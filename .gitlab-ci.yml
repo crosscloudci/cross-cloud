@@ -35,8 +35,8 @@ deploy_aws_cloud:
   script:
     - export DEPLOY=aws-${CI_ENVIRONMENT_SLUG}-$(echo ${CI_COMMIT_SHA} | cut -c -5)
     - ./provision.sh aws-deploy ${DEPLOY}
-    - export KUBECONFIG=$(pwd)/provisioning/data/${DEPLOY}/kubeconfig
-    - kubectl create -f /builds/cncf/demo/AddOns/dns.yaml
+    - export KUBECONFIG=$(pwd)/data/${DEPLOY}/kubeconfig
+    - kubectl create -f dns.yaml
     - helm init
     - helm repo add cncf https://cncf.gitlab.io
     - sleep 20 # Wait for Tiller POD
@@ -58,7 +58,7 @@ deploy_gke_cloud:
   script:
     - export DEPLOY=gke-${CI_ENVIRONMENT_SLUG}-$(echo ${CI_COMMIT_SHA} | cut -c -5)
     - ./provision.sh gke-deploy ${DEPLOY}
-    - export KUBECONFIG=$(pwd)/provisioning/data/${DEPLOY}/kubeconfig
+    - export KUBECONFIG=$(pwd)/data/${DEPLOY}/kubeconfig
     - helm init
     - helm repo add cncf https://cncf.gitlab.io
     - sleep 20 # Wait for Tiller POD

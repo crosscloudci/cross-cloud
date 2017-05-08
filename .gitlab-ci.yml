@@ -22,6 +22,8 @@ provisioning:
 deploy_cloud:
   image: ${CI_REGISTRY_IMAGE}/provisioning:$CI_COMMIT_REF_SLUG
   stage: deploy-cloud
+  only:
+    - triggers
   environment:
     name: ${PROJECT}-${CLOUD}
     url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
@@ -44,6 +46,8 @@ deploy_cloud:
 cleanup_fail:
   image: ${CI_REGISTRY_IMAGE}/provisioning:$CI_COMMIT_REF_SLUG
   stage: cleanup-cloud
+  only:
+    - triggers
   when: on_failure
   environment:
     name: ${PROJECT}-${CLOUD}
@@ -61,6 +65,8 @@ cleanup_fail:
 cleanup_gke_fail:
   image: ${CI_REGISTRY_IMAGE}/provisioning:$CI_COMMIT_REF_SLUG
   stage: cleanup-clouds
+  only:
+    - triggers
   when: on_failure
   environment:
     name: ${PROJECT}-${CLOUD}

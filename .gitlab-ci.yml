@@ -27,7 +27,7 @@ deploy_cloud:
   environment:
     name: ${PROJECT}-${CLOUD}
     url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
-    on_stop: destroy_aws_cloud
+    on_stop: destroy_cloud
   artifacts:
     when: always
     expire_in: 4 weeks
@@ -41,7 +41,7 @@ deploy_cloud:
     - helm init
     - helm repo add cncf https://cncf.gitlab.io
     - sleep 20 # Wait for Tiller POD
-    - helm install --name aws-$(echo ${CI_COMMIT_SHA} | cut -c -5) --set runners.privileged=true --set concurrent=100 --set gitlabUrl=https://gitlab.cncf.ci/ci,runnerRegistrationToken=${GITLAB_REGISTRATION_TOKEN} --set cloud=aws --set commit=${CI_COMMIT_SHA} cncf/gitlab-runner
+    - helm install --name ${CI_ENVIRONMENT_SLUG} --set runners.privileged=true --set concurrent=100 --set gitlabUrl=https://gitlab.cncf.ci/ci,runnerRegistrationToken=${GITLAB_REGISTRATION_TOKEN} --set cloud=${CLOUD} --set commit=${PROJECT} cncf/gitlab-runner
 
 cleanup_fail:
   image: ${CI_REGISTRY_IMAGE}/provisioning:$CI_COMMIT_REF_SLUG

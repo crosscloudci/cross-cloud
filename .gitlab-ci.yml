@@ -43,7 +43,7 @@ deploy_aws_cloud:
     - helm install --name aws-$(echo ${CI_COMMIT_SHA} | cut -c -5) --set runners.privileged=true --set concurrent=100 --set gitlabUrl=https://gitlab.cncf.ci/ci,runnerRegistrationToken=${GITLAB_REGISTRATION_TOKEN} --set cloud=aws --set commit=${CI_COMMIT_SHA} cncf/gitlab-runner
 
 deploy_gke_cloud:
-  image: ${CI_REGISTRY}/cncf/demo/provisioning:$CI_COMMIT_REF_SLUG
+  image: ${CI_REGISTRY_IMAGE}/provisioning:$CI_COMMIT_REF_SLUG
   stage: deploy-clouds
   environment:
     name: $CI_COMMIT_REF_SLUG
@@ -59,14 +59,13 @@ deploy_gke_cloud:
     - export DEPLOY=gke-${CI_ENVIRONMENT_SLUG}-$(echo ${CI_COMMIT_SHA} | cut -c -5)
     - ./provision.sh gke-deploy ${DEPLOY}
     - export KUBECONFIG=$(pwd)/provisioning/data/${DEPLOY}/kubeconfig
-    - kubectl create -f /builds/cncf/demo/AddOns/dns.yaml
     - helm init
     - helm repo add cncf https://cncf.gitlab.io
     - sleep 20 # Wait for Tiller POD
     - helm install --name gke-$(echo ${CI_COMMIT_SHA} | cut -c -5) --set runners.privileged=true --set concurrent=100 --set gitlabUrl=https://gitlab.cncf.ci/ci,runnerRegistrationToken=${GITLAB_REGISTRATION_TOKEN} --set cloud=gke --set commit=${CI_COMMIT_SHA} cncf/gitlab-runner
     
 cleanup_aws_fail:
-  image: ${CI_REGISTRY}/cncf/demo/provisioning:$CI_COMMIT_REF_SLUG
+  image: ${CI_REGISTRY_IMAGE}/provisioning:$CI_COMMIT_REF_SLUG
   stage: cleanup-clouds
   when: on_failure
   environment:
@@ -84,7 +83,7 @@ cleanup_aws_fail:
     - ./provision.sh aws-destroy ${DEPLOY}
     
 cleanup_gke_fail:
-  image: ${CI_REGISTRY}/cncf/demo/provisioning:$CI_COMMIT_REF_SLUG
+  image: ${CI_REGISTRY_IMAGE}/provisioning:$CI_COMMIT_REF_SLUG
   stage: cleanup-clouds
   when: on_failure
   environment:
@@ -102,7 +101,7 @@ cleanup_gke_fail:
     - ./provision.sh gke-destroy ${DEPLOY}
 
 destroy_aws_cloud:
-  image: ${CI_REGISTRY}/cncf/demo/provisioning:$CI_COMMIT_REF_SLUG
+  image: ${CI_REGISTRY_IMAGE}/provisioning:$CI_COMMIT_REF_SLUG
   stage: destroy-clouds
   when: manual
   environment:
@@ -120,7 +119,7 @@ destroy_aws_cloud:
     - ./provision.sh aws-destroy ${DEPLOY}
     
 destroy_gke_cloud:
-  image: ${CI_REGISTRY}/cncf/demo/provisioning:$CI_COMMIT_REF_SLUG
+  image: ${CI_REGISTRY_IMAGE}/provisioning:$CI_COMMIT_REF_SLUG
   stage: destroy-clouds
   when: manual
   environment:

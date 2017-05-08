@@ -1,0 +1,79 @@
+## Prerequisites
+* [docker](https://docker.io/)
+
+* AWS User with following Permissions:
+  - AmazonEC2FullAccess
+  - AmazonS3FullAccess
+  - AWSCodeDeployFullAccess
+  - AmazonRoute53DomainsFullAccess
+  - AmazonRoute53FullAccess
+  - IAMFullAccess
+  - IAMUserChangePassword
+
+* Must use a config config from the repo data/terraform.tfvars
+
+## export AWS Authentication
+
+```
+export AWS_ACCESS_KEY_ID="YOUR_AWS_KEY_ID"
+export AWS_SECRET_ACCESS_KEY="YOUR_AWS_SECRET_KEY"
+```
+
+## create AWS Kubernetes Endpoint
+
+```
+docker run -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID \
+           -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY \
+           -v $(pwd)/data:/cncf/data create/aws
+```
+
+## configure kubectl on local system
+
+```
+sudo chown -R $(whoami):$(whoami) data/
+export KUBECONFIG=$(pwd)/data/kubeconfig
+$ kubectl get nodes
+NAME                                            STATUS                     AGE
+ip-10-0-10-10.ap-southeast-2.compute.internal   Ready,SchedulingDisabled   7m
+ip-10-0-10-11.ap-southeast-2.compute.internal   Ready,SchedulingDisabled   6m
+ip-10-0-10-12.ap-southeast-2.compute.internal   Ready,SchedulingDisabled   7m
+ip-10-0-10-51.ap-southeast-2.compute.internal   Ready                      6m
+ip-10-0-11-7.ap-southeast-2.compute.internal    Ready                      6m
+ip-10-0-12-68.ap-southeast-2.compute.internal   Ready                      6m
+```
+
+## data folder contains certs + kubeconfig
+
+It also contains a json file containing details on current cluster state.
+
+```
+$ sudo cat ./data/kubeconfig
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority: .cfssl/ca.pem
+    server: https://kz8s-apiserver-test-453655923.ap-southeast-2.elb.amazonaws.com
+  name: cluster-test
+contexts:
+- context:
+    cluster: cluster-test
+    user: admin-test
+  name: test
+current-context: test
+kind: Config
+preferences: {}
+users:
+- name: admin-test
+  user:
+    client-certificate: .cfssl/k8s-admin.pem
+    client-key: .cfssl/k8s-admin-key.pem
+```
+
+
+## destroy AWS Kubernetes Endpoint
+
+```
+docker run -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID \
+           -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY \
+           -v $(pwd)/data:/cncf/data terminate/aws
+```

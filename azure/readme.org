@@ -1,0 +1,211 @@
+# -*- org-use-property-inheritance: t; -*-
+#+TITLE: CNCF Demo on Azure
+#+AUTHOR: Hippie Hacker
+#+EMAIL: hh@ii.coop
+#+CREATOR: ii.coop
+#+DATE: March 1st, 2017
+#+PROPERTY: header-args :dir "."
+#+NOTPROPERTY: header-args:shell :prologue ". .env_prod ; . ~/.rvm/scripts/rvm"
+#+PROPERTY: header-args:shell :session none :exports both :cache yes
+* tldr
+
+#+NAME: tldr
+#+BEGIN_SRC shell
+docker run -v $(pwd)/data:/data -ti generate/creds:azure
+# this will ask you to launch a web browser to authenticate to azure
+# it will result in ./data/azure.env
+# deployname can only consist of lowercase letters and numbers, and must be less than 18 characters long
+DEPLOYNAME=$(date +%Y%m%d%H%M) # could be a branch+gitcommit etc
+# all data for the deploy will be stored in it's own directory
+docker run -ti -v $(pwd)/data/$DEPLOYNAME:/cncf/data --env-file ./data/azure.env create/azure deploy $DEPLOYNAME
+#+END_SRC
+
+* access your k8s cluster
+
+#+NAME: 3 minute deploy
+#+BEGIN_SRC output
+bastion-fqdn = bastion201703230324.westus.cloudapp.azure.com
+fqdn_k8s = k8s201703230324.westus.cloudapp.azure.com
+ssh-key-setup = eval $(ssh-agent) ; ssh-add /cncf/data/.ssh/id_rsa
+ssh-via-bastion = ssh -At cncf@bastion201703230324.westus.cloudapp.azure.com ssh cncf@master1.cncf.demo
+
+real	3m2.509s
+user	0m4.460s
+sys	0m0.668s
+# takes about 3-8 minutes to deploy
+
+sudo chown -R $(whoami):$(whoami) $(pwd)/data/${DEPLOYNAME}
+export KUBECONFIG=$(pwd)/data/${DEPLOYNAME}/kubeconfig
+
+kubectl get nodes
+NAME           STATUS                     AGE
+etcd-master1   Ready,SchedulingDisabled   13m
+etcd-master2   Ready,SchedulingDisabled   13m
+etcd-master3   Ready,SchedulingDisabled   14m
+worker-node1   Ready                      10m
+worker-node2   Ready                      13m
+worker-node3   Ready                      13m
+...
+kubectl proxy etc
+
+# to destroy
+docker run -ti -v $(pwd)/data/$DEPLOYNAME:/cncf/data --env-file ./data/azure.env terminate/azure destroy $DEPLOYNAME
+#+END_SRC
+
+Using DEPLOYNAME allows for multiple concurrent deploys and to easily.
+
+* Customing the Deploy via environment
+
+Adding var-name=value to ./data/terraform.tfvars will allow you to override many settings for this deploy.
+
+#+BEGIN_SRC shell
+name= "azure"
+location= "westus"
+internal_tld= "cncf.demo"
+master_node_count= "3"
+worker_node_count= "3"
+master_vm_size= "Standard_A2"
+worker_vm_size= "Standard_A2"
+bastion_vm_size= "Standard_A2"
+kubelet_aci= "quay.io/coreos/hyperkube"
+kubelet_image_tag= "v1.4.7_coreos.0"
+image_publisher= "CoreOS"
+image_offer= "CoreOS"
+image_sku= "Stable"
+image_version= "1298.6.0"
+#+END_SRC
+
+* Next steps
+
+- Store private keys in storage rather than cloud-init
+- Look into using Centos and Debian/Ubuntu
+- Deploy onto AWS and Azure at the same time
+- Setup some CI to deploy on every commit to both clouds
+- Start on GCE
+
+* Notable issues
+
+** Azure dns_zones do not provide IPs
+Specifically [[https://www.terraform.io/docs/providers/azurerm/r/dns_zone.html#name_servers][azurerm_dns_zone name_servers]] only provides the server names, while [[https://www.terraform.io/docs/providers/azurerm/r/network_interface.html#dns_servers][azurerm_network_interface requires a list of IPs]].
+We'll do a cleaner maping later, but the [[https://github.com/cncf/demo/pull/194/files#diff-8f1d08cae7f5b62ea7e23f2cb3b0b67bR7][current hack]] got us IPs and
+** Azure CNAME records don't resolve correctly
+We had a couple places where CNAMEs behaved unexpectedly when using Azure dns zones.
+Specifically CNAME records when queried with DIG wouldn't refer.
+** Terraform azurerm_dns_srv_records do not support multiple dynamic entries
+This affects our ability to bootstrap etcd with an unknown number of nodes beforehand.
+If we stick with three (or any number) it's not a problem.
+** Azure Cluster-Autoscale Virtual Machine Scale Sets are not yet supported by kubernetes
+We should be able to scale up our workers at some point [[https://github.com/Azure/ACS/blob/master/kubernetes-status.md#future-work][in the future]].
+** Starting kubelet without --cloud-config=azure.json results in a panic
+When using --cloud-provider=azure not only must you use
+--cloud-config=azure.json, it seems you have to provide all the optional
+settings as well. Failure to do so results in a panic.
+** Hostnames and VM names must match in order for kubelet to find instances
+[[https://github.com/kubernetes/kubernetes/blob/master/pkg/kubelet/kubelet_node_status.go#L255][instances are looked up via nodeName]] and if they don't match, kubelet will not start.
+
+#+BEGIN_SRC example
+kubelet_node_status.go:69] Unable to construct api.Node object for kubelet:
+    failed to get external ID from cloud provider: instance not found
+#+END_SRC
+
+* generate credentials
+** via a container
+
+#+NAME: generate/creds:azure
+#+BEGIN_SRC shell
+$ docker run -v $(pwd)/data:/data -ti generate/creds:azure
+To sign in, use a web browser to open the page https://aka.ms/devicelogin and enter the code GY7W7BMRZ to authenticate.
+Name           CloudName    SubscriptionId                        State     IsDefault
+-------------  -----------  ------------------------------------  --------  -----------
+Free Trial     AzureCloud   5358e673-95e7-4cd8-9791-ca28dd5e3cbb  Disabled  True
+Pay-As-You-Go  AzureCloud   70693672-7c0d-485f-ac08-06d458c80f0e  Enabled
+
+Please enter the Name of the account you wish to use. If you do not see
+a valid account in the list press Ctrl+C to abort and create one.
+If you leave this blank we will use the Current account.
+> Pay-As-You-Go
+Using subscription_id: 70693672-7c0d-485f-ac08-06d458c80f0e
+Using tenant_id: 9996322a-93ac-43ae-80be-887a3e8194a1
+==> Creating service principal
+Retrying role assignment creation: 1/36
+Retrying role assignment creation: 2/36
+./data/azure.env created
+$ cat ./data/azure.env
+export ARM_SUBSCRIPTION_ID=70693672-XXXX-4858-ac08-06888888880e
+export ARM_TENANT_ID=9896828a-93ac-43ae-YYYY-887a3e8898a1
+export ARM_CLIENT_ID=968448ae-f9f9-ZZZZ-bf43-5c081da88975
+export ARM_CLIENT_SECRET=BBBBBBBB-8eaa-AAAA-aafe-75b02ad4ceba
+#+END_SRC
+
+** manually
+
+#+NAME: run az via docker
+#+BEGIN_SRC
+docker run -v $(pwd)/.azure:/root/.azure azuresdk/azure-cli-python az account list -o table
+#+END_SRC
+
+#+NAME: az account list
+#+BEGIN_SRC shell
+az account list -o table
+az account set --subscription Pay-As-You-Go
+#+END_SRC
+
+#+RESULTS[eb0d69eb1ea1b9a005604b3dd37889127d19f76b]: az account list
+| Name          | CloudName   | SubscriptionId                       | State                                | IsDefault   |
+| ------------- | ----------- | ------------------------------------ | --------                             | ----------- |
+| Free          | Trial       | AzureCloud                           | 5358e673-95e7-4cd8-9791-ca28dd5e3cbb | Disabled    |
+| Pay-As-You-Go | AzureCloud  | 70693672-7c0d-485f-ac08-06d458c80f0e | Enabled                              | True        |
+
+#+NAME: az account show table
+#+BEGIN_SRC shell :results output verbatim raw
+az account show -o table
+#+END_SRC
+
+#+RESULTS[00afff595364da643372e54234a45a775c1539ef]: az account show table
+| EnvironmentName   | IsDefault   | Name          | State   | TenantId                             |
+| ----------------- | ----------- | ------------- | ------- | ------------------------------------ |
+| AzureCloud        | True        | Pay-As-You-Go | Enabled | 9996322a-93ac-43ae-80be-887a3e8194a1 |
+
+#+NAME: az_account_show_json
+#+HEADERS: :wrap SRC js
+#+HEADERS: :results output
+#+BEGIN_SRC shell :export both
+az account show
+#+END_SRC
+
+#+RESULTS[97a6b7ba7839519d9223a4e67e27ced7ed78f0b9]: az_account_show_json
+#+BEGIN_SRC js
+{
+  "environmentName": "AzureCloud",
+  "id": "70693672-7c0d-485f-ac08-06d458c80f0e",
+  "isDefault": true,
+  "name": "Pay-As-You-Go",
+  "state": "Enabled",
+  "tenantId": "9996322a-93ac-43ae-80be-887a3e8194a1",
+  "user": {
+    "name": "azure@ii.coop",
+    "type": "user"
+  }
+}
+#+END_SRC
+
+#+NAME: generate ENV
+#+BEGIN_SRC shell
+ARM_SUBSCRIPTION_ID=$( az account show | jq -r .id )
+CREDS_JSON=$( az ad sp create-for-rbac --name cncfdemos )
+ARM_TENANT_ID=$( echo ${CREDS_JSON} | jq -r .tenant )
+ARM_CLIENT_ID=$( echo ${CREDS_JSON} | jq -r .appId )
+ARM_CLIENT_SECRET=$( echo ${CREDS_JSON} | jq -r .password )
+echo export ARM_SUBSCRIPTION_ID=$ARM_SUBSCRIPTION_ID
+echo export ARM_TENANT_ID=$ARM_TENANT_ID
+echo export ARM_CLIENT_ID=$ARM_CLIENT_ID
+echo export ARM_CLIENT_SECRET=$ARM_CLIENT_SECRET
+#+END_SRC
+
+# Local Variables:
+# eval: (require (quote ob-shell))
+# eval: (require (quote ob-lisp))
+# eval: (require (quote ob-js))
+# eval: (org-babel-do-load-languages 'org-babel-load-languages '((js . t) (shell . t)))
+# eval: (setenv "PATH" (concat (concat (getenv "HOME") "/bin:") (getenv "PATH") ))
+# End:

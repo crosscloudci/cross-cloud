@@ -1,0 +1,281 @@
+# -*- org-use-property-inheritance: t; -*-                                                                                                                                                                                                                     
+#+TITLE: Azure Support
+#+AUTHOR: Hippie Hacker                                                                                                                                                                                                                                      
+#+EMAIL: hh@ii.coop                                                                                                                                                                                                                                             
+#+CREATOR: ii.coop                                                                                                                                                                                                                                           
+#+DATE: March 1st, 2017                                                                                                                                                                                                                                     
+#+PROPERTY: header-args :dir ".."                                                                                                                                                                                                                              
+#+NOTPROPERTY: header-args:shell :prologue ". .env_prod ; . ~/.rvm/scripts/rvm"                                                                                                                                                                                   
+#+PROPERTY: header-args:shell :session none :exports both :cache yes
+
+* Azure Equivalence for Existing EC2
+Eventually we will
+** Locating the Equivalent CentOS Image
+
+Currently the cncf/demo [[https://github.com/cncf/demo/commit/62b4ee750cea96ac18d9998cebed36660b3d5864#diff-165521d9e758a5a743ea42c6fd528156R10][uses the latest CentOS7 AMI]], so let's go find that at Azure.
+
+#+NAME:list azure default images 
+#+BEGIN_SRC shell
+az vm image list -o table 
+#+END_SRC
+
+#+RESULTS[f42a28cef38b0b7c3346005ad6b0128d06d069b1]: list azure default images
+| Offer         | Publisher              | Sku                | Urn                                                            | UrnAlias            | Version   |
+| ------------- | ---------------------- | ------------------ | -------------------------------------------------------------- | ------------------- | --------- |
+| WindowsServer | MicrosoftWindowsServer | 2016-Datacenter    | MicrosoftWindowsServer:WindowsServer:2016-Datacenter:latest    | Win2016Datacenter   | latest    |
+| WindowsServer | MicrosoftWindowsServer | 2012-R2-Datacenter | MicrosoftWindowsServer:WindowsServer:2012-R2-Datacenter:latest | Win2012R2Datacenter | latest    |
+| WindowsServer | MicrosoftWindowsServer | 2008-R2-SP1        | MicrosoftWindowsServer:WindowsServer:2008-R2-SP1:latest        | Win2008R2SP1        | latest    |
+| WindowsServer | MicrosoftWindowsServer | 2012-Datacenter    | MicrosoftWindowsServer:WindowsServer:2012-Datacenter:latest    | Win2012Datacenter   | latest    |
+| UbuntuServer  | Canonical              | 14.04.4-LTS        | Canonical:UbuntuServer:14.04.4-LTS:latest                      | UbuntuLTS           | latest    |
+| CentOS        | OpenLogic              | 7.2                | OpenLogic:CentOS:7.2:latest                                    | CentOS              | latest    |
+| openSUSE      | SUSE                   | 13.2               | SUSE:openSUSE:13.2:latest                                      | openSUSE            | latest    |
+| RHEL          | RedHat                 | 7.2                | RedHat:RHEL:7.2:latest                                         | RHEL                | latest    |
+| SLES          | SUSE                   | 12-SP1             | SUSE:SLES:12-SP1:latest                                        | SLES                | latest    |
+| Debian        | credativ               | 8                  | credativ:Debian:8:latest                                       | Debian              | latest    |
+| CoreOS        | CoreOS                 | Stable             | CoreOS:CoreOS:Stable:latest                                    | CoreOS              | latest    |
+
+We are looking for CentOS, and looks like the default Publisher is OpenLogic. Let's see what SKU's they have in westus.
+
+#+NAME: list OpenLogic CentOS sku offers
+#+BEGIN_SRC shell
+az vm image list-skus -o table --publisher OpenLogic --location westus --offer CentOS
+#+END_SRC
+
+#+RESULTS[bd6ed1e6f2fc3c614c736373beafd146068045f4]: list OpenLogic CentOS sku offers
+| Location   |   Name |
+| ---------- | ------ |
+| westus     |    6.5 |
+| westus     |    6.6 |
+| westus     |    6.7 |
+| westus     |    6.8 |
+| westus     |    7.0 |
+| westus     |    7.1 |
+| westus     |    7.2 |
+| westus     |   7.2n |
+| westus     |    7.3 |
+
+I prefer not to use 'latest' anywhere, let's grab the precise version of CentOS 7.3.
+
+#+NAME: list OpenLogic CentOS 7.3 Versions
+#+BEGIN_SRC shell
+az vm image list --offer centos -o table --publisher openlogic --sku 7.3 --all
+#+END_SRC
+
+#+RESULTS[7a0228f7fd750965697c45a561145ee0cb58e207]: list OpenLogic CentOS 7.3 Versions
+| Offer   | Publisher   | Sku   | Urn                               | Version      |
+| ------- | ----------- | ----- | --------------------------------- | ------------ |
+| CentOS  | OpenLogic   | 7.3   | OpenLogic:CentOS:7.3:7.3.20161221 | 7.3.20161221 |
+
+I'm comfortable using this image as our base.
+
+** 
+* Communicating to Azure from Terraform
+  
+The [[https://github.com/Azure/azure-cli][Azure-CLI]] can be utilized to create creds for terraform.
+
+Let's [[https://azure.microsoft.com/en-us/blog/run-azure-cli-as-a-docker-container-avoid-installation-and-setup/][run Azure CLI as a Docker Container]]
+Be sure you have a Paid account, the free trail quotas are too low.
+
+#+NAME: azure account list
+#+BEGIN_SRC shell
+$ docker run -v $(pwd)/.azure:/root/.azure -it azuresdk/azure-cli-python az login
+To sign in, use a web browser to open the page https://aka.ms/devicelogin and enter the code GLKE7GL6F to authenticate.
+[
+  {
+    "cloudName": "AzureCloud",
+    "id": "5358e673-95e7-4cd8-9791-ca28dd5e3cbb",
+    "isDefault": true,
+    "name": "Free Trial",
+    "state": "Enabled",
+    "tenantId": "9996322a-93ac-43ae-80be-887a3e8194a1",
+    "user": {
+      "name": "azure@ii.coop",
+      "type": "user"
+    }
+  },
+  {
+    "cloudName": "AzureCloud",
+    "id": "70693672-7c0d-485f-ac08-06d458c80f0e",
+    "isDefault": false,
+    "name": "Pay-As-You-Go",
+    "state": "Enabled",
+    "tenantId": "9996322a-93ac-43ae-80be-887a3e8194a1",
+    "user": {
+      "name": "azure@ii.coop",
+      "type": "user"
+    }
+  }
+]
+#+END_SRC
+
+#+NAME: az account list
+#+BEGIN_SRC shell
+#az account list
+#echo HELLO
+# docker run -v $(pwd)/.azure:/root/.azure -it azuresdk/azure-cli-python az account list | jq ".[] | select(.name==\"Pay-As-You-Go\") | .id"
+#+END_SRC
+
+#+RESULTS[4e9dccc24c6d7d7b761fe504e1cc41f7d41c7914]: az account list
+
+#+NAME: generate azure creds
+#+BEGIN_SRC shell
+$ docker run -v $(pwd)/.azure-cli-creds:/root -it azuresdk/azure-cli-python az login
+To sign in, use a web browser to open the page https://aka.ms/devicelogin and enter the code GLKE7GL6F to authenticate.
+[
+  {
+    "cloudName": "AzureCloud",
+    "id": "5358e673-95e7-4cd8-9791-ca28dd5e3cbb",
+    "isDefault": true,
+    "name": "Free Trial",
+    "state": "Enabled",
+    "tenantId": "9996322a-93ac-43ae-80be-887a3e8194a1",
+    "user": {
+      "name": "azure@ii.coop",
+      "type": "user"
+    }
+  }
+]
+#+END_SRC
+
+Please note that to run this demo full, you'll need to have a pay-as-you-go account due to a resource limits.
+
+#+BEGIN_SRC shell
+ARM_SUBSCRIPTION_ID=$(az account list | jq '. | map([.id] | join("\n")) | join("\n")' | sed 's/"//g')
+az account set --subscription="${ARM_SUBSCRIPTION_ID}"
+az ad sp create-for-rbac --role="Contributor" --scopes="/subscriptions/${ARM_SUBSCRIPTION_ID}" | tee servicePrincipalProfile.json
+ARM_CLIENT_ID=$(jq -r .appId servicePrincipalProfile.json)
+ARM_CLIENT_SECRET=$(jq -r .password servicePrincipalProfile.json)
+ARM_TENANT_ID=$(jq -r .tenant servicePrincipalProfile.json)
+#+END_SRC
+
+#+NAME: list my lb
+#+BEGIN_SRC shell :format js
+az network lb list --output table
+#+END_SRC
+
+#+RESULTS[50522849401e494e714a1f3cb413e3a936dd0cb3]: list my lb
+| Location   | Name             | ProvisioningState   | ResourceGroup   | ResourceGuid                         |
+| ---------- | ---------------- | ------------------- | --------------- | ------------------------------------ |
+| westus     | TestLoadBalancer | Succeeded           | deploy          | 93247839-cdcd-4d24-b461-acafafc59833 |
+
+#+NAME: my my lb
+#+BEGIN_SRC shell :format js
+az network lb show --name TestLoadBalancer --resource-group test
+#az network lb show TestLoadBalancer
+#+END_SRC
+
+#+NAME: list resource group
+#+BEGIN_SRC shell
+az group list -o table
+#+END_SRC
+
+#+RESULTS[e1c878abc4d0ba479f12a7c7ae192f70a58feec1]: list resource group
+| Name   | Location   | Status    |
+| ------ | ---------- | --------- |
+| deploy | westus     | Succeeded |
+
+#+NAME: my my lb
+#+BEGIN_SRC shell :format js
+az network lb show --name TestLoadBalancer --resource-group deploy -o table
+#az network lb show TestLoadBalancer
+#+END_SRC
+
+#+RESULTS[75c3b3395ca9f70185e880e4c9b14338b7287472]: my my lb
+| Location   | Name             | ProvisioningState   | ResourceGroup   | ResourceGuid                         |
+| ---------- | ---------------- | ------------------- | --------------- | ------------------------------------ |
+| westus     | TestLoadBalancer | Succeeded           | deploy          | 93247839-cdcd-4d24-b461-acafafc59833 |
+
+
+#+BEGIN_SRC 
+
+openssl x509 -in .cfssl/k8s_admin.pem -noout -text
+openssl x509 -in .cfssl/k8s-apiserver.pem -noout -text
+
+
+#+END_SRC
+
+#+BEGIN_SRC shell
+az group delete --name deploy --yes
+#+END_SRC
+
+** CoreOS
+
+We might start with CoreOS to focus on getting cloud up now, then look at images.
+
+#+NAME: list CoreOS sku offers
+#+BEGIN_SRC shell
+az vm image list-skus -o table --publisher CoreOS --location westus --offer CoreOS
+#+END_SRC
+
+#+RESULTS[1756d18b49a91fd7d620f538082e7101545e22d7]: list CoreOS sku offers
+| Location   | Name   |
+| ---------- | ------ |
+| westus     | Alpha  |
+| westus     | Beta   |
+| westus     | Stable |
+
+#+NAME: list CoreOS Stable Versions
+#+BEGIN_SRC shell
+az vm image list --offer CoreOS -o table --publisher CoreOS --sku Stable --all
+#+END_SRC
+
+#+RESULTS[508f2fcde4974eced346be39c6788c31c21e5230]: list CoreOS Stable Versions
+| Offer   | Publisher   | Sku    | Urn                            |   Version |
+| ------- | ----------- | ------ | ------------------------------ | --------- |
+| CoreOS  | CoreOS      | Stable | CoreOS:CoreOS:Stable:1010.5.0  |  1010.5.0 |
+| CoreOS  | CoreOS      | Stable | CoreOS:CoreOS:Stable:1010.6.0  |  1010.6.0 |
+| CoreOS  | CoreOS      | Stable | CoreOS:CoreOS:Stable:1068.6.0  |  1068.6.0 |
+| CoreOS  | CoreOS      | Stable | CoreOS:CoreOS:Stable:1068.8.0  |  1068.8.0 |
+| CoreOS  | CoreOS      | Stable | CoreOS:CoreOS:Stable:1068.9.0  |  1068.9.0 |
+| CoreOS  | CoreOS      | Stable | CoreOS:CoreOS:Stable:1122.2.0  |  1122.2.0 |
+| CoreOS  | CoreOS      | Stable | CoreOS:CoreOS:Stable:1122.3.0  |  1122.3.0 |
+| CoreOS  | CoreOS      | Stable | CoreOS:CoreOS:Stable:1185.3.0  |  1185.3.0 |
+| CoreOS  | CoreOS      | Stable | CoreOS:CoreOS:Stable:1185.5.0  |  1185.5.0 |
+| CoreOS  | CoreOS      | Stable | CoreOS:CoreOS:Stable:1235.12.0 | 1235.12.0 |
+| CoreOS  | CoreOS      | Stable | CoreOS:CoreOS:Stable:1235.5.0  |  1235.5.0 |
+| CoreOS  | CoreOS      | Stable | CoreOS:CoreOS:Stable:1235.6.0  |  1235.6.0 |
+| CoreOS  | CoreOS      | Stable | CoreOS:CoreOS:Stable:1235.8.0  |  1235.8.0 |
+| CoreOS  | CoreOS      | Stable | CoreOS:CoreOS:Stable:1235.9.0  |  1235.9.0 |
+| CoreOS  | CoreOS      | Stable | CoreOS:CoreOS:Stable:1298.5.0  |  1298.5.0 |
+| CoreOS  | CoreOS      | Stable | CoreOS:CoreOS:Stable:1298.6.0  |  1298.6.0 |
+| CoreOS  | CoreOS      | Stable | CoreOS:CoreOS:Stable:494.3.0   |   494.3.0 |
+| CoreOS  | CoreOS      | Stable | CoreOS:CoreOS:Stable:494.4.0   |   494.4.0 |
+| CoreOS  | CoreOS      | Stable | CoreOS:CoreOS:Stable:494.5.0   |   494.5.0 |
+| CoreOS  | CoreOS      | Stable | CoreOS:CoreOS:Stable:522.5.0   |   522.5.0 |
+| CoreOS  | CoreOS      | Stable | CoreOS:CoreOS:Stable:522.6.0   |   522.6.0 |
+| CoreOS  | CoreOS      | Stable | CoreOS:CoreOS:Stable:557.2.0   |   557.2.0 |
+| CoreOS  | CoreOS      | Stable | CoreOS:CoreOS:Stable:607.0.0   |   607.0.0 |
+| CoreOS  | CoreOS      | Stable | CoreOS:CoreOS:Stable:633.1.0   |   633.1.0 |
+| CoreOS  | CoreOS      | Stable | CoreOS:CoreOS:Stable:647.0.0   |   647.0.0 |
+| CoreOS  | CoreOS      | Stable | CoreOS:CoreOS:Stable:647.2.0   |   647.2.0 |
+| CoreOS  | CoreOS      | Stable | CoreOS:CoreOS:Stable:681.0.0   |   681.0.0 |
+| CoreOS  | CoreOS      | Stable | CoreOS:CoreOS:Stable:681.1.0   |   681.1.0 |
+| CoreOS  | CoreOS      | Stable | CoreOS:CoreOS:Stable:681.2.0   |   681.2.0 |
+| CoreOS  | CoreOS      | Stable | CoreOS:CoreOS:Stable:717.1.0   |   717.1.0 |
+| CoreOS  | CoreOS      | Stable | CoreOS:CoreOS:Stable:717.3.0   |   717.3.0 |
+| CoreOS  | CoreOS      | Stable | CoreOS:CoreOS:Stable:723.3.0   |   723.3.0 |
+| CoreOS  | CoreOS      | Stable | CoreOS:CoreOS:Stable:766.3.0   |   766.3.0 |
+| CoreOS  | CoreOS      | Stable | CoreOS:CoreOS:Stable:766.4.0   |   766.4.0 |
+| CoreOS  | CoreOS      | Stable | CoreOS:CoreOS:Stable:766.5.0   |   766.5.0 |
+| CoreOS  | CoreOS      | Stable | CoreOS:CoreOS:Stable:835.10.0  |  835.10.0 |
+| CoreOS  | CoreOS      | Stable | CoreOS:CoreOS:Stable:835.11.0  |  835.11.0 |
+| CoreOS  | CoreOS      | Stable | CoreOS:CoreOS:Stable:835.12.0  |  835.12.0 |
+| CoreOS  | CoreOS      | Stable | CoreOS:CoreOS:Stable:835.13.0  |  835.13.0 |
+| CoreOS  | CoreOS      | Stable | CoreOS:CoreOS:Stable:835.8.0   |   835.8.0 |
+| CoreOS  | CoreOS      | Stable | CoreOS:CoreOS:Stable:835.9.0   |   835.9.0 |
+| CoreOS  | CoreOS      | Stable | CoreOS:CoreOS:Stable:899.13.0  |  899.13.0 |
+| CoreOS  | CoreOS      | Stable | CoreOS:CoreOS:Stable:899.15.0  |  899.15.0 |
+| CoreOS  | CoreOS      | Stable | CoreOS:CoreOS:Stable:899.17.0  |  899.17.0 |
+
+I think we want:
+
+| CoreOS  | CoreOS      | Stable | CoreOS:CoreOS:Stable:1298.5.0  |  1298.5.0 |
+
+* Summary
+
+# Local Variables:
+# eval: (require (quote ob-shell))
+# eval: (require (quote ob-lisp))
+# eval: (org-babel-do-load-languages 'org-babel-load-languages '((js . t) (shell . t)))
+# eval: (setenv "PATH" (concat (concat (getenv "HOME") "/bin:") (getenv "PATH") ))
+# End:

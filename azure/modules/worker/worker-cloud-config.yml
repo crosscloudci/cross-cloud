@@ -1,0 +1,165 @@
+#cloud-config
+---
+coreos:
+
+  etcd2:
+    discovery-srv: ${ internal_tld }
+    peer-trusted-ca-file: /etc/kubernetes/ssl/ca.pem
+    peer-client-cert-auth: true
+    peer-cert-file: /etc/kubernetes/ssl/k8s-worker.pem
+    peer-key-file: /etc/kubernetes/ssl/k8s-worker-key.pem
+    proxy: on
+
+  units:
+    - name: etcd2.service
+      command: start
+
+    - name: docker.service
+      command: start
+
+    - name: kubelet.service
+      command: start
+      content: |
+        [Unit]
+        ConditionFileIsExecutable=/usr/lib/coreos/kubelet-wrapper
+        [Service]
+        Environment="KUBELET_IMAGE_URL=${ kubelet_image_url }"
+        Environment="KUBELET_IMAGE_TAG=${ kubelet_image_tag }"
+        Environment="RKT_OPTS=\
+          --volume dns,kind=host,source=/etc/resolv.conf \
+          --mount volume=dns,target=/etc/resolv.conf \
+          --volume rkt,kind=host,source=/opt/bin/host-rkt \
+          --mount volume=rkt,target=/usr/bin/rkt \
+          --volume var-lib-rkt,kind=host,source=/var/lib/rkt \
+          --mount volume=var-lib-rkt,target=/var/lib/rkt \
+          --volume stage,kind=host,source=/tmp \
+          --mount volume=stage,target=/tmp \
+          --volume var-log,kind=host,source=/var/log \
+          --mount volume=var-log,target=/var/log"
+        ExecStartPre=/usr/bin/mkdir -p /var/log/containers
+        ExecStartPre=/usr/bin/mkdir -p /var/lib/kubelet
+        ExecStartPre=/usr/bin/mount --bind /var/lib/kubelet /var/lib/kubelet
+        ExecStartPre=/usr/bin/mount --make-shared /var/lib/kubelet
+        ExecStart=/usr/lib/coreos/kubelet-wrapper \
+          --allow-privileged=true \
+          --api-servers=http://master.${ internal_tld }:8080 \
+          --cloud-provider=azure \
+          --cloud-config=/etc/kubernetes/ssl/azure-config.json \
+          --cluster-dns=${ dns_service_ip } \
+          --cluster_domain=${ cluster_domain } \
+          --config=/etc/kubernetes/manifests \
+          --kubeconfig=/etc/kubernetes/kubeconfig.yml \
+          --register-node=true \
+          --tls-cert-file=/etc/kubernetes/ssl/k8s-worker.pem \
+          --tls-private-key-file=/etc/kubernetes/ssl/k8s-worker-key.pem
+        Restart=always
+        RestartSec=5
+        [Install]
+        WantedBy=multi-user.target
+
+  update:
+    reboot-strategy: etcd-lock
+
+write-files:
+  - path: /opt/bin/host-rkt
+    permissions: 0755
+    owner: root:root
+    content: |
+      #!/bin/sh
+      exec nsenter -m -u -i -n -p -t 1 -- /usr/bin/rkt "$@"
+
+  - path: /etc/kubernetes/kubeconfig.yml
+    content: |
+      apiVersion: v1
+      kind: Config
+      clusters:
+        - name: local
+          cluster:
+            certificate-authority: /etc/kubernetes/ssl/ca.pem
+      users:
+        - name: kubelet
+          user:
+            client-certificate: /etc/kubernetes/ssl/k8s-worker.pem
+            client-key: /etc/kubernetes/ssl/k8s-worker-key.pem
+      contexts:
+        - context:
+            cluster: local
+            user: kubelet
+          name: kubelet-context
+      current-context: kubelet-context
+
+  - path: /etc/kubernetes/manifests/kube-proxy.yml
+    content: |
+      apiVersion: v1
+      kind: Pod
+      metadata:
+        name: kube-proxy
+        namespace: kube-system
+      spec:
+        hostNetwork: true
+        containers:
+        - name: kube-proxy
+          image: ${ kubelet_image_url }:${ kubelet_image_tag }
+          command:
+          - /hyperkube
+          - proxy
+          - --kubeconfig=/etc/kubernetes/kubeconfig.yml
+          - --master=https://master.${ internal_tld }
+          - --proxy-mode=iptables
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - mountPath: /etc/ssl/certs
+              name: "ssl-certs"
+            - mountPath: /etc/kubernetes/kubeconfig.yml
+              name: "kubeconfig"
+              readOnly: true
+            - mountPath: /etc/kubernetes/ssl
+              name: "etc-kube-ssl"
+              readOnly: true
+        volumes:
+          - name: "ssl-certs"
+            hostPath:
+              path: "/usr/share/ca-certificates"
+          - name: "kubeconfig"
+            hostPath:
+              path: "/etc/kubernetes/kubeconfig.yml"
+          - name: "etc-kube-ssl"
+            hostPath:
+              path: "/etc/kubernetes/ssl"
+
+  - path: /etc/logrotate.d/docker-containers
+    content: |
+      /var/lib/docker/containers/*/*.log {
+        rotate 7
+        daily
+        compress
+        size=1M
+        missingok
+        delaycompress
+        copytruncate
+      }
+
+  - path: /etc/kubernetes/ssl/ca.pem
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ ca }
+      
+  - path: /etc/kubernetes/ssl/k8s-worker.pem
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ k8s_worker }
+      
+  - path: /etc/kubernetes/ssl/k8s-worker-key.pem
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ k8s_worker_key }
+
+  - path: /etc/kubernetes/ssl/azure-config.json
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ k8s_cloud_config }

@@ -1,0 +1,149 @@
+azure dns nameservers must be turned into IPs
+Azure dns cname seems broken
+Azure / terraform azurerm_dns_srv_records don't support multiple entries
+
+# no VMSS
+https://github.com/kubernetes/kubernetes-anywhere/issues/265#issuecomment-256732736
+ 
+https://github.com/kubernetes/kubernetes/blob/master/pkg/kubelet/kubelet_node_status.go#L195
+
+https://github.com/kubernetes/kubernetes/blob/master/pkg/kubelet/kubelet_node_status.go#L255
+
+#+BEGIN_SRC tsuff
+
+sudo journalctl -u kubelet -f
+-- Logs begin at Tue 2017-03-21 23:17:36 UTC. --
+Mar 21 23:48:41 etcd-master1 kubelet-wrapper[1928]: E0321 23:468:41.872058    1928 reflector.go:203] pkg/kubelet/kubelet.go:403: Failed to list *api.Node: Get http://127.0.0.1:8080/api/v1/nodes?fieldSelector=metadata.name%3Detcd-master1&resourceVersion=0: dial tcp 127.0.0.1:8080: getsockopt: connection refused
+Mar 21 23:48:41 etcd-master1 kubelet-wrapper[1928]: E0321 23:48:41.883928    1928 reflector.go:203] pkg/kubelet/kubelet.go:384: Failed to list *api.Service: Get http://127.0.0.1:8080/api/v1/services?resourceVersion=0: dial tcp 127.0.0.1:8080: getsockopt: connection refused
+Mar 21 23:48:41 etcd-master1 kubelet-wrapper[1928]: E0321 23:48:41.972576    1928 reflector.go:203] pkg/kubelet/config/apiserver.go:43: Failed to list *api.Pod: Get http://127.0.0.1:8080/api/v1/pods?fieldSelector=spec.nodeName%3Detcd-master1&resourceVersion=0: dial tcp 127.0.0.1:8080: getsockopt: connection refused
+
+Mar 21 23:48:42 etcd-master1 kubelet-wrapper[1928]: I0321 23:48:42.594834    1928 kubelet.go:2243] skipping pod synchronization - [Kubelet failed to get node info.]
+
+Mar 21 23:48:42 etcd-master1 kubelet-wrapper[1928]: E0321 23:48:42.873654    1928 reflector.go:203] pkg/kubelet/kubelet.go:403: Failed to list *api.Node: Get http://127.0.0.1:8080/api/v1/nodes?fieldSelector=metadata.name%3Detcd-master1&resourceVersion=0: dial tcp 127.0.0.1:8080: getsockopt: connection refused
+Mar 21 23:48:42 etcd-master1 kubelet-wrapper[1928]: E0321 23:48:42.885473    1928 reflector.go:203] pkg/kubelet/kubelet.go:384: Failed to list *api.Service: Get http://127.0.0.1:8080/api/v1/services?resourceVersion=0: dial tcp 127.0.0.1:8080: getsockopt: connection refused
+Mar 21 23:48:42 etcd-master1 kubelet-wrapper[1928]: E0321 23:48:42.974035    1928 reflector.go:203] pkg/kubelet/config/apiserver.go:43: Failed to list *api.Pod: Get http://127.0.0.1:8080/api/v1/pods?fieldSelector=spec.nodeName%3Detcd-master1&resourceVersion=0: dial tcp 127.0.0.1:8080: getsockopt: connection refused
+Mar 21 23:48:43 etcd-master1 kubelet-wrapper[1928]: E0321 23:48:43.875186    1928 reflector.go:203] pkg/kubelet/kubelet.go:403: Failed to list *api.Node: Get http://127.0.0.1:8080/api/v1/nodes?fieldSelector=metadata.name%3Detcd-master1&resourceVersion=0: dial tcp 127.0.0.1:8080: getsockopt: connection refused
+Mar 21 23:48:43 etcd-master1 kubelet-wrapper[1928]: E0321 23:48:43.886191    1928 reflector.go:203] pkg/kubelet/kubelet.go:384: Failed to list *api.Service: Get http://127.0.0.1:8080/api/v1/services?resourceVersion=0: dial tcp 127.0.0.1:8080: getsockopt: connection refused
+Mar 21 23:48:43 etcd-master1 kubelet-wrapper[1928]: E0321 23:48:43.975619    1928 reflector.go:203] pkg/kubelet/config/apiserver.go:43: Failed to list *api.Pod: Get http://127.0.0.1:8080/api/v1/pods?fieldSelector=spec.nodeName%3Detcd-master1&resourceVersion=0: dial tcp 127.0.0.1:8080: getsockopt: connection refused
+
+Mar 21 23:48:44 etcd-master1 kubelet-wrapper[1928]: I0321 23:48:44.729330    1928 kubelet_node_status.go:203] Setting node annotation to enable volume controller attach/detach
+Mar 21 23:48:44 etcd-master1 kubelet-wrapper[1928]: E0321 23:48:44.749751    1928 kubelet_node_status.go:69] Unable to construct api.Node object for kubelet: failed to get external ID from cloud provider: instance not found
+
+Mar 21 23:48:44 etcd-master1 kubelet-wrapper[1928]: E0321 23:48:44.876712    1928 reflector.go:203] pkg/kubelet/kubelet.go:403: Failed to list *api.Node: Get http://127.0.0.1:8080/api/v1/nodes?fieldSelector=metadata.name%3Detcd-master1&resourceVersion=0: dial tcp 127.0.0.1:8080: getsockopt: connection refused
+Mar 21 23:48:44 etcd-master1 kubelet-wrapper[1928]: E0321 23:48:44.887033    1928 reflector.go:203] pkg/kubelet/kubelet.go:384: Failed to list *api.Service: Get http://127.0.0.1:8080/api/v1/services?resourceVersion=0: dial tcp 127.0.0.1:8080: getsockopt: connection refused
+Mar 21 23:48:44 etcd-master1 kubelet-wrapper[1928]: E0321 23:48:44.976539    1928 reflector.go:203] pkg/kubelet/config/apiserver.go:43: Failed to list *api.Pod: Get http://127.0.0.1:8080/api/v1/pods?fieldSelector=spec.nodeName%3Detcd-master1&resourceVersion=0: dial tcp 127.0.0.1:8080: getsockopt: connection refused
+
+Mar 21 23:48:45 etcd-master1 kubelet-wrapper[1928]: E0321 23:48:45.742104    1928 eviction_manager.go:162] eviction manager: unexpected err: failed GetNode: node 'etcd-master1' not found
+
+#+END_SRC
+
+#+BEGIN_SRC stuff
+Mar 22 00:28:42 etcd-master1 kubelet-wrapper[1815]: I0322 00:28:42.574621    1815 kubelet_node_status.go:73] Attempting to register node etcd-master1
+Mar 22 00:28:42 etcd-master1 kubelet-wrapper[1815]: E0322 00:28:42.575733    1815 kubelet_node_status.go:97] Unable to register node "etcd-master1" with API server: Node "etcd-master1" is invalid: metadata.labels: Invalid value: "West US": must match the regex (([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])? (e.g. 'MyValue' or 'my_value' or '12345')
+Mar 22 00:28:46 etcd-master1 kubelet-wrapper[1815]: E0322 00:28:46.041615    1815 eviction_manager.go:162] eviction manager: unexpected err: failed GetNode: node 'etcd-master1' not found
+
+
+#+END_SRC
+
+#+BEGIN_SRC stuff
+ sudo journalctl -u kubelet -f
+-- Logs begin at Wed 2017-03-22 00:37:53 UTC. --
+Mar 22 01:10:57 etcd-master1 kubelet-wrapper[1941]: E0322 01:10:57.223662    1941 pod_workers.go:184] Error syncing pod 0304c8506348b69b08fb5074230c5ae3, skipping: failed to "StartContainer" for "kube-controller-manager" with CrashLoopBackOff: "Back-off 5m0s restarting failed container=kube-controller-manager pod=kube-controller-manager-etcd-master1_kube-system(0304c8506348b69b08fb5074230c5ae3)"
+Mar 22 01:11:12 etcd-master1 kubelet-wrapper[1941]: I0322 01:11:12.215912    1941 docker_manager.go:2443] checking backoff for container "kube-controller-manager" in pod "kube-controller-manager-etcd-master1"
+Mar 22 01:11:12 etcd-master1 kubelet-wrapper[1941]: I0322 01:11:12.216014    1941 docker_manager.go:2457] Back-off 5m0s restarting failed container=kube-controller-manager pod=kube-controller-manager-etcd-master1_kube-system(0304c8506348b69b08fb5074230c5ae3)
+Mar 22 01:11:12 etcd-master1 kubelet-wrapper[1941]: E0322 01:11:12.216041    1941 pod_workers.go:184] Error syncing pod 0304c8506348b69b08fb5074230c5ae3, skipping: failed to "StartContainer" for "kube-controller-manager" with CrashLoopBackOff: "Back-off 5m0s restarting failed container=kube-controller-manager pod=kube-controller-manager-etcd-master1_kube-system(0304c8506348b69b08fb5074230c5ae3)"
+Mar 22 01:11:25 etcd-master1 kubelet-wrapper[1941]: I0322 01:11:25.211268    1941 docker_manager.go:2443] checking backoff for container "kube-controller-manager" in pod "kube-controller-manager-etcd-master1"
+Mar 22 01:11:25 etcd-master1 kubelet-wrapper[1941]: I0322 01:11:25.211401    1941 docker_manager.go:2457] Back-off 5m0s restarting failed container=kube-controller-manager pod=kube-controller-manager-etcd-master1_kube-system(0304c8506348b69b08fb5074230c5ae3)
+Mar 22 01:11:25 etcd-master1 kubelet-wrapper[1941]: E0322 01:11:25.211427    1941 pod_workers.go:184] Error syncing pod 0304c8506348b69b08fb5074230c5ae3, skipping: failed to "StartContainer" for "kube-controller-manager" with CrashLoopBackOff: "Back-off 5m0s restarting failed container=kube-controller-manager pod=kube-controller-manager-etcd-master1_kube-system(0304c8506348b69b08fb5074230c5ae3)"
+Mar 22 01:11:38 etcd-master1 kubelet-wrapper[1941]: I0322 01:11:38.204436    1941 docker_manager.go:2443] checking backoff for container "kube-controller-manager" in pod "kube-controller-manager-etcd-master1"
+
+
+cat /
+#+END_SRC
+
+#+BEGIN_SRC  stuff
+# docker logs k8s_kube-controller-manager.57206e25_kube-controller-manager-etcd-master1_kube-system_0304c8506348b69b08fb5074230c5ae3_a3b38efc
+I0322 01:12:57.005934       1 leaderelection.go:295] lock is held by etcd-master3 and has not yet expired
+I0322 01:13:00.459356       1 leaderelection.go:295] lock is held by etcd-master3 and has not yet expired
+I0322 01:13:04.717656       1 leaderelection.go:295] lock is held by etcd-master3 and has not yet expired
+I0322 01:13:08.312550       1 leaderelection.go:295] lock is held by etcd-master3 and has not yet expired
+I0322 01:13:11.365357       1 leaderelection.go:295] lock is held by etcd-master3 and has not yet expired
+E0322 01:13:14.414802       1 event.go:258] Could not construct reference to: '&api.Endpoints{TypeMeta:unversioned.TypeMeta{Kind:"", APIVersion:""}, ObjectMeta:api.ObjectMeta{Name:"kube-controller-manager", GenerateName:"", Namespace:"kube-system", SelfLink:"", UID:"", ResourceVersion:"", Generation:0, CreationTimestamp:unversioned.Time{Time:time.Time{sec:0, nsec:0, loc:(*time.Location)(nil)}}, DeletionTimestamp:(*unversioned.Time)(nil), DeletionGracePeriodSeconds:(*int64)(nil), Labels:map[string]string(nil), Annotations:map[string]string(nil), OwnerReferences:[]api.OwnerReference(nil), Finalizers:[]string(nil), ClusterName:""}, Subsets:[]api.EndpointSubset(nil)}' due to: 'selfLink was empty, can't make reference'. Will not report event: 'Normal' '%v became leader' 'etcd-master1'
+I0322 01:13:14.414933       1 leaderelection.go:214] sucessfully acquired lease kube-system/kube-controller-manager
+F0322 01:13:14.416309       1 plugins.go:80] Couldn't open cloud provider configuration /etc/kubernetes/azure-config.json: &os.PathError{Op:"open", Path:"/etc/kubernetes/azure-config.json", Err:0x2}
+
+
+#+END_SRC
+
+
+
+#+BEGIN_SRC stuff
+-- Logs begin at Mon 2017-03-20 19:46:01 UTC, end at Mon 2017-03-20 20:18:32 UTC. --
+Mar 20 19:48:56 etcd-master1 systemd[1]: Starting kubelet.service...
+Mar 20 19:48:56 etcd-master1 systemd[1]: Started kubelet.service.
+Mar 20 19:48:56 etcd-master1 kubelet-wrapper[2257]: KUBELET_VERSION environment variable is deprecated, please use KUBELET_IMAGE_TAG instead
+Mar 20 19:48:56 etcd-master1 kubelet-wrapper[2257]: KUBELET_ACI environment variable is deprecated, please use the KUBELET_IMAGE_URL instead
+Mar 20 19:48:56 etcd-master1 kubelet-wrapper[2257]: RKT_OPTS environment variable is deprecated, please use the RKT_RUN_ARGS instead
+Mar 20 19:48:56 etcd-master1 kubelet-wrapper[2257]: + exec /usr/bin/rkt run --volume dns,kind=host,source=/etc/resolv.conf --mount volume=dns,target=/etc/resolv.conf --volume rkt,kind=host,source=/opt/bin/host-rkt --mount volume=rkt,target=/usr/bin/rkt --volume
+Mar 20 19:48:59 etcd-master1 kubelet-wrapper[2257]: pubkey: prefix: "quay.io/coreos/hyperkube"
+Mar 20 19:48:59 etcd-master1 kubelet-wrapper[2257]: key: "https://quay.io/aci-signing-key"
+Mar 20 19:48:59 etcd-master1 kubelet-wrapper[2257]: gpg key fingerprint is: BFF3 13CD AA56 0B16 A898  7B8F 72AB F5F6 799D 33BC
+Mar 20 19:48:59 etcd-master1 kubelet-wrapper[2257]:         Quay.io ACI Converter (ACI conversion signing key) <support@quay.io>
+Mar 20 19:48:59 etcd-master1 kubelet-wrapper[2257]: Trusting "https://quay.io/aci-signing-key" for prefix "quay.io/coreos/hyperkube" without fingerprint review.
+Mar 20 19:48:59 etcd-master1 kubelet-wrapper[2257]: Added key for prefix "quay.io/coreos/hyperkube" at "/etc/rkt/trustedkeys/prefix.d/quay.io/coreos/hyperkube/bff313cdaa560b16a8987b8f72abf5f6799d33bc"
+Mar 20 19:48:59 etcd-master1 kubelet-wrapper[2257]: Downloading signature:  0 B/473 B
+Mar 20 19:48:59 etcd-master1 kubelet-wrapper[2257]: Downloading signature:  473 B/473 B
+Mar 20 19:48:59 etcd-master1 kubelet-wrapper[2257]: Downloading signature:  473 B/473 B
+Mar 20 19:49:00 etcd-master1 kubelet-wrapper[2257]: Downloading ACI:  0 B/237 MB
+Mar 20 19:49:01 etcd-master1 kubelet-wrapper[2257]: Downloading ACI:  16.3 KB/237 MB
+Mar 20 19:49:02 etcd-master1 kubelet-wrapper[2257]: Downloading ACI:  9.02 MB/237 MB
+Mar 20 19:49:03 etcd-master1 kubelet-wrapper[2257]: Downloading ACI:  42.2 MB/237 MB
+Mar 20 19:49:04 etcd-master1 kubelet-wrapper[2257]: Downloading ACI:  86.8 MB/237 MB
+Mar 20 19:49:05 etcd-master1 kubelet-wrapper[2257]: Downloading ACI:  129 MB/237 MB
+Mar 20 19:49:06 etcd-master1 kubelet-wrapper[2257]: Downloading ACI:  172 MB/237 MB
+Mar 20 19:49:07 etcd-master1 kubelet-wrapper[2257]: Downloading ACI:  214 MB/237 MB
+Mar 20 19:49:07 etcd-master1 kubelet-wrapper[2257]: Downloading ACI:  237 MB/237 MB
+Mar 20 19:49:37 etcd-master1 kubelet-wrapper[2257]: image: signature verified:
+Mar 20 19:49:37 etcd-master1 kubelet-wrapper[2257]:   Quay.io ACI Converter (ACI conversion signing key) <support@quay.io>
+Mar 20 19:50:59 etcd-master1 kubelet-wrapper[2257]: Flag --api-servers has been deprecated, Use --kubeconfig instead. Will be removed in a future version.
+Mar 20 19:50:59 etcd-master1 kubelet-wrapper[2257]: Flag --config has been deprecated, Use --pod-manifest-path instead. Will be removed in a future version.
+Mar 20 19:50:59 etcd-master1 kubelet-wrapper[2257]: panic: runtime error: invalid memory address or nil pointer dereference [recovered]
+Mar 20 19:50:59 etcd-master1 kubelet-wrapper[2257]:         panic: runtime error: invalid memory address or nil pointer dereference
+Mar 20 19:50:59 etcd-master1 kubelet-wrapper[2257]: [signal 0xb code=0x1 addr=0x20 pc=0xa32559]
+Mar 20 19:50:59 etcd-master1 kubelet-wrapper[2257]: goroutine 1 [running]:
+Mar 20 19:50:59 etcd-master1 kubelet-wrapper[2257]: panic(0x448ae60, 0xc820030060)
+Mar 20 19:50:59 etcd-master1 kubelet-wrapper[2257]:         /usr/local/go/src/runtime/panic.go:481 +0x3e6
+Mar 20 19:50:59 etcd-master1 kubelet-wrapper[2257]: io/ioutil.readAll.func1(0xc820acca40)
+Mar 20 19:50:59 etcd-master1 kubelet-wrapper[2257]:         /usr/local/go/src/io/ioutil/ioutil.go:30 +0x11e
+Mar 20 19:50:59 etcd-master1 kubelet-wrapper[2257]: panic(0x448ae60, 0xc820030060)
+Mar 20 19:50:59 etcd-master1 kubelet-wrapper[2257]:         /usr/local/go/src/runtime/panic.go:443 +0x4e9
+Mar 20 19:50:59 etcd-master1 kubelet-wrapper[2257]: bytes.(*Buffer).ReadFrom(0xc820acc998, 0x0, 0x0, 0x0, 0x0, 0x0)
+Mar 20 19:50:59 etcd-master1 kubelet-wrapper[2257]:         /usr/local/go/src/bytes/buffer.go:176 +0x239
+Mar 20 19:50:59 etcd-master1 kubelet-wrapper[2257]: io/ioutil.readAll(0x0, 0x0, 0x200, 0x0, 0x0, 0x0, 0x0, 0x0)
+Mar 20 19:50:59 etcd-master1 kubelet-wrapper[2257]:         /usr/local/go/src/io/ioutil/ioutil.go:33 +0x156
+Mar 20 19:50:59 etcd-master1 kubelet-wrapper[2257]: io/ioutil.ReadAll(0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0)
+Mar 20 19:50:59 etcd-master1 kubelet-wrapper[2257]:         /usr/local/go/src/io/ioutil/ioutil.go:42 +0x51
+Mar 20 19:50:59 etcd-master1 kubelet-wrapper[2257]: k8s.io/kubernetes/pkg/cloudprovider/providers/azure.NewCloud(0x0, 0x0, 0x0, 0x0, 0x0, 0x0)
+Mar 20 19:50:59 etcd-master1 kubelet-wrapper[2257]:         /go/src/k8s.io/kubernetes/_output/dockerized/go/src/k8s.io/kubernetes/pkg/cloudprovider/providers/azure/azure.go:74 +0x81
+Mar 20 19:50:59 etcd-master1 kubelet-wrapper[2257]: k8s.io/kubernetes/pkg/cloudprovider.GetCloudProvider(0x7fffc7862eee, 0x5, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0)
+Mar 20 19:50:59 etcd-master1 kubelet-wrapper[2257]:         /go/src/k8s.io/kubernetes/_output/dockerized/go/src/k8s.io/kubernetes/pkg/cloudprovider/plugins.go:62 +0x112
+Mar 20 19:50:59 etcd-master1 kubelet-wrapper[2257]: k8s.io/kubernetes/pkg/cloudprovider.InitCloudProvider(0x7fffc7862eee, 0x5, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0)
+Mar 20 19:50:59 etcd-master1 kubelet-wrapper[2257]:         /go/src/k8s.io/kubernetes/_output/dockerized/go/src/k8s.io/kubernetes/pkg/cloudprovider/plugins.go:88 +0x82e
+Mar 20 19:50:59 etcd-master1 kubelet-wrapper[2257]: k8s.io/kubernetes/cmd/kubelet/app.run(0xc8200e0100, 0x0, 0x0, 0x0)
+Mar 20 19:50:59 etcd-master1 kubelet-wrapper[2257]:         /go/src/k8s.io/kubernetes/_output/dockerized/go/src/k8s.io/kubernetes/cmd/kubelet/app/server.go:348 +0x17e4
+Mar 20 19:50:59 etcd-master1 kubelet-wrapper[2257]: k8s.io/kubernetes/cmd/kubelet/app.Run(0xc8200e0100, 0x0, 0x0, 0x0)
+Mar 20 19:50:59 etcd-master1 kubelet-wrapper[2257]:         /go/src/k8s.io/kubernetes/_output/dockerized/go/src/k8s.io/kubernetes/cmd/kubelet/app/server.go:267 +0x4a
+Mar 20 19:50:59 etcd-master1 kubelet-wrapper[2257]: main.NewKubelet.func1(0xc82030b4f0, 0xc8204c5b90, 0x0, 0x7, 0x0, 0x0)
+Mar 20 19:50:59 etcd-master1 kubelet-wrapper[2257]:         /go/src/k8s.io/kubernetes/_output/dockerized/go/src/k8s.io/kubernetes/cmd/hyperkube/kubelet.go:37 +0x35
+Mar 20 19:50:59 etcd-master1 kubelet-wrapper[2257]: main.(*HyperKube).Run(0xc8200b88a0, 0xc82000a090, 0x7, 0x7, 0x0, 0x0)
+Mar 20 19:50:59 etcd-master1 kubelet-wrapper[2257]:         /go/src/k8s.io/kubernetes/_output/dockerized/go/src/k8s.io/kubernetes/cmd/hyperkube/hyperkube.go:181 +0x670
+Mar 20 19:50:59 etcd-master1 kubelet-wrapper[2257]: main.(*HyperKube).RunToExit(0xc8200b88a0, 0xc82000a080, 0x8, 0x8)
+Mar 20 19:50:59 etcd-master1 kubelet-wrapper[2257]:         /go/src/k8s.io/kubernetes/_output/dockerized/go/src/k8s.io/kubernetes/cmd/hyperkube/hyperkube.go:191 +0x5f
+Mar 20 19:50:59 etcd-master1 kubelet-wrapper[2257]: main.main()
+Mar 20 19:50:59 etcd-master1 kubelet-wrapper[2257]:         /go/src/k8s.io/kubernetes/_output/dockerized/go/src/k8s.io/kubernetes/cmd/hyperkube/main.go:48 +0x79e
+Mar 20 19:50:59 etcd-master1 systemd[1]: kubelet.service: Main process exited, code=exited, status=2/INVALIDARGUMENT
+Mar 20 19:50:59 etcd-master1 systemd[1]: kubelet.service: Unit entered failed state.
+Mar 20 19:50:59 etcd-master1 systemd[1]: kubelet.service: Failed with result 'exit-code'.
+Mar 20 19:51:04 etcd-master1 systemd[1]: kubelet.service: Service hold-off time over, scheduling restart.
+Mar 20 19:51:04 etcd-master1 systemd[1]: Stopped kubelet.service.
+#+END_SRC

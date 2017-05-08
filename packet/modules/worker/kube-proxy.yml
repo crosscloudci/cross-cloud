@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: kube-proxy
+  namespace: kube-system
+spec:
+  hostNetwork: true
+  containers:
+    - name: kube-proxy
+      image: ${ kubelet_image_url }:${ kubelet_image_tag }
+      command:
+      - /hyperkube
+      - proxy
+      - --kubeconfig=/etc/kubernetes/kubeconfig.yml
+      - --master=https://master.${ internal_tld }
+      - --proxy-mode=iptables
+      securityContext:
+        privileged: true
+      volumeMounts:
+        - mountPath: /etc/ssl/certs
+          name: "ssl-certs"
+        - mountPath: /etc/kubernetes/kubeconfig.yml
+          name: "kubeconfig"
+          readOnly: true
+        - mountPath: /etc/kubernetes/ssl
+          name: "etc-kube-ssl"
+          readOnly: true
+    volumes:
+      - name: "ssl-certs"
+        hostPath:
+          path: "/usr/share/ca-certificates"
+      - name: "kubeconfig"
+        hostPath:
+          path: "/etc/kubernetes/kubeconfig.yml"
+      - name: "etc-kube-ssl"
+        hostPath:
+          path: "/etc/kubernetes/ssl"
+

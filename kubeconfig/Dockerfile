@@ -12,6 +12,6 @@ RUN wget -O /usr/local/bin/kubectl https://storage.googleapis.com/kubernetes-rel
 chmod +x /usr/local/bin/kubectl
 
 
-COPY ../data /Data
+COPY ./data/ /Data/
 
 CMD ["/bin/bash"]

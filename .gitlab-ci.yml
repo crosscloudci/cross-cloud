@@ -39,10 +39,6 @@ deploy_cloud:
     - ./provision.sh ${CLOUD}-deploy ${CI_ENVIRONMENT_SLUG}
     - export KUBECONFIG=$(pwd)/data/${CI_ENVIRONMENT_SLUG}/kubeconfig
     - kubectl create -f dns.yaml
-    - helm init
-    - helm repo add cncf https://cncf.gitlab.io
-    - sleep 20 # Wait for Tiller POD
-    - helm install --name ${CI_ENVIRONMENT_SLUG} --set runners.privileged=true --set concurrent=100 --set gitlabUrl=https://gitlab.cncf.ci/ci,runnerRegistrationToken=${GITLAB_REGISTRATION_TOKEN} --set cloud=${CLOUD} --set commit=${PROJECT} cncf/gitlab-runner
 
 cleanup_fail:
   image: ${CI_REGISTRY_IMAGE}/provisioning:$CI_COMMIT_REF_SLUG

@@ -11,7 +11,7 @@ stages:
   - deploy-cloud
   - cleanup-cloud
   - destroy-cloud
-  - endpoint-auth
+  # - endpoint-auth
 
 provisioning:
   stage: docker-build
@@ -23,8 +23,8 @@ provisioning:
 deploy_cloud:
   image: ${CI_REGISTRY_IMAGE}/provisioning:$CI_COMMIT_REF_SLUG
   stage: deploy-cloud
-#  only:
-#    - triggers
+  only:
+    - triggers
   environment:
     name: ${PROJECT}-${CLOUD}
     url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
@@ -38,13 +38,33 @@ deploy_cloud:
   script:
     - ./provision.sh ${CLOUD}-deploy ${CI_ENVIRONMENT_SLUG}
     - export KUBECONFIG=$(pwd)/data/${CI_ENVIRONMENT_SLUG}/kubeconfig
-    - kubectl create -f dns.yaml
+    - if [ $CLOUD != gke ] ; then kubectl create -f dns.yaml ; fi
+
+share_cloud:
+  image: ${CI_REGISTRY_IMAGE}/provisioning:$CI_COMMIT_REF_SLUG
+  stage: share-cloud
+  only:
+    - triggers
+  environment:
+    name: ${PROJECT}-${CLOUD}
+    url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
+    on_stop: destroy_cloud
+  artifacts:
+    when: always
+    expire_in: 4 weeks
+    name: "${CI_ENVIRONMENT_SLUG}"
+    paths:
+    - ./data/
+  script:
+    - export KUBECONFIG=$(pwd)/data/${CI_ENVIRONMENT_SLUG}/kubeconfig
+    - sleep 99999999
+    - if [ $CLOUD != gke ] ; then kubectl create -f dns.yaml ; fi
 
 cleanup_fail:
   image: ${CI_REGISTRY_IMAGE}/provisioning:$CI_COMMIT_REF_SLUG
   stage: cleanup-cloud
-#  only:
-#    - triggers
+  only:
+    - triggers
   when: on_failure
   environment:
     name: ${PROJECT}-${CLOUD}
@@ -63,6 +83,8 @@ destroy_cloud:
   image: ${CI_REGISTRY_IMAGE}/provisioning:$CI_COMMIT_REF_SLUG
   stage: destroy-cloud
   when: manual
+  only:
+    - triggers
   environment:
     name: ${PROJECT}-${CLOUD}
     url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
@@ -76,16 +98,16 @@ destroy_cloud:
   script:
     - ./provision.sh ${CLOUD}-destroy ${CI_ENVIRONMENT_SLUG}
     
-k8s_endpoint:
-  stage: endpoint-auth
-  artifacts:
-    when: always
-    expire_in: 4 weeks
-    name: "${CI_ENVIRONMENT_SLUG}"
-    paths:
-    - ./data/
-  script:
-    - docker login -u "gitlab-ci-token" -p "$CI_JOB_TOKEN" $CI_REGISTRY
-    - docker build --pull -t "$CI_REGISTRY_IMAGE/$CI_JOB_NAME:$CI_COMMIT_REF_SLUG" -f Dockerfile-auth .
-    - docker push "$CI_REGISTRY_IMAGE/$CI_JOB_NAME:$CI_COMMIT_REF_SLUG"
+# k8s_endpoint:
+#   stage: endpoint-auth
+#   artifacts:
+#     when: always
+#     expire_in: 4 weeks
+#     name: "${CI_ENVIRONMENT_SLUG}"
+#     paths:
+#     - ./data/
+#   script:
+#     - docker login -u "gitlab-ci-token" -p "$CI_JOB_TOKEN" $CI_REGISTRY
+#     - docker build --pull -t "$CI_REGISTRY_IMAGE/$CI_JOB_NAME:$CI_COMMIT_REF_SLUG" -f Dockerfile-auth .
+#     - docker push "$CI_REGISTRY_IMAGE/$CI_JOB_NAME:$CI_COMMIT_REF_SLUG"
 

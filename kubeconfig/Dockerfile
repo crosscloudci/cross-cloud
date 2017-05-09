@@ -1,6 +1,7 @@
 FROM golang:alpine
 MAINTAINER "Denver Williams <denver@ii.coop>"
 ENV KUBECTL_VERSION=v1.5.2
+ENV ARC=amd64
 
 # Install AWS / AZURE CLI Deps
 RUN apk update

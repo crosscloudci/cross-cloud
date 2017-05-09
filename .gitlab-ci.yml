@@ -11,6 +11,7 @@ stages:
   - deploy-cloud
   - cleanup-cloud
   - destroy-cloud
+  - endpoint-auth
 
 provisioning:
   stage: docker-build
@@ -78,4 +79,17 @@ destroy_cloud:
     - ./data/
   script:
     - ./provisioning/provision.sh ${CLOUD}-destroy ${CI_ENVIRONMENT_SLUG}
+    
+k8s_endpoint:
+  stage: endpoint-auth
+  artifacts:
+    when: always
+    expire_in: 4 weeks
+    name: "${CI_ENVIRONMENT_SLUG}"
+    paths:
+    - ./data/
+  script:
+    - docker login -u "gitlab-ci-token" -p "$CI_JOB_TOKEN" $CI_REGISTRY
+    - docker build --pull -t "$CI_REGISTRY_IMAGE/$CI_JOB_NAME:$CI_COMMIT_REF_SLUG" ./kubeconfig
+    - docker push "$CI_REGISTRY_IMAGE/$CI_JOB_NAME:$CI_COMMIT_REF_SLUG"
 

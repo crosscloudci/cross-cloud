@@ -61,25 +61,6 @@ cleanup_fail:
     - ./data/
   script:
     - ./provision.sh ${CLOUD}-destroy ${CI_ENVIRONMENT_SLUG}
-
-cleanup_gke_fail:
-  image: ${CI_REGISTRY_IMAGE}/provisioning:$CI_COMMIT_REF_SLUG
-  stage: cleanup-cloud
-#  only:
-#    - triggers
-  when: on_failure
-  environment:
-    name: ${PROJECT}-${CLOUD}
-    url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
-    action: stop
-  artifacts:
-    when: always
-    expire_in: 4 weeks
-    name: "${CI_ENVIRONMENT_SLUG}"
-    paths:
-    - ./data/
-  script:
-    - ./provision.sh ${CLOUD}-destroy ${CI_ENVIRONMENT_SLUG}
     
 destroy_cloud:
   image: ${CI_REGISTRY_IMAGE}/provisioning:$CI_COMMIT_REF_SLUG

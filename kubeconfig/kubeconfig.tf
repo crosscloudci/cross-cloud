@@ -1,10 +1,12 @@
 data "template_file" "kubeconfig" {
   template = <<EOF
 kubectl config set-cluster cluster-${ var.name } \
+  --embed-certs \
   --server=https://${ var.fqdn_k8s } \
   --certificate-authority=${ var.ca_pem }
 
 kubectl config set-credentials admin-${ var.name } \
+  --embed-certs \
   --certificate-authority=${ var.ca_pem } \
   --client-key=${ var.admin_key_pem } \
   --client-certificate=${ var.admin_pem }
@@ -25,13 +27,16 @@ resource "null_resource" "kubeconfig" {
 export KUBECONFIG="${ var.data_dir}/kubeconfig"
 
 kubectl config set-cluster cluster-${ var.name } \
+  --embed-certs \
   --server=https://${ var.fqdn_k8s } \
   --certificate-authority=${ var.ca_pem } &&\
 kubectl config set-credentials admin-${ var.name } \
+  --embed-certs \
   --certificate-authority=${ var.ca_pem } \
   --client-key=${ var.admin_key_pem } \
   --client-certificate=${ var.admin_pem } &&\
 kubectl config set-context ${ var.name } \
+  --embed-certs \
   --cluster=cluster-${ var.name } \
   --user=admin-${ var.name } &&\
 kubectl config use-context ${ var.name }

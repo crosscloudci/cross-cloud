@@ -78,7 +78,7 @@ destroy_cloud:
     paths:
     - ./data/
   script:
-    - ./provisioning/provision.sh ${CLOUD}-destroy ${CI_ENVIRONMENT_SLUG}
+    - ./provision.sh ${CLOUD}-destroy ${CI_ENVIRONMENT_SLUG}
     
 k8s_endpoint:
   stage: endpoint-auth

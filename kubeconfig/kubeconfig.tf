@@ -36,7 +36,6 @@ kubectl config set-credentials admin-${ var.name } \
   --client-key=${ var.admin_key_pem } \
   --client-certificate=${ var.admin_pem } &&\
 kubectl config set-context ${ var.name } \
-  --embed-certs \
   --cluster=cluster-${ var.name } \
   --user=admin-${ var.name } &&\
 kubectl config use-context ${ var.name }

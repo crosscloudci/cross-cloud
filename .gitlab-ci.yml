@@ -9,6 +9,7 @@
 stages:
   - docker-build
   - deploy-cloud
+  - share-cloud
   - cleanup-cloud
   - destroy-cloud
   # - endpoint-auth

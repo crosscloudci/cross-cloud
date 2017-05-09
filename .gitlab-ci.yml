@@ -85,9 +85,6 @@ k8s_endpoint:
     paths:
     - ./data/
   script:
-    - ls -la
-    - pwd
-    - sleep 99999999
     - docker login -u "gitlab-ci-token" -p "$CI_JOB_TOKEN" $CI_REGISTRY
     - docker build --pull -t "$CI_REGISTRY_IMAGE/$CI_JOB_NAME:$CI_COMMIT_REF_SLUG" ./kubeconfig
     - docker push "$CI_REGISTRY_IMAGE/$CI_JOB_NAME:$CI_COMMIT_REF_SLUG"

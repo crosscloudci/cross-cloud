@@ -60,10 +60,12 @@ share_cloud:
     - ./data/
   script:
     - export KUBECONFIG=$(pwd)/data/${CI_ENVIRONMENT_SLUG}/kubeconfig
+    - base64 $KUBECONFIG > $(pwd)/data/${CI_ENVIRONMENT_SLUG}/b64.kubeconfig
+    - export KUBECONFIG_B64=$(pwd)/data/${CI_ENVIRONMENT_SLUG}/b64.kubeconfig
     - curl --request POST
         --form ref=${CALLBACK_REF}
         --form token=${CALLBACK_TOKEN}
-        --form "variables[KUBEAUTH]=<$KUBECONFIG"
+        --form "variables[KUBEAUTH]=<$KUBECONFIG_B64"
         https://gitlab.cncf.ci/api/v4/projects/1/trigger/pipeline
     # - if [ $CLOUD != gke ] ; then kubectl create -f dns.yaml ; fi
 

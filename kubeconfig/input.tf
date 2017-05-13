@@ -1,6 +1,6 @@
-variable "admin_key_pem" {}
-variable "admin_pem" {}
-variable "ca_pem" {}
+variable "ca" {}
+variable "client" {}
+variable "client_key" {}
 variable "fqdn_k8s" {}
 variable "name" {}
 variable "data_dir" {}

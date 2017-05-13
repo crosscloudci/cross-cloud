@@ -111,9 +111,9 @@ module "worker" {
 module "kubeconfig" {
   source = "../kubeconfig"
 
-  admin_key_pem = "${ var.data_dir }/.cfssl/k8s-admin-key.pem"
-  admin_pem = "${ var.data_dir }/.cfssl/k8s-admin.pem"
-  ca_pem = "${ var.data_dir }/.cfssl/ca.pem"
+  ca_pem = "${ module.tls.ca }"
+  client = "${ module.tls.client }"
+  client_key = "${ module.tls.client_key }"
   data_dir = "${ var.data_dir }"
   fqdn_k8s = "${ module.etcd.external_elb }"
   name = "${ var.name }"

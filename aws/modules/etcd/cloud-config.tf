@@ -3,19 +3,19 @@ resource "gzip_me" "ca" {
 }
 
 resource "gzip_me" "k8s_etcd" {
-  input = "${ var.k8s_etcd }"
+  input = "${ var.etcd }"
 }
 
 resource "gzip_me" "k8s_etcd_key" {
-  input = "${ var.k8s_etcd_key }"
+  input = "${ var.etcd_key }"
 }
 
 resource "gzip_me" "k8s_apiserver" {
-  input = "${ var.k8s_apiserver }"
+  input = "${ var.apiserver }"
 }
 
 resource "gzip_me" "k8s_apiserver_key" {
-  input = "${ var.k8s_apiserver_key }"
+  input = "${ var.apiserver_key }"
 }
 
 data "template_file" "kube-apiserver" {
@@ -52,10 +52,10 @@ data "template_file" "cloud-config" {
     region = "${ var.region }"
     service_cidr = "${ var.service_cidr }"
     ca = "${ gzip_me.ca.output }"
-    k8s_etcd = "${ gzip_me.k8s_etcd.output }"
-    k8s_etcd_key = "${ gzip_me.k8s_etcd_key.output }"
-    k8s_apiserver = "${ gzip_me.k8s_apiserver.output }"
-    k8s_apiserver_key = "${ gzip_me.k8s_apiserver_key.output }"
+    etcd = "${ gzip_me.etcd.output }"
+    etcd_key = "${ gzip_me.etcd_key.output }"
+    apiserver = "${ gzip_me.apiserver.output }"
+    apiserver_key = "${ gzip_me.apiserver_key.output }"
     kube-apiserver-yml = "${ gzip_me.kube-apiserver.output }"
   }
 }

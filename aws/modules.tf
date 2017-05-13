@@ -54,11 +54,11 @@ module "etcd" {
   subnet_ids_private             = "${ module.vpc.subnet_ids_private }"
   subnet_ids_public              = "${ module.vpc.subnet_ids_public }"
   vpc_id                         = "${ module.vpc.id }"
-  ca                             = "${file("${ var.data_dir }/.cfssl/ca.pem")}"
-  k8s_etcd                       = "${file("${ var.data_dir }/.cfssl/k8s-etcd.pem")}"
-  k8s_etcd_key                   = "${file("${ var.data_dir }/.cfssl/k8s-etcd-key.pem")}"
-  k8s_apiserver                  = "${file("${ var.data_dir }/.cfssl/k8s-apiserver.pem")}"
-  k8s_apiserver_key              = "${file("${ var.data_dir }/.cfssl/k8s-apiserver-key.pem")}"
+  ca                             = "${ module.tls.ca }"
+  k8s_etcd                       = "${ module.tls.etcd }"
+  k8s_etcd_key                   = "${ module.tls.etcd_key }"
+  k8s_apiserver                  = "${ module.tls.apiserver }"
+  k8s_apiserver_key              = "${ module.tls.apiserver_key }"
 }
 
 module "bastion" {

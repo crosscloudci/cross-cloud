@@ -55,10 +55,10 @@ module "etcd" {
   subnet_ids_public              = "${ module.vpc.subnet_ids_public }"
   vpc_id                         = "${ module.vpc.id }"
   ca                             = "${ module.tls.ca }"
-  k8s_etcd                       = "${ module.tls.etcd }"
-  k8s_etcd_key                   = "${ module.tls.etcd_key }"
-  k8s_apiserver                  = "${ module.tls.apiserver }"
-  k8s_apiserver_key              = "${ module.tls.apiserver_key }"
+  etcd                           = "${ module.tls.etcd }"
+  etcd_key                       = "${ module.tls.etcd_key }"
+  apiserver                      = "${ module.tls.apiserver }"
+  apiserver_key                  = "${ module.tls.apiserver_key }"
 }
 
 module "bastion" {
@@ -111,7 +111,7 @@ module "worker" {
 module "kubeconfig" {
   source = "../kubeconfig"
 
-  ca_pem = "${ module.tls.ca }"
+  ca = "${ module.tls.ca }"
   client = "${ module.tls.client }"
   client_key = "${ module.tls.client_key }"
   data_dir = "${ var.data_dir }"
@@ -121,13 +121,6 @@ module "kubeconfig" {
 
 module "tls" {
   source = "../tls"
-
-  admin_key_pem = "${ var.data_dir }/.cfssl/k8s-admin-key.pem"
-  admin_pem = "${ var.data_dir }/.cfssl/k8s-admin.pem"
-  ca_pem = "${ var.data_dir }/.cfssl/ca.pem"
-  data_dir = "${ var.data_dir }"
-  fqdn_k8s = "${ module.etcd.external_elb }"
-  name = "${ var.name }"
 
   tls_ca_cert_subject_common_name = "CA"
   tls_ca_cert_subject_organization = "Kubernetes"

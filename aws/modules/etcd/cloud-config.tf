@@ -2,19 +2,19 @@ resource "gzip_me" "ca" {
   input = "${ var.ca }"
 }
 
-resource "gzip_me" "k8s_etcd" {
+resource "gzip_me" "etcd" {
   input = "${ var.etcd }"
 }
 
-resource "gzip_me" "k8s_etcd_key" {
+resource "gzip_me" "etcd_key" {
   input = "${ var.etcd_key }"
 }
 
-resource "gzip_me" "k8s_apiserver" {
+resource "gzip_me" "apiserver" {
   input = "${ var.apiserver }"
 }
 
-resource "gzip_me" "k8s_apiserver_key" {
+resource "gzip_me" "apiserver_key" {
   input = "${ var.apiserver_key }"
 }
 

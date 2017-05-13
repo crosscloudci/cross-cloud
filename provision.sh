@@ -20,7 +20,7 @@ cd $TF_VAR_data_dir
 # Run CMD
 if [ "$1" = "aws-deploy" ] ; then
     terraform get ${DIR}/aws && \
-        terraform apply -target null_resource.ssl_gen ${DIR}/aws && \
+        # terraform apply -target null_resource.ssl_gen ${DIR}/aws && \
         time terraform apply ${DIR}/aws
     ELB=$(terraform output external_elb)
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig

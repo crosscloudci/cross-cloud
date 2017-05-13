@@ -96,9 +96,9 @@ module "worker" {
   region = "${ var.aws_region }"
   security_group_id = "${ module.security.worker_id }"
   subnet_ids = "${ module.vpc.subnet_ids_private }"
-  ca = "${file("${ var.data_dir }/.cfssl/ca.pem")}"
-  k8s_worker = "${file("${ var.data_dir }/.cfssl/k8s-worker.pem")}"
-  k8s_worker_key = "${file("${ var.data_dir }/.cfssl/k8s-worker-key.pem")}"
+  ca = "${ module.tls.ca }"
+  worker = "${ module.tls.worker }"
+  worker_key = "${ module.tls.worker_key }"
 
   volume_size = {
     ebs = 250

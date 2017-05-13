@@ -30,13 +30,3 @@ resource "tls_locally_signed_cert" "etcd_cert" {
   early_renewal_hours = "${var.tls_etcd_cert_early_renewal_hours}"
 }
 
-resource "null_resource" "etcd-ssl" {
-
-  provisioner "local-exec" {
-    command = <<LOCAL_EXEC
-echo "${tls_locally_signed_cert.etcd_cert.cert_pem}" > etcd.pem
-echo "${tls_private_key.etcd_key.private_key_pem}" > etcd-key.pem
-echo "${tls_self_signed_cert.ca_cert.cert_pem}" > ca.pem
-LOCAL_EXEC
-  }
-}

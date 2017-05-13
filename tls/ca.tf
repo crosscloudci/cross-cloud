@@ -25,11 +25,3 @@ resource "tls_self_signed_cert" "ca_cert" {
 }
 
 
-resource "null_resource" "ca-ssl" {
-
-  provisioner "local-exec" {
-    command = <<LOCAL_EXEC
-echo "${tls_self_signed_cert.ca_cert.cert_pem}" > ca.pem
-LOCAL_EXEC
-  }
-}

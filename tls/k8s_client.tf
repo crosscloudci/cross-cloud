@@ -24,12 +24,3 @@ resource "tls_locally_signed_cert" "client_cert" {
   early_renewal_hours = "${var.tls_client_cert_early_renewal_hours}"
 }
 
-resource "null_resource" "admin-ssl" {
-
-  provisioner "local-exec" {
-    command = <<LOCAL_EXEC
-echo "${tls_locally_signed_cert.client_cert.cert_pem}" > admin.pem
-echo "${tls_private_key.client_key.private_key_pem}" > admin-key.pem
-LOCAL_EXEC
-  }
-}

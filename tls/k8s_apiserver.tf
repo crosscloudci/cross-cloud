@@ -34,14 +34,6 @@ resource "tls_locally_signed_cert" "apiserver_cert" {
   early_renewal_hours = "${var.tls_apiserver_cert_early_renewal_hours}"
 }
 
-resource "null_resource" "apiserver-ssl" {
 
-  provisioner "local-exec" {
-    command = <<LOCAL_EXEC
-echo "${tls_locally_signed_cert.apiserver_cert.cert_pem}" > apiserver.pem
-echo "${tls_private_key.apiserver_key.private_key_pem}" > apiserver-key.pem
-LOCAL_EXEC
-  }
-}
 
 

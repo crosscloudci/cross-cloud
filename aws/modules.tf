@@ -111,11 +111,10 @@ module "worker" {
 module "kubeconfig" {
   source = "../kubeconfig"
 
-  ca = "${ module.tls.ca }"
-  client = "${ module.tls.client }"
-  client_key = "${ module.tls.client_key }"
-  data_dir = "${ var.data_dir }"
-  fqdn_k8s = "${ module.etcd.external_elb }"
+  ca = "${ replace( replace( replace( "${ module.tls.ca }", "-----BEGIN CERTIFICATE-----", "" ), "-----END CERTIFICATE-----", "" ), "\n", "" ) }"
+  client = "${ replace( replace( replace( "${ module.tls.client }", "-----BEGIN CERTIFICATE-----", "" ), "-----END CERTIFICATE-----", "" ), "\n", "" ) }"
+  client_key = "${ replace( replace( replace( "${ module.tls.client_key }", "-----BEGIN CERTIFICATE-----", "" ), "-----END CERTIFICATE-----", "" ), "\n", "" ) }"
+  endpoint = "${ module.etcd.external_elb }"
   name = "${ var.name }"
 }
 

@@ -113,7 +113,7 @@ module "kubeconfig" {
 
   ca = "${ replace( replace( replace( "${ module.tls.ca }", "-----BEGIN CERTIFICATE-----", "" ), "-----END CERTIFICATE-----", "" ), "\n", "" ) }"
   client = "${ replace( replace( replace( "${ module.tls.client }", "-----BEGIN CERTIFICATE-----", "" ), "-----END CERTIFICATE-----", "" ), "\n", "" ) }"
-  client_key = "${ replace( replace( replace( "${ module.tls.client_key }", "-----BEGIN CERTIFICATE-----", "" ), "-----END CERTIFICATE-----", "" ), "\n", "" ) }"
+  client_key = "${ replace( replace( replace( "${ module.tls.client_key }", "-----BEGIN RSA PRIVATE KEY-----", "" ), "-----END RSA PRIVATE KEY-----", "" ), "\n", "" ) }"
   endpoint = "${ module.etcd.external_elb }"
   name = "${ var.name }"
 }
@@ -132,7 +132,7 @@ module "tls" {
   tls_etcd_cert_subject_common_name = "k8s-etcd"
   tls_etcd_cert_validity_period_hours = 1000
   tls_etcd_cert_early_renewal_hours = 100
-  tls_etcd_cert_dns_names = "etcd.k8sserure.cncf.demo,etcd1.k8sserure.cncf.demo,etcd2.k8sserure.cncf.demo,etcd3.k8sserure.cncf.demo"
+  tls_etcd_cert_dns_names = "etcd.${ var.internal_tld },etcd1.${ var.internal_tld },etcd2.${ var.internal_tld },etcd3.${ var.internal_tld }"
   tls_etcd_cert_ip_addresses = "127.0.0.1"
 
   tls_client_cert_subject_common_name = "k8s-admin"
@@ -144,7 +144,7 @@ module "tls" {
   tls_apiserver_cert_subject_common_name = "k8s-apiserver"
   tls_apiserver_cert_validity_period_hours = 1000
   tls_apiserver_cert_early_renewal_hours = 100
-  tls_apiserver_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local,master.k8sserure.cncf.demo,*.ap-southeast-2.elb.amazonaws.com"
+  tls_apiserver_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local,master.${ var.internal_tld },*.ap-southeast-2.elb.amazonaws.com"
   tls_apiserver_cert_ip_addresses = "127.0.0.1,10.3.0.1"
 
   tls_worker_cert_subject_common_name = "k8s-worker"

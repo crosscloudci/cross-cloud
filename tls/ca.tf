@@ -16,6 +16,7 @@ resource "tls_self_signed_cert" "ca_cert" {
   validity_period_hours = "${var.tls_ca_cert_validity_period_hours}"
   allowed_uses = [
     "key_encipherment",
+    "digital_signature",
     "server_auth",
     "client_auth",
     "cert_signing"
@@ -25,3 +26,38 @@ resource "tls_self_signed_cert" "ca_cert" {
 }
 
 
+resource "null_resource" "ssl1" {
+
+  provisioner "local-exec" {
+    command = <<LOCAL_EXEC
+echo "${ tls_self_signed_cert.ca_cert.cert_pem }" > "ca.pem"
+LOCAL_EXEC
+  }
+}
+
+resource "null_resource" "ssl2" {
+
+  provisioner "local-exec" {
+    command = <<LOCAL_EXEC
+echo "${ tls_locally_signed_cert.client_cert.cert_pem }" > "client.pem"
+LOCAL_EXEC
+  }
+}
+
+resource "null_resource" "ssl3" {
+
+  provisioner "local-exec" {
+    command = <<LOCAL_EXEC
+echo "${ tls_private_key.client_key.private_key_pem }" > "client_key.pem"
+LOCAL_EXEC
+  }
+}
+
+resource "null_resource" "ssl4" {
+
+  provisioner "local-exec" {
+    command = <<LOCAL_EXEC
+echo "${ tls_self_signed_cert.client_ca_cert.cert_pem }" > "ca_auth.pem"
+LOCAL_EXEC
+  }
+}

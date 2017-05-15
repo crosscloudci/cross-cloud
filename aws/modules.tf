@@ -55,6 +55,7 @@ module "etcd" {
   subnet_ids_public              = "${ module.vpc.subnet_ids_public }"
   vpc_id                         = "${ module.vpc.id }"
   ca                             = "${ module.tls.ca }"
+  ca_auth                        = "${ module.tls.ca_auth }"
   etcd                           = "${ module.tls.etcd }"
   etcd_key                       = "${ module.tls.etcd_key }"
   apiserver                      = "${ module.tls.apiserver }"
@@ -126,31 +127,45 @@ module "tls" {
   tls_ca_cert_subject_locality = "San Francisco"
   tls_ca_cert_subject_province = "California"
   tls_ca_cert_subject_country = "US"
-  tls_ca_cert_validity_period_hours = 1000
+  tls_ca_cert_validity_period_hours = 10000000
   tls_ca_cert_early_renewal_hours = 100
 
   tls_etcd_cert_subject_common_name = "k8s-etcd"
-  tls_etcd_cert_validity_period_hours = 1000
+  tls_etcd_cert_validity_period_hours = 10000000
   tls_etcd_cert_early_renewal_hours = 100
   tls_etcd_cert_dns_names = "etcd.${ var.internal_tld },etcd1.${ var.internal_tld },etcd2.${ var.internal_tld },etcd3.${ var.internal_tld }"
   tls_etcd_cert_ip_addresses = "127.0.0.1"
 
-  tls_client_cert_subject_common_name = "k8s-admin"
-  tls_client_cert_validity_period_hours = 1000
-  tls_client_cert_early_renewal_hours = 100
-  tls_client_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local,*.*.compute.internal,*.ec2.internal"
-  tls_client_cert_ip_addresses = "127.0.0.1"
+  # tls_client_cert_subject_common_name = "k8s-admin"
+  # tls_client_cert_validity_period_hours = 10000000
+  # tls_client_cert_early_renewal_hours = 100
+  # tls_client_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local,*.*.compute.internal,*.ec2.internal"
+  # tls_client_cert_ip_addresses = "127.0.0.1"
 
   tls_apiserver_cert_subject_common_name = "k8s-apiserver"
-  tls_apiserver_cert_validity_period_hours = 1000
+  tls_apiserver_cert_validity_period_hours = 10000000
   tls_apiserver_cert_early_renewal_hours = 100
   tls_apiserver_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local,master.${ var.internal_tld },*.ap-southeast-2.elb.amazonaws.com"
   tls_apiserver_cert_ip_addresses = "127.0.0.1,10.3.0.1"
 
   tls_worker_cert_subject_common_name = "k8s-worker"
-  tls_worker_cert_validity_period_hours = 1000
+  tls_worker_cert_validity_period_hours = 10000000
   tls_worker_cert_early_renewal_hours = 100
   tls_worker_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local,*.*.compute.internal,*.ec2.internal"
   tls_worker_cert_ip_addresses = "127.0.0.1"
+
+  tls_client_cert_subject_common_name = "k8s-admin"
+  tls_client_cert_subject_organization = "kubernetes"
+  tls_client_cert_subject_organizational_unit = "k8s"
+  tls_client_cert_subject_street_address = 118
+  tls_client_cert_subject_locality = "US"
+  tls_client_cert_subject_province = "Cali"
+  tls_client_cert_subject_postal_code = 1888
+  tls_client_cert_subject_country = "US"
+  tls_client_cert_subject_serial_number = 91919919
+  tls_client_cert_validity_period_hours = 100000
+  tls_client_cert_early_renewal_hours = 100000
+  tls_client_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local,*.*.compute.internal,*.ec2.internal"
+  tls_client_cert_ip_addresses = "127.0.0.1"
 }
 

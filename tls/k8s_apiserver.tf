@@ -28,6 +28,7 @@ resource "tls_locally_signed_cert" "apiserver_cert" {
   allowed_uses = [
     "key_encipherment",
     "server_auth",
+    "digital_signature",
     "client_auth",
     "cert_signing"
   ]

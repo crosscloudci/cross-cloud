@@ -1,4 +1,5 @@
 output "ca" { value = "${ tls_self_signed_cert.ca_cert.cert_pem }" }
+output "ca_auth" { value = "${ tls_self_signed_cert.client_ca_cert.cert.pem }" }
 
 output "etcd" { value = "${ tls_locally_signed_cert.etcd_cert.cert_pem }" }
 output "etcd_key" { value = "${ tls_private_key.etcd_key.private_key_pem }" }

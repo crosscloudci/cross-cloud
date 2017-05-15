@@ -27,6 +27,7 @@ resource "tls_locally_signed_cert" "worker_cert" {
   validity_period_hours = "${var.tls_worker_cert_validity_period_hours}"
   allowed_uses = [
     "key_encipherment",
+    "digital_signature",
     "server_auth",
     "client_auth",
     "cert_signing"

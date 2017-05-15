@@ -221,7 +221,14 @@ write-files:
     encoding: "gzip+base64"
     content: |
       ${ ca }
-      
+
+  - path: /etc/kubernetes/ssl/ca_auth.pem
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ ca_auth }
+ 
+
   - path: /etc/kubernetes/ssl/k8s-etcd.pem
     permissions: "0644"
     encoding: "gzip+base64"

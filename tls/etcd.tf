@@ -23,6 +23,7 @@ resource "tls_locally_signed_cert" "etcd_cert" {
   validity_period_hours = "${var.tls_etcd_cert_validity_period_hours}"
   allowed_uses = [
     "key_encipherment",
+    "digital_signature",
     "server_auth",
     "client_auth",
     "cert_signing"

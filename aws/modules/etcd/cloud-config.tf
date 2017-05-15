@@ -2,6 +2,10 @@ resource "gzip_me" "ca" {
   input = "${ var.ca }"
 }
 
+resource "gzip_me" "ca_auth" {
+  input = "${ var.ca_auth }"
+}
+
 resource "gzip_me" "etcd" {
   input = "${ var.etcd }"
 }
@@ -52,6 +56,7 @@ data "template_file" "cloud-config" {
     region = "${ var.region }"
     service_cidr = "${ var.service_cidr }"
     ca = "${ gzip_me.ca.output }"
+    ca_auth = "${ gzip_me.ca_auth.output }"
     etcd = "${ gzip_me.etcd.output }"
     etcd_key = "${ gzip_me.etcd_key.output }"
     apiserver = "${ gzip_me.apiserver.output }"

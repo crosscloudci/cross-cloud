@@ -18,13 +18,14 @@ spec:
     - --admission-control=SecurityContextDeny
     - --admission-control=ServiceAccount
     - --allow-privileged=true
-    - --client-ca-file=/etc/kubernetes/ssl/ca.pem
+    - --client-ca-file=/etc/kubernetes/ssl/ca_auth.pem
     - --cloud-provider=aws
     - --etcd-servers=http://etcd.${ internal_tld }:2379
     - --insecure-bind-address=0.0.0.0
     - --secure-port=443
     - --service-account-key-file=/etc/kubernetes/ssl/k8s-apiserver-key.pem
     - --service-cluster-ip-range=${ service_cidr }
+    - --tls-ca-file=/etcd/kubernetes/ssl/ca.pem
     - --tls-cert-file=/etc/kubernetes/ssl/k8s-apiserver.pem
     - --tls-private-key-file=/etc/kubernetes/ssl/k8s-apiserver-key.pem
     - --v=2

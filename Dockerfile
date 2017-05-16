@@ -61,7 +61,7 @@ COPY gce/ /cncf/gce/
 COPY gke/ /cncf/gke/
 COPY packet/ /cncf/packet/
 COPY cross-cloud/ /cncf/packet/
-COPY kubeconfig/ /cncf/
+COPY kubeconfig/ /cncf/kubeconfig/
 COPY provision.sh /cncf/
 RUN chmod +x /cncf/provision.sh
 #ENTRYPOINT ["/cncf/provision.sh"]

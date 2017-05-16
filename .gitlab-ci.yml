@@ -1,18 +1,9 @@
- # Using docker socket on docker runner
-# image: docker:latest
-# variables:
-#   DOCKER_HOST: 127.0.0.1:2375
-#   privileged: 'true'
-# services:
-#   - docker:dind
-
 stages:
   - docker-build
   - deploy-cloud
   - share-cloud
   - cleanup-cloud
   - destroy-cloud
-  # - endpoint-auth
 
 provisioning:
   stage: docker-build
@@ -67,7 +58,6 @@ share_cloud:
         --form token=${CALLBACK_TOKEN}
         --form "variables[KUBEAUTH]=<$KUBECONFIG_B64"
         https://gitlab.cncf.ci/api/v4/projects/1/trigger/pipeline
-    # - if [ $CLOUD != gke ] ; then kubectl create -f dns.yaml ; fi
 
 cleanup_fail:
   image: ${CI_REGISTRY_IMAGE}/provisioning:$CI_COMMIT_REF_SLUG
@@ -106,17 +96,3 @@ destroy_cloud:
     - ./data/
   script:
     - ./provision.sh ${CLOUD}-destroy ${CI_ENVIRONMENT_SLUG}
-    
-# k8s_endpoint:
-#   stage: endpoint-auth
-#   artifacts:
-#     when: always
-#     expire_in: 4 weeks
-#     name: "${CI_ENVIRONMENT_SLUG}"
-#     paths:
-#     - ./data/
-#   script:
-#     - docker login -u "gitlab-ci-token" -p "$CI_JOB_TOKEN" $CI_REGISTRY
-#     - docker build --pull -t "$CI_REGISTRY_IMAGE/$CI_JOB_NAME:$CI_COMMIT_REF_SLUG" -f Dockerfile-auth .
-#     - docker push "$CI_REGISTRY_IMAGE/$CI_JOB_NAME:$CI_COMMIT_REF_SLUG"
-

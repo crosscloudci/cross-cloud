@@ -55,7 +55,13 @@ RUN go get -u github.com/jakexks/terraform-provider-gzip && \
 
 #Add Terraform Modules
 
-COPY aws azure gce gke packet cross-cloud provision.sh /cncf/
+COPY aws /cncf/
+COPY azure /cncf/
+COPY gce /cncf/
+COPY gke /cncf/
+COPY packet /cncf/
+COPY cross-cloud /cncf/
+COPY provision.sh /cncf/
 RUN chmod +x /cncf/provision.sh
 #ENTRYPOINT ["/cncf/provision.sh"]
 WORKDIR /cncf/

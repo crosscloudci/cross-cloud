@@ -29,7 +29,7 @@ deploy_cloud:
   only:
     - triggers
   environment:
-    name: ${PROJECT}-${CLOUD}
+    name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
     url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
     on_stop: destroy_cloud
   artifacts:
@@ -49,7 +49,7 @@ share_cloud:
   only:
     - triggers
   environment:
-    name: ${PROJECT}-${CLOUD}
+    name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
     url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
     on_stop: destroy_cloud
   artifacts:
@@ -76,7 +76,7 @@ cleanup_fail:
     - triggers
   when: on_failure
   environment:
-    name: ${PROJECT}-${CLOUD}
+    name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
     url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
     action: stop
   artifacts:
@@ -95,7 +95,7 @@ destroy_cloud:
   only:
     - triggers
   environment:
-    name: ${PROJECT}-${CLOUD}
+    name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
     url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
     action: stop
   artifacts:

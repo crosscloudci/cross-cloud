@@ -22,7 +22,7 @@ EOF
   provisioner "local-exec" {
     command = <<EOF
 mkdir -p ${ var.data_dir }/.ssh
-ssh-keygen -t rsa -f ${ var.data_dir }/.ssh/id_rsa -N ''
+ssh-keygen -t rsa -f ${ var.data_dir }/.ssh/id_rsa -N '' || true
 EOF
   }
 

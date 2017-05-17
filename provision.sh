@@ -126,7 +126,9 @@ elif [ "$1" = "gce-destroy" ] ; then
         terraform apply -target module.etcd.null_resource.discovery_gen ${DIR}/gce
     terraform destroy -force -target null_resource.ssl_gen ${DIR}/gce && \
         terraform apply -target null_resource.ssl_gen ${DIR}/gce
-    time terraform destroy -force ${DIR}/gce
+    time terraform destroy -force ${DIR}/gce || true
+    echo "sleep" && sleep 10 && \
+        time terraform destroy -force -target module.vpc.google_compute_network.cncf ${DIR}/gce || true
 elif [ "$1" = "gke-deploy" ] ; then
     terraform get ${DIR}/gke && \
     terraform apply -target module.vpc ${DIR}/gke && \

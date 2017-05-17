@@ -89,8 +89,7 @@ elif [ "$1" = "packet-deploy" ] ; then
           -backend-config "key=${TF_VAR_name}" \
           -backend-config 'region=ap-southeast-2'
     terraform state list
-    terraform get ${DIR}/packet && \
-        terraform apply -target module.etcd.null_resource.discovery_gen ${DIR}/packet && \
+    terraform apply -target module.etcd.null_resource.discovery_gen ${DIR}/packet && \
         terraform apply -target null_resource.ssl_ssh_gen ${DIR}/packet && \
         time terraform apply ${DIR}/packet
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
@@ -143,7 +142,6 @@ elif [ "$1" = "gce-destroy" ] ; then
     echo "sleep" && sleep 10 && \
         time terraform destroy -force -target module.vpc.google_compute_network.cncf ${DIR}/gce || true
 elif [ "$1" = "gke-deploy" ] ; then
-    terraform get ${DIR}/gke && \
     terraform apply -target module.vpc ${DIR}/gke && \
         time terraform apply ${DIR}/gke
 elif [ "$1" = "gke-destroy" ] ; then

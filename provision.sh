@@ -159,6 +159,7 @@ elif [ "$1" = "gke-deploy" ] ; then
         time terraform apply ${DIR}/gke
     ELB=$(terraform output fqdn_k8s)
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
+    echo "❤ ❤ ❤ ❤ ❤"
     echo "❤ Polling for cluster life - this could take a minute or more"
     _retry "❤ Waiting for DNS to resolve for ${ELB}" ping -c1 "${ELB}"
     _retry "❤ Curling apiserver external elb" curl --insecure --silent "https://${ELB}"

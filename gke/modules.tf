@@ -18,7 +18,6 @@ module "cluster" {
   master_user = "${ var.master_user }"
   master_password = "${ var.master_password }"
   vm_size = "${ var.vm_size }"
-  node_pool_count = "${ var.node_pool_count }"
   data_dir = "${ var.data_dir }"
 }
 

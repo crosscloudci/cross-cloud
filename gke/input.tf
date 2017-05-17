@@ -8,6 +8,5 @@ variable "node_version" { default = "1.6.2" }
 variable "master_user" { default = "cncf" }
 variable "master_password" { default = "demo"}
 variable "vm_size" { default = "n1-standard-1"}
-#variable "node_pool_count" { default = "3"}
 variable "data_dir" { default = "/cncf/data" }
 

@@ -12,8 +12,7 @@ NC='\033[0m' # No Color
 
 export TF_VAR_name="$2"
 export TF_VAR_internal_tld=${TF_VAR_name}.cncf.demo
-# Data dir will be within the build dir on gitla
-  b
+# Data dir will be within the build dir on gitlab
 export TF_VAR_data_dir=$(pwd)/data/${TF_VAR_name}
 # tfstate, sslcerts, and ssh keys are currently stored in TF_VAR_data_dir
 # These were only used for state

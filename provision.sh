@@ -50,15 +50,32 @@ elif [ "$1" = "azure-deploy" ] ; then
     # There are some dependency issues around cert,sshkey,k8s_cloud_config, and dns
     # since they use files on disk that are created on the fly
     # should probably move these to data resources
-    terraform get ${DIR}/azure && \
-        terraform apply -target null_resource.ssl_ssh_cloud_gen ${DIR}/cross-cloud && \
-        terraform apply -target null_resource.dns_gen ${DIR}/azure && \
+    cd ${DIR}/azure
+    terraform init \
+              -backend-config 'bucket=aws65972563' \
+              -backend-config "key=${TF_VAR_name}" \
+              -backend-config 'region=ap-southeast-2'
+    
+        terraform apply -target null_resource.ssl_ssh_cloud_gen ${DIR}/azure && \
+        terraform apply -target module.dns.null_resource.dns_gen ${DIR}/azure && \
         time terraform apply ${DIR}/azure && \
         printf "${RED}\n#Commands to Configue Kubectl \n\n" && \
         printf 'sudo chown -R $(whoami):$(whoami) $(pwd)/data/${name} \n\n' && \
         printf 'export KUBECONFIG=$(pwd)/data/${name}/kubeconfig \n\n'${NC}
 elif [ "$1" = "azure-destroy" ] ; then
-    time terraform destroy -force ${DIR}/azure
+    cd ${DIR}/azure
+    terraform init \
+              -backend-config 'bucket=aws65972563' \
+              -backend-config "key=${TF_VAR_name}" \
+              -backend-config 'region=ap-southeast-2'
+ 
+    terraform destroy -force -target null_resource.ssl_ssh_cloud_gen ${DIR}/azure && \
+    terraform destroy -force -target module.dns.null_resource.dns_gen ${DIR}/azure && \
+    terraform apply -target null_resource.ssl_ssh_cloud_gen ${DIR}/azure && \
+    terraform apply -target module.dns.null_resource.dns_gen ${DIR}/azure && \
+
+    time terraform destroy -force ${DIR}/azure || true
+  
 elif [ "$1" = "packet-deploy" ] ; then
     terraform get ${DIR}/packet && \
         terraform apply -target module.etcd.null_resource.discovery_gen ${DIR}/packet && \

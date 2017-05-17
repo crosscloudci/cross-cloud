@@ -122,6 +122,10 @@ elif [ "$1" = "gce-destroy" ] ; then
               -backend-config 'bucket=aws65972563' \
               -backend-config "key=${TF_VAR_name}" \
               -backend-config 'region=ap-southeast-2'
+    terraform destroy -force -target module.etcd.null_resource.discovery_gen ${DIR}/gce && \
+        terraform apply -target module.etcd.null_resource.discovery_gen ${DIR}/gce
+    terraform destroy -force -target null_resource.ssl_gen ${DIR}/gce && \
+        terraform apply -target null_resource.ssl_gen ${DIR}/gce
     time terraform destroy -force ${DIR}/gce
 elif [ "$1" = "gke-deploy" ] ; then
     terraform get ${DIR}/gke && \

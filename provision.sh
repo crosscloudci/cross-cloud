@@ -50,14 +50,30 @@ elif [ "$1" = "azure-deploy" ] ; then
     # There are some dependency issues around cert,sshkey,k8s_cloud_config, and dns
     # since they use files on disk that are created on the fly
     # should probably move these to data resources
+    cd ${DIR}/azure
+    terraform init \
+              -backend-config 'bucket=aws65972563' \
+              -backend-config "key=${TF_VAR_name}" \
+              -backend-config 'region=ap-southeast-2'
+
     terraform get ${DIR}/azure && \
         terraform apply -target null_resource.ssl_ssh_cloud_gen ${DIR}/cross-cloud && \
         terraform apply -target null_resource.dns_gen ${DIR}/azure && \
-        time terraform apply ${DIR}/azure && \
-        printf "${RED}\n#Commands to Configue Kubectl \n\n" && \
-        printf 'sudo chown -R $(whoami):$(whoami) $(pwd)/data/${name} \n\n' && \
-        printf 'export KUBECONFIG=$(pwd)/data/${name}/kubeconfig \n\n'${NC}
+        time terraform apply ${DIR}/azure
+    export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
+    ELB=$(terraform output fqdn_k8s)
+    echo "❤ Polling for cluster life - this could take a minute or more"
+    _retry "❤ Waiting for DNS to resolve for ${ELB}" ping -c1 "${ELB}"
+    _retry "❤ Curling apiserver external elb" curl --insecure --silent "https://${ELB}"
+    _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info
+    kubectl cluster-info
 elif [ "$1" = "azure-destroy" ] ; then
+    cd ${DIR}/azure
+    terraform init \
+              -backend-config 'bucket=aws65972563' \
+              -backend-config "key=${TF_VAR_name}" \
+              -backend-config 'region=ap-southeast-2'
+
     time terraform destroy -force ${DIR}/azure
 elif [ "$1" = "packet-deploy" ] ; then
     terraform get ${DIR}/packet && \

@@ -60,7 +60,7 @@ COPY azure/ /cncf/azure/
 COPY gce/ /cncf/gce/
 COPY gke/ /cncf/gke/
 COPY packet/ /cncf/packet/
-COPY cross-cloud/ /cncf/packet/
+COPY cross-cloud/ /cncf/cross-cloud/
 COPY kubeconfig/ /cncf/kubeconfig/
 COPY provision.sh /cncf/
 RUN chmod +x /cncf/provision.sh

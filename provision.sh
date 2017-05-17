@@ -117,6 +117,11 @@ elif [ "$1" = "gce-deploy" ] ; then
     _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info
     kubectl cluster-info
 elif [ "$1" = "gce-destroy" ] ; then
+    cd ${DIR}/gce
+    terraform init \
+              -backend-config 'bucket=aws65972563' \
+              -backend-config "key=${TF_VAR_name}" \
+              -backend-config 'region=ap-southeast-2'
     time terraform destroy -force ${DIR}/gce
 elif [ "$1" = "gke-deploy" ] ; then
     terraform get ${DIR}/gke && \

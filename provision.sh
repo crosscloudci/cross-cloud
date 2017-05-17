@@ -37,6 +37,9 @@ if [ "$1" = "aws-deploy" ] ; then
     _retry "❤ Curling apiserver external elb" curl --insecure --silent "https://${ELB}"
     _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info
     kubectl cluster-info
+    kubectl get componentstatuses
+    kubectl get nodes
+    kubectl get pods
 elif [ "$1" = "aws-destroy" ] ; then
     cd ${DIR}/aws
     terraform init \
@@ -67,6 +70,9 @@ elif [ "$1" = "azure-deploy" ] ; then
     _retry "❤ Curling apiserver external elb" curl --insecure --silent "https://${ELB}"
     _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info
     kubectl cluster-info
+    kubectl get componentstatuses
+    kubectl get nodes
+    kubectl get pods
 elif [ "$1" = "azure-destroy" ] ; then
     cd ${DIR}/azure
     terraform init \
@@ -94,6 +100,9 @@ elif [ "$1" = "packet-deploy" ] ; then
     _retry "❤ Curling apiserver external elb" curl --insecure --silent "https://${ELB}"
     _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info
     kubectl cluster-info
+    kubectl get componentstatuses
+    kubectl get nodes
+    kubectl get pods
 elif [ "$1" = "packet-destroy" ] ; then
     cd ${DIR}/packet
     ls -la
@@ -123,6 +132,9 @@ elif [ "$1" = "gce-deploy" ] ; then
     _retry "❤ Curling apiserver external elb" curl --insecure --silent "https://${ELB}"
     _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info
     kubectl cluster-info
+    kubectl get componentstatuses
+    kubectl get nodes
+    kubectl get pods
 elif [ "$1" = "gce-destroy" ] ; then
     cd ${DIR}/gce
     terraform init \
@@ -144,6 +156,15 @@ elif [ "$1" = "gke-deploy" ] ; then
               -backend-config 'region=ap-southeast-2'
     terraform apply -target module.vpc ${DIR}/gke && \
         time terraform apply ${DIR}/gke
+    ELB=$(terraform output fqdn_k8s)
+    echo "❤ Polling for cluster life - this could take a minute or more"
+    _retry "❤ Waiting for DNS to resolve for ${ELB}" ping -c1 "${ELB}"
+    _retry "❤ Curling apiserver external elb" curl --insecure --silent "https://${ELB}"
+    _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info
+    kubectl cluster-info
+    kubectl get componentstatuses
+    kubectl get nodes
+    kubectl get pods
 elif [ "$1" = "gke-destroy" ] ; then
     cd ${DIR}/gke
     terraform init \

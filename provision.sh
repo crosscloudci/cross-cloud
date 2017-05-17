@@ -142,18 +142,23 @@ elif [ "$1" = "gce-destroy" ] ; then
     echo "sleep" && sleep 10 && \
         time terraform destroy -force -target module.vpc.google_compute_network.cncf ${DIR}/gce || true
 elif [ "$1" = "gke-deploy" ] ; then
+    cd ${DIR}/gke
+    terraform init \
+              -backend-config 'bucket=aws65972563' \
+              -backend-config "key=${TF_VAR_name}" \
+              -backend-config 'region=ap-southeast-2'
     terraform apply -target module.vpc ${DIR}/gke && \
         time terraform apply ${DIR}/gke
 elif [ "$1" = "gke-destroy" ] ; then
-    cd ${DIR}/gce
+    cd ${DIR}/gke
     terraform init \
               -backend-config 'bucket=aws65972563' \
               -backend-config "key=${TF_VAR_name}" \
               -backend-config 'region=ap-southeast-2'
     time terraform destroy -force -target module.cluster.google_container_cluster.cncf ${DIR}/gke || true
     echo "sleep" && sleep 10 && \
-    time terraform destroy -force -target module.vpc.google_compute_network.cncf ${DIR}/gke || true
-    time terraform destroy -force ${DIR}/gke || true
+        time terraform destroy -force -target module.vpc.google_compute_network.cncf ${DIR}/gke || true
+    time terraform destroy -force ${DIR}/gke
 elif [ "$1" = "cross-cloud-deploy" ] ; then
     cd ${DIR}/cross-cloud
     terraform init \

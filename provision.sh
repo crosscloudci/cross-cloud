@@ -101,9 +101,9 @@ elif [ "$1" = "packet-destroy" ] ; then
               -backend-config 'bucket=aws65972563' \
               -backend-config "key=${TF_VAR_name}" \
               -backend-config 'region=ap-southeast-2'
-    terraform destroy --force -target module.etcd.null_resource.discovery_gen ${DIR}/packet && \
+    terraform destroy -force -target module.etcd.null_resource.discovery_gen ${DIR}/packet && \
         terraform apply -target module.etcd.null_resource.discovery_gen ${DIR}/packet
-    terraform destroy --force -target null_resource.ssl_ssh_gen ${DIR}/packet && \
+    terraform destroy -force -target null_resource.ssl_ssh_gen ${DIR}/packet && \
         terraform apply -target null_resource.ssl_ssh_gen ${DIR}/packet
     time terraform destroy -force ${DIR}/packet
 elif [ "$1" = "gce-deploy" ] ; then

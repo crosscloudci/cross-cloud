@@ -27,7 +27,6 @@ if [ "$1" = "aws-deploy" ] ; then
               -backend-config 'bucket=aws65972563' \
               -backend-config "key=${TF_VAR_name}" \
               -backend-config 'region=ap-southeast-2'
-    terraform state list
     terraform apply -target null_resource.ssl_gen ${DIR}/aws && \
         time terraform apply ${DIR}/aws
 
@@ -44,7 +43,6 @@ elif [ "$1" = "aws-destroy" ] ; then
               -backend-config 'bucket=aws65972563' \
               -backend-config "key=${TF_VAR_name}" \
               -backend-config 'region=ap-southeast-2'
-    terraform state list
 
     terraform destroy -force -target null_resource.ssl_gen ${DIR}/aws && \
         terraform apply -target null_resource.ssl_gen ${DIR}/aws && \
@@ -58,7 +56,6 @@ elif [ "$1" = "azure-deploy" ] ; then
               -backend-config 'bucket=aws65972563' \
               -backend-config "key=${TF_VAR_name}" \
               -backend-config 'region=ap-southeast-2'
-    terraform state list
 
     terraform apply -target null_resource.ssl_ssh_cloud_gen ${DIR}/azure && \
         terraform apply -target module.dns.null_resource.dns_gen ${DIR}/azure && \
@@ -76,7 +73,6 @@ elif [ "$1" = "azure-destroy" ] ; then
               -backend-config 'bucket=aws65972563' \
               -backend-config "key=${TF_VAR_name}" \
               -backend-config 'region=ap-southeast-2'
-    terraform state list
     terraform destroy -force -target null_resource.ssl_ssh_cloud_gen ${DIR}/azure && \
         terraform destroy -force -target module.dns.null_resource.dns_gen ${DIR}/azure && \
         terraform apply -target null_resource.ssl_ssh_cloud_gen ${DIR}/azure && \
@@ -88,7 +84,6 @@ elif [ "$1" = "packet-deploy" ] ; then
           -backend-config 'bucket=aws65972563' \
           -backend-config "key=${TF_VAR_name}" \
           -backend-config 'region=ap-southeast-2'
-    terraform state list
     terraform apply -target module.etcd.null_resource.discovery_gen ${DIR}/packet && \
         terraform apply -target null_resource.ssl_ssh_gen ${DIR}/packet && \
         time terraform apply ${DIR}/packet
@@ -106,7 +101,6 @@ elif [ "$1" = "packet-destroy" ] ; then
               -backend-config 'bucket=aws65972563' \
               -backend-config "key=${TF_VAR_name}" \
               -backend-config 'region=ap-southeast-2'
-    terraform state list
     terraform destroy -force -target module.etcd.null_resource.discovery_gen ${DIR}/packet && \
         terraform apply -target module.etcd.null_resource.discovery_gen ${DIR}/packet
     terraform destroy -force -target null_resource.ssl_ssh_gen ${DIR}/packet && \

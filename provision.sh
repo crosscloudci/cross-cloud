@@ -58,7 +58,7 @@ elif [ "$1" = "azure-deploy" ] ; then
               -backend-config 'region=ap-southeast-2'
 
     terraform apply -target null_resource.ssl_ssh_cloud_gen ${DIR}/azure && \
-        terraform apply -target null_resource.dns_gen ${DIR}/azure && \
+        terraform apply -target module.dns.null_resource.dns_gen ${DIR}/azure && \
         time terraform apply ${DIR}/azure
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
     ELB=$(terraform output fqdn_k8s)
@@ -73,8 +73,11 @@ elif [ "$1" = "azure-destroy" ] ; then
               -backend-config 'bucket=aws65972563' \
               -backend-config "key=${TF_VAR_name}" \
               -backend-config 'region=ap-southeast-2'
-
-    time terraform destroy -force ${DIR}/azure
+    terraform destroy -force -target null_resource.ssl_ssh_cloud_gen ${DIR}/azure && \
+        terraform destroy -force -target module.dns.null_resource.dns_gen ${DIR}/azure && \
+        terraform apply -target null_resource.ssl_ssh_cloud_gen ${DIR}/azure && \
+        terraform apply -target module.dns.null_resource.dns_gen ${DIR}/azure && \
+        time terraform destroy -force ${DIR}/azure || true
 elif [ "$1" = "packet-deploy" ] ; then
     cd ${DIR}/packet
     terraform init \

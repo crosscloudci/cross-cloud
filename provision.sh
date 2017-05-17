@@ -18,6 +18,7 @@ export TF_VAR_data_dir=$(pwd)/data/${TF_VAR_name}
 # These were only used for state
 # mkdir -p $TF_VAR_data_dir
 # cd $TF_VAR_data_dir
+mkdir -p $TF_VAR_data_dir
 
 # Run CMD
 if [ "$1" = "aws-deploy" ] ; then
@@ -26,7 +27,6 @@ if [ "$1" = "aws-deploy" ] ; then
               -backend-config 'bucket=aws65972563' \
               -backend-config "key=${TF_VAR_name}" \
               -backend-config 'region=ap-southeast-2'
-
     terraform apply -target null_resource.ssl_gen ${DIR}/aws && \
         time terraform apply ${DIR}/aws
 

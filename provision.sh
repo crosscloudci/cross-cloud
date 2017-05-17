@@ -101,6 +101,7 @@ elif [ "$1" = "packet-deploy" ] ; then
     kubectl cluster-info
 elif [ "$1" = "packet-destroy" ] ; then
     cd ${DIR}/packet
+    ls -la
     terraform init \
               -backend-config 'bucket=aws65972563' \
               -backend-config "key=${TF_VAR_name}" \

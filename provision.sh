@@ -123,8 +123,9 @@ elif [ "$1" = "gce-deploy" ] ; then
               -backend-config 'region=ap-southeast-2'
 
     terraform apply -target module.etcd.null_resource.discovery_gen ${DIR}/gce && \
-        terraform apply -target null_resource.ssl_gen ${DIR}/gce && \
-        time terraform apply ${DIR}/gce
+        terraform apply -target null_resource.ssl_gen ${DIR}/gce
+    # gce sometimes fails because the remote network wasn't created yet
+    time terraform apply ${DIR}/gce || time terraform apply ${DIR}/gce
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
     ELB=$(terraform output external_lb)
     echo "❤ Polling for cluster life - this could take a minute or more"

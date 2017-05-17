@@ -56,8 +56,7 @@ elif [ "$1" = "azure-deploy" ] ; then
               -backend-config "key=${TF_VAR_name}" \
               -backend-config 'region=ap-southeast-2'
 
-    terraform get ${DIR}/azure && \
-        terraform apply -target null_resource.ssl_ssh_cloud_gen ${DIR}/cross-cloud && \
+    terraform apply -target null_resource.ssl_ssh_cloud_gen ${DIR}/azure && \
         terraform apply -target null_resource.dns_gen ${DIR}/azure && \
         time terraform apply ${DIR}/azure
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig

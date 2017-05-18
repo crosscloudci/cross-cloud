@@ -140,9 +140,9 @@ write-files:
         volumes:
         - hostPath:
             path: /usr/share/ca-certificates
-            name: ssl-certs-host
+          name: ssl-certs-host
 
-  - path: /etc/kubernetes/manifests/kube-scheduler.yaml
+  - path: /etc/kubernetes/manifests/kube-scheduler.yml
     content: |
       apiVersion: v1
       kind: Pod
@@ -153,7 +153,7 @@ write-files:
         hostNetwork: true
         containers:
         - name: kube-scheduler
-          image: { hyperkube }
+          image: ${ hyperkube }
           command:
           - /hyperkube
           - scheduler

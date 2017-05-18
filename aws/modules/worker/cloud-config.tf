@@ -16,6 +16,7 @@ data "template_file" "cloud-config" {
   vars {
     cluster_domain = "${ var.cluster_domain }"
     dns_service_ip = "${ var.dns_service_ip }"
+    hyperkube = "${ var.kubelet_image_url }:${ var.kubelet_image_tag }"
     kubelet_image_url = "${ var.kubelet_image_url }"
     kubelet_image_tag = "${ var.kubelet_image_tag }"
     internal_tld = "${ var.internal_tld }"

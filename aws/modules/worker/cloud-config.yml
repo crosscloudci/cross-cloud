@@ -51,7 +51,7 @@ coreos:
         ExecStartPre=/usr/bin/mkdir -p /var/log/containers
         ExecStartPre=-/usr/bin/rkt rm --uuid-file=/var/run/kubelet-pod.uuid
         ExecStart=/usr/lib/coreos/kubelet-wrapper \
-          --api-servers=http://master.${ internal_tld } \
+          --api-servers=https://master.${ internal_tld } \
           --cloud-provider=aws \
           --cni-conf-dir=/etc/kubernetes/cni/net.d \
           --network-plugin=cni \
@@ -59,8 +59,6 @@ coreos:
           --register-node=true \
           --allow-privileged=true \
           --pod-manifest-path=/etc/kubernetes/manifests \
-          # FIX When AutoScaling is Removed
-          # --hostname-override=fqdn  \
           --cluster_dns=${ dns_service_ip } \
           --cluster_domain=${ cluster_domain } \
           --kubeconfig=/etc/kubernetes/worker-kubeconfig.yaml \
@@ -141,19 +139,19 @@ write-files:
       apiVersion: v1
       kind: Config
       clusters:
-        - name: local
-          cluster:
-            certificate-authority: /etc/kubernetes/ssl/ca.pem
+      - name: local
+        cluster:
+          certificate-authority: /etc/kubernetes/ssl/ca.pem
       users:
-        - name: kubelet
-          user:
-            client-certificate: /etc/kubernetes/ssl/k8s-worker.pem
-            client-key: /etc/kubernetes/ssl/k8s-worker-key.pem
+      - name: kubelet
+        user:
+          client-certificate: /etc/kubernetes/ssl/k8s-worker.pem
+          client-key: /etc/kubernetes/ssl/k8s-worker-key.pem
       contexts:
-        - context:
-            cluster: local
-            user: kubelet
-          name: kubelet-context
+      - context:
+          cluster: local
+          user: kubelet
+        name: kubelet-context
       current-context: kubelet-context
 
   - path: /etc/kubernetes/ssl/ca.pem

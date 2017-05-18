@@ -26,6 +26,9 @@ spec:
     - --service-account-key-file=/etc/kubernetes/ssl/k8s-apiserver-key.pem
     - --runtime-config=extensions/v1beta1/networkpolicies=true
     - --anonymous-auth=false
+    - --storage-backend=etcd2
+    # Verbose Logging
+    - --v=2
     livenessProbe:
       httpGet:
         host: 127.0.0.1

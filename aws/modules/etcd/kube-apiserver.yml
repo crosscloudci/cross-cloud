@@ -17,7 +17,8 @@ spec:
     - --allow-privileged=true
     - --service-cluster-ip-range=${ service_cidr }
     - --secure-port=443
-    - --advertise-address=${ fqdn }
+    # FIX?? Unable to use $private_ipv4 because var is unavalible if unset bind adderess is used
+    # - --advertise-address=$private_ipv4
     - --admission-control=NamespaceLifecycle,LimitRanger,ServiceAccount,DefaultStorageClass,ResourceQuota
     - --tls-cert-file=/etc/kubernetes/ssl/k8s-apiserver.pem
     - --tls-private-key-file=/etc/kubernetes/ssl/k8s-apiserver-key.pem

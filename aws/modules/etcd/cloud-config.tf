@@ -35,6 +35,18 @@ resource "gzip_me" "kube-apiserver" {
   input = "${ data.template_file.kube-apiserver.rendered }"
 }
 
+data "template_file" "kube-controller-manager" {
+  template = "${ file( "${ path.module }/kube-controller-manager.yml" )}"
+
+  vars {
+    hyperkube = "${ var.kubelet_image_url }:${ var.kubelet_image_tag }"
+  }
+}
+
+resource "gzip_me" "kube-controller-manager" {
+  input = "${ data.template_file.kube-controller-manager.rendered }"
+}
+
 data "template_file" "cloud-config" {
   count = "${ var.master_node_count }"
   template = "${ file( "${ path.module }/cloud-config.yml" )}"
@@ -57,7 +69,8 @@ data "template_file" "cloud-config" {
     k8s_etcd_key = "${ gzip_me.k8s_etcd_key.output }"
     k8s_apiserver = "${ gzip_me.k8s_apiserver.output }"
     k8s_apiserver_key = "${ gzip_me.k8s_apiserver_key.output }"
-    kube-apiserver-yml = "${ gzip_me.kube-apiserver.output }"
+    kube-apiserver = "${ gzip_me.kube-apiserver.output }"
+    kube-controller-manager = "${ gzip_me.kube-controller-manager.output }"
   }
 }
 

@@ -108,52 +108,12 @@ write-files:
   - path: /etc/kubernetes/manifests/kube-apiserver.yml
     encoding: "gzip+base64"
     content: |
-      ${ kube-apiserver-yml }
+      ${ kube-apiserver }
       
   - path: /etc/kubernetes/manifests/kube-controller-manager.yml
+    encoding: "gzip+base64"
     content: |
-      apiVersion: v1
-      kind: Pod
-      metadata:
-        name: kube-controller-manager
-        namespace: kube-system
-      spec:
-        hostNetwork: true
-        containers:
-        - name: kube-controller-manager
-          image: ${ hyperkube }
-          command:
-          - /hyperkube
-          - controller-manager
-          - --cloud-provider=aws
-          - --leader-elect=true
-          - --master=http://127.0.0.1:8080
-          - --root-ca-file=/etc/kubernetes/ssl/ca.pem
-          - --service-account-private-key-file=/etc/kubernetes/ssl/k8s-apiserver-key.pem
-          resources:
-            requests:
-              cpu: 200m
-          livenessProbe:
-            httpGet:
-              host: 127.0.0.1
-              path: /healthz
-              port: 10252
-            initialDelaySeconds: 15
-            timeoutSeconds: 1
-          volumeMounts:
-          - mountPath: /etc/kubernetes/ssl
-            name: ssl-certs-kubernetes
-            readOnly: true
-          - mountPath: /etc/ssl/certs
-            name: ssl-certs-host
-            readOnly: true
-        volumes:
-        - hostPath:
-            path: /etc/kubernetes/ssl
-          name: ssl-certs-kubernetes
-        - hostPath:
-            path: /usr/share/ca-certificates
-          name: ssl-certs-host
+      ${ kube-controller-manager }
 
   - path: /etc/kubernetes/manifests/kube-proxy.yml
     content: |
@@ -182,50 +142,6 @@ write-files:
             path: /usr/share/ca-certificates
             name: ssl-certs-host
 
-  - path: /etc/kubernetes/manifests//kube-controller-manager.yaml
-    content: |
-      apiVersion: v1
-      kind: Pod
-      metadata:
-        name: kube-controller-manager
-        namespace: kube-system
-      spec:
-        hostNetwork: true
-        containers:
-        - name: kube-controller-manager
-          image: ${ hyperkube }
-          command:
-          - /hyperkube
-          - controller-manager
-          - --master=http://127.0.0.1:8080
-          - --leader-elect=true
-          - --service-account-private-key-file=/etc/kubernetes/ssl/k8s-apiserver-key.pem
-          - --root-ca-file=/etc/kubernetes/ssl/ca.pem
-          resources:
-            requests:
-              cpu: 200m
-          livenessProbe:
-            httpGet:
-              host: 127.0.0.1
-              path: /healthz
-              port: 10252
-            initialDelaySeconds: 15
-            timeoutSeconds: 15
-          volumeMounts:
-          - mountPath: /etc/kubernetes/ssl
-            name: ssl-certs-kubernetes
-            readOnly: true
-          - mountPath: /etc/ssl/certs
-            name: ssl-certs-host
-            readOnly: true
-        volumes:
-        - hostPath:
-            path: /etc/kubernetes/ssl
-          name: ssl-certs-kubernetes
-        - hostPath:
-            path: /usr/share/ca-certificates
-          name: ssl-certs-host
-          
   - path: /etc/kubernetes/manifests/kube-scheduler.yaml
     content: |
       apiVersion: v1

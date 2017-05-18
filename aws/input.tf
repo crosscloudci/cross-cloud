@@ -32,5 +32,5 @@ variable "worker_node_max" { default = "5" }
 # Hyperkube
 # Set from https://quay.io/repository/coreos/hyperkube?tab=tags
 variable "kubelet_image_url" { default = "quay.io/coreos/hyperkube"}
-variable "kubelet_image_tag" { default = "v1.5.1_coreos.0"}
+variable "kubelet_image_tag" { default = "v1.6.3_coreos.0"}
 

@@ -22,6 +22,7 @@ data "template_file" "kube-apiserver" {
   template = "${ file( "${ path.module }/kube-apiserver.yml" )}"
 
   vars {
+    fqdn = "etcd${ count.index + 1 }.${ var.internal_tld }"
     internal_tld = "${ var.internal_tld }"
     service_cidr = "${ var.service_cidr }"
     hyperkube = "${ var.kubelet_image_url }:${ var.kubelet_image_tag }"

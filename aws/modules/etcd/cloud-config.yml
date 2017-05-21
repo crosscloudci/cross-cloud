@@ -182,23 +182,23 @@ write-files:
     permissions: "0644"
     encoding: "gzip+base64"
     content: |
-      ${ k8s_etcd }
+      ${ etcd }
       
   - path: /etc/kubernetes/ssl/k8s-etcd-key.pem
     permissions: "0644"
     encoding: "gzip+base64"
     content: |
-      ${ k8s_etcd_key }
+      ${ etcd_key }
       
   - path: /etc/kubernetes/ssl/k8s-apiserver.pem
     permissions: "0644"
     encoding: "gzip+base64"
     content: |
-      ${ k8s_apiserver }
+      ${ apiserver }
 
   - path: /etc/kubernetes/ssl/k8s-apiserver-key.pem
     permissions: "0644"
     encoding: "gzip+base64"
     content: |
-      ${ k8s_apiserver_key }
+      ${ apiserver_key }
 

@@ -14,9 +14,7 @@ export TF_VAR_name="$2"
 export TF_VAR_internal_tld=${TF_VAR_name}.cncf.demo
 export TF_VAR_data_dir=${DIR}/data/${TF_VAR_name}
 # tfstate, sslcerts, and ssh keys are currently stored in TF_VAR_data_dir
-# These were only used for state 
-# mkdir -p $TF_VAR_data_dir
-# cd $TF_VAR_data_dir
+mkdir -p $TF_VAR_data_dir
 
 # Run CMD
 if [ "$1" = "aws-deploy" ] ; then
@@ -26,7 +24,6 @@ if [ "$1" = "aws-deploy" ] ; then
               -backend-config "key=${TF_VAR_name}" \
               -backend-config 'region=ap-southeast-2'
 
-    terraform apply -target null_resource.ssl_gen ${DIR}/aws && \
         time terraform apply ${DIR}/aws
 
     ELB=$(terraform output external_elb)
@@ -43,8 +40,6 @@ elif [ "$1" = "aws-destroy" ] ; then
               -backend-config "key=${TF_VAR_name}" \
               -backend-config 'region=ap-southeast-2'
 
-    terraform destroy -force -target null_resource.ssl_gen ${DIR}/aws && \
-        terraform apply -target null_resource.ssl_gen ${DIR}/aws && \
     time terraform destroy -force ${DIR}/aws
 elif [ "$1" = "azure-deploy" ] ; then
     # There are some dependency issues around cert,sshkey,k8s_cloud_config, and dns

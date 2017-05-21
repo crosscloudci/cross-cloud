@@ -2,12 +2,12 @@ resource "gzip_me" "ca" {
   input = "${ var.ca }"
 }
 
-resource "gzip_me" "k8s_worker" {
-  input = "${ var.k8s_worker }"
+resource "gzip_me" "worker" {
+  input = "${ var.worker }"
 }
 
-resource "gzip_me" "k8s_worker_key" {
-  input = "${ var.k8s_worker_key }"
+resource "gzip_me" "worker_key" {
+  input = "${ var.worker_key }"
 }
 
 data "template_file" "cloud-config" {
@@ -22,7 +22,7 @@ data "template_file" "cloud-config" {
     internal_tld = "${ var.internal_tld }"
     region = "${ var.region }"
     ca = "${ gzip_me.ca.output }"
-    k8s_worker = "${ gzip_me.k8s_worker.output }"
-    k8s_worker_key = "${ gzip_me.k8s_worker_key.output }"
+    worker = "${ gzip_me.worker.output }"
+    worker_key = "${ gzip_me.worker_key.output }"
   }
 }

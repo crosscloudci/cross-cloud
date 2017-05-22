@@ -32,6 +32,7 @@ deploy_aws:
   script:
     - echo CLOUD=$CLOUD
     - echo CI_ENVIRONMENT_SLUG=$CI_ENVIRONMENT_SLUG
+    - sleep 10
     - /cncf/provision.sh ${CLOUD}-deploy ${CI_ENVIRONMENT_SLUG}
     - export KUBECONFIG=$(pwd)/data/${CI_ENVIRONMENT_SLUG}/kubeconfig
  
@@ -224,6 +225,7 @@ deploy_gce:
   script:
     - echo CLOUD=$CLOUD
     - echo CI_ENVIRONMENT_SLUG=$CI_ENVIRONMENT_SLUG
+    - sleep 10
     - /cncf/provision.sh ${CLOUD}-deploy ${CI_ENVIRONMENT_SLUG}
     - export KUBECONFIG=$(pwd)/data/${CI_ENVIRONMENT_SLUG}/kubeconfig
 

@@ -34,11 +34,11 @@ module "etcd" {
   internal_tld              = "${ var.name }.${ var.domain }"
   pod_cidr                  = "${ var.pod_cidr }"
   service_cidr              = "${ var.service_cidr }"
-  ca                             = "${ module.tls.ca }"
-  etcd                           = "${ module.tls.etcd }"
-  etcd_key                       = "${ module.tls.etcd_key }"
-  apiserver                      = "${ module.tls.apiserver }"
-  apiserver_key                  = "${ module.tls.apiserver_key }"
+  ca                        = "${ module.tls.ca }"
+  etcd                      = "${ module.tls.etcd }"
+  etcd_key                  = "${ module.tls.etcd_key }"
+  apiserver                 = "${ module.tls.apiserver }"
+  apiserver_key             = "${ module.tls.apiserver_key }"
 
   data_dir                  = "${ var.data_dir }"
 }
@@ -89,9 +89,9 @@ module "kubeconfig" {
   data_dir = "${ var.data_dir }"
   endpoint = "endpoint.${ var.name }.${ var.domain }"
   name = "${ var.name }"
-  ca = "${ var.data_dir}/ca.pem"
-  client = "${ var.data_dir}/client.pem"
-  client_key = "${ var.data_dir}/client_key.pem"
+  ca = "${ module.tls.ca}"
+  client = "${ module.tls.client }"
+  client_key = "${ module.tls.client_key }"
 
 }
 
@@ -111,7 +111,7 @@ module "tls" {
   tls_etcd_cert_subject_common_name = "k8s-etcd"
   tls_etcd_cert_validity_period_hours = 1000
   tls_etcd_cert_early_renewal_hours = 100
-  tls_etcd_cert_dns_names = "etcd.${ var.internal_tld },etcd1.${ var.internal_tld },etcd2.${ var.internal_tld },etcd3.${ var.internal_tld }"
+  tls_etcd_cert_dns_names = "etcd.${ var.name }.${ var.domain },etcd1.${ var.name }.${ var.domain },etcd2.${ var.name }.${ var.domain },etcd3.${ var.name }.${ var.domain }"
   tls_etcd_cert_ip_addresses = "127.0.0.1"
 
   tls_client_cert_subject_common_name = "k8s-admin"
@@ -123,7 +123,7 @@ module "tls" {
   tls_apiserver_cert_subject_common_name = "k8s-apiserver"
   tls_apiserver_cert_validity_period_hours = 1000
   tls_apiserver_cert_early_renewal_hours = 100
-  tls_apiserver_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local,master.${ var.internal_tld },endpoint.${ var.internal_tld }"
+  tls_apiserver_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local,master.${ var.name }.${ var.domain },endpoint.${ var.name }.${ var.domain }"
   tls_apiserver_cert_ip_addresses = "127.0.0.1,10.3.0.1"
 
   tls_worker_cert_subject_common_name = "k8s-worker"

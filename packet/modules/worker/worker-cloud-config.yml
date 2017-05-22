@@ -100,7 +100,7 @@ write-files:
       ${ kube_proxy }
 
 
-  - path: /etc/kubernetes/kubeconfig.yaml
+  - path: /etc/kubernetes/worker-kubeconfig.yaml
     content: |
       apiVersion: v1
       kind: Config

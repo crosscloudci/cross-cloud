@@ -7,25 +7,26 @@ spec:
   hostNetwork: true
   containers:
   - name: kube-apiserver
-    image: ${ kubelet_image_url }:${ kubelet_image_tag }
+    image: ${ hyperkube }
     command:
     - /hyperkube
     - apiserver
-    - --admission-control=LimitRanger
-    - --admission-control=NamespaceExists
-    - --admission-control=NamespaceLifecycle
-    - --admission-control=ResourceQuota
-    - --admission-control=SecurityContextDeny
-    - --admission-control=ServiceAccount
-    - --allow-privileged=true
-    - --client-ca-file=/etc/kubernetes/ssl/ca.pem
+    - --bind-address=0.0.0.0
     - --etcd-servers=http://etcd.${ internal_tld }:2379
-    - --insecure-bind-address=0.0.0.0
-    - --secure-port=443
-    - --service-account-key-file=/etc/kubernetes/ssl/k8s-apiserver-key.pem
+    - --allow-privileged=true
     - --service-cluster-ip-range=${ service_cidr }
+    - --secure-port=443
+    # FIX?? Unable to use $private_ipv4 because var is unavalible if unset bind adderess is used
+    # - --advertise-address=$private_ipv4
+    - --admission-control=NamespaceLifecycle,LimitRanger,ServiceAccount,DefaultStorageClass,ResourceQuota
     - --tls-cert-file=/etc/kubernetes/ssl/k8s-apiserver.pem
     - --tls-private-key-file=/etc/kubernetes/ssl/k8s-apiserver-key.pem
+    - --client-ca-file=/etc/kubernetes/ssl/ca.pem
+    - --service-account-key-file=/etc/kubernetes/ssl/k8s-apiserver-key.pem
+    - --runtime-config=extensions/v1beta1/networkpolicies=true
+    - --anonymous-auth=false
+    - --storage-backend=etcd2
+    # Verbose Logging
     - --v=2
     livenessProbe:
       httpGet:
@@ -55,3 +56,4 @@ spec:
   - hostPath:
       path: /usr/share/ca-certificates
     name: ssl-certs-host
+

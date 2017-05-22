@@ -1,9 +1,8 @@
 data "template_file" "kube_proxy" {
   template = "${ file( "${ path.module }/kube-proxy.yml" )}"
   vars {
+    hyperkube = "${ var.kubelet_image_url }:${ var.kubelet_image_tag }"
     internal_tld = "${ var.internal_tld }"
-    kubelet_image_url = "${ var.kubelet_image_url }"
-    kubelet_image_tag = "${ var.kubelet_image_tag }"
   }
 }
 
@@ -36,7 +35,7 @@ data "template_file" "worker_user_data" {
     dns_service_ip    = "${ var.dns_service_ip }"
     kubelet_image_url = "${ var.kubelet_image_url }"
     kubelet_image_tag = "${ var.kubelet_image_tag }"
-    k8s_proxy_yml     = "${ gzip_me.kube_proxy.output }"
+    kube_proxy        = "${ gzip_me.kube_proxy.output }"
     ca                = "${ gzip_me.ca.output }"
     worker            = "${ gzip_me.worker.output }"
     worker_key        = "${ gzip_me.worker_key.output }"

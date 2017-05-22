@@ -13,24 +13,21 @@ data "template_file" "kube_apiserver" {
 data "template_file" "kube_controller_manager" {
   template = "${ file( "${ path.module }/kube-controller-manager.yml" )}"
   vars {
-    kubelet_image_url = "${ var.kubelet_image_url }"
-    kubelet_image_tag = "${ var.kubelet_image_tag }"
+    hyperkube = "${ var.kubelet_image_url }:${ var.kubelet_image_tag }"
   }
 }
 
 data "template_file" "kube_proxy" {
   template = "${ file( "${ path.module }/kube-proxy.yml" )}"
   vars {
-    kubelet_image_url = "${ var.kubelet_image_url }"
-    kubelet_image_tag = "${ var.kubelet_image_tag }"
+    hyperkube = "${ var.kubelet_image_url }:${ var.kubelet_image_tag }"
   }
 }
 
 data "template_file" "kube_scheduler" {
   template = "${ file( "${ path.module }/kube-scheduler.yml" )}"
   vars {
-    kubelet_image_url = "${ var.kubelet_image_url }"
-    kubelet_image_tag = "${ var.kubelet_image_tag }"
+    hyperkube = "${ var.kubelet_image_url }:${ var.kubelet_image_tag }"
   }
 }
 
@@ -94,7 +91,7 @@ data "template_file" "etcd_user_data" {
     apiserver_key = "${ gzip_me.apiserver_key.output }"
     kube_apiserver = "${ gzip_me.kube_apiserver.output }"
     kube_proxy = "${ gzip_me.kube_proxy.output }"
-    k8s_scheduler = "${ gzip_me.kube_scheduler.output }"
+    kube_scheduler = "${ gzip_me.kube_scheduler.output }"
     kube_controller_manager = "${ gzip_me.kube_controller_manager.output }"
     etcd_discovery = "${ file(var.etcd_discovery) }"
   }

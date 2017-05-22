@@ -115,9 +115,9 @@ module "kubeconfig" {
   data_dir = "${ var.data_dir }"
   endpoint = "${ module.etcd.external_elb }"
   name = "${ var.name }"
-  ca = "${ var.data_dir}/ca.pem"
-  client = "${ var.data_dir}/client.pem"
-  client_key = "${ var.data_dir}/client_key.pem"
+  ca = "${ module.tls.ca}"
+  client = "${ module.tls.client }"
+  client_key = "${ module.tls.client_key }"
 }
 
 module "tls" {

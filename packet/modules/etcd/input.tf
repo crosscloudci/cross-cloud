@@ -13,9 +13,9 @@ variable "internal_tld" {}
 variable "pod_cidr" {}
 variable "service_cidr" {}
 variable "ca" {}
-variable "k8s_etcd" {}
-variable "k8s_etcd_key" {}
-variable "k8s_apiserver" {}
-variable "k8s_apiserver_key" {}
+variable "etcd" {}
+variable "etcd_key" {}
+variable "apiserver" {}
+variable "apiserver_key" {}
 variable "data_dir" {}
 variable "etcd_discovery" {}

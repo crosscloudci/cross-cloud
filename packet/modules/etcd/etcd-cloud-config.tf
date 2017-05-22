@@ -13,24 +13,21 @@ data "template_file" "kube_apiserver" {
 data "template_file" "kube_controller_manager" {
   template = "${ file( "${ path.module }/kube-controller-manager.yml" )}"
   vars {
-    kubelet_image_url = "${ var.kubelet_image_url }"
-    kubelet_image_tag = "${ var.kubelet_image_tag }"
+    hyperkube = "${ var.kubelet_image_url }:${ var.kubelet_image_tag }"
   }
 }
 
 data "template_file" "kube_proxy" {
   template = "${ file( "${ path.module }/kube-proxy.yml" )}"
   vars {
-    kubelet_image_url = "${ var.kubelet_image_url }"
-    kubelet_image_tag = "${ var.kubelet_image_tag }"
+    hyperkube = "${ var.kubelet_image_url }:${ var.kubelet_image_tag }"
   }
 }
 
 data "template_file" "kube_scheduler" {
   template = "${ file( "${ path.module }/kube-scheduler.yml" )}"
   vars {
-    kubelet_image_url = "${ var.kubelet_image_url }"
-    kubelet_image_tag = "${ var.kubelet_image_tag }"
+    hyperkube = "${ var.kubelet_image_url }:${ var.kubelet_image_tag }"
   }
 }
 
@@ -58,20 +55,20 @@ resource "gzip_me" "ca" {
   input = "${ var.ca }"
 }
 
-resource "gzip_me" "k8s_etcd" {
-  input = "${ var.k8s_etcd }"
+resource "gzip_me" "etcd" {
+  input = "${ var.etcd }"
 }
 
-resource "gzip_me" "k8s_etcd_key" {
-  input = "${ var.k8s_etcd_key }"
+resource "gzip_me" "etcd_key" {
+  input = "${ var.etcd_key }"
 }
 
-resource "gzip_me" "k8s_apiserver" {
-  input = "${ var.k8s_apiserver }"
+resource "gzip_me" "apiserver" {
+  input = "${ var.apiserver }"
 }
 
-resource "gzip_me" "k8s_apiserver_key" {
-  input = "${ var.k8s_apiserver_key }"
+resource "gzip_me" "apiserver_key" {
+  input = "${ var.apiserver_key }"
 }
 
 data "template_file" "etcd_user_data" {
@@ -88,14 +85,14 @@ data "template_file" "etcd_user_data" {
     pod_cidr = "${ var.pod_cidr }"
     service_cidr = "${ var.service_cidr }"
     ca = "${ gzip_me.ca.output }"
-    k8s_etcd = "${ gzip_me.k8s_etcd.output }"
-    k8s_etcd_key = "${ gzip_me.k8s_etcd_key.output }"
-    k8s_apiserver = "${ gzip_me.k8s_apiserver.output }"
-    k8s_apiserver_key = "${ gzip_me.k8s_apiserver_key.output }"
-    k8s_apiserver_yml = "${ gzip_me.kube_apiserver.output }"
-    k8s_proxy_yml = "${ gzip_me.kube_proxy.output }"
-    k8s_scheduler_yml = "${ gzip_me.kube_scheduler.output }"
-    k8s_controller_manager_yml = "${ gzip_me.kube_controller_manager.output }"
+    etcd = "${ gzip_me.etcd.output }"
+    etcd_key = "${ gzip_me.etcd_key.output }"
+    apiserver = "${ gzip_me.apiserver.output }"
+    apiserver_key = "${ gzip_me.apiserver_key.output }"
+    kube_apiserver = "${ gzip_me.kube_apiserver.output }"
+    kube_proxy = "${ gzip_me.kube_proxy.output }"
+    kube_scheduler = "${ gzip_me.kube_scheduler.output }"
+    kube_controller_manager = "${ gzip_me.kube_controller_manager.output }"
     etcd_discovery = "${ file(var.etcd_discovery) }"
   }
 }

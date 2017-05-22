@@ -7,7 +7,7 @@ spec:
   hostNetwork: true
   containers:
   - name: kube-controller-manager
-    image: ${ kubelet_image_url }:${ kubelet_image_tag }
+    image: ${ hyperkube }
     command:
     - /hyperkube
     - controller-manager

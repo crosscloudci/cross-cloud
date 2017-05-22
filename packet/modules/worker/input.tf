@@ -13,9 +13,7 @@ variable "internal_tld" {}
 variable "pod_cidr" {}
 variable "service_cidr" {}
 variable "ca" {}
-variable "k8s_etcd" {}
-variable "k8s_etcd_key" {}
-variable "k8s_worker" {}
-variable "k8s_worker_key" {}
+variable "worker" {}
+variable "worker_key" {}
 variable "data_dir" {}
 variable "etcd_discovery" {}

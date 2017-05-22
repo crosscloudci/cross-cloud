@@ -130,10 +130,10 @@ write-files:
     permissions: "0644"
     encoding: "gzip+base64"
     content: |
-      ${ k8s_worker }
+      ${ worker }
 
   - path: /etc/kubernetes/ssl/k8s-worker-key.pem
     permissions: "0644"
     encoding: "gzip+base64"
     content: |
-      ${ k8s_worker_key }
+      ${ worker_key }

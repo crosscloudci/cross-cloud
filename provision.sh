@@ -50,7 +50,7 @@ elif [ "$1" = "azure-deploy" ] ; then
               -backend-config 'bucket=aws65972563' \
               -backend-config "key=${TF_VAR_name}" \
               -backend-config 'region=ap-southeast-2'
-    
+
         terraform apply -target null_resource.ssl_ssh_cloud_gen ${DIR}/azure && \
         terraform apply -target module.dns.null_resource.dns_gen ${DIR}/azure && \
         time terraform apply ${DIR}/azure && \

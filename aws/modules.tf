@@ -54,12 +54,13 @@ module "etcd" {
   subnet_ids_private             = "${ module.vpc.subnet_ids_private }"
   subnet_ids_public              = "${ module.vpc.subnet_ids_public }"
   vpc_id                         = "${ module.vpc.id }"
-  ca                             = "${file("${ var.data_dir }/.cfssl/ca.pem")}"
-  k8s_etcd                       = "${file("${ var.data_dir }/.cfssl/k8s-etcd.pem")}"
-  k8s_etcd_key                   = "${file("${ var.data_dir }/.cfssl/k8s-etcd-key.pem")}"
-  k8s_apiserver                  = "${file("${ var.data_dir }/.cfssl/k8s-apiserver.pem")}"
-  k8s_apiserver_key              = "${file("${ var.data_dir }/.cfssl/k8s-apiserver-key.pem")}"
+  ca                             = "${ module.tls.ca }"
+  etcd                           = "${ module.tls.etcd }"
+  etcd_key                       = "${ module.tls.etcd_key }"
+  apiserver                      = "${ module.tls.apiserver }"
+  apiserver_key                  = "${ module.tls.apiserver_key }"
 }
+
 
 module "bastion" {
   source = "./modules/bastion"
@@ -96,9 +97,9 @@ module "worker" {
   region = "${ var.aws_region }"
   security_group_id = "${ module.security.worker_id }"
   subnet_ids = "${ module.vpc.subnet_ids_private }"
-  ca = "${file("${ var.data_dir }/.cfssl/ca.pem")}"
-  k8s_worker = "${file("${ var.data_dir }/.cfssl/k8s-worker.pem")}"
-  k8s_worker_key = "${file("${ var.data_dir }/.cfssl/k8s-worker-key.pem")}"
+  ca = "${ module.tls.ca }"
+  worker = "${ module.tls.worker }"
+  worker_key = "${ module.tls.worker_key }"
 
   volume_size = {
     ebs = 250
@@ -111,10 +112,48 @@ module "worker" {
 module "kubeconfig" {
   source = "../kubeconfig"
 
-  admin_key_pem = "${ var.data_dir }/.cfssl/k8s-admin-key.pem"
-  admin_pem = "${ var.data_dir }/.cfssl/k8s-admin.pem"
-  ca_pem = "${ var.data_dir }/.cfssl/ca.pem"
   data_dir = "${ var.data_dir }"
-  fqdn_k8s = "${ module.etcd.external_elb }"
+  endpoint = "${ module.etcd.external_elb }"
   name = "${ var.name }"
+  ca = "${ var.data_dir}/ca.pem"
+  client = "${ var.data_dir}/client.pem"
+  client_key = "${ var.data_dir}/client_key.pem"
+}
+
+module "tls" {
+  source = "../tls"
+
+  data_dir = "${ var.data_dir }"
+
+  tls_ca_cert_subject_common_name = "CA"
+  tls_ca_cert_subject_organization = "Kubernetes"
+  tls_ca_cert_subject_locality = "San Francisco"
+  tls_ca_cert_subject_province = "California"
+  tls_ca_cert_subject_country = "US"
+  tls_ca_cert_validity_period_hours = 1000
+  tls_ca_cert_early_renewal_hours = 100
+
+  tls_etcd_cert_subject_common_name = "k8s-etcd"
+  tls_etcd_cert_validity_period_hours = 1000
+  tls_etcd_cert_early_renewal_hours = 100
+  tls_etcd_cert_dns_names = "etcd.${ var.internal_tld },etcd1.${ var.internal_tld },etcd2.${ var.internal_tld },etcd3.${ var.internal_tld }"
+  tls_etcd_cert_ip_addresses = "127.0.0.1"
+
+  tls_client_cert_subject_common_name = "k8s-admin"
+  tls_client_cert_validity_period_hours = 1000
+  tls_client_cert_early_renewal_hours = 100
+  tls_client_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local,*.*.compute.internal,*.ec2.internal"
+  tls_client_cert_ip_addresses = "127.0.0.1"
+
+  tls_apiserver_cert_subject_common_name = "k8s-apiserver"
+  tls_apiserver_cert_validity_period_hours = 1000
+  tls_apiserver_cert_early_renewal_hours = 100
+  tls_apiserver_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local,master.${ var.internal_tld },*.ap-southeast-2.elb.amazonaws.com"
+  tls_apiserver_cert_ip_addresses = "127.0.0.1,10.3.0.1"
+
+  tls_worker_cert_subject_common_name = "k8s-worker"
+  tls_worker_cert_validity_period_hours = 1000
+  tls_worker_cert_early_renewal_hours = 100
+  tls_worker_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local,*.*.compute.internal,*.ec2.internal"
+  tls_worker_cert_ip_addresses = "127.0.0.1"
 }

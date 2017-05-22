@@ -30,6 +30,8 @@ deploy_aws:
     url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
     on_stop: destroy_aws
   script:
+    - echo CLOUD=$CLOUD
+    - echo CI_ENVIRONMENT_SLUG=$CI_ENVIRONMENT_SLUG
     - /cncf/provision.sh ${CLOUD}-deploy ${CI_ENVIRONMENT_SLUG}
     - export KUBECONFIG=$(pwd)/data/${CI_ENVIRONMENT_SLUG}/kubeconfig
  
@@ -45,6 +47,8 @@ use_aws:
     url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
     on_stop: destroy_aws
   script:
+    - echo CLOUD=$CLOUD
+    - echo CI_ENVIRONMENT_SLUG=$CI_ENVIRONMENT_SLUG
     - export KUBECONFIG=$(pwd)/data/${CI_ENVIRONMENT_SLUG}/kubeconfig
     - find ./data/
     - ls -la $(pwd)/data/${CI_ENVIRONMENT_SLUG}/
@@ -64,6 +68,8 @@ destroy_aws:
     url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
     action: stop
   script:
+    - echo CLOUD=$CLOUD
+    - echo CI_ENVIRONMENT_SLUG=$CI_ENVIRONMENT_SLUG
     - /cncf/provision.sh ${CLOUD}-destroy ${CI_ENVIRONMENT_SLUG}
 
 deploy_gke:
@@ -216,6 +222,8 @@ deploy_gce:
     url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
     on_stop: destroy_gce
   script:
+    - echo CLOUD=$CLOUD
+    - echo CI_ENVIRONMENT_SLUG=$CI_ENVIRONMENT_SLUG
     - /cncf/provision.sh ${CLOUD}-deploy ${CI_ENVIRONMENT_SLUG}
     - export KUBECONFIG=$(pwd)/data/${CI_ENVIRONMENT_SLUG}/kubeconfig
 
@@ -231,6 +239,8 @@ use_gce:
     url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
     on_stop: destroy_gce
   script:
+    - echo CLOUD=$CLOUD
+    - echo CI_ENVIRONMENT_SLUG=$CI_ENVIRONMENT_SLUG
     - export KUBECONFIG=$(pwd)/data/${CI_ENVIRONMENT_SLUG}/kubeconfig
     - kubectl get nodes
     - kubectl get pods
@@ -248,4 +258,6 @@ destroy_gce:
     url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
     action: stop
   script:
+    - echo CLOUD=$CLOUD
+    - echo CI_ENVIRONMENT_SLUG=$CI_ENVIRONMENT_SLUG
     - /cncf/provision.sh ${CLOUD}-destroy ${CI_ENVIRONMENT_SLUG}

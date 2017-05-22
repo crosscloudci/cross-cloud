@@ -1,9 +1,8 @@
 data "template_file" "kube_proxy" {
   template = "${ file( "${ path.module }/kube-proxy.yml" )}"
   vars {
+    hyperkube = "${ var.kubelet_image_url }:${ var.kubelet_image_tag }"
     internal_tld = "${ var.internal_tld }"
-    kubelet_image_url = "${ var.kubelet_image_url }"
-    kubelet_image_tag = "${ var.kubelet_image_tag }"
   }
 }
 
@@ -19,20 +18,12 @@ resource "gzip_me" "ca" {
   input = "${ var.ca }"
 }
 
-resource "gzip_me" "k8s_etcd" {
-  input = "${ var.k8s_etcd }"
+resource "gzip_me" "worker" {
+  input = "${ var.worker }"
 }
 
-resource "gzip_me" "k8s_etcd_key" {
-  input = "${ var.k8s_etcd_key }"
-}
-
-resource "gzip_me" "k8s_worker" {
-  input = "${ var.k8s_worker }"
-}
-
-resource "gzip_me" "k8s_worker_key" {
-  input = "${ var.k8s_worker_key }"
+resource "gzip_me" "worker_key" {
+  input = "${ var.worker_key }"
 }
 
 data "template_file" "worker_user_data" {
@@ -44,12 +35,10 @@ data "template_file" "worker_user_data" {
     dns_service_ip    = "${ var.dns_service_ip }"
     kubelet_image_url = "${ var.kubelet_image_url }"
     kubelet_image_tag = "${ var.kubelet_image_tag }"
-    k8s_proxy_yml     = "${ gzip_me.kube_proxy.output }"
+    kube_proxy        = "${ gzip_me.kube_proxy.output }"
     ca                = "${ gzip_me.ca.output }"
-    k8s_etcd          = "${ gzip_me.k8s_etcd.output }"
-    k8s_etcd_key      = "${ gzip_me.k8s_etcd_key.output }"
-    k8s_worker        = "${ gzip_me.k8s_worker.output }"
-    k8s_worker_key    = "${ gzip_me.k8s_worker_key.output }"
+    worker            = "${ gzip_me.worker.output }"
+    worker_key        = "${ gzip_me.worker_key.output }"
     etcd_discovery    = "${file(var.etcd_discovery)}"
   }
 }

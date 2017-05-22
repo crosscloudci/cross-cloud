@@ -1,4 +1,4 @@
-output "fqdn_k8s" { value = "endpoint.${ var.name }.${ var.domain }" }
+output "endpoint" { value = "endpoint.${ var.name }.${ var.domain }" }
 # output "bastion_ip" { value = "${ module.bastion.bastion_ip}" }
 # output "bastion_fqdn" { value = "${ module.bastion.bastion_fqdn}" }
 # output "k8s_admin" { value = "${ k8s_admin}"}

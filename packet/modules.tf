@@ -34,11 +34,12 @@ module "etcd" {
   internal_tld              = "${ var.name }.${ var.domain }"
   pod_cidr                  = "${ var.pod_cidr }"
   service_cidr              = "${ var.service_cidr }"
-  ca                        = "${file("${ var.data_dir }/.cfssl/ca.pem")}"
-  k8s_etcd                  = "${file("${ var.data_dir }/.cfssl/k8s-etcd.pem")}"
-  k8s_etcd_key              = "${file("${ var.data_dir }/.cfssl/k8s-etcd-key.pem")}"
-  k8s_apiserver             = "${file("${ var.data_dir }/.cfssl/k8s-apiserver.pem")}"
-  k8s_apiserver_key         = "${file("${ var.data_dir }/.cfssl/k8s-apiserver-key.pem")}"
+  ca                        = "${ module.tls.ca }"
+  etcd                      = "${ module.tls.etcd }"
+  etcd_key                  = "${ module.tls.etcd_key }"
+  apiserver                 = "${ module.tls.apiserver }"
+  apiserver_key             = "${ module.tls.apiserver_key }"
+
   data_dir                  = "${ var.data_dir }"
 }
 
@@ -76,22 +77,58 @@ module "worker" {
   internal_tld              = "${ var.name }.${ var.domain }"
   pod_cidr                  = "${ var.pod_cidr }"
   service_cidr              = "${ var.service_cidr }"
-  ca                        = "${file("${ var.data_dir }/.cfssl/ca.pem")}"
-  k8s_etcd                  = "${file("${ var.data_dir }/.cfssl/k8s-etcd.pem")}"
-  k8s_etcd_key              = "${file("${ var.data_dir }/.cfssl/k8s-etcd-key.pem")}"
-  k8s_worker                = "${file("${ var.data_dir }/.cfssl/k8s-worker.pem")}"
-  k8s_worker_key            = "${file("${ var.data_dir }/.cfssl/k8s-worker-key.pem")}"
+  ca = "${ module.tls.ca }"
+  worker = "${ module.tls.worker }"
+  worker_key = "${ module.tls.worker_key }"
   etcd_discovery            = "${ var.data_dir }/etcd"
   data_dir                  = "${ var.data_dir }"
 }
 
 module "kubeconfig" {
   source = "../kubeconfig"
-
-  admin_key_pem = "${ var.data_dir }/.cfssl/k8s-admin-key.pem"
-  admin_pem = "${ var.data_dir }/.cfssl/k8s-admin.pem"
-  ca_pem = "${ var.data_dir }/.cfssl/ca.pem"
   data_dir = "${ var.data_dir }"
-  fqdn_k8s = "endpoint.${ var.name }.${ var.domain }"
+  endpoint = "endpoint.${ var.name }.${ var.domain }"
   name = "${ var.name }"
+  ca = "${ module.tls.ca}"
+  client = "${ module.tls.client }"
+  client_key = "${ module.tls.client_key }"
+
+}
+
+module "tls" {
+  source = "../tls"
+
+  data_dir = "${ var.data_dir }"
+
+  tls_ca_cert_subject_common_name = "CA"
+  tls_ca_cert_subject_organization = "Kubernetes"
+  tls_ca_cert_subject_locality = "San Francisco"
+  tls_ca_cert_subject_province = "California"
+  tls_ca_cert_subject_country = "US"
+  tls_ca_cert_validity_period_hours = 1000
+  tls_ca_cert_early_renewal_hours = 100
+
+  tls_etcd_cert_subject_common_name = "k8s-etcd"
+  tls_etcd_cert_validity_period_hours = 1000
+  tls_etcd_cert_early_renewal_hours = 100
+  tls_etcd_cert_dns_names = "etcd.${ var.name }.${ var.domain },etcd1.${ var.name }.${ var.domain },etcd2.${ var.name }.${ var.domain },etcd3.${ var.name }.${ var.domain }"
+  tls_etcd_cert_ip_addresses = "127.0.0.1"
+
+  tls_client_cert_subject_common_name = "k8s-admin"
+  tls_client_cert_validity_period_hours = 1000
+  tls_client_cert_early_renewal_hours = 100
+  tls_client_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local"
+  tls_client_cert_ip_addresses = "127.0.0.1"
+
+  tls_apiserver_cert_subject_common_name = "k8s-apiserver"
+  tls_apiserver_cert_validity_period_hours = 1000
+  tls_apiserver_cert_early_renewal_hours = 100
+  tls_apiserver_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local,master.${ var.name }.${ var.domain },endpoint.${ var.name }.${ var.domain }"
+  tls_apiserver_cert_ip_addresses = "127.0.0.1,10.3.0.1"
+
+  tls_worker_cert_subject_common_name = "k8s-worker"
+  tls_worker_cert_validity_period_hours = 1000
+  tls_worker_cert_early_renewal_hours = 100
+  tls_worker_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local"
+  tls_worker_cert_ip_addresses = "127.0.0.1"
 }

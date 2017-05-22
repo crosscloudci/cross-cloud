@@ -30,5 +30,5 @@ variable "worker_node_count" { default = "3" }
 # Deployment Artifact Versions
 # Hyperkube
 # Set from https://quay.io/repository/coreos/hyperkube
-variable "kubelet_image_url" { default = "quay.io/coreos/hyperkube"}
-variable "kubelet_image_tag" { default = "v1.4.7_coreos.0"}
+variable "kubelet_image_url" { default = "gcr.io/google-containers/hyperkube"}
+variable "kubelet_image_tag" { default = "v1.6.3"}

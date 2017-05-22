@@ -23,15 +23,3 @@ resource "tls_self_signed_cert" "ca_cert" {
   early_renewal_hours = "${var.tls_etcd_cert_early_renewal_hours}"
   is_ca_certificate = true
 }
-
-
-resource "null_resource" "ssl" {
-
-  provisioner "local-exec" {
-    command = <<LOCAL_EXEC
-echo "${tls_self_signed_cert.ca_cert.cert_pem}" > "${ var.data_dir}/ca.pem"
-echo "${tls_locally_signed_cert.client_cert.cert_pem}" > "${ var.data_dir }/client.pem"
-echo "${tls_private_key.client_key.private_key_pem}" > "${ var.data_dir }/client_key.pem"
-LOCAL_EXEC
-  }
-}

@@ -26,6 +26,9 @@ if [ "$1" = "aws-deploy" ] ; then
 
         time terraform apply ${DIR}/aws
 
+    terraform taint -module=kubeconfig null_resource.kubeconfig
+    terraform apply -target module.kubeconfig.null_resource.kubeconfig
+    
     ELB=$(terraform output external_elb)
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
     echo "❤ Polling for cluster life - this could take a minute or more"

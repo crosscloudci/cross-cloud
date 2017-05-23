@@ -41,8 +41,6 @@ destroy_cloud:
   image: ${CI_REGISTRY_IMAGE}/provisioning:$CI_COMMIT_REF_SLUG
   stage: destroy-cloud
   when: manual
-  only:
-    - triggers
   environment:
     name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
     url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/

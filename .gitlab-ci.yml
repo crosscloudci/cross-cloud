@@ -42,7 +42,7 @@ deploy_cloud:
         --form ref=${CALLBACK_REF}
         --form token=${CALLBACK_TOKEN}
         --form "variables[KUBEAUTH]=<$KUBECONFIG_B64"
-        https://gitlab.cncf.ci/api/v4/projects/1/trigger/pipeline
+        $CALLBACK_URL
     
     
 destroy_cloud:

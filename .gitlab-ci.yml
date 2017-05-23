@@ -35,7 +35,7 @@ deploy_aws:
  
 use_aws:
   allow_failure: true
-  image: ${CI_REGISTRY}/cncf/demo/kubectl:$CI_COMMIT_REF_SLUG
+  image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
   stage: run-demo
   when: manual
   variables:
@@ -83,7 +83,7 @@ deploy_gke:
 
 use_gke:
   allow_failure: true
-  image: ${CI_REGISTRY}/cncf/demo/kubectl:$CI_COMMIT_REF_SLUG
+  image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
   stage: run-demo
   when: manual
   variables:
@@ -129,7 +129,7 @@ deploy_azure:
 
 use_azure:
   allow_failure: true
-  image: ${CI_REGISTRY}/cncf/demo/kubectl:$CI_COMMIT_REF_SLUG
+  image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
   stage: run-demo
   when: manual
   variables:
@@ -175,7 +175,7 @@ deploy_packet:
 
 use_packet:
   allow_failure: true
-  image: ${CI_REGISTRY}/cncf/demo/kubectl:$CI_COMMIT_REF_SLUG
+  image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
   stage: run-demo
   when: manual
   variables:

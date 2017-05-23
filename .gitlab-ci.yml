@@ -44,7 +44,7 @@ destroy_cloud:
   only:
     - triggers
   environment:
-    name: ${PROJECT}-${CLOUD}
+    name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
     url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
     action: stop
   artifacts:

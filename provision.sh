@@ -23,8 +23,9 @@ if [ "$1" = "aws-deploy" ] ; then
               -backend-config 'bucket=aws65972563' \
               -backend-config "key=${TF_VAR_name}" \
               -backend-config 'region=ap-southeast-2'
-        terraform taint -module=kubeconfig null_resource.kubeconfig
-        time terraform apply ${DIR}/aws
+    # ensure kubeconfig is written to disk on infrastructure refresh
+    terraform taint -module=kubeconfig null_resource.kubeconfig || true
+    time terraform apply ${DIR}/aws
 
     
     ELB=$(terraform output external_elb)

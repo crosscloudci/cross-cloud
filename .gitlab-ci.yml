@@ -9,6 +9,12 @@ before_script:
   - export BASE_URL=${BASE_URL:-$(echo $CI_PROJECT_URL |  cut -d'/' -f1-3)}
   - export KUBECONFIG=$(pwd)/data/${CI_ENVIRONMENT_SLUG}/kubeconfig
   - if [ -d data ] ; then . data/*vars ; fi
+artifacts:
+  when: always
+  expire_in: 4 weeks
+  paths:
+    - ./data/
+
 
 kubernetes:
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
@@ -21,12 +27,6 @@ kubernetes:
     - curl -o data/kubernetes.vars -L ${BASE_URL}/$KUBERNETES_RELEASE_VARS
     - KUBERNETES_TAG=$(grep image_tag data/kubernetes.vars | awk -F= '{print $2}')
     - echo "kubernetes release - $KUBERNETES_TAG"
-  artifacts:
-    when: always
-    expire_in: 4 weeks
-    name: "${CI_ENVIRONMENT_SLUG}"
-    paths:
-    - ./data/
 
 coredns:
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
@@ -39,12 +39,6 @@ coredns:
     - curl -o data/coredns.properties -L ${BASE_URL}/$COREDNS_RELEASE_PROPERTIES
     - COREDNS_TAG=$(grep image.tag data/coredns.properties  | awk -F= '{print $2}')
     - echo "coredns release - $COREDNS_TAG"
-  artifacts:
-    when: always
-    expire_in: 4 weeks
-    name: "${CI_ENVIRONMENT_SLUG}"
-    paths:
-    - ./data/
 
 provisioning:
   stage: docker-build

@@ -55,6 +55,14 @@ RUN go get -u github.com/jakexks/terraform-provider-gzip && \
 
 #Add Terraform Modules
 
+COPY aws/ /cncf/aws/
+COPY azure/ /cncf/azure/
+COPY gce/ /cncf/gce/
+COPY gke/ /cncf/gke/
+COPY packet/ /cncf/packet/
+COPY cross-cloud/ /cncf/cross-cloud/
+COPY kubeconfig/ /cncf/kubeconfig/
+COPY tls/ /cncf/tls/
 COPY provision.sh /cncf/
 RUN chmod +x /cncf/provision.sh
 #ENTRYPOINT ["/cncf/provision.sh"]

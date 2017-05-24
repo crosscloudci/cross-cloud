@@ -90,7 +90,8 @@ use_aws:
     - CORE_DNS_IMAGE_SETTINGS=$(cat data/coredns.properties
         | xargs -n 1 echo \ --set |  awk '!/0$/{printf $0} /0$/')
     - helm init
-    - helm list | grep coredns || helm delete --purge coredns
+    - echo Removing any previous deploys of coredns
+    - helm get coredns > /dev/null && helm delete --purge coredns
     - helm install --name coredns ${CORE_DNS_IMAGE_SETTINGS}
         --set middleware.kubernetes.clusterCidr=10.3.0.0/24
         --set middleware.kubernetes.clusterIP=10.3.0.10

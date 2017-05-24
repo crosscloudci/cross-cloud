@@ -10,8 +10,6 @@ before_script:
   - export KUBECONFIG=$(pwd)/data/${CI_ENVIRONMENT_SLUG}/kubeconfig
   - if [ -d data ] ; then . data/*vars ; fi
 
-
-
 kubernetes:
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
   stage: project-artifacts
@@ -99,9 +97,9 @@ use_aws:
         --set middleware.kubernetes.clusterIP=10.3.0.10
         stable/coredns
     - COREDNS_IMAGE=$(kubectl get pods -l k8s-app=coredns -o jsonpath="{.items[0].spec.containers[0].image}")
-    - HYPERKUBE_IMAGE=$(kubectl describe pods  --namespace=kube-system  | grep Image: | grep hyperkube | uniq | awk '{print $2}')
-    - echo CoreDNS Image: $COREDNS_IMAGE
-    - echo HyperKube Image: $HYPERKUBE_IMAGE
+    - HYPERKUBE_IMAGE=$(kubectl describe pods  --namespace=kube-system  | grep Image | grep hyperkube | uniq | awk '{print $2}')
+    - echo CoreDNS Image - $COREDNS_IMAGE
+    - echo HyperKube Image - $HYPERKUBE_IMAGE
     - kubectl get svc
     - kubectl get pods
 

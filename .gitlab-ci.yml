@@ -68,6 +68,7 @@ deploy_aws:
     on_stop: destroy_aws
   script:
     - /cncf/provision.sh ${CLOUD}-deploy ${CI_ENVIRONMENT_SLUG}
+    - sleep 9999
   artifacts:
     when: always
     expire_in: 4 weeks

@@ -75,6 +75,8 @@ use_aws:
   allow_failure: true
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
   stage: use-clouds
+  dependencies:
+    - deploy_aws
   variables:
     CLOUD: aws
   environment:
@@ -141,6 +143,8 @@ use_gke:
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
   stage: use-clouds
   when: manual
+  dependencies:
+    - deploy_gke
   variables:
     CLOUD: gke
   environment:
@@ -191,6 +195,8 @@ use_azure:
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
   stage: use-clouds
   when: manual
+  dependencies:
+    - deploy_azure
   variables:
     CLOUD: azure
   environment:
@@ -240,6 +246,8 @@ use_packet:
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
   stage: use-clouds
   when: manual
+  dependencies:
+    - deploy_packet
   variables:
     CLOUD: packet
   environment:

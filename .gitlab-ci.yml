@@ -11,6 +11,7 @@ before_script:
   - if [ -d data ] ; then . data/*vars ; fi
 
 kubernetes:
+  image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
   stage: project-artifacts
   script:
     - KUBERNETES_RELEASE_VARS=$(curl -L
@@ -28,6 +29,7 @@ kubernetes:
     - ./data/
 
 coredns:
+  image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
   stage: project-artifacts
   script:
     - COREDNS_RELEASE_PROPERTIES=$(curl -L

@@ -274,55 +274,6 @@ destroy_packet:
   script:
     - /cncf/provision.sh ${CLOUD}-destroy ${CI_ENVIRONMENT_SLUG}
 
-deploy_packet:
-  allow_failure: true
-  image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
-  stage: request-clouds
-  when: manual
-  variables:
-    CLOUD: packet
-  environment:
-    name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
-    url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
-    on_stop: destroy_packet
-  script:
-    - /cncf/provision.sh ${CLOUD}-deploy ${CI_ENVIRONMENT_SLUG}
-  artifacts:
-    when: always
-    expire_in: 4 weeks
-    paths:
-      - ./data/
-
-use_packet:
-  allow_failure: true
-  image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
-  stage: use-clouds
-  when: manual
-  variables:
-    CLOUD: packet
-  environment:
-    name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
-    url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
-    on_stop: destroy_packet
-  script:
-    - kubectl get nodes
-    - kubectl get pods
-    - kubectl get componentstatuses
-
-destroy_packet:
-  allow_failure: true
-  image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
-  stage: destroy-clouds
-  when: manual
-  variables:
-    CLOUD: packet
-  environment:
-    name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
-    url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
-    action: stop
-  script:
-    - /cncf/provision.sh ${CLOUD}-destroy ${CI_ENVIRONMENT_SLUG}
-
 deploy_gce:
   allow_failure: true
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
@@ -347,6 +298,8 @@ use_gce:
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
   stage: use-clouds
   when: manual
+  dependencies:
+    - deploy_gce
   variables:
     CLOUD: gce
   environment:

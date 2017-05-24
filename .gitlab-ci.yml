@@ -1,6 +1,6 @@
 stages:
-  - project-artifacts
   - docker-build
+  - project-artifacts
   - request-clouds
   - use-clouds
   - destroy-clouds

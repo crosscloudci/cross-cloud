@@ -74,7 +74,7 @@ elif [ "$1" = "azure-destroy" ] ; then
 elif [ "$1" = "packet-deploy" ] ; then
     terraform get ${DIR}/packet && \
         terraform apply -target module.etcd.null_resource.discovery_gen ${DIR}/packet && \
-        terraform apply -target null_resource.ssl_ssh_gen ${DIR}/packet && \
+        terraform apply -target null_resource.ssh_gen ${DIR}/packet && \
         time terraform apply ${DIR}/packet && \
         printf "${RED}\n#Commands to Configue Kubectl \n\n" && \
         printf 'sudo chown -R $(whoami):$(whoami) $(pwd)/data/${name} \n\n' && \

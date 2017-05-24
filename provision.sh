@@ -23,8 +23,9 @@ if [ "$1" = "aws-deploy" ] ; then
               -backend-config 'bucket=aws65972563' \
               -backend-config "key=${TF_VAR_name}" \
               -backend-config 'region=ap-southeast-2'
-
-        time terraform apply ${DIR}/aws
+    # ensure kubeconfig is written to disk on infrastructure refresh
+    terraform taint -module=kubeconfig null_resource.kubeconfig || true
+    time terraform apply ${DIR}/aws
 
     ELB=$(terraform output external_elb)
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
@@ -50,27 +51,20 @@ elif [ "$1" = "azure-deploy" ] ; then
               -backend-config 'bucket=aws65972563' \
               -backend-config "key=${TF_VAR_name}" \
               -backend-config 'region=ap-southeast-2'
-    
-        terraform apply -target null_resource.ssl_ssh_cloud_gen ${DIR}/azure && \
+    terraform apply -target null_resource.ssl_ssh_cloud_gen ${DIR}/azure && \
         terraform apply -target module.dns.null_resource.dns_gen ${DIR}/azure && \
-        time terraform apply ${DIR}/azure && \
-        printf "${RED}\n#Commands to Configue Kubectl \n\n" && \
-        printf 'sudo chown -R $(whoami):$(whoami) $(pwd)/data/${name} \n\n' && \
-        printf 'export KUBECONFIG=$(pwd)/data/${name}/kubeconfig \n\n'${NC}
+        time terraform apply ${DIR}/azure
 elif [ "$1" = "azure-destroy" ] ; then
     cd ${DIR}/azure
     terraform init \
               -backend-config 'bucket=aws65972563' \
               -backend-config "key=${TF_VAR_name}" \
               -backend-config 'region=ap-southeast-2'
- 
     terraform destroy -force -target null_resource.ssl_ssh_cloud_gen ${DIR}/azure && \
     terraform destroy -force -target module.dns.null_resource.dns_gen ${DIR}/azure && \
     terraform apply -target null_resource.ssl_ssh_cloud_gen ${DIR}/azure && \
     terraform apply -target module.dns.null_resource.dns_gen ${DIR}/azure && \
-
     time terraform destroy -force ${DIR}/azure || true
-  
 elif [ "$1" = "packet-deploy" ] ; then
     terraform get ${DIR}/packet && \
         terraform apply -target module.etcd.null_resource.discovery_gen ${DIR}/packet && \

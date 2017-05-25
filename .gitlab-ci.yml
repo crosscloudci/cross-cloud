@@ -11,11 +11,13 @@ before_script:
   - if [ -d data ] ; then . data/*vars ; fi
 
 kubernetes:
+  variables:
+    K8S_BRANCH: ci-v1.6.3
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
   stage: project-artifacts
   script:
     - KUBERNETES_RELEASE_VARS=$(curl -L
-        "$BASE_URL/kubernetes/kubernetes/builds/artifacts/ci-v1.6.3/file/ci.vars?job=build"
+        "$BASE_URL/kubernetes/kubernetes/builds/artifacts/${K8S_BRANCH}/file/ci.vars?job=build"
         |  sed -n 's/.*href="\([^"]*\).*/\1/p' | grep artifacts/raw | tail -1)
     - mkdir -p data
     - curl -o data/kubernetes.vars -L ${BASE_URL}/$KUBERNETES_RELEASE_VARS
@@ -28,6 +30,8 @@ kubernetes:
       - ./data/
 
 coredns:
+  variables:
+    COREDNS_BRANCH: ci-master
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
   stage: project-artifacts
   script:
@@ -45,11 +49,13 @@ coredns:
       - ./data/
 
 prometheus:
+  variables:
+    PROMETHEUS_BRANCH: ci-master
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
   stage: project-artifacts
   script:
     - PROMETHEUS_RELEASE_PROPERTIES=$(curl -L
-        "$BASE_URL/prometheus/prometheus/builds/artifacts/ci-v1.6.3/file/release.properties?job=release"
+        "$BASE_URL/prometheus/prometheus/builds/artifacts/${PROMETHEUS_BRANCH}/file/release.properties?job=release"
         |  sed -n 's/.*href="\([^"]*\).*/\1/p' | grep artifacts/raw | tail -1)
     - mkdir -p data
     - curl -o data/prometheus.properties -L ${BASE_URL}/$PROMETHEUS_RELEASE_PROPERTIES

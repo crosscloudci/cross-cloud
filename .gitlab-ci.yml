@@ -12,7 +12,7 @@ before_script:
 
 kubernetes:
   variables:
-    K8S_BRANCH: ci-v1.6.3
+    K8S_BRANCH: ci-master
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
   stage: project-artifacts
   script:
@@ -36,7 +36,7 @@ coredns:
   stage: project-artifacts
   script:
     - COREDNS_RELEASE_PROPERTIES=$(curl -L
-        "$BASE_URL/coredns/coredns/builds/artifacts/master/file/release.properties?job=release"
+        "$BASE_URL/coredns/coredns/builds/artifacts/${COREDNS_BRANCH}/file/release.properties?job=release"
         |  sed -n 's/.*href="\([^"]*\).*/\1/p' | grep artifacts/raw | tail -1)
     - mkdir -p data
     - curl -o data/coredns.properties -L ${BASE_URL}/$COREDNS_RELEASE_PROPERTIES
@@ -69,8 +69,6 @@ prometheus:
 
 provisioning:
   stage: docker-build
-  only:
-    - triggers
   script:
     - docker login -u "gitlab-ci-token" -p "$CI_JOB_TOKEN" $CI_REGISTRY
     - docker build --pull -t "$CI_REGISTRY_IMAGE/$CI_JOB_NAME:$CI_COMMIT_REF_SLUG" .
@@ -129,9 +127,9 @@ use_aws:
         stable/prometheus
     - DEPLOYED_PROMETHEUS_IMAGE=$(kubectl get pods -l k8s-app=prometheus -o jsonpath="{.items[0].spec.containers[0].image}")
     - DEPLOYED_COREDNS_IMAGE=$(kubectl get pods -l k8s-app=coredns -o jsonpath="{.items[0].spec.containers[0].image}")
-    - DEPLOYED_HYPERKUBE_IMAGE="$(kubectl describe pods  --namespace=kube-system  | grep Image | grep hyperkube | uniq | awk '{print $2}')"
+    - DEPLOYED_HYPERKUBE_IMAGE="$(kubectl describe pods  --namespace=kube-system  | grep cncf.ci| grep -v ID| uniq | awk '{print $2}')"
         | xargs -n 1 echo \ --set |  awk '!/0$/{printf $0} /0$/')
-    - DEPLOYED_PROMETHEUS_IMAGE="$(kubectl describe pods  --namespace=kube-system  | grep Image | grep hyperkube | uniq | awk '{print $2}')"
+    - DEPLOYED_PROMETHEUS_IMAGE="$(kubectl describe pods -l app=prometheus,component=server  | grep cncf.ci| grep prometheus | awk '{print $2}'"
     - echo Deployed HyperKube Image - $DEPLOYED_HYPERKUBE_IMAGE
     - echo Deployed CoreDNS Image - $DEPLOYED_COREDNS_IMAGE
     - echo Deployed Prometheus Image - $DEPLOYED_PROMETHEUS_IMAGE

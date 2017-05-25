@@ -44,6 +44,23 @@ coredns:
     paths:
       - ./data/
 
+prometheus:
+  image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
+  stage: project-artifacts
+  script:
+    - PROMETHEUS_RELEASE_PROPERTIES=$(curl -L
+        "$BASE_URL/prometheus/prometheus/builds/artifacts/ci-v1.6.3/file/release.properties?job=release"
+        |  sed -n 's/.*href="\([^"]*\).*/\1/p' | grep artifacts/raw | tail -1)
+    - mkdir -p data
+    - curl -o data/prometheus.properties -L ${BASE_URL}/$PROMETHEUS_RELEASE_PROPERTIES
+    - PROMETHEUS_TAG=$(grep image.tag data/prometheus.properties  | awk -F= '{print $2}')
+    - echo "prometheus release - $PROMETHEUS_TAG"
+  artifacts:
+    when: always
+    expire_in: 4 weeks
+    paths:
+      - ./data/
+
 provisioning:
   stage: docker-build
   only:

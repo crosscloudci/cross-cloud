@@ -125,7 +125,6 @@ use_aws:
         stable/coredns
     - helm install --name prometheus ${PROMETHEUS_IMAGE_SETTINGS}
         stable/prometheus
-    - DEPLOYED_PROMETHEUS_IMAGE=$(kubectl get pods -l k8s-app=prometheus -o jsonpath="{.items[0].spec.containers[0].image}")
     - DEPLOYED_COREDNS_IMAGE=$(kubectl get pods -l k8s-app=coredns -o jsonpath="{.items[0].spec.containers[0].image}")
     - DEPLOYED_HYPERKUBE_IMAGE="$(kubectl describe pods  --namespace=kube-system  | grep cncf.ci| grep -v ID| uniq | awk '{print $2}')"
         | xarzgs -n 1 echo \ --set |  awk '!/0$/{printf $0} /0$/')

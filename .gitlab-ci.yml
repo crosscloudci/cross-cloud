@@ -12,7 +12,7 @@ before_script:
 
 kubernetes:
   variables:
-    K8S_BRANCH: ci-master
+    K8S_BRANCH: ci-v1.6.3
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
   stage: project-artifacts
   script:
@@ -126,8 +126,8 @@ use_aws:
     - helm install --name prometheus ${PROMETHEUS_IMAGE_SETTINGS}
         stable/prometheus
     - DEPLOYED_COREDNS_IMAGE=$(kubectl get pods -l k8s-app=coredns -o jsonpath="{.items[0].spec.containers[0].image}")
-    - DEPLOYED_HYPERKUBE_IMAGE="$(kubectl describe pods  --namespace=kube-system  | grep cncf.ci| grep -v ID| uniq | awk '{print $2}')"
-        | xarzgs -n 1 echo \ --set |  awk '!/0$/{printf $0} /0$/')
+    - DEPLOYED_HYPERKUBE_IMAGE="$(kubectl describe pods  --namespace=kube-system  | grep cncf.ci| grep -v ID| uniq | awk '{print $2}'
+        | xarzgs -n 1 echo \ --set |  awk '!/0$/{printf $0} /0$/')"
     - echo Deployed HyperKube Image - $DEPLOYED_HYPERKUBE_IMAGE
     - echo Deployed CoreDNS Image - $DEPLOYED_COREDNS_IMAGE
     - kubectl get svc

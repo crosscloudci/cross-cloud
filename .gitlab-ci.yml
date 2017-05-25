@@ -106,19 +106,29 @@ use_aws:
     - kubectl get nodes
     - kubectl get pods
     - kubectl get componentstatuses
-    - CORE_DNS_IMAGE_SETTINGS=$(cat data/coredns.properties
-        | xargs -n 1 echo \ --set |  awk '!/0$/{printf $0} /0$/')
     - helm init
     - echo Removing any previous deploys of coredns
     - helm get coredns > /dev/null && helm delete --purge coredns
-    - helm install --name coredns ${CORE_DNS_IMAGE_SETTINGS}
+    - echo Removing any previous deploys of prometheus
+    - helm get prometheus > /dev/null && helm delete --purge prometheus
+    - COREDNS_IMAGE_SETTINGS=$(cat data/coredns.properties
+        | xargs -n 1 echo \ --set |  awk '!/0$/{printf $0} /0$/')
+    - PROMETHEUS_IMAGE_SETTINGS=$(cat data/prometheus.properties
+        | xargs -n 1 echo \ --set |  awk '!/0$/{printf $0} /0$/')
+    - helm install --name coredns ${COREDNS_IMAGE_SETTINGS}
         --set middleware.kubernetes.clusterCidr=10.3.0.0/24
         --set middleware.kubernetes.clusterIP=10.3.0.10
         stable/coredns
+    - helm install --name prometheus ${PROMETHEUS_IMAGE_SETTINGS}
+        stable/prometheus
+    - DEPLOYED_PROMETHEUS_IMAGE=$(kubectl get pods -l k8s-app=prometheus -o jsonpath="{.items[0].spec.containers[0].image}")
     - DEPLOYED_COREDNS_IMAGE=$(kubectl get pods -l k8s-app=coredns -o jsonpath="{.items[0].spec.containers[0].image}")
-    - echo Deployed CoreDNS Image - $DEPLOYED_COREDNS_IMAGE
     - DEPLOYED_HYPERKUBE_IMAGE="$(kubectl describe pods  --namespace=kube-system  | grep Image | grep hyperkube | uniq | awk '{print $2}')"
-    - echo HyperKube Image - $HYPERKUBE_IMAGE
+        | xargs -n 1 echo \ --set |  awk '!/0$/{printf $0} /0$/')
+    - DEPLOYED_PROMETHEUS_IMAGE="$(kubectl describe pods  --namespace=kube-system  | grep Image | grep hyperkube | uniq | awk '{print $2}')"
+    - echo Deployed HyperKube Image - $DEPLOYED_HYPERKUBE_IMAGE
+    - echo Deployed CoreDNS Image - $DEPLOYED_COREDNS_IMAGE
+    - echo Deployed Prometheus Image - $DEPLOYED_PROMETHEUS_IMAGE
     - kubectl get svc
     - kubectl get pods
 

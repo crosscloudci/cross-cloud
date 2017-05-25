@@ -13,6 +13,7 @@ NC='\033[0m' # No Color
 export TF_VAR_name="$2"
 export TF_VAR_internal_tld=${TF_VAR_name}.cncf.demo
 export TF_VAR_data_dir=$(pwd)/data/${TF_VAR_name}
+export TF_VAR_aws_key_name=${TF_VAR_name}
 # tfstate, sslcerts, and ssh keys are currently stored in TF_VAR_data_dir
 mkdir -p $TF_VAR_data_dir
 

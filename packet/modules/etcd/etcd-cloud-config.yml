@@ -12,7 +12,7 @@ coreos:
     listen-client-urls: http://${ fqdn }:2379,http://127.0.0.1:2379
     listen-peer-urls: https://${ fqdn }:2380
     name: ${ fqdn } 
-    discovery: $(curl https://discovery.etcd.io/new?size=3)
+    discovery: ${ etcd_discovery }
     peer-trusted-ca-file: /etc/kubernetes/ssl/ca.pem
     peer-client-cert-auth: true
     peer-cert-file: /etc/kubernetes/ssl/k8s-etcd.pem

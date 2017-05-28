@@ -43,9 +43,9 @@ rm -rf helm-*gz linux-amd64
 RUN wget https://releases.hashicorp.com/terraform/$TERRAFORM_VERSION/terraform_"${TERRAFORM_VERSION}"_linux_$ARC.zip
 RUN unzip terraform*.zip -d /usr/bin
 
-# Install CFSSL
-RUN go get -u github.com/cloudflare/cfssl/cmd/cfssl && \
-go get -u github.com/cloudflare/cfssl/cmd/...
+# # Install CFSSL
+# RUN go get -u github.com/cloudflare/cfssl/cmd/cfssl && \
+# go get -u github.com/cloudflare/cfssl/cmd/...
 
 # Install Gzip+base64 & ETCD Provider
 RUN go get -u github.com/jakexks/terraform-provider-gzip && \

@@ -47,10 +47,12 @@ RUN unzip terraform*.zip -d /usr/bin
 RUN go get -u github.com/cloudflare/cfssl/cmd/cfssl && \
 go get -u github.com/cloudflare/cfssl/cmd/...
 
-# Install Gzip+base64 Provider
+# Install Gzip+base64 & ETCD Provider
 RUN go get -u github.com/jakexks/terraform-provider-gzip && \
+    go get -u github.com/paperg/terraform-provider-etcdiscovery && \
   echo providers { >> ~/.terraformrc && \
   echo '    gzip = "terraform-provider-gzip"' >> ~/.terraformrc && \
+  echo '    etcdiscovery = "terraform-provider-etcdiscovery"' >> ~/.terraformrc && \
   echo } >> ~/.terraformrc
 
 #Add Terraform Modules

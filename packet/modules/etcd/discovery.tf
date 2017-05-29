@@ -1,18 +1,10 @@
-#Get Discovery URL
-resource "null_resource" "discovery_gen" {
+provider "etcdiscovery" {
+}
 
-  provisioner "local-exec" {
-    command = <<EOF
-curl https://discovery.etcd.io/new?size=${ var.master_node_count } > ${ var.etcd_discovery }
-EOF
-  }
+resource "etcdiscovery_token" "etcd" {
+  size = "${ var.master_node_count }"
+}
 
-  provisioner "local-exec" {
-    when = "destroy"
-    on_failure = "continue"
-    command = <<EOF
-rm -rf ${ var.etcd_discovery }
-EOF
-  }
-
+output "etcd_discovery" {
+  value = "${ etcdiscovery_token.etcd.id }"
 }

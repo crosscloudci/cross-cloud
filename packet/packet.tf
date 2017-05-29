@@ -7,10 +7,10 @@
 #   payment_method = ""
 # }
 
-resource "packet_ssh_key" "cncf" {
-  name     = "${ var.name }"
-  public_key = "${file("${ var.data_dir }/.ssh/id_rsa.pub")}"
-}
+# resource "packet_ssh_key" "cncf" {
+#   name     = "${ var.name }"
+#   public_key = "${file("${ var.data_dir }/.ssh/id_rsa.pub")}"
+# }
 
  # terraform {
 #   backend "local" {

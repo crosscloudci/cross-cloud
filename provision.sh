@@ -23,7 +23,7 @@ if [ "$1" = "aws-deploy" ] ; then
     cd ${DIR}/aws
     terraform init \
               -backend-config 'bucket=aws65972563' \
-              -backend-config "key=${TF_VAR_name}" \
+              -backend-config "key=aws-${TF_VAR_name}" \
               -backend-config 'region=ap-southeast-2'
     # ensure kubeconfig is written to disk on infrastructure refresh
     terraform taint -module=kubeconfig null_resource.kubeconfig || true
@@ -40,7 +40,7 @@ elif [ "$1" = "aws-destroy" ] ; then
     cd ${DIR}/aws
     terraform init \
               -backend-config 'bucket=aws65972563' \
-              -backend-config "key=${TF_VAR_name}" \
+              -backend-config "key=aws-${TF_VAR_name}" \
               -backend-config 'region=ap-southeast-2'
 
     time terraform destroy -force ${DIR}/aws
@@ -68,15 +68,23 @@ elif [ "$1" = "azure-destroy" ] ; then
     terraform apply -target module.dns.null_resource.dns_gen ${DIR}/azure && \
     time terraform destroy -force ${DIR}/azure || true
 elif [ "$1" = "packet-deploy" ] ; then
-    terraform get ${DIR}/packet && \
-        terraform apply -target module.etcd.null_resource.discovery_gen ${DIR}/packet && \
-        terraform apply -target null_resource.ssh_gen ${DIR}/packet && \
-        time terraform apply ${DIR}/packet && \
+    cd ${DIR}/packet
+    terraform init \
+              -backend-config 'bucket=aws65972563' \
+              -backend-config "key=packet-${TF_VAR_name}" \
+              -backend-config 'region=ap-southeast-2'
+    time terraform apply ${DIR}/packet && \
         printf "${RED}\n#Commands to Configue Kubectl \n\n" && \
         printf 'sudo chown -R $(whoami):$(whoami) $(pwd)/data/${name} \n\n' && \
         printf 'export KUBECONFIG=$(pwd)/data/${name}/kubeconfig \n\n'${NC}
 elif [ "$1" = "packet-destroy" ] ; then
+cd ${DIR}/packet
+    terraform init \
+              -backend-config 'bucket=aws65972563' \
+              -backend-config "key=packet-${TF_VAR_name}" \
+              -backend-config 'region=ap-southeast-2'
     time terraform destroy -force ${DIR}/packet
+    
 elif [ "$1" = "gce-deploy" ] ; then
     terraform get ${DIR}/gce && \
         terraform apply -target module.etcd.null_resource.discovery_gen ${DIR}/gce && \

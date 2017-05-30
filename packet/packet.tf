@@ -12,8 +12,10 @@
 #   public_key = "${file("${ var.data_dir }/.ssh/id_rsa.pub")}"
 # }
 
- # terraform {
-#   backend "local" {
-#     path = "${ var.data_dir}/terraform.tfstate"
-#   }
-# }
+terraform {
+  backend "s3" {
+    bucket = "aws"
+    key    = "aws"
+    region = "ap-southeast-2"
+  }
+}

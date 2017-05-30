@@ -25,7 +25,7 @@ module "cluster" {
 module "kubeconfig" {
   source = "../kubeconfig"
 
-  ca_pem = "${ var.data_dir }/ca.pem"
+  ca = "${ var.data_dir }/ca.pem"
   client = "${ var.data_dir }/k8s-admin.pem"
   client_key = "${ var.data_dir }/k8s-admin-key.pem"
   endpoint = "${ module.cluster.endpoint }"

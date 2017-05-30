@@ -31,7 +31,7 @@ kubernetes:
 
 coredns:
   variables:
-    COREDNS_BRANCH: ci-master
+    COREDNS_BRANCH: ci-v007
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
   stage: project-artifacts
   script:
@@ -50,7 +50,7 @@ coredns:
 
 prometheus:
   variables:
-    PROMETHEUS_BRANCH: ci-master
+    PROMETHEUS_BRANCH: ci-v1.6.3
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
   stage: project-artifacts
   script:

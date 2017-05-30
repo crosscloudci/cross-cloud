@@ -73,6 +73,8 @@ elif [ "$1" = "packet-deploy" ] ; then
               -backend-config 'bucket=aws65972563' \
               -backend-config "key=packet-${TF_VAR_name}" \
               -backend-config 'region=ap-southeast-2'
+    # ensure kubeconfig is written to disk on infrastructure refresh
+    terraform taint -module=kubeconfig null_resource.kubeconfig || true
     time terraform apply ${DIR}/packet && \
         printf "${RED}\n#Commands to Configue Kubectl \n\n" && \
         printf 'sudo chown -R $(whoami):$(whoami) $(pwd)/data/${name} \n\n' && \
@@ -96,16 +98,27 @@ elif [ "$1" = "gce-deploy" ] ; then
 elif [ "$1" = "gce-destroy" ] ; then
     time terraform destroy -force ${DIR}/gce
 elif [ "$1" = "gke-deploy" ] ; then
-    terraform get ${DIR}/gke && \
-    terraform apply -target module.vpc ${DIR}/gke && \
-        time terraform apply ${DIR}/gke
+cd ${DIR}/gke
+    terraform init \
+              -backend-config 'bucket=aws65972563' \
+              -backend-config "key=gke-${TF_VAR_name}" \
+              -backend-config 'region=ap-southeast-2'
+    # ensure kubeconfig is written to disk on infrastructure refresh
+    terraform taint -module=kubeconfig null_resource.kubeconfig || true          
+    time terraform apply -target module.vpc ${DIR}/gke && \
+    time terraform apply ${DIR}/gke
 elif [ "$1" = "gke-destroy" ] ; then
-    terraform get ${DIR}/gke && \
+cd ${DIR}/gke
+    terraform init \
+              -backend-config 'bucket=aws65972563' \
+              -backend-config "key=gke-${TF_VAR_name}" \
+              -backend-config 'region=ap-southeast-2'
 
     time terraform destroy -force -target module.cluster.google_container_cluster.cncf ${DIR}/gke || true 
     echo "sleep" && sleep 10 && \
     time terraform destroy -force -target module.vpc.google_compute_network.cncf ${DIR}/gke || true 
     time terraform destroy -force ${DIR}/gke || true 
+    
 elif [ "$1" = "cross-cloud-deploy" ] ; then
     terraform get ${DIR}/cross-cloud && \
         terraform apply -target module.aws.null_resource.ssl_gen ${DIR}/cross-cloud && \

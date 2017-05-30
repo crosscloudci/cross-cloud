@@ -75,10 +75,15 @@ elif [ "$1" = "packet-deploy" ] ; then
               -backend-config 'region=ap-southeast-2'
     # ensure kubeconfig is written to disk on infrastructure refresh
     terraform taint -module=kubeconfig null_resource.kubeconfig || true
-    time terraform apply ${DIR}/packet && \
-        printf "${RED}\n#Commands to Configue Kubectl \n\n" && \
-        printf 'sudo chown -R $(whoami):$(whoami) $(pwd)/data/${name} \n\n' && \
-        printf 'export KUBECONFIG=$(pwd)/data/${name}/kubeconfig \n\n'${NC}
+    time terraform apply ${DIR}/packet 
+    
+    ELB=$(terraform output endpoint)
+    export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
+    echo "❤ Polling for cluster life - this could take a minute or more"
+    _retry "❤ Waiting for DNS to resolve for ${ELB}" ping -c1 "${ELB}"
+    _retry "❤ Curling apiserver external elb" curl --insecure --silent "https://${ELB}"
+    _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info
+    kubectl cluster-info
 elif [ "$1" = "packet-destroy" ] ; then
 cd ${DIR}/packet
     terraform init \
@@ -91,10 +96,8 @@ elif [ "$1" = "gce-deploy" ] ; then
     terraform get ${DIR}/gce && \
         terraform apply -target module.etcd.null_resource.discovery_gen ${DIR}/gce && \
         terraform apply -target null_resource.ssl_gen ${DIR}/gce && \
-        time terraform apply ${DIR}/gce && \
-        printf "${RED}\n#Commands to Configue Kubectl \n\n" && \
-        printf 'sudo chown -R $(whoami):$(whoami) $(pwd)/data/${name} \n\n' && \
-        printf 'export KUBECONFIG=$(pwd)/data/${name}/kubeconfig \n\n'${NC}
+        time terraform apply ${DIR}/gce 
+        
 elif [ "$1" = "gce-destroy" ] ; then
     time terraform destroy -force ${DIR}/gce
 elif [ "$1" = "gke-deploy" ] ; then
@@ -107,6 +110,14 @@ cd ${DIR}/gke
     terraform taint -module=kubeconfig null_resource.kubeconfig || true          
     time terraform apply -target module.vpc ${DIR}/gke && \
     time terraform apply ${DIR}/gke
+    
+    ELB=$(terraform output endpoint)
+    export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
+    echo "❤ Polling for cluster life - this could take a minute or more"
+    _retry "❤ Waiting for DNS to resolve for ${ELB}" ping -c1 "${ELB}"
+    _retry "❤ Curling apiserver external elb" curl --insecure --silent "https://${ELB}"
+    _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info
+    kubectl cluster-info
 elif [ "$1" = "gke-destroy" ] ; then
 cd ${DIR}/gke
     terraform init \

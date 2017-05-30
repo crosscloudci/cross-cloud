@@ -26,8 +26,8 @@ module "kubeconfig" {
   source = "../kubeconfig"
 
   ca_pem = "${ var.data_dir }/ca.pem"
-  admin_pem = "${ var.data_dir }/k8s-admin.pem"
-  admin_key_pem = "${ var.data_dir }/k8s-admin-key.pem"
+  client = "${ var.data_dir }/k8s-admin.pem"
+  client_key = "${ var.data_dir }/k8s-admin-key.pem"
   endpoint = "${ module.cluster.endpoint }"
   data_dir = "${ var.data_dir }"
   name = "gke_${ var.project }_${ var.zone }-a_${ var.name }"

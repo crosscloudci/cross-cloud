@@ -119,15 +119,16 @@ use_aws:
         | xargs -n 1 echo \ --set |  awk '!/0$/{printf $0} /0$/')
     - PROMETHEUS_IMAGE_SETTINGS=$(cat data/prometheus.properties
         | xargs -n 1 echo \ --set |  awk '!/0$/{printf $0} /0$/')
-    - helm install --name coredns ${COREDNS_IMAGE_SETTINGS}
+    - COREDNS_INSTALL=helm install --name coredns ${COREDNS_IMAGE_SETTINGS}
         --set middleware.kubernetes.clusterCidr=10.3.0.0/24
         --set middleware.kubernetes.clusterIP=10.3.0.10
         stable/coredns
-    - helm install --name prometheus ${PROMETHEUS_IMAGE_SETTINGS}
+    - echo $COREDNS_INSTALL ; $COREDNS_INSTALL
+    - PROMETHEUS_INSTALL=helm install --name prometheus ${PROMETHEUS_IMAGE_SETTINGS}
         stable/prometheus
+    - echo $PROMETHEUS_INSTALL ; $PROMETHEUS_INSTALL
     - DEPLOYED_COREDNS_IMAGE=$(kubectl get pods -l k8s-app=coredns -o jsonpath="{.items[0].spec.containers[0].image}")
-    - DEPLOYED_HYPERKUBE_IMAGE="$(kubectl describe pods  --namespace=kube-system  | grep cncf.ci| grep -v ID| uniq | awk '{print $2}'
-        | xarzgs -n 1 echo \ --set |  awk '!/0$/{printf $0} /0$/')"
+    - DEPLOYED_HYPERKUBE_IMAGE="$(kubectl describe pods  --namespace=kube-system  | grep cncf.ci| grep -v ID| uniq | awk '{print $2}')"
     - echo Deployed HyperKube Image - $DEPLOYED_HYPERKUBE_IMAGE
     - echo Deployed CoreDNS Image - $DEPLOYED_COREDNS_IMAGE
     - kubectl get svc

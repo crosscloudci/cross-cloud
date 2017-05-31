@@ -56,13 +56,10 @@ prometheus:
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
   stage: project-artifacts
   script:
-    - tee >>urls.txt <<LIST
-        "$BASE_URL/prometheus/prometheus/builds/artifacts/${PROMETHEUS_BRANCH}/file/release.properties?job=release"
-        "$BASE_URL/prometheus/node_exporter/builds/artifacts/${NODE_EXPORTER_BRANCH}/file/release.properties?job=release"
-        "$BASE_URL/prometheus/alertmanager/builds/artifacts/${ALERTMANAGER_BRANCH}/file/release.properties?job=release"
-        LIST
-    - PROMETHEUS_RELEASE_PROPERTIES=$(curl -KL urls.txt
-        |  sed -n 's/.*href="\([^"]*\).*/\1/p' | grep artifacts/raw | tail -1)
+    - echo "$BASE_URL/prometheus/prometheus/builds/artifacts/${PROMETHEUS_BRANCH}/file/release.properties?job=release" | tee -a urls.txt
+    - echo "$BASE_URL/prometheus/node_exporter/builds/artifacts/${NODE_EXPORTER_BRANCH}/file/release.properties?job=release" | tee -a urls.txt
+    - echo "$BASE_URL/prometheus/alertmanager/builds/artifacts/${ALERTMANAGER_BRANCH}/file/release.properties?job=release" | tee -a urls.txt
+    - PROMETHEUS_RELEASE_PROPERTIES=$(curl -KL urls.txt |  sed -n 's/.*href="\([^"]*\).*/\1/p' | grep artifacts/raw | tail -1)
     - mkdir -p data
     - curl -o data/prometheus.properties -L ${BASE_URL}/$PROMETHEUS_RELEASE_PROPERTIES
     - PROMETHEUS_TAG=$(grep image.tag data/prometheus.properties  | awk -F= '{print $2}')

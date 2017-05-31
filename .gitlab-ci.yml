@@ -57,7 +57,7 @@ prometheus:
   stage: project-artifacts
   script:
     - tee >>urls.txt <<LIST
-        "$BASE_URL/prometheus/prometheus/builds/artifacts/${PROMETHEUS_BRANCH}/fle/release.properties?job=release"
+        "$BASE_URL/prometheus/prometheus/builds/artifacts/${PROMETHEUS_BRANCH}/file/release.properties?job=release"
         "$BASE_URL/prometheus/node_exporter/builds/artifacts/${NODE_EXPORTER_BRANCH}/file/release.properties?job=release"
         "$BASE_URL/prometheus/alertmanager/builds/artifacts/${ALERTMANAGER_BRANCH}/file/release.properties?job=release"
         LIST

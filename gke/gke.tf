@@ -1,5 +1,5 @@
 provider "google" {}
- 
+
 terraform {
   backend "s3" {
     bucket = "aws"

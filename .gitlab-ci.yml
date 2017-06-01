@@ -3,6 +3,7 @@ stages:
   - project-artifacts
   - request-clouds
   - use-clouds
+  - e2e-test
   - destroy-clouds
 
 before_script:
@@ -81,6 +82,7 @@ deploy_aws:
   allow_failure: true
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
   stage: request-clouds
+  when: manual
   variables:
     CLOUD: aws
   environment:
@@ -123,8 +125,8 @@ use_aws:
     - PROMETHEUS_IMAGE_SETTINGS=$(cat data/prometheus.properties
         | xargs -n 1 echo \ --set |  awk '!/0$/{printf $0} /0$/')
     - COREDNS_INSTALL="helm install --name coredns ${COREDNS_IMAGE_SETTINGS}
-        --set middleware.kubernetes.clusterCidr=10.3.0.0/24
-        --set middleware.kubernetes.clusterIP=10.3.0.10
+        --set middleware.kubernetes.clusterCidr=10.0.0.0/24
+        --set middleware.kubernetes.clusterIP=10.0.0.10
         stable/coredns"
     - echo $COREDNS_INSTALL ; $COREDNS_INSTALL
     - PROMETHEUS_INSTALL="helm install --name prometheus ${PROMETHEUS_IMAGE_SETTINGS}
@@ -136,6 +138,24 @@ use_aws:
     - echo Deployed CoreDNS Image - $DEPLOYED_COREDNS_IMAGE
     - kubectl get svc
     - kubectl get pods
+    
+kubernetes_e2e_aws:
+  variables:
+    K8S_BRANCH: ci-v1.6.3
+  image: ${CI_REGISTRY}/kubernetes/kubernetes/kubernetes-e2e:ci-v1-6-3.job.4793 
+  stage: e2e-test
+  when: manual
+  dependencies:
+    - deploy_aws
+  variables:
+    CLOUD: aws
+  environment:
+    name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
+    url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
+    on_stop: destroy_aws
+  script:
+  - export KUBECONFIG=$(pwd)/data/${CI_ENVIRONMENT_SLUG}/kubeconfig
+  - /kubernetes/e2e/run-conformance.sh
 
 destroy_aws:
   allow_failure: true

@@ -141,8 +141,6 @@ use_aws:
     - kubectl get pods
 
 kubernetes_e2e_aws:
-  variables:
-    K8S_BRANCH: ci-v1.6.3
   image: ${CI_REGISTRY}/kubernetes/kubernetes/kubernetes-e2e:ci-v1-6-3.job.4793
   stage: e2e-test
   when: manual
@@ -158,6 +156,23 @@ kubernetes_e2e_aws:
   - export KUBECONFIG=$(pwd)/data/${CI_ENVIRONMENT_SLUG}/kubeconfig
   - /kubernetes/e2e/run-conformance.sh
 
+ kubernetes_e2e_aws:
+  image: ${CI_REGISTRY}/coredns/coredns/coredns-e2e:ci-v007.job.4744
+  stage: e2e-test
+  when: manual
+  dependencies:
+    - deploy_aws
+  variables:
+    CLOUD: aws
+  environment:
+    name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
+    url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
+    on_stop: destroy_aws
+  script:
+  - export KUBECONFIG=$(pwd)/data/${CI_ENVIRONMENT_SLUG}/kubeconfig
+  - kubectl proxy --port 8080 &
+  - kubectl -f create /coredns/e2e/test.yml
+  - go test -v -tags k8s
 
 destroy_aws:
   allow_failure: true

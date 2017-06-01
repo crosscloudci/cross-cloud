@@ -149,7 +149,8 @@ kubernetes_e2e_aws:
     url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
     on_stop: destroy_aws
   script:
-  - sleep 10000000
+  - export KUBECONFIG=$(pwd)/data/${CI_ENVIRONMENT_SLUG}/kubeconfig
+  - /kubernetes/e2e/run-conformance.sh
 
 destroy_aws:
   allow_failure: true

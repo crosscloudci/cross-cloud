@@ -3,6 +3,7 @@ stages:
   - project-artifacts
   - request-clouds
   - use-clouds
+  - e2e-test
   - destroy-clouds
 
 before_script:
@@ -100,6 +101,7 @@ use_aws:
   allow_failure: true
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
   stage: use-clouds
+  when: manual
   dependencies:
     - deploy_aws
   variables:
@@ -137,6 +139,25 @@ use_aws:
     - echo Deployed CoreDNS Image - $DEPLOYED_COREDNS_IMAGE
     - kubectl get svc
     - kubectl get pods
+
+kubernetes_e2e_aws:
+  variables:
+    K8S_BRANCH: ci-v1.6.3
+  image: ${CI_REGISTRY}/kubernetes/kubernetes/kubernetes-e2e:ci-v1-6-3.job.4793
+  stage: e2e-test
+  when: manual
+  dependencies:
+    - deploy_aws
+  variables:
+    CLOUD: aws
+  environment:
+    name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
+    url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
+    on_stop: destroy_aws
+  script:
+  - export KUBECONFIG=$(pwd)/data/${CI_ENVIRONMENT_SLUG}/kubeconfig
+  - /kubernetes/e2e/run-conformance.sh
+
 
 destroy_aws:
   allow_failure: true

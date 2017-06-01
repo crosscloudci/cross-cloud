@@ -171,7 +171,7 @@ coredns_e2e_aws:
   script:
   - export KUBECONFIG=$(pwd)/data/${CI_ENVIRONMENT_SLUG}/kubeconfig
   - kubectl proxy --port 8080 &
-  - kubectl create -f /coredns/e2e/test.yml
+  - kubectl create -f /coredns/e2e/test.yml || true
   - cd /go/src/github.com/coredns/coredns/test && test -v -tags k8s
 
 destroy_aws:

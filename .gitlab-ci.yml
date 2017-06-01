@@ -21,6 +21,7 @@ kubernetes:
         |  sed -n 's/.*href="\([^"]*\).*/\1/p' | grep artifacts/raw | tail -1)
     - mkdir -p data
     - curl -o data/kubernetes.vars -L ${BASE_URL}/$KUBERNETES_RELEASE_VARS
+    - cat data/kubernetes.vars
     - KUBERNETES_TAG=$(grep image_tag data/kubernetes.vars | awk -F= '{print $2}')
     - echo "kubernetes release - $KUBERNETES_TAG"
   artifacts:
@@ -40,6 +41,7 @@ coredns:
         |  sed -n 's/.*href="\([^"]*\).*/\1/p' | grep artifacts/raw | tail -1)
     - mkdir -p data
     - curl -o data/coredns.properties -L ${BASE_URL}/$COREDNS_RELEASE_PROPERTIES
+    - cat data/coredns.properties
     - COREDNS_TAG=$(grep image.tag data/coredns.properties  | awk -F= '{print $2}')
     - echo "coredns release - $COREDNS_TAG"
   artifacts:
@@ -59,6 +61,7 @@ prometheus:
         |  sed -n 's/.*href="\([^"]*\).*/\1/p' | grep artifacts/raw | tail -1)
     - mkdir -p data
     - curl -o data/prometheus.properties -L ${BASE_URL}/$PROMETHEUS_RELEASE_PROPERTIES
+    - cat data/prometheus.properties
     - PROMETHEUS_TAG=$(grep image.tag data/prometheus.properties  | awk -F= '{print $2}')
     - echo "prometheus release - $PROMETHEUS_TAG"
   artifacts:

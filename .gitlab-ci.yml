@@ -81,6 +81,7 @@ deploy_aws:
   allow_failure: true
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
   stage: request-clouds
+  when: manual
   variables:
     CLOUD: aws
   environment:

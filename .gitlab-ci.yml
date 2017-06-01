@@ -156,7 +156,7 @@ kubernetes_e2e_aws:
   - export KUBECONFIG=$(pwd)/data/${CI_ENVIRONMENT_SLUG}/kubeconfig
   - /kubernetes/e2e/run-conformance.sh
 
- kubernetes_e2e_aws:
+coredns_e2e_aws:
   image: ${CI_REGISTRY}/coredns/coredns/coredns-e2e:ci-v007.job.4744
   stage: e2e-test
   when: manual

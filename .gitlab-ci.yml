@@ -126,8 +126,8 @@ use_aws:
     - PROMETHEUS_IMAGE_SETTINGS=$(cat data/prometheus.properties
         | xargs -n 1 echo \ --set |  awk '!/0$/{printf $0} /0$/')
     - COREDNS_INSTALL="helm install --name coredns ${COREDNS_IMAGE_SETTINGS}
-        --set middleware.kubernetes.clusterCidr=10.3.0.0/24
-        --set middleware.kubernetes.clusterIP=10.3.0.10
+        --set middleware.kubernetes.clusterCidr=10.0.0.0/24
+        --set middleware.kubernetes.clusterIP=10.0.0.10
         stable/coredns"
     - echo $COREDNS_INSTALL ; $COREDNS_INSTALL
     - PROMETHEUS_INSTALL="helm install --name prometheus ${PROMETHEUS_IMAGE_SETTINGS}

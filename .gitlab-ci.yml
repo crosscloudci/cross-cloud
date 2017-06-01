@@ -173,6 +173,7 @@ coredns_e2e_aws:
   - kubectl proxy --port 8080 &
   - kubectl create -f /coredns/e2e/test.yml || true
   - cd /go/src/github.com/coredns/coredns/test
+  - sleep 100000000
   - test -v -tags k8s
 
 destroy_aws:

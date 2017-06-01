@@ -138,7 +138,7 @@ use_aws:
 kubernetes_e2e_aws:
   variables:
     K8S_BRANCH: ci-v1.6.3
-  image: ${CI_REGISTRY}/kubernetes/kubernetes/kubernetes-e2e:ci-v1-6-3.job.4749 
+  image: ${CI_REGISTRY}/kubernetes/kubernetes/kubernetes-e2e:ci-v1-6-3.job.4793 
   stage: e2e-test
   dependencies:
     - deploy_aws

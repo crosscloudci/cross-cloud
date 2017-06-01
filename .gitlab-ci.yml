@@ -3,6 +3,7 @@ stages:
   - project-artifacts
   - request-clouds
   - use-clouds
+  - e2e-test
   - destroy-clouds
 
 before_script:
@@ -21,6 +22,7 @@ kubernetes:
         |  sed -n 's/.*href="\([^"]*\).*/\1/p' | grep artifacts/raw | tail -1)
     - mkdir -p data
     - curl -o data/kubernetes.vars -L ${BASE_URL}/$KUBERNETES_RELEASE_VARS
+    - cat data/kubernetes.vars
     - KUBERNETES_TAG=$(grep image_tag data/kubernetes.vars | awk -F= '{print $2}')
     - echo "kubernetes release - $KUBERNETES_TAG"
   artifacts:
@@ -31,7 +33,7 @@ kubernetes:
 
 coredns:
   variables:
-    COREDNS_BRANCH: ci-master
+    COREDNS_BRANCH: ci-v007
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
   stage: project-artifacts
   script:
@@ -40,6 +42,7 @@ coredns:
         |  sed -n 's/.*href="\([^"]*\).*/\1/p' | grep artifacts/raw | tail -1)
     - mkdir -p data
     - curl -o data/coredns.properties -L ${BASE_URL}/$COREDNS_RELEASE_PROPERTIES
+    - cat data/coredns.properties
     - COREDNS_TAG=$(grep image.tag data/coredns.properties  | awk -F= '{print $2}')
     - echo "coredns release - $COREDNS_TAG"
   artifacts:
@@ -50,9 +53,9 @@ coredns:
 
 prometheus:
   variables:
-    PROMETHEUS_BRANCH: ci-stable
-    NODE_EXPORTER_BRANCH: ci-stable
-    ALERTMANAGER_BRANCH: ci-stable
+    PROMETHEUS_BRANCH: ci-v1.6.3
+    NODE_EXPORTER_BRANCH: ci-v0.14.0
+    ALERTMANAGER_BRANCH: ci-v0.6.2
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
   stage: project-artifacts
   script:
@@ -62,6 +65,7 @@ prometheus:
     - PROMETHEUS_RELEASE_PROPERTIES=$(xargs <urls.txt curl -L | sed -n 's/.*href="\([^"]*\).*/\1/p' | grep artifacts/raw | tail -1)
     - mkdir -p data
     - curl -o data/prometheus.properties -L ${BASE_URL}/$PROMETHEUS_RELEASE_PROPERTIES
+    - cat data/prometheus.properties
     - PROMETHEUS_TAG=$(grep image.tag data/prometheus.properties  | awk -F= '{print $2}')
     - echo "prometheus release - $PROMETHEUS_TAG"
   artifacts:
@@ -81,6 +85,7 @@ deploy_aws:
   allow_failure: true
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
   stage: request-clouds
+  when: manual
   variables:
     CLOUD: aws
   environment:
@@ -122,22 +127,43 @@ use_aws:
         | xargs -n 1 echo \ --set |  awk '!/0$/{printf $0} /0$/')
     - PROMETHEUS_IMAGE_SETTINGS=$(cat data/prometheus.properties
         | xargs -n 1 echo \ --set |  awk '!/0$/{printf $0} /0$/')
-    - helm install --name coredns ${COREDNS_IMAGE_SETTINGS}
-        --set middleware.kubernetes.clusterCidr=10.3.0.0/24
-        --set middleware.kubernetes.clusterIP=10.3.0.10
-        stable/coredns
-    - helm install --name prometheus ${PROMETHEUS_IMAGE_SETTINGS}
-        stable/prometheus
-    - DEPLOYED_PROMETHEUS_IMAGE=$(kubectl get pods -l k8s-app=prometheus -o jsonpath="{.items[0].spec.containers[0].image}")
+    - COREDNS_INSTALL="helm install --name coredns ${COREDNS_IMAGE_SETTINGS}
+        --set middleware.kubernetes.clusterCidr=10.0.0.0/24
+        --set middleware.kubernetes.clusterIP=10.0.0.10
+        stable/coredns"
+    - echo $COREDNS_INSTALL ; $COREDNS_INSTALL
+    - PROMETHEUS_INSTALL="helm install --name prometheus ${PROMETHEUS_IMAGE_SETTINGS}
+        stable/prometheus"
+    - echo $PROMETHEUS_INSTALL ; $PROMETHEUS_INSTALL
     - DEPLOYED_COREDNS_IMAGE=$(kubectl get pods -l k8s-app=coredns -o jsonpath="{.items[0].spec.containers[0].image}")
     - DEPLOYED_HYPERKUBE_IMAGE="$(kubectl describe pods  --namespace=kube-system  | grep cncf.ci| grep -v ID| uniq | awk '{print $2}')"
+<<<<<<< HEAD
         | xargs -n 1 echo \ --set |  awk '!/0$/{printf $0} /0$/')
     - DEPLOYED_PROMETHEUS_IMAGE="$(kubectl describe pods -l app=prometheus,component=server  | grep cncf.ci| grep prometheus | awk '{print $2}'"
+=======
+>>>>>>> f8971231b8d1a77f0b9dbdfd869da467e106c0a5
     - echo Deployed HyperKube Image - $DEPLOYED_HYPERKUBE_IMAGE
     - echo Deployed CoreDNS Image - $DEPLOYED_COREDNS_IMAGE
-    - echo Deployed Prometheus Image - $DEPLOYED_PROMETHEUS_IMAGE
     - kubectl get svc
     - kubectl get pods
+    
+kubernetes_e2e_aws:
+  variables:
+    K8S_BRANCH: ci-v1.6.3
+  image: ${CI_REGISTRY}/kubernetes/kubernetes/kubernetes-e2e:ci-v1-6-3.job.4793 
+  stage: e2e-test
+  when: manual
+  dependencies:
+    - deploy_aws
+  variables:
+    CLOUD: aws
+  environment:
+    name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
+    url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
+    on_stop: destroy_aws
+  script:
+  - export KUBECONFIG=$(pwd)/data/${CI_ENVIRONMENT_SLUG}/kubeconfig
+  - /kubernetes/e2e/run-conformance.sh
 
 destroy_aws:
   allow_failure: true

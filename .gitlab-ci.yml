@@ -81,7 +81,7 @@ k8s_deploy_aws:
   allow_failure: true
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
   stage: k8s
-  when: manual
+  # when: manual
   variables:
     CLOUD: aws
   environment:
@@ -99,7 +99,7 @@ k8s_deploy_aws:
 k8s_e2e_aws:
   image: ${CI_REGISTRY}/kubernetes/kubernetes/kubernetes-e2e:ci-v1-6-3.job.4793
   stage: k8s
-  # when: manual
+  when: manual
   # dependencies:
   #   - k8s_deploy_aws
   variables:

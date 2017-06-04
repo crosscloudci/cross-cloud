@@ -158,7 +158,7 @@ kubernetes_aws:
 
 coredns_aws:
   image: ${CI_REGISTRY}/coredns/coredns/coredns-e2e:ci-v007.job.4744
-  stage: e2e-test
+  stage: e2e-aws
   when: manual
   dependencies:
     - deploy_aws
@@ -177,7 +177,7 @@ coredns_aws:
 
 prometheus_aws:
   image: ${CI_REGISTRY}/coredns/coredns/coredns-e2e:ci-v007.job.4744
-  stage: e2e-test
+  stage: e2e-aws
   when: manual
   dependencies:
     - deploy_aws

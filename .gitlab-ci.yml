@@ -264,3 +264,46 @@ prometheus_e2e_aws:
   variables:
     CLOUD: aws
 
+k8s_deploy_packet:
+  <<: *k8s_deploy_template
+  variables:
+    CLOUD: packet
+  environment:
+    name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
+    url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
+    on_stop: k8s_destroy_packet
+
+k8s_e2e_packet:
+  <<: *k8s_e2e_template
+  variables:
+    CLOUD: packet
+
+k8s_destroy_packet:
+  <<: *k8s_cloud_destroy_template
+  variables:
+    CLOUD: packet
+
+coredns_deploy_packet:
+  <<: *coredns_deploy_template
+  variables:
+    CLOUD: packet
+  dependencies:
+    - k8s_deploy_packet
+
+coredns_e2e_packet:
+  <<: *coredns_e2e_template
+  variables:
+    CLOUD: packet
+
+prometheus_deploy_packet:
+  <<: *prometheus_deploy_template
+  variables:
+    CLOUD: packet
+  dependencies:
+    - k8s_deploy_packet
+
+prometheus_e2e_packet:
+  <<: *prometheus_e2e_template
+  variables:
+    CLOUD: packet
+

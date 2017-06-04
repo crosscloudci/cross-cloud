@@ -118,7 +118,7 @@ coredns_deploy_aws:
   allow_failure: true
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
   stage: coredns
-  when: manual
+  # when: manual
   dependencies:
     - k8s_deploy_aws
   variables:
@@ -171,7 +171,7 @@ prometheus_deploy_aws:
   allow_failure: true
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
   stage: prometheus
-  when: manual
+  # when: manual
   dependencies:
     - k8s_deploy_aws
   variables:

@@ -212,7 +212,7 @@ kubernetes_packet:
 
 coredns_packet:
   image: ${CI_REGISTRY}/coredns/coredns/coredns-e2e:ci-v007.job.4744
-  stage: e2e-test
+  stage: e2e-packet
   when: manual
   dependencies:
     - deploy_packet

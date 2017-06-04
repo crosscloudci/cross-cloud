@@ -1,11 +1,8 @@
 stages:
   - project-artifacts
-  - deploy-k8s
-  - e2e-k8s
-  - deploy-coredns
-  - e2e-coredns
-  - deploy-prometheus
-  - e2e-prometheus
+  - k8s
+  - coredns
+  - prometheus
   - destroy-clouds
 
 before_script:
@@ -83,7 +80,7 @@ cross-cloud:
 k8s_deploy_aws:
   allow_failure: true
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
-  stage: deploy-k8s
+  stage: k8s
   when: manual
   variables:
     CLOUD: aws
@@ -101,7 +98,7 @@ k8s_deploy_aws:
 
 k8s_e2e_aws:
   image: ${CI_REGISTRY}/kubernetes/kubernetes/kubernetes-e2e:ci-v1-6-3.job.4793
-  stage: e2e-k8s
+  stage: k8s
   when: manual
   dependencies:
     - k8s_deploy_aws
@@ -120,7 +117,7 @@ k8s_e2e_aws:
 coredns_deploy_aws:
   allow_failure: true
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
-  stage: deploy-coredns
+  stage: coredns
   when: manual
   dependencies:
     - k8s_deploy_aws
@@ -153,7 +150,7 @@ coredns_deploy_aws:
 
 coredns_e2e_aws:
   image: ${CI_REGISTRY}/coredns/coredns/coredns-e2e:ci-v007.job.4744
-  stage: e2e-coredns
+  stage: coredns
   when: manual
   dependencies:
     - coredns_deploy_aws
@@ -173,7 +170,7 @@ coredns_e2e_aws:
 prometheus_deploy_aws:
   allow_failure: true
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
-  stage: deploy-prometheus
+  stage: prometheus
   when: manual
   dependencies:
     - k8s_deploy_aws
@@ -206,7 +203,7 @@ prometheus_deploy_aws:
 
 prometheus_e2e_aws:
   image: ${CI_REGISTRY}/coredns/coredns/coredns-e2e:ci-v007.job.4744
-  stage: e2e-prometheus
+  stage: prometheus
   when: manual
   dependencies:
     - prometheus_deploy_aws

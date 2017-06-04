@@ -77,13 +77,10 @@ cross-cloud:
     - docker build --pull -t "$CI_REGISTRY_IMAGE/$CI_JOB_NAME:$CI_COMMIT_REF_SLUG" .
     - docker push "$CI_REGISTRY_IMAGE/$CI_JOB_NAME:$CI_COMMIT_REF_SLUG"
 
-k8s_deploy_aws:
+.k8s_deploy_template: &k8s_deploy_template
   allow_failure: true
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
   stage: k8s
-  # when: manual
-  variables:
-    CLOUD: aws
   environment:
     name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
     url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
@@ -95,6 +92,11 @@ k8s_deploy_aws:
     expire_in: 4 weeks
     paths:
       - ./data/
+
+k8s_deploy_aws:
+  <<: *k8s_deploy_template
+  variables:
+    CLOUD: aws
 
 k8s_e2e_aws:
   image: ${CI_REGISTRY}/kubernetes/kubernetes/kubernetes-e2e:ci-v1-6-3.job.4793

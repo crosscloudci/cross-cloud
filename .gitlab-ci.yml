@@ -234,24 +234,24 @@ destroy_aws:
   script:
     - /cncf/provision.sh ${CLOUD}-destroy ${CI_ENVIRONMENT_SLUG}
 
-deploy_gke:
-  allow_failure: true
-  image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
-  stage: deploy-k8s
-  when: manual
-  variables:
-    CLOUD: gke
-  environment:
-    name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
-    url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
-    on_stop: destroy_gke
-  script:
-    - /cncf/provision.sh ${CLOUD}-deploy ${CI_ENVIRONMENT_SLUG}
-  artifacts:
-    when: always
-    expire_in: 4 weeks
-    paths:
-      - ./data/
+# deploy_gke:
+#   allow_failure: true
+#   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
+#   stage: deploy-k8s
+#   when: manual
+#   variables:
+#     CLOUD: gke
+#   environment:
+#     name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
+#     url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
+#     on_stop: destroy_gke
+#   script:
+#     - /cncf/provision.sh ${CLOUD}-deploy ${CI_ENVIRONMENT_SLUG}
+#   artifacts:
+#     when: always
+#     expire_in: 4 weeks
+#     paths:
+#       - ./data/
 
 # use_gke:
 #   allow_failure: true

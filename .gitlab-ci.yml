@@ -74,7 +74,7 @@ cross-cloud:
   script:
     - docker login -u "gitlab-ci-token" -p "$CI_JOB_TOKEN" $CI_REGISTRY
     - docker build --pull -t "$CI_REGISTRY_IMAGE/provisioning:$CI_COMMIT_REF_SLUG" .
-    - docker push "$CI_REGISTRY_IMAGE/provisoning:$CI_COMMIT_REF_SLUG"
+    - docker push "$CI_REGISTRY_IMAGE/provisioning:$CI_COMMIT_REF_SLUG"
 
 .k8s_deploy_template: &k8s_deploy_template
   allow_failure: true

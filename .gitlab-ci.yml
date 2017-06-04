@@ -77,10 +77,46 @@ cross-cloud:
     - docker build --pull -t "$CI_REGISTRY_IMAGE/$CI_JOB_NAME:$CI_COMMIT_REF_SLUG" .
     - docker push "$CI_REGISTRY_IMAGE/$CI_JOB_NAME:$CI_COMMIT_REF_SLUG"
 
+k8s_deploy_aws:
+  <<: *k8s_deploy_template
+  variables:
+    CLOUD: aws
+
+k8s_e2e_aws:
+  <<: *k8s_deploy_template
+  variables:
+    CLOUD: aws
+
+coredns_deploy_aws:
+  <<: *coredns_deploy_template
+  variables:
+    CLOUD: aws
+  dependencies:
+    - k8s_deploy_aws
+
+coredns_e2e_aws:
+  <<: *coredns_e2e_template
+  variables:
+    CLOUD: aws
+
+prometheus_deploy_aws:
+  <<: *prometheus_deploy_template
+  variables:
+    CLOUD: aws
+  dependencies:
+    - k8s_deploy_aws
+
+prometheus_e2e_aws:
+  <<: *prometheus_e2e_template
+  variables:
+    CLOUD: aws
+
 .k8s_deploy_template: &k8s_deploy_template
   allow_failure: true
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
   stage: k8s
+  variables:
+    CLOUD: MUST BE SET 
   environment:
     name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
     url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
@@ -93,19 +129,14 @@ cross-cloud:
     paths:
       - ./data/
 
-k8s_deploy_aws:
-  <<: *k8s_deploy_template
-  variables:
-    CLOUD: aws
-
-k8s_e2e_aws:
+.k8s_e2e_template: &k8s_e2e_template
   image: ${CI_REGISTRY}/kubernetes/kubernetes/kubernetes-e2e:ci-v1-6-3.job.4793
   stage: k8s
   when: manual
   # dependencies:
   #   - k8s_deploy_aws
   variables:
-    CLOUD: aws
+    CLOUD: MUST BE SET 
   environment:
     name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
     url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
@@ -116,15 +147,13 @@ k8s_e2e_aws:
   - echo Deployed HyperKube Image - $DEPLOYED_HYPERKUBE_IMAGE
   - /kubernetes/e2e/run-conformance.sh
 
-coredns_deploy_aws:
+.coredns_deploy_template: &coredns_deploy_template
   allow_failure: true
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
   stage: coredns
   # when: manual
-  dependencies:
-    - k8s_deploy_aws
   variables:
-    CLOUD: aws
+    CLOUD: MUST BE SET
   environment:
     name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
     url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
@@ -150,14 +179,14 @@ coredns_deploy_aws:
     - kubectl get svc
     - kubectl get pods
 
-coredns_e2e_aws:
+.coredns_e2e_template: &coredns_e2e_template
   image: ${CI_REGISTRY}/coredns/coredns/coredns-e2e:ci-v007.job.4744
   stage: coredns
   when: manual
   # dependencies:
   #   - coredns_deploy_aws
   variables:
-    CLOUD: aws
+    CLOUD: MUST BE SET
   environment:
     name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
     url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
@@ -169,15 +198,13 @@ coredns_e2e_aws:
   - cd /go/src/github.com/coredns/coredns/test
   - go test -v -tags k8s
 
-prometheus_deploy_aws:
+.prometheus_deploy_template: &prometheus_e2e_template
   allow_failure: true
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
   stage: prometheus
   # when: manual
-  dependencies:
-    - k8s_deploy_aws
   variables:
-    CLOUD: aws
+    CLOUD:  must be set
   environment:
     name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
     url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
@@ -203,14 +230,14 @@ prometheus_deploy_aws:
     - kubectl get svc
     - kubectl get pods
 
-prometheus_e2e_aws:
+.prometheus_e2e_template: &prometheus_e2e_template
   image: ${CI_REGISTRY}/coredns/coredns/coredns-e2e:ci-v007.job.4744
   stage: prometheus
   when: manual
   # dependencies:
   #   - prometheus_deploy_aws
   variables:
-    CLOUD: aws
+    CLOUD: MUST BE SET
   environment:
     name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
     url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/

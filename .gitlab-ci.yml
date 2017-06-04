@@ -79,6 +79,7 @@ cross-cloud:
 
 .k8s_deploy_template: &k8s_deploy_template
   allow_failure: true
+  when: manual
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
   stage: k8s
   variables:
@@ -221,7 +222,7 @@ cross-cloud:
   - export KUBECONFIG=$(pwd)/data/${CI_ENVIRONMENT_SLUG}/kubeconfig
   - echo FIXME && exit 1
 
-k8s_deploy_aws:
+k@aws 1 1:
   <<: *k8s_deploy_template
   variables:
     CLOUD: aws
@@ -230,7 +231,7 @@ k8s_deploy_aws:
     url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
     on_stop: k8s_destroy_aws
 
-k8s_e2e_aws:
+k@aws 1 2:
   <<: *k8s_e2e_template
   variables:
     CLOUD: aws
@@ -240,26 +241,26 @@ k8s_destroy_aws:
   variables:
     CLOUD: aws
 
-coredns_deploy_aws:
+c@aws 1 1:
   <<: *coredns_deploy_template
   variables:
     CLOUD: aws
   dependencies:
     - k8s_deploy_aws
 
-coredns_e2e_aws:
+c@aws 1 2:
   <<: *coredns_e2e_template
   variables:
     CLOUD: aws
 
-prometheus_deploy_aws:
+p@aws 1 1:
   <<: *prometheus_deploy_template
   variables:
     CLOUD: aws
   dependencies:
     - k8s_deploy_aws
 
-prometheus_e2e_aws:
+p@aws 1 2:
   <<: *prometheus_e2e_template
   variables:
     CLOUD: aws

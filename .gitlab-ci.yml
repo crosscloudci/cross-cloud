@@ -152,8 +152,8 @@ coredns_e2e_aws:
   image: ${CI_REGISTRY}/coredns/coredns/coredns-e2e:ci-v007.job.4744
   stage: coredns
   when: manual
-  dependencies:
-    - coredns_deploy_aws
+  # dependencies:
+  #   - coredns_deploy_aws
   variables:
     CLOUD: aws
   environment:
@@ -205,8 +205,8 @@ prometheus_e2e_aws:
   image: ${CI_REGISTRY}/coredns/coredns/coredns-e2e:ci-v007.job.4744
   stage: prometheus
   when: manual
-  dependencies:
-    - prometheus_deploy_aws
+  # dependencies:
+  #   - prometheus_deploy_aws
   variables:
     CLOUD: aws
   environment:

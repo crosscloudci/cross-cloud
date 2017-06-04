@@ -202,8 +202,8 @@ cross-cloud:
     - PROMETHEUS_INSTALL="helm install --name prometheus ${PROMETHEUS_IMAGE_SETTINGS}
         stable/prometheus"
     - echo $PROMETHEUS_INSTALL ; $PROMETHEUS_INSTALL
-    - DEPLOYED_PROMETHEUS_IMAGE="$(kubectl describe pods -l app=prometheus,component=server  | grep cncf.ci| grep prometheus | awk '{print $2}'"
-    - echo Deployed HyperKube Image - $DEPLOYED_PROMETHEUS_IMAGE
+    - DEPLOYED_PROMETHEUS_IMAGE="$(kubectl describe pods -l app=prometheus,component=server  | grep cncf.ci| grep prometheus | awk '{print $2}')"
+    - echo Deployed Prometheus Image - $DEPLOYED_PROMETHEUS_IMAGE
     - kubectl get svc
     - kubectl get pods
 

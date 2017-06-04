@@ -100,8 +100,8 @@ k8s_e2e_aws:
   image: ${CI_REGISTRY}/kubernetes/kubernetes/kubernetes-e2e:ci-v1-6-3.job.4793
   stage: k8s
   when: manual
-  dependencies:
-    - k8s_deploy_aws
+  # dependencies:
+  #   - k8s_deploy_aws
   variables:
     CLOUD: aws
   environment:

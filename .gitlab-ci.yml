@@ -54,12 +54,15 @@ coredns:
 prometheus:
   variables:
     PROMETHEUS_BRANCH: ci-v1.6.3
+    NODE_EXPORTER_BRANCH: ci-v0.14.0
+    ALERTMANAGER_BRANCH: ci-v0.6.2
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
   stage: project-artifacts
   script:
-    - PROMETHEUS_RELEASE_PROPERTIES=$(curl -L
-        "$BASE_URL/prometheus/prometheus/builds/artifacts/${PROMETHEUS_BRANCH}/file/release.properties?job=release"
-        |  sed -n 's/.*href="\([^"]*\).*/\1/p' | grep artifacts/raw | tail -1)
+    - echo "$BASE_URL/prometheus/prometheus/builds/artifacts/${PROMETHEUS_BRANCH}/file/release.properties?job=release" | tee -a urls.txt
+    - echo "$BASE_URL/prometheus/node_exporter/builds/artifacts/${NODE_EXPORTER_BRANCH}/file/release.properties?job=release" | tee -a urls.txt
+    - echo "$BASE_URL/prometheus/alertmanager/builds/artifacts/${ALERTMANAGER_BRANCH}/file/release.properties?job=release" | tee -a urls.txt
+    - PROMETHEUS_RELEASE_PROPERTIES=$(xargs <urls.txt curl -L | sed -n 's/.*href="\([^"]*\).*/\1/p' | grep artifacts/raw | tail -1)
     - mkdir -p data
     - curl -o data/prometheus.properties -L ${BASE_URL}/$PROMETHEUS_RELEASE_PROPERTIES
     - cat data/prometheus.properties
@@ -135,6 +138,7 @@ use_aws:
     - echo $PROMETHEUS_INSTALL ; $PROMETHEUS_INSTALL
     - DEPLOYED_COREDNS_IMAGE=$(kubectl get pods -l k8s-app=coredns -o jsonpath="{.items[0].spec.containers[0].image}")
     - DEPLOYED_HYPERKUBE_IMAGE="$(kubectl describe pods  --namespace=kube-system  | grep cncf.ci| grep -v ID| uniq | awk '{print $2}')"
+    - DEPLOYED_PROMETHEUS_IMAGE="$(kubectl describe pods -l app=prometheus,component=server  | grep cncf.ci| grep prometheus | awk '{print $2}'"
     - echo Deployed HyperKube Image - $DEPLOYED_HYPERKUBE_IMAGE
     - echo Deployed CoreDNS Image - $DEPLOYED_COREDNS_IMAGE
     - kubectl get svc

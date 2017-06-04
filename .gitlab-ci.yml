@@ -79,7 +79,6 @@ cross-cloud:
 
 .k8s_deploy_template: &k8s_deploy_template
   allow_failure: true
-  when: manual
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
   stage: k8s
   variables:
@@ -222,88 +221,88 @@ cross-cloud:
   - export KUBECONFIG=$(pwd)/data/${CI_ENVIRONMENT_SLUG}/kubeconfig
   - echo FIXME && exit 1
 
-k@aws 1 1:
+aws_deploy_k8s:
   <<: *k8s_deploy_template
   variables:
     CLOUD: aws
   environment:
     name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
     url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
-    on_stop: k8s_destroy_aws
+    on_stop: aws_destroy_k8s
 
-k@aws 1 2:
+aws_e2e_k8s:
   <<: *k8s_e2e_template
   variables:
     CLOUD: aws
 
-k8s_destroy_aws:
+aws_destroy_k8s:
   <<: *k8s_cloud_destroy_template
   variables:
     CLOUD: aws
 
-c@aws 1 1:
+aws_deploy_coredns:
   <<: *coredns_deploy_template
   variables:
     CLOUD: aws
   dependencies:
-    - k@aws 1 1
+    - aws_deploy_k8s
 
-c@aws 1 2:
+aws_e2e_coredns:
   <<: *coredns_e2e_template
   variables:
     CLOUD: aws
 
-p@aws 1 1:
+aws_deploy_prom:
   <<: *prometheus_deploy_template
   variables:
     CLOUD: aws
   dependencies:
-    - k@aws 1 1
+    - aws_deploy_k8s
 
-p@aws 1 2:
+aws_e2e_prom:
   <<: *prometheus_e2e_template
   variables:
     CLOUD: aws
 
-k8s_deploy_packet:
+packet_deploy_k8s:
   <<: *k8s_deploy_template
   variables:
     CLOUD: packet
   environment:
     name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
     url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
-    on_stop: k8s_destroy_packet
+    on_stop: packet_destroy_k8s
 
-k8s_e2e_packet:
+packet_e2e_k8s:
   <<: *k8s_e2e_template
   variables:
     CLOUD: packet
 
-k8s_destroy_packet:
+packet_destroy_k8s:
   <<: *k8s_cloud_destroy_template
   variables:
     CLOUD: packet
 
-coredns_deploy_packet:
+packet_deploy_coredns:
   <<: *coredns_deploy_template
   variables:
     CLOUD: packet
   dependencies:
-    - k8s_deploy_packet
+    - packet_deploy_k8s
 
-coredns_e2e_packet:
+packet_e2e_coredns:
   <<: *coredns_e2e_template
   variables:
     CLOUD: packet
 
-prometheus_deploy_packet:
+packet_deploy_prom:
   <<: *prometheus_deploy_template
   variables:
     CLOUD: packet
   dependencies:
-    - k8s_deploy_packet
+    - packet_deploy_k8s
 
-prometheus_e2e_packet:
+packet_e2e_prom:
   <<: *prometheus_e2e_template
   variables:
     CLOUD: packet

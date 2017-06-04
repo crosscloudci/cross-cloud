@@ -1,9 +1,9 @@
 stages:
-  - docker-build
   - project-artifacts
   - request-clouds
   - use-clouds
-  - e2e-test
+  - e2e-aws
+  - e2e-packet
   - destroy-clouds
 
 before_script:
@@ -71,8 +71,8 @@ prometheus:
     paths:
       - ./data/
 
-provisioning:
-  stage: docker-build
+cross-cloud:
+  stage: project-artifacts
   script:
     - docker login -u "gitlab-ci-token" -p "$CI_JOB_TOKEN" $CI_REGISTRY
     - docker build --pull -t "$CI_REGISTRY_IMAGE/$CI_JOB_NAME:$CI_COMMIT_REF_SLUG" .
@@ -140,9 +140,9 @@ use_aws:
     - kubectl get svc
     - kubectl get pods
 
-kubernetes_e2e_aws:
+kubernetes_aws:
   image: ${CI_REGISTRY}/kubernetes/kubernetes/kubernetes-e2e:ci-v1-6-3.job.4793
-  stage: e2e-test
+  stage: e2e-aws
   when: manual
   dependencies:
     - deploy_aws
@@ -156,7 +156,7 @@ kubernetes_e2e_aws:
   - export KUBECONFIG=$(pwd)/data/${CI_ENVIRONMENT_SLUG}/kubeconfig
   - /kubernetes/e2e/run-conformance.sh
 
-coredns_e2e_aws:
+coredns_aws:
   image: ${CI_REGISTRY}/coredns/coredns/coredns-e2e:ci-v007.job.4744
   stage: e2e-test
   when: manual
@@ -174,6 +174,80 @@ coredns_e2e_aws:
   - kubectl create -f /coredns/e2e/test.yml || true
   - cd /go/src/github.com/coredns/coredns/test
   - go test -v -tags k8s
+
+prometheus_aws:
+  image: ${CI_REGISTRY}/coredns/coredns/coredns-e2e:ci-v007.job.4744
+  stage: e2e-test
+  when: manual
+  dependencies:
+    - deploy_aws
+  variables:
+    CLOUD: aws
+  environment:
+    name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
+    url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
+    on_stop: destroy_aws
+  script:
+  - export KUBECONFIG=$(pwd)/data/${CI_ENVIRONMENT_SLUG}/kubeconfig
+  - kubectl proxy --port 8080 &
+  - kubectl create -f /coredns/e2e/test.yml || true
+  - cd /go/src/github.com/coredns/coredns/test
+  - go test -v -tags k8s
+
+kubernetes_packet:
+  image: ${CI_REGISTRY}/kubernetes/kubernetes/kubernetes-e2e:ci-v1-6-3.job.4793
+  stage: e2e-packet
+  when: manual
+  dependencies:
+    - deploy_packet
+  variables:
+    CLOUD: packet
+  environment:
+    name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
+    url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
+    on_stop: destroy_packet
+  script:
+  - export KUBECONFIG=$(pwd)/data/${CI_ENVIRONMENT_SLUG}/kubeconfig
+  - /kubernetes/e2e/run-conformance.sh
+
+coredns_packet:
+  image: ${CI_REGISTRY}/coredns/coredns/coredns-e2e:ci-v007.job.4744
+  stage: e2e-test
+  when: manual
+  dependencies:
+    - deploy_packet
+  variables:
+    CLOUD: packet
+  environment:
+    name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
+    url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
+    on_stop: destroy_packet
+  script:
+  - export KUBECONFIG=$(pwd)/data/${CI_ENVIRONMENT_SLUG}/kubeconfig
+  - kubectl proxy --port 8080 &
+  - kubectl create -f /coredns/e2e/test.yml || true
+  - cd /go/src/github.com/coredns/coredns/test
+  - go test -v -tags k8s
+
+prometheus_packet:
+  image: ${CI_REGISTRY}/coredns/coredns/coredns-e2e:ci-v007.job.4744
+  stage: e2e-packet
+  when: manual
+  dependencies:
+    - deploy_packet
+  variables:
+    CLOUD: packet
+  environment:
+    name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
+    url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
+    on_stop: destroy_packet
+  script:
+  - export KUBECONFIG=$(pwd)/data/${CI_ENVIRONMENT_SLUG}/kubeconfig
+  - kubectl proxy --port 8080 &
+  - kubectl create -f /coredns/e2e/test.yml || true
+  - cd /go/src/github.com/coredns/coredns/test
+  - go test -v -tags k8s
+
 
 destroy_aws:
   allow_failure: true

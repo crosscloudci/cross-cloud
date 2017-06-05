@@ -6,10 +6,10 @@ variables:
   ALERT_MANAGER_BRANCH: ci-v0.6.2
 
 stages:
-  - project-artifacts
-  - k8s
-  - coredns
-  - prometheus
+  - cncf-artifacts
+  - cross-cloud
+  - cross-project
+  - cncf-e2e
 
 before_script:
   - export BASE_URL=${BASE_URL:-$(echo $CI_PROJECT_URL |  cut -d'/' -f1-3)}
@@ -19,7 +19,7 @@ before_script:
 
 kubernetes:
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
-  stage: project-artifacts
+  stage: cncf-artifacts
   script:
     - KUBERNETES_RELEASE_VARS=$(curl -s -L
         "$BASE_URL/kubernetes/kubernetes/builds/artifacts/${K8S_BRANCH}/file/release.env?job=build"
@@ -35,7 +35,7 @@ kubernetes:
 
 coredns:
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
-  stage: project-artifacts
+  stage: cncf-artifacts
   script:
     - COREDNS_RELEASE_ENV=$(curl -s -L
         "$BASE_URL/coredns/coredns/builds/artifacts/${COREDNS_BRANCH}/file/release.env?job=release"
@@ -51,7 +51,7 @@ coredns:
 
 prometheus:
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
-  stage: project-artifacts
+  stage: cncf-artifacts
   script:
     - mkdir -p data
     - PROMETHEUS_URL="$BASE_URL/prometheus/prometheus/builds/artifacts/${PROMETHEUS_BRANCH}/file/release.env?job=release"
@@ -71,7 +71,7 @@ prometheus:
       - ./data/
 
 .cross-cloud:
-  stage: project-artifacts
+  stage: cncf-artifacts
   script:
     - docker login -u "gitlab-ci-token" -p "$CI_JOB_TOKEN" $CI_REGISTRY
     - docker build --pull -t "$CI_REGISTRY_IMAGE/provisioning:$CI_COMMIT_REF_SLUG" .
@@ -80,7 +80,7 @@ prometheus:
 .k8s_deploy_template: &k8s_deploy_template
   allow_failure: true
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
-  stage: k8s
+  stage: cross-cloud
   variables:
     CLOUD: MUST BE SET 
   environment:
@@ -98,7 +98,7 @@ prometheus:
 
 .k8s_e2e_template: &k8s_e2e_template
   image: ${CI_REGISTRY}/kubernetes/kubernetes/kubernetes-e2e:ci-v1-6-3.job.4793
-  stage: k8s
+  stage: cncf-e2e
   when: manual
   # dependencies:
   #   - k8s_deploy_aws
@@ -113,7 +113,7 @@ prometheus:
 .k8s_cloud_destroy_template: &k8s_cloud_destroy_template
   allow_failure: true
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
-  stage: k8s
+  stage: cross-cloud
   when: manual
   variables:
     CLOUD:  MUST BE SET
@@ -127,7 +127,7 @@ prometheus:
 .coredns_deploy_template: &coredns_deploy_template
   allow_failure: true
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
-  stage: coredns
+  stage: cross-project
   # when: manual
   variables:
     CLOUD: MUST BE SET
@@ -157,7 +157,7 @@ prometheus:
 
 .coredns_e2e_template: &coredns_e2e_template
   image: ${CI_REGISTRY}/coredns/coredns/coredns-e2e:ci-v007.job.4744
-  stage: coredns
+  stage: cncf-e2e
   when: manual
   # dependencies:
   #   - coredns_deploy_aws
@@ -175,7 +175,7 @@ prometheus:
 .prometheus_deploy_template: &prometheus_deploy_template
   allow_failure: true
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
-  stage: prometheus
+  stage: cross-project
   # when: manual
   variables:
     CLOUD:  must be set
@@ -210,7 +210,7 @@ prometheus:
 
 .prometheus_e2e_template: &prometheus_e2e_template
   image: ${CI_REGISTRY}/coredns/coredns/coredns-e2e:ci-v007.job.4744
-  stage: prometheus
+  stage: cncf-e2e
   when: manual
   # dependencies:
   #   - prometheus_deploy_aws

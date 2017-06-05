@@ -136,8 +136,8 @@ cross-cloud:
     name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
     url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
   script:
-    - find ./data/
-    - ls -la $(pwd)/data/${CI_ENVIRONMENT_SLUG}/
+    - cat ./data/coredns.env
+    - env | grep COREDNS
     - kubectl get nodes
     - kubectl get pods
     - kubectl get componentstatuses

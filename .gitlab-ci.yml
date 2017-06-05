@@ -14,7 +14,6 @@ stages:
 before_script:
   - export BASE_URL=${BASE_URL:-$(echo $CI_PROJECT_URL |  cut -d'/' -f1-3)}
   - export KUBECONFIG=$(pwd)/data/${CI_ENVIRONMENT_SLUG}/kubeconfig
-  - mkdir -p ./data ; touch ./data/empty.env ; . data/*env
   - mkdir -p ./data ; touch ./data/empty.env
   - for envfile in data/*env ; do source $envfile ; echo ----- $envfile ---- ; cat $envfile ; done
 
@@ -71,7 +70,7 @@ prometheus:
     paths:
       - ./data/
 
-cross-cloud:
+.cross-cloud:
   stage: project-artifacts
   script:
     - docker login -u "gitlab-ci-token" -p "$CI_JOB_TOKEN" $CI_REGISTRY
@@ -108,7 +107,6 @@ cross-cloud:
     name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
     url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
   script:
-  - export KUBECONFIG=$(pwd)/data/${CI_ENVIRONMENT_SLUG}/kubeconfig
   - DEPLOYED_HYPERKUBE_IMAGE="$(kubectl describe pods  --namespace=kube-system  | grep cncf.ci| grep -v ID| uniq | awk '{print $2}')"
   - echo Deployed HyperKube Image - $DEPLOYED_HYPERKUBE_IMAGE
   - /kubernetes/e2e/run-conformance.sh
@@ -170,9 +168,8 @@ cross-cloud:
     name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
     url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
   script:
-  - export KUBECONFIG=$(pwd)/data/${CI_ENVIRONMENT_SLUG}/kubeconfig
   - kubectl proxy --port 8080 &
-  - kubectl create -f /coredns/e2e/test.yml || true
+  - kubectl recreate -f /coredns/e2e/test.yml
   - cd /go/src/github.com/coredns/coredns/test
   - go test -v -tags k8s
 
@@ -203,7 +200,7 @@ cross-cloud:
         --set nodeExporter.image.repository=$NODE_EXPORTER_IMAGE
         --set nodeExporter.image.tag=$NODE_EXPORTER_TAG
         --set alertManager.image.repository=$ALERT_MANAGER_IMAGE
-        --set nodeExporter.image.tag=$ALERT_MANAGER_TAG
+        --set alertManager.image.tag=$ALERT_MANAGER_TAG
         --set persistentVolume=false
         stable/prometheus"
     - echo $PROMETHEUS_INSTALL ; $PROMETHEUS_INSTALL
@@ -224,7 +221,6 @@ cross-cloud:
     name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
     url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
   script:
-  - export KUBECONFIG=$(pwd)/data/${CI_ENVIRONMENT_SLUG}/kubeconfig
   - echo FIXME && exit 1
 
 aws_deploy_k8s:

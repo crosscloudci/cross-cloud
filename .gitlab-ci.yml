@@ -61,7 +61,8 @@ prometheus:
     - NODE_EXPORTER_URL="$BASE_URL/prometheus/node_exporter/builds/artifacts/${NODE_EXPORTER_BRANCH}/file/release.properties?job=release"
     - NODE_EXPORTER_RELEASE_PROPERTIES=$(curl -L $NODE_EXPORTER_URL | sed -n 's/.*href="\([^"]*\).*/\1/p' | grep artifacts/raw | tail -1)
     - ALERT_MANAGER_URL="$BASE_URL/prometheus/alertmanager/builds/artifacts/${ALERT_MANAGER_BRANCH}/file/release.properties?job=release"
-    - ALERT_MANAGER_RELEASE_PROPERTIES=$(curl -L $ALERT_MANAGER_URL | sed -n 's/.*href="\([^"]*\).*/\1/p' | grep artifacts/raw | tail -1)
+    - sleep 9999999
+    # - ALERT_MANAGER_RELEASE_PROPERTIES=$(curl -L $ALERT_MANAGER_URL | sed -n 's/.*href="\([^"]*\).*/\1/p' | grep artifacts/raw | tail -1)
     - mkdir -p data
     - curl -o data/prom.properties -L ${BASE_URL}/$PROMETHEUS_RELEASE_PROPERTIES
     - curl -o data/node_exporter.properties -L ${BASE_URL}/$NODE_EXPORTER_RELEASE_PROPERTIES

@@ -15,6 +15,12 @@ export TF_VAR_internal_tld=${TF_VAR_name}.cncf.demo
 export TF_VAR_data_dir=$(pwd)/data/${TF_VAR_name}
 export TF_VAR_aws_key_name=${TF_VAR_name}
 export TF_VAR_packet_api_key=${PACKET_AUTH_TOKEN}
+if [ ! -e $KUBERNETES_IMAGE ] ; then
+  export TF_VAR_kubelet_image_url=$KUBERNETES_IMAGE
+fi
+if [ ! -e $KUBERNETES_TAG ] ; then
+  export TF_VAR_kubelet_image_tag=$KUBERNETES_TAG
+fi
 # tfstate, sslcerts, and ssh keys are currently stored in TF_VAR_data_dir
 mkdir -p $TF_VAR_data_dir
 

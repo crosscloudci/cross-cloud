@@ -54,6 +54,7 @@ prometheus:
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
   stage: project-artifacts
   script:
+    - mkdir -p data
     - PROMETHEUS_URL="$BASE_URL/prometheus/prometheus/builds/artifacts/${PROMETHEUS_BRANCH}/file/release.env?job=release"
     - PROMETHEUS_RELEASE_ENV=$(curl -L $PROMETHEUS_URL | sed -n 's/.*href="\([^"]*\).*/\1/p' | grep artifacts/raw | tail -1)
     - curl -o data/prom.env -L ${BASE_URL}/$PROMETHEUS_RELEASE_ENV
@@ -63,7 +64,6 @@ prometheus:
     - ALERT_MANAGER_URL="$BASE_URL/prometheus/alertmanager/builds/artifacts/${ALERT_MANAGER_BRANCH}/file/release.env?job=release"
     - ALERT_MANAGER_RELEASE_ENV=$(curl -L $ALERT_MANAGER_URL | sed -n 's/.*href="\([^"]*\).*/\1/p' | grep artifacts/raw | tail -1)
     - curl -o data/alert_manager.env -L ${BASE_URL}/$ALERT_MANAGER_RELEASE_ENV
-    - mkdir -p data
     - cat data/prom.env data/node_exporter.env data/alert_manager.env
   artifacts:
     when: always
@@ -146,9 +146,9 @@ cross-cloud:
     - helm init
     - echo Removing any previous deploys of coredns
     - helm get coredns > /dev/null && helm delete --purge coredns
-    - COREDNS_IMAGE_SETTINGS=$(cat data/coredns.properties
-        | xargs -n 1 echo \ --set |  awk '!/0$/{printf $0} /0$/')
-    - COREDNS_INSTALL="helm install --name coredns ${COREDNS_IMAGE_SETTINGS}
+    - COREDNS_INSTALL="helm install --name coredns
+        --set image.repository=${COREDNS_IMAGE}
+        --set image.tag=${COREDNS_TAG}
         --set middleware.kubernetes.clusterCidr=10.0.0.0/24
         --set middleware.kubernetes.clusterIP=10.0.0.10
         stable/coredns"
@@ -197,9 +197,13 @@ cross-cloud:
     - sleep 5
     - echo Removing any previous deploys of prometheus
     - helm get prometheus > /dev/null && helm delete --purge prometheus
-    - PROMETHEUS_IMAGE_SETTINGS=$(cat data/prometheus.properties
-        | xargs -n 1 echo \ --set |  awk '!/0$/{printf $0} /0$/')
-    - PROMETHEUS_INSTALL="helm install --name prometheus ${PROMETHEUS_IMAGE_SETTINGS}
+    - PROMETHEUS_INSTALL="helm install --name prometheus
+        --set server.image.repository=$PROMETHEUS_IMAGE
+        --set server.image.tag=$PROMETHEUS_TAG
+        --set nodeExporter.image.repository=$NODE_EXPORTER_IMAGE
+        --set nodeExporter.image.tag=$NODE_EXPORTER_TAG
+        --set alertManager.image.repository=$ALERT_MANAGER_IMAGE
+        --set nodeExporter.image.tag=$ALERT_MANAGER_TAG
         --set persistentVolume=false
         stable/prometheus"
     - echo $PROMETHEUS_INSTALL ; $PROMETHEUS_INSTALL

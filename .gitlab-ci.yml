@@ -56,15 +56,18 @@ prometheus:
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
   stage: project-artifacts
   script:
-    - echo "$BASE_URL/prometheus/prometheus/builds/artifacts/${PROMETHEUS_BRANCH}/file/release.properties?job=release" | tee -a urls.txt
-    - echo "$BASE_URL/prometheus/node_exporter/builds/artifacts/${NODE_EXPORTER_BRANCH}/file/release.properties?job=release" | tee -a urls.txt
-    - echo "$BASE_URL/prometheus/alertmanager/builds/artifacts/${ALERTMANAGER_BRANCH}/file/release.properties?job=release" | tee -a urls.txt
-    - PROMETHEUS_RELEASE_PROPERTIES=$(xargs <urls.txt curl -L | sed -n 's/.*href="\([^"]*\).*/\1/p' | grep artifacts/raw | tail -1)
+    - PROMETHEUS_URL="$BASE_URL/prometheus/prometheus/builds/artifacts/${PROMETHEUS_BRANCH}/file/release.properties?job=release"
+    - PROMETHEUS_RELEASE_PROPERTIES=$(curl -L $PROMETHEUS_URL | sed -n 's/.*href="\([^"]*\).*/\1/p' | grep artifacts/raw | tail -1)
+    - NODE_EXPORTER_URL="$BASE_URL/prometheus/node_exporter/builds/artifacts/${NODE_EXPORTER_BRANCH}/file/release.properties?job=release"
+    - NODE_EXPORTER_RELEASE_PROPERTIES=$(curl -L $NODE_EXPORTER_URL | sed -n 's/.*href="\([^"]*\).*/\1/p' | grep artifacts/raw | tail -1)
+    - ALERT_MANAGER_URL="$BASE_URL/prometheus/alertmanager/builds/artifacts/${ALERTMANAGER_BRANCH}/file/release.properties?job=release"
+    - ALERT_MANAGER_RELEASE_PROPERTIES=$(curl -L $NODE_EXPORTER_URL | sed -n 's/.*href="\([^"]*\).*/\1/p' | grep artifacts/raw | tail -1)
     - mkdir -p data
-    - curl -o data/prometheus.properties -L ${BASE_URL}/$PROMETHEUS_RELEASE_PROPERTIES
+    - curl -o data/prom.properties -L ${BASE_URL}/$PROMETHEUS_RELEASE_PROPERTIES
+    - curl -o data/node_exporter.properties -L ${BASE_URL}/$NODE_EXPORTER_RELEASE_PROPERTIES
+    - curl -o data/alert_manager.properties -L ${BASE_URL}/$ALERT_MANAGER_RELEASE_PROPERTIES
+    - cat data/prom.properties data/node_exporter.properties data/alert_manager.properties > data/prometheus.properties
     - cat data/prometheus.properties
-    - PROMETHEUS_TAG=$(grep image.tag data/prometheus.properties  | awk -F= '{print $2}')
-    - echo "prometheus release - $PROMETHEUS_TAG"
   artifacts:
     when: always
     expire_in: 4 weeks

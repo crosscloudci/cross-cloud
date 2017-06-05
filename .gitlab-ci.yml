@@ -196,11 +196,12 @@ cross-cloud:
     - PROMETHEUS_INSTALL="helm install --name prometheus
         --set server.image.repository=$PROMETHEUS_IMAGE
         --set server.image.tag=$PROMETHEUS_TAG
+        --set server.persistentVolume.enabled=false
         --set nodeExporter.image.repository=$NODE_EXPORTER_IMAGE
         --set nodeExporter.image.tag=$NODE_EXPORTER_TAG
         --set alertManager.image.repository=$ALERT_MANAGER_IMAGE
         --set alertManager.image.tag=$ALERT_MANAGER_TAG
-        --set persistentVolume=false
+        --set alertManager.persistentVolume.enabled=false
         stable/prometheus"
     - echo $PROMETHEUS_INSTALL ; $PROMETHEUS_INSTALL
     - DEPLOYED_PROMETHEUS_IMAGE="$(kubectl describe pods -l app=prometheus,component=server  | grep cncf.ci| grep prometheus | awk '{print $2}')"

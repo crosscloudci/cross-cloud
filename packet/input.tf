@@ -2,6 +2,7 @@ variable "name" { default = "packet" }
 
 # Set with env TF_VAR_packet_project_id
 variable "packet_project_id" {} # required for now
+variable "packet_api_key" {}
 # https://www.packet.net/locations/
 variable "packet_facility" { default = "sjc1" }
 variable "packet_billing_cycle" { default = "hourly" }

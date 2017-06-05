@@ -16,6 +16,12 @@ EOF
 EOF
   }
 
+  provisioner "local-exec" {
+    command = <<EOF
+    packet admin -k ${ var.packet_api_key } create-sshkey --label ${ var.name } --file ${ var.data_dir}/.ssh/id_rsa.pub
+EOF
+  }
+
 }
 
 resource "null_resource" "dummy_dependency" {

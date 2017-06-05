@@ -3,7 +3,7 @@ variables:
   COREDNS_BRANCH: ci-v007
   PROMETHEUS_BRANCH: ci-v1.6.3
   NODE_EXPORTER_BRANCH: ci-v0.14.0
-  ALERTMANAGER_BRANCH: ci-v0.6.2
+  ALERT_MANAGER_BRANCH: ci-v0.6.2
 
 stages:
   - project-artifacts
@@ -60,7 +60,9 @@ prometheus:
     - PROMETHEUS_RELEASE_PROPERTIES=$(curl -L $PROMETHEUS_URL | sed -n 's/.*href="\([^"]*\).*/\1/p' | grep artifacts/raw | tail -1)
     - NODE_EXPORTER_URL="$BASE_URL/prometheus/node_exporter/builds/artifacts/${NODE_EXPORTER_BRANCH}/file/release.properties?job=release"
     - NODE_EXPORTER_RELEASE_PROPERTIES=$(curl -L $NODE_EXPORTER_URL | sed -n 's/.*href="\([^"]*\).*/\1/p' | grep artifacts/raw | tail -1)
-    - ALERT_MANAGER_URL="$BASE_URL/prometheus/alertmanager/builds/artifacts/${ALERTMANAGER_BRANCH}/file/release.properties?job=release"
+    - echo ALERT_MANAGER_URL="$BASE_URL/prometheus/alertmanager/builds/artifacts/${ALERT_MANAGER_BRANCH}/file/release.properties?job=release"
+    - echo ALERT_MANAGER_RELEASE_PROPERTIES=$(curl -L $ALERT_MANAGER_URL | sed -n 's/.*href="\([^"]*\).*/\1/p' | grep artifacts/raw | tail -1)
+    - ALERT_MANAGER_URL="$BASE_URL/prometheus/alertmanager/builds/artifacts/${ALERT_MANAGER_BRANCH}/file/release.properties?job=release"
     - ALERT_MANAGER_RELEASE_PROPERTIES=$(curl -L $ALERT_MANAGER_URL | sed -n 's/.*href="\([^"]*\).*/\1/p' | grep artifacts/raw | tail -1)
     - mkdir -p data
     - curl -o data/prom.properties -L ${BASE_URL}/$PROMETHEUS_RELEASE_PROPERTIES

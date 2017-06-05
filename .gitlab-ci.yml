@@ -21,11 +21,11 @@ kubernetes:
   stage: project-artifacts
   script:
     - KUBERNETES_RELEASE_VARS=$(curl -L
-        "$BASE_URL/kubernetes/kubernetes/builds/artifacts/${K8S_BRANCH}/file/release.vars?job=build"
+        "$BASE_URL/kubernetes/kubernetes/builds/artifacts/${K8S_BRANCH}/file/release.env?job=build"
         |  sed -n 's/.*href="\([^"]*\).*/\1/p' | grep artifacts/raw | tail -1)
     - mkdir -p data
-    - curl -o data/kubernetes.vars -L ${BASE_URL}/$KUBERNETES_RELEASE_VARS
-    - cat data/kubernetes.vars
+    - curl -o data/kubernetes.env -L ${BASE_URL}/$KUBERNETES_RELEASE_VARS
+    - cat data/kubernetes.env
   artifacts:
     when: always
     expire_in: 4 weeks

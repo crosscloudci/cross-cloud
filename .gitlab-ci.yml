@@ -14,7 +14,7 @@ stages:
 before_script:
   - export BASE_URL=${BASE_URL:-$(echo $CI_PROJECT_URL |  cut -d'/' -f1-3)}
   - export KUBECONFIG=$(pwd)/data/${CI_ENVIRONMENT_SLUG}/kubeconfig
-  - if [ -d data ] ; then . data/*vars ; fi
+  - mkdir ./data ; touch ./data/empty.env ; . data/*env
 
 kubernetes:
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG

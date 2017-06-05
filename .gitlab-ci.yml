@@ -272,7 +272,7 @@ packet_k8s_deploy:
   environment:
     name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
     url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
-    on_stop: packet_destroy_k8s
+    on_stop: packet_k8s_destroy
 
 packet_k8s_e2e:
   <<: *k8s_e2e_template
@@ -289,7 +289,7 @@ packet_coredns_deploy:
   variables:
     CLOUD: packet
   dependencies:
-    - packet_deploy_k8s
+    - packet_k8s_deploy
 
 packet_coredns_e2e:
   <<: *coredns_e2e_template
@@ -301,7 +301,7 @@ packet_prom_deploy:
   variables:
     CLOUD: packet
   dependencies:
-    - packet_deploy_k8s
+    - packet_k8s_deploy
 
 packet_prom_e2e:
   <<: *prometheus_e2e_template

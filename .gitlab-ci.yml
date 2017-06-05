@@ -21,11 +21,11 @@ kubernetes:
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
   stage: project-artifacts
   script:
-    - KUBERNETES_RELEASE_VARS=$(curl -L
+    - KUBERNETES_RELEASE_VARS=$(curl -s -L
         "$BASE_URL/kubernetes/kubernetes/builds/artifacts/${K8S_BRANCH}/file/release.env?job=build"
         |  sed -n 's/.*href="\([^"]*\).*/\1/p' | grep artifacts/raw | tail -1)
     - mkdir -p data
-    - curl -o data/kubernetes.env -L ${BASE_URL}/$KUBERNETES_RELEASE_VARS
+    - curl -s -o data/kubernetes.env -L ${BASE_URL}/$KUBERNETES_RELEASE_VARS
     - cat data/kubernetes.env
   artifacts:
     when: always
@@ -37,11 +37,11 @@ coredns:
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
   stage: project-artifacts
   script:
-    - COREDNS_RELEASE_ENV=$(curl -L
+    - COREDNS_RELEASE_ENV=$(curl -s -L
         "$BASE_URL/coredns/coredns/builds/artifacts/${COREDNS_BRANCH}/file/release.env?job=release"
         |  sed -n 's/.*href="\([^"]*\).*/\1/p' | grep artifacts/raw | tail -1)
     - mkdir -p data
-    - curl -o data/coredns.env -L ${BASE_URL}/$COREDNS_RELEASE_ENV
+    - curl -s -o data/coredns.env -L ${BASE_URL}/$COREDNS_RELEASE_ENV
     - cat data/coredns.env
   artifacts:
     when: always
@@ -55,14 +55,14 @@ prometheus:
   script:
     - mkdir -p data
     - PROMETHEUS_URL="$BASE_URL/prometheus/prometheus/builds/artifacts/${PROMETHEUS_BRANCH}/file/release.env?job=release"
-    - PROMETHEUS_RELEASE_ENV=$(curl -L $PROMETHEUS_URL | sed -n 's/.*href="\([^"]*\).*/\1/p' | grep artifacts/raw | tail -1)
-    - curl -o data/prom.env -L ${BASE_URL}/$PROMETHEUS_RELEASE_ENV
+    - PROMETHEUS_RELEASE_ENV=$(curl -s -L $PROMETHEUS_URL | sed -n 's/.*href="\([^"]*\).*/\1/p' | grep artifacts/raw | tail -1)
+    - curl -s -o data/prom.env -L ${BASE_URL}/$PROMETHEUS_RELEASE_ENV
     - NODE_EXPORTER_URL="$BASE_URL/prometheus/node_exporter/builds/artifacts/${NODE_EXPORTER_BRANCH}/file/release.env?job=release"
-    - NODE_EXPORTER_RELEASE_ENV=$(curl -L $NODE_EXPORTER_URL | sed -n 's/.*href="\([^"]*\).*/\1/p' | grep artifacts/raw | tail -1)
-    - curl -o data/node_exporter.env -L ${BASE_URL}/$NODE_EXPORTER_RELEASE_ENV
+    - NODE_EXPORTER_RELEASE_ENV=$(curl -s -L $NODE_EXPORTER_URL | sed -n 's/.*href="\([^"]*\).*/\1/p' | grep artifacts/raw | tail -1)
+    - curl -s -o data/node_exporter.env -L ${BASE_URL}/$NODE_EXPORTER_RELEASE_ENV
     - ALERT_MANAGER_URL="$BASE_URL/prometheus/alertmanager/builds/artifacts/${ALERT_MANAGER_BRANCH}/file/release.env?job=release"
-    - ALERT_MANAGER_RELEASE_ENV=$(curl -L $ALERT_MANAGER_URL | sed -n 's/.*href="\([^"]*\).*/\1/p' | grep artifacts/raw | tail -1)
-    - curl -o data/alert_manager.env -L ${BASE_URL}/$ALERT_MANAGER_RELEASE_ENV
+    - ALERT_MANAGER_RELEASE_ENV=$(curl -s -L $ALERT_MANAGER_URL | sed -n 's/.*href="\([^"]*\).*/\1/p' | grep artifacts/raw | tail -1)
+    - curl -s -o data/alert_manager.env -L ${BASE_URL}/$ALERT_MANAGER_RELEASE_ENV
     - cat data/prom.env data/node_exporter.env data/alert_manager.env
   artifacts:
     when: always

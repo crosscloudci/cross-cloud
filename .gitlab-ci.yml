@@ -14,7 +14,7 @@ stages:
 before_script:
   - export BASE_URL=${BASE_URL:-$(echo $CI_PROJECT_URL |  cut -d'/' -f1-3)}
   - export KUBECONFIG=$(pwd)/data/${CI_ENVIRONMENT_SLUG}/kubeconfig
-  - mkdir ./data ; touch ./data/empty.env ; . data/*env
+  - mkdir -p ./data ; touch ./data/empty.env ; . data/*env
 
 kubernetes:
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
@@ -42,8 +42,6 @@ coredns:
     - mkdir -p data
     - curl -o data/coredns.env -L ${BASE_URL}/$COREDNS_RELEASE_ENV
     - cat data/coredns.env
-    - . data/coredns.env
-    - echo "coredns release - $COREDNS_TAG"
   artifacts:
     when: always
     expire_in: 4 weeks

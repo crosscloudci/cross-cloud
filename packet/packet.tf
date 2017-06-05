@@ -7,13 +7,15 @@
 #   payment_method = ""
 # }
 
-resource "packet_ssh_key" "cncf" {
-  name     = "${ var.name }"
-  public_key = "${file("${ var.data_dir }/.ssh/id_rsa.pub")}"
-}
-
- # terraform {
-#   backend "local" {
-#     path = "${ var.data_dir}/terraform.tfstate"
-#   }
+# resource "packet_ssh_key" "cncf" {
+#   name     = "${ var.name }"
+#   public_key = "${file("${ var.data_dir }/.ssh/id_rsa.pub")}"
 # }
+
+terraform {
+  backend "s3" {
+    bucket = "aws"
+    key    = "aws"
+    region = "ap-southeast-2"
+  }
+}

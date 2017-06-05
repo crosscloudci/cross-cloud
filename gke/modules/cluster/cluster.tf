@@ -11,7 +11,7 @@ resource "google_container_cluster" "cncf" {
 
   network            = "${ var.network }"
   subnetwork         = "${ var.subnetwork }"
-  node_version       = "${ var.node_version }"
+  #node_version       = "${ var.node_version }"
 
   master_auth {
     username         = "${ var.master_user }"

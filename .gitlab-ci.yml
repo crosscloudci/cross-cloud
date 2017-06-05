@@ -108,7 +108,6 @@ prometheus:
     name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
     url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
   script:
-  - sleep 10000000
   - /kubernetes/e2e/run-conformance.sh
 
 .k8s_cloud_destroy_template: &k8s_cloud_destroy_template

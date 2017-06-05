@@ -170,7 +170,7 @@ prometheus:
     url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
   script:
   - kubectl proxy --port 8080 &
-  - kubectl recreate -f /coredns/e2e/test.yml
+  - kubectl create -f /coredns/e2e/test.yml || kubectl replace -f /coredns/e2e/test.yml
   - cd /go/src/github.com/coredns/coredns/test
   - go test -v -tags k8s
 

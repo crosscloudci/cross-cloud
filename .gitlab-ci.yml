@@ -231,6 +231,7 @@ aws_k8s_deploy:
     name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
     url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
     on_stop: aws_k8s_destroy
+  on_failure: packet_k8s_destroy
 
 aws_k8s_e2e:
   <<: *k8s_e2e_template
@@ -274,6 +275,7 @@ packet_k8s_deploy:
     name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
     url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
     on_stop: packet_k8s_destroy
+  on_failure: packet_k8s_destroy
 
 packet_k8s_e2e:
   <<: *k8s_e2e_template

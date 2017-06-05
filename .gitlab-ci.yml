@@ -222,50 +222,50 @@ prometheus:
   script:
   - echo FIXME && exit 1
 
-aws_deploy_k8s:
+aws_k8s_deploy:
   <<: *k8s_deploy_template
   variables:
     CLOUD: aws
   environment:
     name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
     url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
-    on_stop: aws_destroy_k8s
+    on_stop: aws_k8s_destroy
 
-aws_e2e_k8s:
+aws_k8s_e2e:
   <<: *k8s_e2e_template
   variables:
     CLOUD: aws
 
-aws_destroy_k8s:
+aws_k8s_destroy:
   <<: *k8s_cloud_destroy_template
   variables:
     CLOUD: aws
 
-aws_deploy_coredns:
+aws_coredns_deploy:
   <<: *coredns_deploy_template
   variables:
     CLOUD: aws
   dependencies:
-    - aws_deploy_k8s
+    - aws_k8s_deploy
 
-aws_e2e_coredns:
+aws_coredns_e2e:
   <<: *coredns_e2e_template
   variables:
     CLOUD: aws
 
-aws_deploy_prom:
+aws_prom_deploy:
   <<: *prometheus_deploy_template
   variables:
     CLOUD: aws
   dependencies:
-    - aws_deploy_k8s
+    - aws_k8s_deploy
 
-aws_e2e_prom:
+aws_prom_e2e:
   <<: *prometheus_e2e_template
   variables:
     CLOUD: aws
 
-packet_deploy_k8s:
+packet_k8s_deploy:
   <<: *k8s_deploy_template
   variables:
     CLOUD: packet
@@ -274,36 +274,36 @@ packet_deploy_k8s:
     url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
     on_stop: packet_destroy_k8s
 
-packet_e2e_k8s:
+packet_k8s_e2e:
   <<: *k8s_e2e_template
   variables:
     CLOUD: packet
 
-packet_destroy_k8s:
+packet_k8s_destroy:
   <<: *k8s_cloud_destroy_template
   variables:
     CLOUD: packet
 
-packet_deploy_coredns:
+packet_coredns_deploy:
   <<: *coredns_deploy_template
   variables:
     CLOUD: packet
   dependencies:
     - packet_deploy_k8s
 
-packet_e2e_coredns:
+packet_coredns_e2e:
   <<: *coredns_e2e_template
   variables:
     CLOUD: packet
 
-packet_deploy_prom:
+packet_prom_deploy:
   <<: *prometheus_deploy_template
   variables:
     CLOUD: packet
   dependencies:
     - packet_deploy_k8s
 
-packet_e2e_prom:
+packet_prom_e2e:
   <<: *prometheus_e2e_template
   variables:
     CLOUD: packet

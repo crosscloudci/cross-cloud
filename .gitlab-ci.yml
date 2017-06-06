@@ -91,7 +91,7 @@ cross-cloud:
     - /cncf/provision.sh ${CLOUD}-deploy ${CI_ENVIRONMENT_SLUG}
     - helm init ; until [ ! -e $(
         kubectl get pods --namespace=kube-system -l app=helm -l name=tiller
-        - o jsonpath='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}'
+        -o jsonpath='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}'
         | grep "Ready=True") ] ;
         do echo 'tiller not up yet' ;
         sleep 2 ;

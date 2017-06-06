@@ -7,4 +7,4 @@ This cross-cloud project aims to demonstrate cross-project compatibility in the 
 
 Our cross-cloud provisioning is accomplished with the terraform modules for [AWS](./aws), [Azure](./azure), [GCE](./gce), [GKE](./gke), [Packet](./packet) which deploy kubernetes using a common set of variables producing KUBECONFIGs for each.
 
-[cross-cloud-pipeline](./docs/images/cross-cloud-pipeline.png)
+![cross-cloud-pipeline](docs/images/cross-cloud-pipeline.png)

@@ -34,6 +34,8 @@ Feedback on our approach to building and e2e testing welcome:
  * https://github.com/ii/alertmanager/pull/1 => https://gitlab.cncf.ci/prometheus/alertmanager/blob/ci-master/.gitlab-ci.yml
  * https://github.com/ii/node_exporter/pull/1 => https://gitlab.cncf.ci/prometheus/node_exporter/blob/ci-master/.gitlab-ci.yml
 
+We frequent #cncf-ci on [slack.cncf.io](slack.cncf.io) and CNCF [wg-ci](https://github.com/cncf/wg-ci) [mailinglist](https://lists.cncf.io/mailman/listinfo/cncf-ci-public). 
+
 ## Cross-Cloud CI Pipeline Stages
 
 ### CNCF Artifacts 

@@ -39,7 +39,7 @@ data "template_file" "worker_user_data" {
     ca                = "${ gzip_me.ca.output }"
     worker            = "${ gzip_me.worker.output }"
     worker_key        = "${ gzip_me.worker_key.output }"
-    etcd_discovery    = "${file(var.etcd_discovery)}"
+    etcd_discovery    = "${ var.etcd_discovery }"
   }
 }
 

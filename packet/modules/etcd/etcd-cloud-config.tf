@@ -93,6 +93,6 @@ data "template_file" "etcd_user_data" {
     kube_proxy = "${ gzip_me.kube_proxy.output }"
     kube_scheduler = "${ gzip_me.kube_scheduler.output }"
     kube_controller_manager = "${ gzip_me.kube_controller_manager.output }"
-    etcd_discovery = "${ file(var.etcd_discovery) }"
+    etcd_discovery = "${ etcdiscovery_token.etcd.id }"
   }
 }

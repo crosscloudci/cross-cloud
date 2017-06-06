@@ -26,11 +26,31 @@ Each push to projects branches we are interested in will generate binaries,
 tests, and container images exported as ci variables that will allow continous
 deployment of that projects artifacts.
 
+Feedback on our approach to building and e2e testing welcome:
+
+ * https://github.com/ii/kubernetes/pull/1 => https://gitlab.cncf.ci/kubernetes/kubernetes/blob/ci-master/.gitlab-ci.yml
+ * https://github.com/ii/coredns/pull/1 => https://gitlab.cncf.ci/coredns/coredns/blob/ci-master/.gitlab-ci.yml
+ * https://github.com/ii/prometheus/pull/1 https://gitlab.cncf.ci/prometheus/prometheus/blob/ci-master/.gitlab-ci.yml
+ * https://github.com/ii/alertmanager/pull/1 => https://gitlab.cncf.ci/prometheus/alertmanager/blob/ci-master/.gitlab-ci.yml
+ * https://github.com/ii/node_exporter/pull/1 => https://gitlab.cncf.ci/prometheus/node_exporter/blob/ci-master/.gitlab-ci.yml
+
+## Cross-Cloud CI Pipeline Stages
+
 ### CNCF Artifacts 
 
 In our first stage we tie together a particular set of project branches
 (stable,master,alpha) and collect the release.env
 
+We override these variables for the sets of branches we want to test together:
+
+```yaml
+variables:
+  K8S_BRANCH: ci-master
+  COREDNS_BRANCH: ci-master
+  PROMETHEUS_BRANCH: ci-master
+  NODE_EXPORTER_BRANCH: ci-master
+  ALERT_MANAGER_BRANCH: ci-master
+```
 ![cncf-artifacts-stage](docs/images/cncf-artifacts-stage.png)
 
 ```

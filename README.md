@@ -15,6 +15,10 @@ Our cross-cloud provisioning is accomplished with the terraform modules for
 which deploy kubernetes using a common set of variables producing KUBECONFIGs
 for each.
 
+Each project is deployed and tested on each of the clouds. For now the results
+will be available as we run each cross-cloud CI job, but plan to run them daily
+and eventually per commit.
+
 ![cross-cloud-pipeline](docs/images/cross-cloud-pipeline.png)
 
 #### How does it work?
@@ -26,17 +30,29 @@ Each push to projects branches we are interested in will generate binaries,
 tests, and container images exported as ci variables that will allow continous
 deployment of that projects artifacts.
 
-Feedback on our approach to building and e2e testing welcome:
-
- * https://github.com/ii/kubernetes/pull/1 => https://gitlab.cncf.ci/kubernetes/kubernetes/blob/ci-master/.gitlab-ci.yml
- * https://github.com/ii/coredns/pull/1 => https://gitlab.cncf.ci/coredns/coredns/blob/ci-master/.gitlab-ci.yml
- * https://github.com/ii/prometheus/pull/1 https://gitlab.cncf.ci/prometheus/prometheus/blob/ci-master/.gitlab-ci.yml
- * https://github.com/ii/alertmanager/pull/1 => https://gitlab.cncf.ci/prometheus/alertmanager/blob/ci-master/.gitlab-ci.yml
- * https://github.com/ii/node_exporter/pull/1 => https://gitlab.cncf.ci/prometheus/node_exporter/blob/ci-master/.gitlab-ci.yml
-
 We frequent #cncf-ci on [slack.cncf.io](slack.cncf.io) and CNCF [wg-ci](https://github.com/cncf/wg-ci) [mailinglist](https://lists.cncf.io/mailman/listinfo/cncf-ci-public). 
 
-## Cross-Cloud CI Pipeline Stages
+### CNCF Project Pipelines
+
+![cross-cloud-pipeline](docs/images/cncf-project-pipelines.png)
+
+The CI yaml for each project builds artifacts needed to deploy and e2e test and
+makes them available as environment variables.
+
+```
+ALERT_MANAGER_IMAGE=registry.cncf.ci/prometheus/alertmanager
+ALERT_MANAGER_TAG=ci-v0.6.2.e9aefe84.5699
+COREDNS_IMAGE=registry.cncf.ci/coredns/coredns
+COREDNS_TAG=ci-v007.97c730ab.5713
+KUBERNETES_IMAGE=registry.cncf.ci/kubernetes/kubernetes/hyperkube-amd64
+KUBERNETES_TAG=ci-v1-6-3.job.5949
+NODE_EXPORTER_IMAGE=registry.cncf.ci/prometheus/node_exporter
+NODE_EXPORTER_TAG=ci-v0.14.0.ae1e00a5.5696
+PROMETHEUS_IMAGE=registry.cncf.ci/prometheus/prometheus
+PROMETHEUS_TAG=ci-v1.6.3.fd07e315.6097
+```
+
+# Cross-Cloud CI Pipeline Stages
 
 ### CNCF Artifacts 
 
@@ -55,37 +71,50 @@ variables:
 ```
 ![cncf-artifacts-stage](docs/images/cncf-artifacts-stage.png)
 
-```
-ALERT_MANAGER_IMAGE=registry.cncf.ci/prometheus/alertmanager
-ALERT_MANAGER_TAG=ci-v0.6.2.e9aefe84.5699
-COREDNS_IMAGE=registry.cncf.ci/coredns/coredns
-COREDNS_TAG=ci-v007.97c730ab.5713
-KUBERNETES_IMAGE=registry.cncf.ci/kubernetes/kubernetes/hyperkube-amd64
-KUBERNETES_TAG=ci-v1-6-3.job.5949
-NODE_EXPORTER_IMAGE=registry.cncf.ci/prometheus/node_exporter
-NODE_EXPORTER_TAG=ci-v0.14.0.ae1e00a5.5696
-PROMETHEUS_IMAGE=registry.cncf.ci/prometheus/prometheus
-PROMETHEUS_TAG=ci-v1.6.3.fd07e315.6097
-```
-
 ### Cross Cloud
 
 The Cross cloud repo itself includes a [container](Dockerfile) which is used to
 deploy k8s on several clouds, making the KUBECONFIG available for cross-project
-deployments.
+deployments. We are looking to standardize on kubeadmin in the near future
+across all our clouds.
 
 ![cross-cloud-stage](docs/images/cross-cloud-stage.png)
 
 ### Cross Project
 
 We are currently using helm and overriding the image_url and image_tag with our
-CI generated artifacts. and then runs runs E2E tests on the whole infrastructure
+CI generated artifact.
+
+```
+$ /cncf/provision.sh aws-deploy aws-ci-stable
+Kubernetes master is running at
+https://kz8s-apiserver-aws-mvci-stable-8857.ap-southeast-2.elb.amazonaws.com
+
+$ /cncf/provision.sh aws-deploy packet-ci-stable
+Kubernetes master is running at
+https://endpoint.packet-mvci-stable.cncf.ci
+```
 
 ![cross-cloud-stage](docs/images/cross-project-stage.png)
 
 ### CNCF e2e
 
-Initially we are testing head and the last stable release of Kubernetes, CoreDNS
+Initially we are e2e testing head and the last stable release of Kubernetes, CoreDNS
 and Prometheus.
 
+```
+helm install --name coredns --set image.repository=${COREDNS_IMAGE} --set image.tag=${COREDNS_TAG} … stable/coredns
+
+helm install --name prometheus --set server.image.repository=$PROMETHEUS_IMAGE --set server.image.tag=$PROMETHEUS_TAG --set nodeExporter.image.repository=$NODE_EXPORTER_IMAGE --set … stable/prometheus
+```
+
 ![cncf-e2e-stage](docs/images/cncf-e2e-stage.png)
+
+Feedback on our approach to building and e2e testing welcome:
+
+ * https://github.com/ii/kubernetes/pull/1 => https://gitlab.cncf.ci/kubernetes/kubernetes/blob/ci-master/.gitlab-ci.yml
+ * https://github.com/ii/coredns/pull/1 => https://gitlab.cncf.ci/coredns/coredns/blob/ci-master/.gitlab-ci.yml
+ * https://github.com/ii/prometheus/pull/1 https://gitlab.cncf.ci/prometheus/prometheus/blob/ci-master/.gitlab-ci.yml
+ * https://github.com/ii/alertmanager/pull/1 => https://gitlab.cncf.ci/prometheus/alertmanager/blob/ci-master/.gitlab-ci.yml
+ * https://github.com/ii/node_exporter/pull/1 => https://gitlab.cncf.ci/prometheus/node_exporter/blob/ci-master/.gitlab-ci.yml
+

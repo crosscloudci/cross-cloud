@@ -1,5 +1,5 @@
 variables:
-  K8S_BRANCH: ci-v1.6.3
+  K8S_BRANCH: ci-master
   COREDNS_BRANCH: ci-master
   PROMETHEUS_BRANCH: ci-master
   NODE_EXPORTER_BRANCH: ci-master
@@ -89,7 +89,7 @@ cross-cloud:
     on_stop: MUST BE SET
   script:
     - /cncf/provision.sh ${CLOUD}-deploy ${CI_ENVIRONMENT_SLUG}
-    - helm init
+    - helm init || helm init --upgrade
   artifacts:
     when: always
     expire_in: 4 weeks
@@ -139,7 +139,7 @@ cross-cloud:
     - kubectl get nodes
     - kubectl get pods
     - kubectl get componentstatuses
-    - helm init
+    - helm init || true
     - echo Removing any previous deploys of coredns
     - helm get coredns > /dev/null && helm delete --purge coredns
     - COREDNS_INSTALL="helm install --name coredns

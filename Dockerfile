@@ -43,18 +43,28 @@ rm -rf helm-*gz linux-amd64
 RUN wget https://releases.hashicorp.com/terraform/$TERRAFORM_VERSION/terraform_"${TERRAFORM_VERSION}"_linux_$ARC.zip
 RUN unzip terraform*.zip -d /usr/bin
 
-# Install CFSSL
-RUN go get -u github.com/cloudflare/cfssl/cmd/cfssl && \
-go get -u github.com/cloudflare/cfssl/cmd/...
+# # Install CFSSL
+# RUN go get -u github.com/cloudflare/cfssl/cmd/cfssl && \
+# go get -u github.com/cloudflare/cfssl/cmd/...
 
-# Install Gzip+base64 Provider
+# Install Gzip+base64 & ETCD Provider
 RUN go get -u github.com/jakexks/terraform-provider-gzip && \
+    go get -u github.com/paperg/terraform-provider-etcdiscovery && \
   echo providers { >> ~/.terraformrc && \
   echo '    gzip = "terraform-provider-gzip"' >> ~/.terraformrc && \
+  echo '    etcdiscovery = "terraform-provider-etcdiscovery"' >> ~/.terraformrc && \
   echo } >> ~/.terraformrc
 
 #Add Terraform Modules
 
+COPY aws/ /cncf/aws/
+COPY azure/ /cncf/azure/
+COPY gce/ /cncf/gce/
+COPY gke/ /cncf/gke/
+COPY packet/ /cncf/packet/
+COPY cross-cloud/ /cncf/cross-cloud/
+COPY kubeconfig/ /cncf/kubeconfig/
+COPY tls/ /cncf/tls/
 COPY provision.sh /cncf/
 RUN chmod +x /cncf/provision.sh
 #ENTRYPOINT ["/cncf/provision.sh"]

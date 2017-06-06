@@ -18,4 +18,3 @@ variable "etcd_key" {}
 variable "apiserver" {}
 variable "apiserver_key" {}
 variable "data_dir" {}
-variable "etcd_discovery" {}

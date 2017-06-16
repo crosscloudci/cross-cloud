@@ -3,202 +3,31 @@
 ---
 coreos:
 
-  etcd2:
-    advertise-client-urls: http://${ fqdn }:2379
-    # cert-file: /etc/kubernetes/ssl/k8s-etcd.pem
-    # debug: true
-    discovery-srv: ${ internal_tld }
-    initial-advertise-peer-urls: https://${ fqdn }:2380
-    initial-cluster-state: new
-    initial-cluster-token: ${ cluster-token }
-    # key-file: /etc/kubernetes/ssl/k8s-etcd-key.pem
-    listen-client-urls: http://0.0.0.0:2379
-    listen-peer-urls: https://0.0.0.0:2380
-    name: ${ hostname }
-    peer-trusted-ca-file: /etc/kubernetes/ssl/ca.pem
-    peer-client-cert-auth: true
-    peer-cert-file: /etc/kubernetes/ssl/k8s-etcd.pem
-    peer-key-file: /etc/kubernetes/ssl/k8s-etcd-key.pem
-
   units:
-    - name: etcd2.service
-      command: start
-
-    - name: flanneld.service
-      command: start
-      drop-ins:
-        - name: 40-ExecStartPre-symlink.conf
-          content: |
-            [Service]
-            ExecStartPre=/usr/bin/ln -sf /etc/flannel/options.env /run/flannel/options.env
-        - name: 50-network-config.conf
-          content: |
-            [Service]
-            ExecStartPre=-/usr/bin/etcdctl mk /coreos.com/network/config \
-              '{ "Network": "${ pod_cidr }", "Backend": { "Type": "vxlan" } }'
-            Restart=always
-            RestartSec=10
-
     - name: docker.service
       command: start
-      drop-ins:
-        - name: 40-flannel.conf
-          content: |
-            [Unit]
-            After=flanneld.service
-            Requires=flanneld.service
-            [Service]
-            EnvironmentFile=/etc/kubernetes/cni/docker_opts_cni.env
+
+    - name: binaries.service
+      command: start
+      content: |
+        [Unit]
+        Description=Download Binarys
+        [Service]
+        Type=oneshot
+        RemainAfterExit=yes
+        ExecStartPre=-/usr/bin/mkdir --parents /opt/bin
+        ExecStartPre=/usr/bin/curl -L -o /usr/bin/kubelet https://storage.googleapis.com/kubernetes-release/release/v1.6.0/bin/linux/amd64/kubelet
+        ExecStartPre=/usr/bin/curl -L -o /usr/bin/kubelet https://storage.googleapis.com/kubernetes-release/release/v1.6.0/bin/linux/amd64/kubeadm
 
     - name: kubelet.service
       command: start
       content: |
         [Service]
-        Environment=KUBELET_IMAGE_URL=docker://${ kubelet_image_url }
-        Environment=KUBELET_IMAGE_TAG=${ kubelet_image_tag }
-        Environment="RKT_RUN_ARGS=--uuid-file-save=/var/run/kubelet-pod.uuid \
-        --insecure-options=image \
-        --volume var-log,kind=host,source=/var/log \
-        --mount volume=var-log,target=/var/log \
-        --volume dns,kind=host,source=/etc/resolv.conf \
-        --mount volume=dns,target=/etc/resolv.conf"
-        ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/manifests
-        ExecStartPre=/usr/bin/mkdir -p /var/log/containers
-        ExecStartPre=-/usr/bin/rkt rm --uuid-file=/var/run/kubelet-pod.uuid
-        ExecStart=/usr/lib/coreos/kubelet-wrapper \
-        --api-servers=http://127.0.0.1:8080 \
-        --register-schedulable=false \
-        --cloud-provider=aws \
-        --cni-conf-dir=/etc/kubernetes/cni/net.d \
-        --network-plugin=cni \
-        --container-runtime=docker \
-        --allow-privileged=true \
-        --pod-manifest-path=/etc/kubernetes/manifests \
-        --hostname-override=${ fqdn } \
-        --cluster_dns=${ dns_service_ip } \
-        --cluster_domain=${ cluster_domain }
-        ExecStop=-/usr/bin/rkt stop --uuid-file=/var/run/kubelet-pod.uuid
+        ExecStart=/usr/bin/kubelet --kubeconfig=/etc/kubernetes/kubelet.conf --require-kubeconfig=true --pod-manifest-path=/etc/kubernetes/manifests --allow-privileged=true --network-plugin=cni --cni-conf-dir=/etc/cni/net.d --cni-bin-dir=/opt/cni/bin --cluster-dns=10.96.0.10 --cluster-domain=cluster.local
         Restart=always
+        StartLimitInterval=0
         RestartSec=10
         [Install]
         WantedBy=multi-user.target
 
-  update:
-    reboot-strategy: etcd-lock
-
-write-files:
-  - path: /etc/flannel/options.env
-    content: |
-      FLANNELD_IFACE=$private_ipv4
-      FLANNELD_ETCD_ENDPOINTS=http://etcd.${ internal_tld }:2379
-
-  - path: /etc/kubernetes/cni/docker_opts_cni.env
-    content: |
-      DOCKER_OPT_BIP=""
-      DOCKER_OPT_IPMASQ=""
-
-  - path: /etc/kubernetes/cni/net.d/10-flannel.conf
-    content: |
-        {
-            "name": "podnet",
-            "type": "flannel",
-            "delegate": {
-                "isDefaultGateway": true
-            }
-        }
-
-  - path: /etc/kubernetes/manifests/kube-apiserver.yml
-    encoding: "gzip+base64"
-    content: |
-      ${ kube-apiserver }
-      
-  - path: /etc/kubernetes/manifests/kube-controller-manager.yml
-    encoding: "gzip+base64"
-    content: |
-      ${ kube-controller-manager }
-
-  - path: /etc/kubernetes/manifests/kube-proxy.yml
-    content: |
-      apiVersion: v1
-      kind: Pod
-      metadata:
-        name: kube-proxy
-        namespace: kube-system
-      spec:
-        hostNetwork: true
-        containers:
-        - name: kube-proxy
-          image: ${ hyperkube }
-          command:
-          - /hyperkube
-          - proxy
-          - --master=http://127.0.0.1:8080
-          securityContext:
-            privileged: true
-          volumeMounts:
-          - mountPath: /etc/ssl/certs
-            name: ssl-certs-host
-            readOnly: true
-        volumes:
-        - hostPath:
-            path: /usr/share/ca-certificates
-          name: ssl-certs-host
-
-  - path: /etc/kubernetes/manifests/kube-scheduler.yml
-    content: |
-      apiVersion: v1
-      kind: Pod
-      metadata:
-        name: kube-scheduler
-        namespace: kube-system
-      spec:
-        hostNetwork: true
-        containers:
-        - name: kube-scheduler
-          image: ${ hyperkube }
-          command:
-          - /hyperkube
-          - scheduler
-          - --master=http://127.0.0.1:8080
-          - --leader-elect=true
-          resources:
-            requests:
-              cpu: 100m
-          livenessProbe:
-            httpGet:
-              host: 127.0.0.1
-              path: /healthz
-              port: 10251
-            initialDelaySeconds: 15
-            timeoutSeconds: 15
-      
-  - path: /etc/kubernetes/ssl/ca.pem
-    permissions: "0644"
-    encoding: "gzip+base64"
-    content: |
-      ${ ca }
-      
-  - path: /etc/kubernetes/ssl/k8s-etcd.pem
-    permissions: "0644"
-    encoding: "gzip+base64"
-    content: |
-      ${ etcd }
-      
-  - path: /etc/kubernetes/ssl/k8s-etcd-key.pem
-    permissions: "0644"
-    encoding: "gzip+base64"
-    content: |
-      ${ etcd_key }
-      
-  - path: /etc/kubernetes/ssl/k8s-apiserver.pem
-    permissions: "0644"
-    encoding: "gzip+base64"
-    content: |
-      ${ apiserver }
-
-  - path: /etc/kubernetes/ssl/k8s-apiserver-key.pem
-    permissions: "0644"
-    encoding: "gzip+base64"
-    content: |
-      ${ apiserver_key }
-
+  

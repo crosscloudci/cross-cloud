@@ -54,11 +54,11 @@ module "etcd" {
   subnet_ids_private             = "${ module.vpc.subnet_ids_private }"
   subnet_ids_public              = "${ module.vpc.subnet_ids_public }"
   vpc_id                         = "${ module.vpc.id }"
-  ca                             = "${ module.tls.ca }"
-  etcd                           = "${ module.tls.etcd }"
-  etcd_key                       = "${ module.tls.etcd_key }"
-  apiserver                      = "${ module.tls.apiserver }"
-  apiserver_key                  = "${ module.tls.apiserver_key }"
+  # ca                             = "${ module.tls.ca }"
+  # etcd                           = "${ module.tls.etcd }"
+  # etcd_key                       = "${ module.tls.etcd_key }"
+  # apiserver                      = "${ module.tls.apiserver }"
+  # apiserver_key                  = "${ module.tls.apiserver_key }"
 }
 
 
@@ -97,9 +97,9 @@ module "worker" {
   region = "${ var.aws_region }"
   security_group_id = "${ module.security.worker_id }"
   subnet_ids = "${ module.vpc.subnet_ids_private }"
-  ca = "${ module.tls.ca }"
-  worker = "${ module.tls.worker }"
-  worker_key = "${ module.tls.worker_key }"
+  # ca = "${ module.tls.ca }"
+  # worker = "${ module.tls.worker }"
+  # worker_key = "${ module.tls.worker_key }"
 
   volume_size = {
     ebs = 250

@@ -7,7 +7,7 @@ coreos:
     - name: docker.service
       command: start
 
-    - name: binaries.service
+    - name: bins.service
       command: start
       content: |
         [Unit]
@@ -15,19 +15,41 @@ coreos:
         [Service]
         Type=oneshot
         RemainAfterExit=yes
-        ExecStartPre=-/usr/bin/mkdir --parents /opt/bin
-        ExecStartPre=/usr/bin/curl -L -o /usr/bin/kubelet https://storage.googleapis.com/kubernetes-release/release/v1.6.0/bin/linux/amd64/kubelet
-        ExecStartPre=/usr/bin/curl -L -o /usr/bin/kubelet https://storage.googleapis.com/kubernetes-release/release/v1.6.0/bin/linux/amd64/kubeadm
+        ExecStartPre=/usr/bin/mkdir --parents /opt/bin
+        ExecStartPre=/usr/bin/curl -L -o /opt/bin/kubelet https://storage.googleapis.com/kubernetes-release/release/v1.6.0/bin/linux/amd64/kubelet
+        ExecStartPre=/usr/bin/chmod +x /opt/bin/kubelet
+        ExecStartPre=/usr/bin/curl -L -o /opt/bin/kubeadm https://storage.googleapis.com/kubernetes-release/release/v1.6.0/bin/linux/amd64/kubeadm
+        ExecStart=/usr/bin/chmod +x /opt/bin/kubeadm
+        Restart=no
 
     - name: kubelet.service
       command: start
       content: |
+        [Unit]
+        Description=kubelet: The Kubernetes Node Agent
+        Documentation=http://kubernetes.io/docs/
+        After=bins.service
+        Requires=bins.service
+ 
         [Service]
-        ExecStart=/usr/bin/kubelet --kubeconfig=/etc/kubernetes/kubelet.conf --require-kubeconfig=true --pod-manifest-path=/etc/kubernetes/manifests --allow-privileged=true --network-plugin=cni --cni-conf-dir=/etc/cni/net.d --cni-bin-dir=/opt/cni/bin --cluster-dns=10.96.0.10 --cluster-domain=cluster.local
+        ExecStart=/opt/bin/kubelet
         Restart=always
         StartLimitInterval=0
         RestartSec=10
+
         [Install]
         WantedBy=multi-user.target
+      drop-ins:
+        - name: 10-kubeadm.conf
+          content: |
+            [Service]
+            Environment="KUBELET_KUBECONFIG_ARGS=--kubeconfig=/etc/kubernetes/kubelet.conf --require-kubeconfig=true"
+            Environment="KUBELET_SYSTEM_PODS_ARGS=--pod-manifest-path=/etc/kubernetes/manifests --allow-privileged=true"
+            Environment="KUBELET_NETWORK_ARGS=--network-plugin=cni --cni-conf-dir=/etc/cni/net.d --cni-bin-dir=/opt/cni/bin"
+            Environment="KUBELET_DNS_ARGS=--cluster-dns=10.96.0.10 --cluster-domain=cluster.local"
+            Environment="KUBELET_AUTHZ_ARGS=--authorization-mode=Webhook --client-ca-file=/etc/kubernetes/pki/ca.crt"
+            Environment="KUBELET_CGROUP_ARGS=--cgroup-driver=cgroupfs"
+            ExecStart=
+            ExecStart=/opt/bin/kubelet $KUBELET_KUBECONFIG_ARGS $KUBELET_SYSTEM_PODS_ARGS $KUBELET_NETWORK_ARGS $KUBELET_DNS_ARGS $KUBELET_AUTHZ_ARGS $KUBELET_CGROUP_ARGS $KUBELET_EXTRA_ARGS
 
   

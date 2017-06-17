@@ -23,6 +23,6 @@ variable "service_cidr"   { default = "10.3.0.0/24" }
 variable "k8s_service_ip" { default = "10.3.0.1" }
 variable "dns_service_ip" { default = "10.3.0.10" }
 # variable "allow-ssh-cidr" { default = "0.0.0.0/0" }
-variable "data_dir" { default = "/cncf/data" }
+variable "data_dir" { default = "/cncf/data/test" }
 # variable "name-servers-file" { default = "google_dns_zone"}
 variable "domain" { default = "cncf.ci" }

@@ -252,22 +252,32 @@ write-files:
         copytruncate
       }
 
-  - encoding: b64 
-    content: "${ ca }"
-    path: /etc/kubernetes/ssl/ca.pem
+  - path: /etc/kubernetes/ssl/ca.pem
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ ca }
+      
+  - path: /etc/kubernetes/ssl/k8s-etcd.pem
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ etcd }
+      
+  - path: /etc/kubernetes/ssl/k8s-etcd-key.pem
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ etcd_key }
+      
+  - path: /etc/kubernetes/ssl/k8s-apiserver.pem
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ apiserver }
 
-  - encoding: b64 
-    content: "${ k8s-etcd }"
-    path: /etc/kubernetes/ssl/k8s-etcd.pem
-
-  - encoding: b64 
-    content: "${ k8s-etcd-key }"
-    path: /etc/kubernetes/ssl/k8s-etcd-key.pem
-
-  - encoding: b64 
-    content: "${ k8s-apiserver }"
-    path: /etc/kubernetes/ssl/k8s-apiserver.pem
-
-  - encoding: b64 
-    content: "${ k8s-apiserver-key }"
-    path: /etc/kubernetes/ssl/k8s-apiserver-key.pem
+  - path: /etc/kubernetes/ssl/k8s-apiserver-key.pem
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ apiserver_key }

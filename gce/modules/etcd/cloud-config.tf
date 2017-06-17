@@ -1,3 +1,23 @@
+resource "gzip_me" "ca" {
+  input = "${ var.ca }"
+}
+
+resource "gzip_me" "etcd" {
+  input = "${ var.etcd }"
+}
+
+resource "gzip_me" "etcd_key" {
+  input = "${ var.etcd_key }"
+}
+
+resource "gzip_me" "apiserver" {
+  input = "${ var.apiserver }"
+}
+
+resource "gzip_me" "apiserver_key" {
+  input = "${ var.apiserver_key }"
+}
+
 data "template_file" "cloud-config" {
   count = "${ var.master_node_count }"
   template = "${ file( "${ path.module }/cloud-config.yml" )}"
@@ -14,13 +34,13 @@ data "template_file" "cloud-config" {
     internal_tld = "${ var.internal_tld }"
     pod_cidr = "${ var.pod_cidr }"
     service_cidr = "${ var.service_cidr }"
-    ca = "${ base64encode(var.ca) }"
-    k8s-etcd = "${ base64encode(var.k8s-etcd) }"
-    k8s-etcd-key = "${ base64encode(var.k8s-etcd-key) }"
-    k8s-apiserver = "${ base64encode(var.k8s-apiserver) }"
-    k8s-apiserver-key = "${ base64encode(var.k8s-apiserver-key) }"
+    ca = "${ gzip_me.ca.output }"
+    etcd = "${ gzip_me.etcd.output }"
+    etcd_key = "${ gzip_me.etcd_key.output }"
+    apiserver = "${ gzip_me.apiserver.output }"
+    apiserver_key = "${ gzip_me.apiserver_key.output }"
     #name-servers-file = "${ var.name-servers-file }"
-    etcd_discovery = "${ file(var.etcd_discovery) }"
+    etcd_discovery = "${ etcdiscovery_token.etcd.id }"
     # cloud-config = "${ base64encode(var.cloud-config) }"
 
   }

@@ -21,7 +21,7 @@ variable "internal_tld" {}
 variable "kubelet_image_url" {}
 variable "kubelet_image_tag" {}
 variable "ca" {}
-variable "k8s-worker" {}
-variable "k8s-worker-key" {}
+variable "worker" {}
+variable "worker_key" {}
 variable "domain" {}
 # variable "cloud-config" {}

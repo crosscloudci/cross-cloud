@@ -11,7 +11,7 @@ spec:
     command:
     - /hyperkube
     - proxy
-    - --master=https://${ master_fqdn }
+    - --master=https://${ internal_lb_ip }
     - --kubeconfig=/etc/kubernetes/worker-kubeconfig.yaml
     securityContext:
       privileged: true

@@ -5,23 +5,13 @@ module "vpc" {
   # name-servers-file = "${ module.dns.name-servers-file }"
   region = "${ var.region }"
  }
+
 # module "dns" {
 #   source = "./modules/dns"
 #   name = "${ var.name }"
-#   internal_tld = "${ var.internal_tld }"
-#   # master-ips = "${ module.etcd.master-ips }"
 #   master_node_count = "${ var.master_node_count }"
-#   name-servers-file = "${ var.name-servers-file }"
+#   domain = "${ var.domain }"
 # }
-
-module "dns" {
-  source = "./modules/dns"
-  name = "${ var.name }"
-  external_lb = "${ module.etcd.external_lb }"
-  internal_lb = "${ module.etcd.internal_lb}"
-  master_node_count = "${ var.master_node_count }"
-  domain = "${ var.domain }"
-}
 
  module "etcd" {
    source = "./modules/etcd"
@@ -31,6 +21,7 @@ module "dns" {
    project = "${ var.project }"
    network = "${ module.vpc.network }"
    subnetwork = "${ module.vpc.subnetwork }"
+   internal_lb_ip = "${ var.internal_lb_ip }"
    # name-servers-file = "${ var.name-servers-file }"
 # admin_username = "${ var.admin_username }"
    master_node_count = "${ var.master_node_count }"
@@ -89,6 +80,7 @@ module "worker" {
   project = "${ var.project }"
   # admin_username = "${ var.admin_username }"
   worker_node_count = "${ var.worker_node_count }"
+  internal_lb_ip = "${ var.internal_lb_ip }"
   # worker-vm-size = "${ var.worker-vm-size }"
   # image-publisher = "${ var.image-publisher }"
   # image-offer = "${ var.image-offer }"
@@ -129,7 +121,7 @@ module "kubeconfig" {
   source = "../kubeconfig"
 
   data_dir = "${ var.data_dir }"
-  endpoint = "endpoint.${ var.name }.${ var.domain }"
+  endpoint = "${ module.etcd.external_lb }"
   name = "${ var.name }"
   ca = "${ module.tls.ca }"
   client = "${ module.tls.client }"
@@ -164,8 +156,8 @@ module "tls" {
   tls_apiserver_cert_subject_common_name = "k8s-apiserver"
   tls_apiserver_cert_validity_period_hours = 1000
   tls_apiserver_cert_early_renewal_hours = 100
-  tls_apiserver_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local,master.${ var.name }.${ var.domain },endpoint.${ var.name }.${ var.domain }"
-  tls_apiserver_cert_ip_addresses = "127.0.0.1,10.0.0.1"
+  tls_apiserver_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local,*.c.${ var.project }.internal"
+  tls_apiserver_cert_ip_addresses = "127.0.0.1,10.0.0.1,${ module.etcd.external_lb }"
 
   tls_worker_cert_subject_common_name = "k8s-worker"
   tls_worker_cert_validity_period_hours = 1000

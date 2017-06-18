@@ -22,7 +22,6 @@ spec:
     - --tls-cert-file=/etc/kubernetes/ssl/k8s-apiserver.pem
     - --tls-private-key-file=/etc/kubernetes/ssl/k8s-apiserver-key.pem
     - --client-ca-file=/etc/kubernetes/ssl/ca.pem
-    - --cloud-provider=gce
     - --service-account-key-file=/etc/kubernetes/ssl/k8s-apiserver-key.pem
     - --runtime-config=extensions/v1beta1/networkpolicies=true
     - --anonymous-auth=false

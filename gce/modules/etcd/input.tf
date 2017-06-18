@@ -30,6 +30,7 @@ variable "kubelet_image_tag" {}
 # variable "name-servers-file" {}
 variable "network" {}
 variable "subnetwork" {}
+variable "internal_lb_ip" {}
 # variable "cloud-config" {}
 
 # variable "etcd-security-group-id" {}

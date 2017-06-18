@@ -11,7 +11,6 @@ spec:
     command:
     - /hyperkube
     - controller-manager
-    - --cloud-provider=gce
     - --leader-elect=true
     - --master=http://127.0.0.1:8080
     - --root-ca-file=/etc/kubernetes/ssl/ca.pem

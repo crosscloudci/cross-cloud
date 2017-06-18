@@ -24,4 +24,5 @@ variable "ca" {}
 variable "worker" {}
 variable "worker_key" {}
 variable "domain" {}
+variable "etcd_discovery" {}
 # variable "cloud-config" {}

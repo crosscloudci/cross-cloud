@@ -109,6 +109,7 @@ module "worker" {
   ca = "${ module.tls.ca }"
   worker = "${ module.tls.worker }"
   worker_key = "${ module.tls.worker_key }"
+  etcd_discovery            = "${ module.etcd.etcd_discovery }"
 
   # cloud-config = "${file("${ var.data_dir }/azure-config.json")}"
   # security-group-id = "${ module.security.worker-id }"

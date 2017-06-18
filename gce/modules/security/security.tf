@@ -7,7 +7,7 @@ resource "google_compute_firewall" "allow-internal-lb" {
     ports    = ["8080", "443"]
   }
 
-  source_ranges = ["10.0.0.0/16"]
+  source_ranges = ["10.1.0.0/16"]
   target_tags = ["int-lb"]
 }
 
@@ -20,7 +20,7 @@ resource "google_compute_firewall" "allow-health-check" {
     ports = ["8080", "443"]
   }
 
-  source_ranges = ["130.211.0.0/22","35.191.0.0/16","10.0.0.0/16"]
+  source_ranges = ["130.211.0.0/22","35.191.0.0/16","10.1.0.0/16"]
 }
 
 resource "google_compute_firewall" "allow-all-internal" {
@@ -39,7 +39,7 @@ resource "google_compute_firewall" "allow-all-internal" {
     protocol = "icmp"
   }
 
-  source_ranges = ["10.0.0.0/16"]
+  source_ranges = ["10.1.0.0/16"]
 }
 
 resource "google_compute_firewall" "allow-ssh-bastion" {

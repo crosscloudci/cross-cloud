@@ -25,4 +25,6 @@ variable "worker" {}
 variable "worker_key" {}
 variable "domain" {}
 variable "etcd_discovery" {}
+variable "internal_lb_ip" {}
+
 # variable "cloud-config" {}

@@ -2,8 +2,10 @@ data "template_file" "kube_proxy" {
   template = "${ file( "${ path.module }/kube-proxy.yml" )}"
   vars {
     hyperkube = "${ var.kubelet_image_url }:${ var.kubelet_image_tag }"
+    internal_lb_ip = "${ var.internal_lb_ip }"
     name = "${ var.name }"
     domain = "${ var.domain }"
+    master_fqdn = "${ var.name}-master${ count.index + 1 }.c.${ var.project }.internal"
   }
 }
 
@@ -29,6 +31,7 @@ data "template_file" "cloud-config" {
   vars {
 
     fqdn = "${ var.name}-worker${ count.index + 1 }.c.${ var.project }.internal"
+    master_fqdn = "${ var.name}-master${ count.index + 1 }.c.${ var.project }.internal"
     cluster_domain = "${ var.cluster_domain }"
     dns_service_ip = "${ var.dns_service_ip }"
     kubelet_image_url = "${ var.kubelet_image_url }"
@@ -40,6 +43,7 @@ data "template_file" "cloud-config" {
     kube_proxy        = "${ gzip_me.kube_proxy.output }"
     name = "${ var.name }"
     domain = "${ var.domain }"
+    internal_lb_ip = "${ var.internal_lb_ip }"
     etcd_discovery    = "${ var.etcd_discovery }"
   }
 }

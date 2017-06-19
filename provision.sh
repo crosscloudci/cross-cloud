@@ -99,13 +99,33 @@ cd ${DIR}/packet
     time terraform destroy -force ${DIR}/packet
     
 elif [ "$1" = "gce-deploy" ] ; then
-    terraform get ${DIR}/gce && \
-        terraform apply -target module.etcd.null_resource.discovery_gen ${DIR}/gce && \
-        terraform apply -target null_resource.ssl_gen ${DIR}/gce && \
-        time terraform apply ${DIR}/gce 
-        
+    cd ${DIR}/gce
+    terraform init \
+              -backend-config 'bucket=aws65972563' \
+              -backend-config "key=aws-${TF_VAR_name}" \
+              -backend-config 'region=ap-southeast-2'
+    # ensure kubeconfig is written to disk on infrastructure refresh
+    terraform taint -module=kubeconfig null_resource.kubeconfig || true
+    time terraform apply -target module.vpc.google_compute_subnetwork.cncf ${DIR}/gce
+    time terraform apply ${DIR}/gce
+
+    ELB=$(terraform output external_lb)
+    export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
+    echo "❤ Polling for cluster life - this could take a minute or more"
+    _retry "❤ Waiting for DNS to resolve for ${ELB}" ping -c1 "${ELB}"
+    _retry "❤ Curling apiserver external elb" curl --insecure --silent "https://${ELB}"
+    _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info
+    kubectl cluster-info
+
 elif [ "$1" = "gce-destroy" ] ; then
+    cd ${DIR}/gce
+    terraform init \
+              -backend-config 'bucket=aws65972563' \
+              -backend-config "key=packet-${TF_VAR_name}" \
+              -backend-config 'region=ap-southeast-2'
+    time terraform destroy -force -target module.vpc.google_compute_subnetwork.cncf
     time terraform destroy -force ${DIR}/gce
+
 elif [ "$1" = "gke-deploy" ] ; then
 cd ${DIR}/gke
     terraform init \

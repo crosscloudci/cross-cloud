@@ -19,9 +19,9 @@ variable "admin_username" { default = "core"}
 # Kubernetes
 variable "cluster_domain" { default = "cluster.local" }
 variable "pod_cidr" { default = "10.2.0.0/16" }
-variable "service_cidr"   { default = "10.3.0.0/24" }
-variable "k8s_service_ip" { default = "10.3.0.1" }
-variable "dns_service_ip" { default = "10.3.0.10" }
+variable "service_cidr"   { default = "10.0.0.0/24" }
+variable "k8s_service_ip" { default = "10.0.0.1" }
+variable "dns_service_ip" { default = "10.0.0.10" }
 variable "master_node_count" { default = "3" }
 variable "worker_node_count" { default = "3" }
 # Autoscaling not supported by Kuberenetes on Azure yet

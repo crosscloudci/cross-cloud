@@ -312,3 +312,46 @@ packet_prom_e2e:
   <<: *prometheus_e2e_template
   variables:
     CLOUD: packet
+
+gce_k8s_deploy:
+  <<: *k8s_deploy_template
+  variables:
+    CLOUD: gce
+  environment:
+    name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
+    url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
+    on_stop: gce_k8s_destroy
+
+gce_k8s_e2e:
+  <<: *k8s_e2e_template
+  variables:
+    CLOUD: gce
+
+gce_k8s_destroy:
+  <<: *k8s_cloud_destroy_template
+  variables:
+    CLOUD: gce
+
+gce_coredns_deploy:
+  <<: *coredns_deploy_template
+  variables:
+    CLOUD: gce
+  dependencies:
+    - gce_k8s_deploy
+
+gce_coredns_e2e:
+  <<: *coredns_e2e_template
+  variables:
+    CLOUD: gce
+
+gce_prom_deploy:
+  <<: *prometheus_deploy_template
+  variables:
+    CLOUD: gce
+  dependencies:
+    - gce_k8s_deploy
+
+gce_prom_e2e:
+  <<: *prometheus_e2e_template
+  variables:
+    CLOUD: gce

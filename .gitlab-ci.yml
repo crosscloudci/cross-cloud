@@ -38,10 +38,11 @@ cni:
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
   stage: cncf-artifacts
   script:
+    - RELEASE_ENV_URL="$BASE_URL/containernetworking/cni/builds/artifacts/${COREDNS_BRANCH}/file/release.env?job=release"
+    - echo $RELEASE_ENV_URL
     - CNI_RELEASE_ENV=$(curl -s -L
-        "$BASE_URL/containernetworking/cni/builds/artifacts/${COREDNS_BRANCH}/file/release.env?job=release"
+        $RELEASE_ENV_URL
         |  sed -n 's/.*href="\([^"]*\).*/\1/p' | grep artifacts/raw | tail -1)
-    - mkdir -p data
     - curl -s -o data/cni.env -L ${BASE_URL}/$CNI_RELEASE_ENV
     - cat data/cni.env
   artifacts:

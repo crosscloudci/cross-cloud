@@ -4,6 +4,7 @@ variables:
   PROMETHEUS_BRANCH: ci-v1.6.3
   NODE_EXPORTER_BRANCH: ci-v0.14.0
   ALERT_MANAGER_BRANCH: ci-v0.6.2
+  CNI_BRANCH: ci-v0.5.2
 
 stages:
   - cncf-artifacts
@@ -21,12 +22,28 @@ kubernetes:
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
   stage: cncf-artifacts
   script:
-    - KUBERNETES_RELEASE_VARS=$(curl -s -L
+    - KUBERNETES_RELEASE_ENV=$(curl -s -L
         "$BASE_URL/kubernetes/kubernetes/builds/artifacts/${K8S_BRANCH}/file/release.env?job=build"
         |  sed -n 's/.*href="\([^"]*\).*/\1/p' | grep artifacts/raw | tail -1)
     - mkdir -p data
-    - curl -s -o data/kubernetes.env -L ${BASE_URL}/$KUBERNETES_RELEASE_VARS
+    - curl -s -o data/kubernetes.env -L ${BASE_URL}/$KUBERNETES_RELEASE_ENV
     - cat data/kubernetes.env
+  artifacts:
+    when: always
+    expire_in: 4 weeks
+    paths:
+      - ./data/
+
+cni:
+  image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
+  stage: cncf-artifacts
+  script:
+    - CNI_RELEASE_ENV=$(curl -s -L
+        "$BASE_URL/containernetworking/cni/builds/artifacts/${COREDNS_BRANCH}/file/release.env?job=release"
+        |  sed -n 's/.*href="\([^"]*\).*/\1/p' | grep artifacts/raw | tail -1)
+    - mkdir -p data
+    - curl -s -o data/cni.env -L ${BASE_URL}/$CNI_RELEASE_ENV
+    - cat data/cni.env
   artifacts:
     when: always
     expire_in: 4 weeks

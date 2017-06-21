@@ -409,3 +409,89 @@ gce_prom_e2e:
   <<: *prometheus_e2e_template
   variables:
     CLOUD: gce
+
+gke_k8s_deploy:
+  <<: *k8s_deploy_template
+  variables:
+    CLOUD: gke
+  environment:
+    name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
+    url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
+    on_stop: gke_k8s_destroy
+
+gke_k8s_e2e:
+  <<: *k8s_e2e_template
+  variables:
+    CLOUD: gke
+
+gke_k8s_destroy:
+  <<: *k8s_cloud_destroy_template
+  variables:
+    CLOUD: gke
+
+gke_coredns_deploy:
+  <<: *coredns_deploy_template
+  variables:
+    CLOUD: gke
+  dependencies:
+    - gke_k8s_deploy
+
+gke_coredns_e2e:
+  <<: *coredns_e2e_template
+  variables:
+    CLOUD: gke
+
+gke_prom_deploy:
+  <<: *prometheus_deploy_template
+  variables:
+    CLOUD: gke
+  dependencies:
+    - gke_k8s_deploy
+
+gke_prom_e2e:
+  <<: *prometheus_e2e_template
+  variables:
+    CLOUD: gke
+
+azure_k8s_deploy:
+  <<: *k8s_deploy_template
+  variables:
+    CLOUD: azure
+  environment:
+    name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
+    url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
+    on_stop: azure_k8s_destroy
+
+azure_k8s_e2e:
+  <<: *k8s_e2e_template
+  variables:
+    CLOUD: azure
+
+azure_k8s_destroy:
+  <<: *k8s_cloud_destroy_template
+  variables:
+    CLOUD: azure
+
+azure_coredns_deploy:
+  <<: *coredns_deploy_template
+  variables:
+    CLOUD: azure
+  dependencies:
+    - azure_k8s_deploy
+
+azure_coredns_e2e:
+  <<: *coredns_e2e_template
+  variables:
+    CLOUD: azure
+
+azure_prom_deploy:
+  <<: *prometheus_deploy_template
+  variables:
+    CLOUD: azure
+  dependencies:
+    - azure_k8s_deploy
+
+azure_prom_e2e:
+  <<: *prometheus_e2e_template
+  variables:
+    CLOUD: azure

@@ -102,7 +102,7 @@ elif [ "$1" = "gce-deploy" ] ; then
     cd ${DIR}/gce
     terraform init \
               -backend-config 'bucket=aws65972563' \
-              -backend-config "key=aws-${TF_VAR_name}" \
+              -backend-config "key=gce-${TF_VAR_name}" \
               -backend-config 'region=ap-southeast-2'
     # ensure kubeconfig is written to disk on infrastructure refresh
     terraform taint -module=kubeconfig null_resource.kubeconfig || true
@@ -121,7 +121,7 @@ elif [ "$1" = "gce-destroy" ] ; then
     cd ${DIR}/gce
     terraform init \
               -backend-config 'bucket=aws65972563' \
-              -backend-config "key=packet-${TF_VAR_name}" \
+              -backend-config "key=gce-${TF_VAR_name}" \
               -backend-config 'region=ap-southeast-2'
     time terraform destroy -force -target module.vpc.google_compute_subnetwork.cncf
     time terraform destroy -force ${DIR}/gce

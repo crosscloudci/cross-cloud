@@ -123,8 +123,8 @@ elif [ "$1" = "gce-destroy" ] ; then
               -backend-config 'bucket=aws65972563' \
               -backend-config "key=gce-${TF_VAR_name}" \
               -backend-config 'region=ap-southeast-2'
-    time terraform destroy -force -target module.vpc.google_compute_subnetwork.cncf
-    time terraform destroy -force ${DIR}/gce
+    time terraform destroy -force ${DIR}/gce || true # Allow to Fail and clean up network on next step
+    time terraform destroy -force -target module.vpc.google_compute_subnetwork.cncf ${DIR}/gce
 
 elif [ "$1" = "gke-deploy" ] ; then
 cd ${DIR}/gke

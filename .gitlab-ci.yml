@@ -20,7 +20,7 @@ before_script:
   - mkdir -p ./data ; touch ./data/empty.env
   - for envfile in data/*env ; do source $envfile ; echo ----- $envfile ---- ; cat $envfile ; done
 
-kubernetes-${K8S_BRANCH}:
+kubernetes-master:
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
   stage: cncf-artifacts
   script:
@@ -36,7 +36,7 @@ kubernetes-${K8S_BRANCH}:
     paths:
       - ./data/
 
-fluentd-${FLUENTD_BRANCH}:
+fluentd-master:
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
   stage: cncf-artifacts
   script:
@@ -53,7 +53,7 @@ fluentd-${FLUENTD_BRANCH}:
     paths:
       - ./data/
 
-coredns-${COREDNS_BRANCH}:
+coredns-master:
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
   stage: cncf-artifacts
   script:
@@ -69,7 +69,7 @@ coredns-${COREDNS_BRANCH}:
     paths:
       - ./data/
 
-prometheus-${PROMETHEUS_BRANCH}:
+prometheus-master:
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
   stage: cncf-artifacts
   script:
@@ -90,7 +90,7 @@ prometheus-${PROMETHEUS_BRANCH}:
     paths:
       - ./data/
 
-cross-cloud-${CI_COMMIT_REF_SLUG}:
+cross-cloud-master:
   stage: cncf-artifacts
   script:
     - docker login -u "gitlab-ci-token" -p "$CI_JOB_TOKEN" $CI_REGISTRY

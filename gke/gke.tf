@@ -3,7 +3,7 @@ provider "google" {}
 terraform {
   backend "s3" {
     bucket = "aws"
-    key    = "setme"
+    key    = "aws"
     region = "ap-southeast-2"
   }
 }

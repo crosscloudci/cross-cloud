@@ -201,6 +201,8 @@ cross-cloud:
   script:
     - helm init 
     - helm repo add cncf http://cncf.gitlab.io/stable
+    - echo Removing any previous deploys of coredns
+    - helm get corednstest > /dev/null && helm delete --purge corednstest
     - COREDNS_TEST_INSTALL="helm install --name corednstest
          --namespace=kube-system
          --set image.repository=registry.cncf.ci/coredns/coredns/coredns-e2e

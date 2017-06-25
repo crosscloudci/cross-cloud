@@ -64,7 +64,7 @@ coredns:
     - curl -s -o data/coredns.env -L ${BASE_URL}/$COREDNS_RELEASE_ENV
     - cat data/coredns.env
   artifacts:
-    when: alway
+    when: always
     expire_in: 4 weeks
     paths:
       - ./data/
@@ -246,7 +246,7 @@ cross-cloud:
     - kubectl get pods
 
 .prometheus_e2e_template: &prometheus_e2e_template
-  image: ${CI_REGISTRY}/coredns/coredns/coredns-e2e:ci-v007.job.4744
+  image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
   stage: cncf-e2e
   variables:
     CLOUD: MUST BE SET
@@ -254,13 +254,15 @@ cross-cloud:
     name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
     url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
   script:
-    - helm repo add cncf http://cncf.gitlab.io/stable
-    - PROMETHEUS_TEST_INSTALL="helm install --name prometheustest
-         --namespace=kube-system
-         --set image.repository=registry.cncf.ci/prometheus/prometheus/prometheus-e2e
-         --set image.tag=ci-v1-7-1.job.8344
-         cncf/prometheus-tests"
-    - echo $PROMETHEUS_TEST_INSTALL ; $PROMETHEUS_TEST_INSTALL
+  - helm init
+  - helm repo add cncf http://cncf.gitlab.io/stable
+  - PROMETHEUS_TEST_INSTALL="helm install --name prometheustest
+       --namespace=kube-system
+       --set image.repository=registry.cncf.ci/prometheus/prometheus/prometheus-e2e
+       --set image.tag=ci-v1-7-1.job.8344
+       cncf/prometheus-tests"
+  - echo $PROMETHEUS_TEST_INSTALL ; $PROMETHEUS_TEST_INSTALL
+
 
 aws_k8s_deploy:
   <<: *k8s_deploy_template

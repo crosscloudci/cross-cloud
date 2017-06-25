@@ -64,7 +64,7 @@ coredns:
     - curl -s -o data/coredns.env -L ${BASE_URL}/$COREDNS_RELEASE_ENV
     - cat data/coredns.env
   artifacts:
-    when: always
+    when: alway
     expire_in: 4 weeks
     paths:
       - ./data/
@@ -252,8 +252,6 @@ cross-cloud:
     name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
     url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
   script:
-    - cat ./data/prometheus.env
-    - env | grep PROMETHEUS
     - helm repo add cncf http://cncf.gitlab.io/stable
     - PROMETHEUS_TEST_INSTALL="helm install --name prometheustest
          --namespace=kube-system

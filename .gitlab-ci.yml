@@ -189,7 +189,7 @@ cross-cloud:
     - kubectl get pods --namespace=kube-system -l k8s-app=coredns
 
 .coredns_e2e_template: &coredns_e2e_template
-  image: image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
+  image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
   stage: cncf-e2e
   # dependencies:
   #   - coredns_deploy_aws

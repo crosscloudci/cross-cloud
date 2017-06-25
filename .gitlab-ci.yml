@@ -258,6 +258,8 @@ cross-cloud:
   script:
   - helm init
   - helm repo add cncf http://cncf.gitlab.io/stable
+  - echo Removing any previous deploys of coredns
+  - helm get prometheustest > /dev/null && helm delete --purge prometheustest
   - PROMETHEUS_TEST_INSTALL="helm install --name prometheustest
        --namespace=kube-system
        --set image.repository=registry.cncf.ci/prometheus/prometheus/prometheus-e2e

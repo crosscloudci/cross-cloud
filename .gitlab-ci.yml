@@ -178,6 +178,7 @@ cross-cloud:
          --set middleware.errors.enabled=true
          --set middleware.log.enabled=true 
          --set middleware.loadbalance.enabled=false
+         --set middleware.test.enabled=false
          --set image.repository=${COREDNS_IMAGE}
          --set image.tag=${COREDNS_TAG}
          cncf/coredns"

@@ -262,11 +262,12 @@ cross-cloud:
   - echo Removing any previous deploys of coredns
   - helm get prometheustest > /dev/null && helm delete --purge prometheustest
   - PROMETHEUS_TEST_INSTALL="helm install --name prometheustest
-       --namespace=kube-system
+       --namespace=default
        --set image.repository=registry.cncf.ci/prometheus/prometheus/prometheus-e2e
-       --set image.tag=ci-v1-7-1.job.8344
+       --set image.tag=ci-v1-7-1.job.8887
        cncf/prometheus-tests"
   - echo $PROMETHEUS_TEST_INSTALL
+  - kubectl logs -l job-name=prometheustest-prometheus-tests  --tail=100000
   # ; $PROMETHEUS_TEST_INSTALL
 
 

@@ -166,7 +166,7 @@ cross-cloud:
     - kubectl get componentstatuses
     - helm init
     - echo Removing any previous deploys of coredns
-    - helm get coredns > /dev/null && helm delete --purge coredns
+    - helm get coredns > /dev/null 2>&1 && helm delete --purge coredns
     - kubectl get svc --namespace=kube-system -l name=coredns
     - kubectl get pods --namespace=kube-system -l name=kube-dns
     - helm repo add cncf http://cncf.gitlab.io/stable
@@ -202,7 +202,7 @@ cross-cloud:
     - helm init 
     - helm repo add cncf http://cncf.gitlab.io/stable
     - echo Removing any previous deploys of coredns
-    - helm get corednstest > /dev/null && helm delete --purge corednstest
+    - helm get corednstest > /dev/null 2>&1 && helm delete --purge corednstest
     - COREDNS_TEST_INSTALL="helm install --name corednstest
          --namespace=kube-system
          --set image.repository=registry.cncf.ci/coredns/coredns/coredns-e2e
@@ -230,7 +230,7 @@ cross-cloud:
     - kubectl get componentstatuses
     - helm init
     - echo Removing any previous deploys of prometheus
-    - helm get prometheus > /dev/null && helm delete --purge prometheus
+    - helm get prometheus > /dev/null 2>&1 && helm delete --purge prometheus
     - PROMETHEUS_INSTALL="helm install --name prometheus
         --set server.image.repository=$PROMETHEUS_IMAGE
         --set server.image.tag=$PROMETHEUS_TAG

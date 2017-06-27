@@ -1,5 +1,5 @@
 variables:
-  K8S_BRANCH: ci-v1.6.3
+  K8S_BRANCH: ci-v1.6.6
   COREDNS_BRANCH: ci-v008
   PROMETHEUS_BRANCH: ci-v1.7.1
   NODE_EXPORTER_BRANCH: ci-v0.14.0
@@ -36,7 +36,7 @@ kubernetes:
     paths:
       - ./data/
 
-fluentd:
+.fluentd:
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
   stage: cncf-artifacts
   script:
@@ -209,6 +209,8 @@ cross-cloud:
          --set image.tag=ci-v007.job.8415
          cncf/coredns-test"
     - echo $COREDNS_TEST_INSTALL ; $COREDNS_TEST_INSTALL
+    - sleep 5
+    #- kubectl logs -l job-name=corednstest-coredns-test --namespace=kube-system --tail=200000
       
     
 
@@ -258,12 +260,17 @@ cross-cloud:
   script:
   - helm init
   - helm repo add cncf http://cncf.gitlab.io/stable
+  - echo Removing any previous deploys of coredns
+  - helm get prometheustest > /dev/null && helm delete --purge prometheustest
   - PROMETHEUS_TEST_INSTALL="helm install --name prometheustest
-       --namespace=kube-system
+       --namespace=default
        --set image.repository=registry.cncf.ci/prometheus/prometheus/prometheus-e2e
-       --set image.tag=ci-v1-7-1.job.8344
+       --set image.tag=ci-v1-7-1.job.8887
        cncf/prometheus-tests"
-  - echo $PROMETHEUS_TEST_INSTALL ; $PROMETHEUS_TEST_INSTALL
+  - echo $PROMETHEUS_TEST_INSTALL
+  - sleep 5
+  #- kubectl logs -l job-name=prometheustest-prometheus-tests  --tail=100000
+  # ; $PROMETHEUS_TEST_INSTALL
 
 
 aws_k8s_deploy:

@@ -209,6 +209,7 @@ cross-cloud:
          --set image.tag=ci-v007.job.8415
          cncf/coredns-test"
     - echo $COREDNS_TEST_INSTALL ; $COREDNS_TEST_INSTALL
+    - sleep 5
     - kubectl logs -l job-name=corednstest-coredns-test --namespace=kube-system --tail=200000
       
     
@@ -267,6 +268,7 @@ cross-cloud:
        --set image.tag=ci-v1-7-1.job.8887
        cncf/prometheus-tests"
   - echo $PROMETHEUS_TEST_INSTALL
+  - sleep 5
   - kubectl logs -l job-name=prometheustest-prometheus-tests  --tail=100000
   # ; $PROMETHEUS_TEST_INSTALL
 

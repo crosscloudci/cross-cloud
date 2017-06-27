@@ -265,7 +265,8 @@ cross-cloud:
        --set image.repository=registry.cncf.ci/prometheus/prometheus/prometheus-e2e
        --set image.tag=ci-v1-7-1.job.8344
        cncf/prometheus-tests"
-  - echo $PROMETHEUS_TEST_INSTALL ; $PROMETHEUS_TEST_INSTALL
+  - echo $PROMETHEUS_TEST_INSTALL
+  # ; $PROMETHEUS_TEST_INSTALL
 
 
 aws_k8s_deploy:

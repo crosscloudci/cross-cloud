@@ -20,7 +20,6 @@ module "dns" {
 module "etcd" {
   source                    = "./modules/etcd"
   name                      = "${ var.name }"
-  etcd_discovery            = "${ var.data_dir }/etcd"
   master_node_count         = "${ var.master_node_count }"
   packet_project_id         = "${ var.packet_project_id }"
   packet_facility           = "${ var.packet_facility }"
@@ -39,7 +38,6 @@ module "etcd" {
   etcd_key                  = "${ module.tls.etcd_key }"
   apiserver                 = "${ module.tls.apiserver }"
   apiserver_key             = "${ module.tls.apiserver_key }"
-
   data_dir                  = "${ var.data_dir }"
 }
 
@@ -80,7 +78,7 @@ module "worker" {
   ca = "${ module.tls.ca }"
   worker = "${ module.tls.worker }"
   worker_key = "${ module.tls.worker_key }"
-  etcd_discovery            = "${ var.data_dir }/etcd"
+  etcd_discovery            = "${ module.etcd.etcd_discovery }"
   data_dir                  = "${ var.data_dir }"
 }
 
@@ -124,7 +122,7 @@ module "tls" {
   tls_apiserver_cert_validity_period_hours = 1000
   tls_apiserver_cert_early_renewal_hours = 100
   tls_apiserver_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local,master.${ var.name }.${ var.domain },endpoint.${ var.name }.${ var.domain }"
-  tls_apiserver_cert_ip_addresses = "127.0.0.1,10.3.0.1"
+  tls_apiserver_cert_ip_addresses = "127.0.0.1,10.0.0.1"
 
   tls_worker_cert_subject_common_name = "k8s-worker"
   tls_worker_cert_validity_period_hours = 1000

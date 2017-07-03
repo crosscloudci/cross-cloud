@@ -25,10 +25,10 @@ module "cluster" {
 module "kubeconfig" {
   source = "../kubeconfig"
 
-  ca_pem = "${ var.data_dir }/ca.pem"
-  admin_pem = "${ var.data_dir }/k8s-admin.pem"
-  admin_key_pem = "${ var.data_dir }/k8s-admin-key.pem"
-  fqdn_k8s = "${ module.cluster.fqdn_k8s }"
+  ca = "${base64decode(module.cluster.ca)}"
+  client = "${base64decode(module.cluster.client)}"
+  client_key = "${base64decode(module.cluster.client_key)}"
+  endpoint = "${ module.cluster.endpoint }"
   data_dir = "${ var.data_dir }"
   name = "gke_${ var.project }_${ var.zone }-a_${ var.name }"
 }

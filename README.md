@@ -21,9 +21,8 @@ and eventually per commit.
 
 Our first public demo of cross-cloud pipeline was recorded during [June 27th CNCF CI WG Meeting](https://www.youtube.com/watch?v=Jc5EJVK7ZZk&feature=youtu.be&t=310)
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/Jc5EJVK7ZZk&t=310?ecver=1" frameborder="0" allowfullscreen></iframe>
-
-![eventually targeting all clouds](docs/images/eventually-targeting-all-clouds.png)
+[![eventually targeting all clouds](docs/images/eventually-targeting-all-clouds.png)](https://www.youtube.com/watch?v=Jc5EJVK7ZZk&featu\
+re=youtu.be&t=310)
 
 #### How does it work?
 

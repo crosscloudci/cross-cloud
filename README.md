@@ -19,7 +19,11 @@ Each project is deployed and tested on each of the clouds. For now the results
 will be available as we run each cross-cloud CI job, but plan to run them daily
 and eventually per commit.
 
-![cross-cloud-pipeline](docs/images/cross-cloud-pipeline.png)
+Our first public demo of cross-cloud pipeline was recorded during [June 27th CNCF CI WG Meeting](https://www.youtube.com/watch?v=Jc5EJVK7ZZk&feature=youtu.be&t=310)
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/Jc5EJVK7ZZk&t=310?ecver=1" frameborder="0" allowfullscreen></iframe>
+
+![eventually targeting all clouds](docs/images/eventually-targeting-all-clouds.png)
 
 #### How does it work?
 

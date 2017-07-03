@@ -8,6 +8,13 @@ variables:
   FLUENTD_BRANCH: ci-master
   CONTAINERD_BRANCH: ci-master
 
+
+# Skip all jobs except the ones that begin or end with 'docs'
+.except-docs: &except-docs
+  except:
+    - /(^docs[\/-].*|.*-docs$)/
+    - /(^doc[\/-].*|.*-doc$)/
+
 stages:
   - cncf-artifacts
   - cross-cloud
@@ -21,6 +28,7 @@ before_script:
   - for envfile in data/*env ; do source $envfile ; echo ----- $envfile ---- ; cat $envfile ; done
 
 kubernetes-master:
+  <<: *except-docs
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
   stage: cncf-artifacts
   script:
@@ -37,6 +45,7 @@ kubernetes-master:
       - ./data/
 
 .fluentd-master:
+  <<: *except-docs
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
   stage: cncf-artifacts
   script:
@@ -54,6 +63,7 @@ kubernetes-master:
       - ./data/
 
 coredns-master:
+  <<: *except-docs
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
   stage: cncf-artifacts
   script:
@@ -70,6 +80,7 @@ coredns-master:
       - ./data/
 
 prometheus-master:
+  <<: *except-docs
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
   stage: cncf-artifacts
   script:
@@ -91,6 +102,7 @@ prometheus-master:
       - ./data/
 
 cross-cloud-master:
+  <<: *except-docs
   stage: cncf-artifacts
   script:
     - docker login -u "gitlab-ci-token" -p "$CI_JOB_TOKEN" $CI_REGISTRY
@@ -98,6 +110,7 @@ cross-cloud-master:
     - docker push "$CI_REGISTRY_IMAGE/provisioning:$CI_COMMIT_REF_SLUG"
 
 .k8s_deploy_template: &k8s_deploy_template
+  <<: *except-docs
   allow_failure: true
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
   stage: cross-cloud
@@ -124,6 +137,7 @@ cross-cloud-master:
       - ./data/
 
 .k8s_e2e_template: &k8s_e2e_template
+  <<: *except-docs
   image: ${CI_REGISTRY}/kubernetes/kubernetes/kubernetes-e2e:ci-v1-6-3.job.4793
   stage: cncf-e2e
   # dependencies:
@@ -137,6 +151,7 @@ cross-cloud-master:
   - /kubernetes/e2e/run-conformance.sh
 
 .k8s_cloud_destroy_template: &k8s_cloud_destroy_template
+  <<: *except-docs
   allow_failure: true
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
   stage: cross-cloud
@@ -151,6 +166,7 @@ cross-cloud-master:
     - /cncf/provision.sh ${CLOUD}-destroy ${CI_ENVIRONMENT_SLUG}
 
 .coredns_deploy_template: &coredns_deploy_template
+  <<: *except-docs
   allow_failure: true
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
   stage: cross-project
@@ -190,6 +206,7 @@ cross-cloud-master:
     - kubectl get pods --namespace=kube-system -l k8s-app=coredns
 
 .coredns_e2e_template: &coredns_e2e_template
+  <<: *except-docs
   image: ${CI_REGISTRY}/coredns/coredns/coredns-e2e:ci-v007.job.4744
   stage: cncf-e2e
   # dependencies:
@@ -206,6 +223,7 @@ cross-cloud-master:
   - go test -v -tags k8s
 
 .prometheus_deploy_template: &prometheus_deploy_template
+  <<: *except-docs
   allow_failure: true
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
   stage: cross-project
@@ -241,6 +259,7 @@ cross-cloud-master:
     - kubectl get pods
 
 .prometheus_e2e_template: &prometheus_e2e_template
+  <<: *except-docs
   image: ${CI_REGISTRY}/coredns/coredns/coredns-e2e:ci-v007.job.4744
   stage: cncf-e2e
   # dependencies:

@@ -77,16 +77,30 @@ variables:
 ### Cross Cloud
 
 The Cross cloud repo itself includes a [container](Dockerfile) which is used to
-deploy k8s on several clouds, making the KUBECONFIG available for cross-project
-deployments. We are looking to standardize on kubeadmin in the near future
-across all our clouds.
+deploy k8s on several clouds, the resulting KUBECONFIG is made available for
+cross-project deployments. The cross-cloud provisioning container is intended to
+include multiple approaches to provisining containers.
 
-![cross-cloud-stage](docs/images/cross-cloud-stage.png)
+We pin the versions of the provisioning dependencies at the top of our
+[container](Dockerfile):
 
-### Cross Project
+```
+FROM golang:alpine
+MAINTAINER "Denver Williams <denver@ii.coop>"
+ENV KUBECTL_VERSION=v1.5.2
+ENV HELM_VERSION=v2.4.1
+ENV GCLOUD_VERSION=150.0.0
+ENV AWSCLI_VERSION=1.11.75
+ENV AZURECLI_VERSION=2.0.2
+ENV PACKETCLI_VERSION=1.33
+ENV TERRAFORM_VERSION=0.9.5
+```
 
-We are currently using helm and overriding the image_url and image_tag with our
-CI generated artifact.
+The cross-cloud
+[provision.sh entrypoint](https://gitlab.cncf.ci/cncf/cross-cloud/blob/master/provision.sh)
+selects the provisioning approach and name for the cluster (currently based on
+the branch). Multiple approaches can be added here. This is where we want to
+standardize what variables should drive cluster deployments across the clouds.
 
 ```
 $ /cncf/provision.sh aws-deploy aws-ci-stable
@@ -97,6 +111,49 @@ $ /cncf/provision.sh aws-deploy packet-ci-stable
 Kubernetes master is running at
 https://endpoint.packet-mvci-stable.cncf.ci
 ```
+
+The terraform module for each cloud has similar inputs for cross-cloud
+deployments in addition to cloud specific variables:
+
+ * Inputs: [AWS](https://gitlab.cncf.ci/cncf/cross-cloud/blob/master/aws/input.tf), [Azure](https://gitlab.cncf.ci/cncf/cross-cloud/blob/master/azure/input.tf), [Packet](https://gitlab.cncf.ci/cncf/cross-cloud/blob/master/packet/input.tf) 
+
+```
+# Kubernetes
+variable "cluster_domain" { default = "cluster.local" }
+variable "pod_cidr" { default = "10.2.0.0/16" }
+variable "service_cidr"   { default = "10.0.0.0/24" }
+variable "k8s_service_ip" { default = "10.0.0.1" }
+variable "dns_service_ip" { default = "10.0.0.10" }
+variable "master_node_count" { default = "3" }
+variable "worker_node_count" { default = "3" }
+variable "worker_node_min" { default = "3" }
+variable "worker_node_max" { default = "5" }
+```
+
+```
+# AWS Specific Settings
+variable "aws_region" { default = "ap-southeast-2" }
+variable "aws_key_name" { default = "aws" }
+variable "aws_azs" { default = "ap-southeast-2a,ap-southeast-2b,ap-southeast-2c" }
+variable "vpc_cidr" { default = "10.0.0.0/16" }
+variable "allow_ssh_cidr" { default = "0.0.0.0/0" }
+```
+
+```
+# Packet Specific Settings
+variable "packet_facility" { default = "sjc1" }
+variable "packet_billing_cycle" { default = "hourly" }
+variable "packet_operating_system" { default = "coreos_stable" }
+variable "packet_master_device_plan" { default = "baremetal_0" }
+variable "packet_worker_device_plan" { default = "baremetal_0" }
+```
+
+![cross-cloud-stage](docs/images/cross-cloud-stage.png)
+
+### Cross Project
+
+We are currently using helm and overriding the image_url and image_tag with our
+CI generated artifact.
 
 ![cross-cloud-stage](docs/images/cross-project-stage.png)
 
@@ -120,4 +177,3 @@ Feedback on our approach to building and e2e testing welcome:
  * https://github.com/ii/prometheus/pull/1 https://gitlab.cncf.ci/prometheus/prometheus/blob/ci-master/.gitlab-ci.yml
  * https://github.com/ii/alertmanager/pull/1 => https://gitlab.cncf.ci/prometheus/alertmanager/blob/ci-master/.gitlab-ci.yml
  * https://github.com/ii/node_exporter/pull/1 => https://gitlab.cncf.ci/prometheus/node_exporter/blob/ci-master/.gitlab-ci.yml
-

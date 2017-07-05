@@ -70,4 +70,4 @@ RUN chmod +x /cncf/provision.sh
 #ENTRYPOINT ["/cncf/provision.sh"]
 WORKDIR /cncf/
 #CMD ["/cncf/provision.sh"]
-CMD ["bash", "-c", "echo ${NAME}"]
+CMD ["bash", "-c", "/cncf/provision.sh ${CLOUD}-${COMMAND} ${NAME}"]

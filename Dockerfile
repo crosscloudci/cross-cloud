@@ -66,6 +66,7 @@ COPY cross-cloud/ /cncf/cross-cloud/
 COPY kubeconfig/ /cncf/kubeconfig/
 COPY tls/ /cncf/tls/
 COPY provision.sh /cncf/
+COPY backend.tf /cncf
 RUN chmod +x /cncf/provision.sh
 #ENTRYPOINT ["/cncf/provision.sh"]
 WORKDIR /cncf/

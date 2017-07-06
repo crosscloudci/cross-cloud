@@ -90,6 +90,7 @@ elif [ "$1" = "azure-destroy" ] ; then
 elif [ "$1" = "packet-deploy" ] ; then
     cd ${DIR}/packet
     terraform init \
+              -backend "${BACKEND}" \
               -backend-config 'bucket=aws65972563' \
               -backend-config "key=packet-${TF_VAR_name}" \
               -backend-config 'region=ap-southeast-2'

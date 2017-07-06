@@ -69,4 +69,5 @@ COPY provision.sh /cncf/
 RUN chmod +x /cncf/provision.sh
 #ENTRYPOINT ["/cncf/provision.sh"]
 WORKDIR /cncf/
-#CMD ["aws-deploy"]
+#CMD ["/cncf/provision.sh"]
+CMD ["bash", "-c", "/cncf/provision.sh ${CLOUD}-${COMMAND} ${NAME}"]

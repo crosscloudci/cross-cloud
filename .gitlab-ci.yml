@@ -20,7 +20,7 @@ before_script:
   - mkdir -p ./data ; touch ./data/empty.env
   - for envfile in data/*env ; do source $envfile ; echo ----- $envfile ---- ; cat $envfile ; done
 
-kubernetes:
+kubernetes-stable:
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
   stage: cncf-artifacts
   script:
@@ -53,7 +53,7 @@ kubernetes:
     paths:
       - ./data/
 
-coredns:
+coredns-stable:
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
   stage: cncf-artifacts
   script:
@@ -69,7 +69,7 @@ coredns:
     paths:
       - ./data/
 
-prometheus:
+prometheus-stable:
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
   stage: cncf-artifacts
   script:
@@ -90,7 +90,7 @@ prometheus:
     paths:
       - ./data/
 
-cross-cloud:
+cross-cloud-stable:
   stage: cncf-artifacts
   script:
     - docker login -u "gitlab-ci-token" -p "$CI_JOB_TOKEN" $CI_REGISTRY
@@ -109,13 +109,14 @@ cross-cloud:
     on_stop: MUST BE SET
   script:
     - /cncf/provision.sh ${CLOUD}-deploy ${CI_ENVIRONMENT_SLUG}
-    - helm init ; until [ ! -e $(
-        kubectl get pods --namespace=kube-system -l app=helm -l name=tiller
-        -o jsonpath='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}'
-        | grep "Ready=True") ] ;
-        do echo 'tiller not up yet' ;
-        sleep 2 ;
-        done
+    - helm init ; sleep 60
+    # - helm init ; until [ ! -e $(
+    #     kubectl get pods --namespace=kube-system -l app=helm -l name=tiller
+    #     -o jsonpath='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}'
+    #     | grep "Ready=True") ] ;
+    #     do echo 'tiller not up yet' ;
+    #     sleep 2 ;
+    #     done
   artifacts:
     when: always
     expire_in: 4 weeks

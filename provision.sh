@@ -27,7 +27,7 @@ mkdir -p $TF_VAR_data_dir
 # Run CMD
 if [ "$1" = "aws-deploy" ] ; then
     cd ${DIR}/aws
-    if [ $BACKEND="true" ]; then
+    if [ "$3"= "s3" ]; then
         cp ../backend.tf .
     terraform init \
               -backend-config 'bucket=aws65972563' \
@@ -36,7 +36,7 @@ if [ "$1" = "aws-deploy" ] ; then
     # ensure kubeconfig is written to disk on infrastructure refresh
     terraform taint -module=kubeconfig null_resource.kubeconfig || true
     time terraform apply ${DIR}/aws
-    else
+    elif [ "$3"= "file" ]; then
         cd ${DIR}/aws
         terraform get
         # ensure kubeconfig is written to disk on infrastructure refresh

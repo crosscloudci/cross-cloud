@@ -42,6 +42,7 @@ if [ "$1" = "aws-deploy" ] ; then
         # ensure kubeconfig is written to disk on infrastructure refresh
         terraform taint -module=kubeconfig null_resource.kubeconfig || true
         time terraform apply ${DIR}/aws
+    fi
 
     ELB=$(terraform output external_elb)
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
@@ -63,6 +64,7 @@ elif [ "$1" = "aws-destroy" ] ; then
           cd ${DIR}/aws
           terraform get
           time terraform destroy -force ${DIR}/aws
+       fi
 
 elif [ "$1" = "azure-deploy" ] ; then
     # There are some dependency issues around cert,sshkey,k8s_cloud_config, and dns

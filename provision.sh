@@ -27,6 +27,8 @@ mkdir -p $TF_VAR_data_dir
 # Run CMD
 if [ "$1" = "aws-deploy" ] ; then
     cd ${DIR}/aws
+    if [ $BACKEND="true" ]; then
+        cp ../backend.tf .
     terraform init \
               -backend-config 'bucket=aws65972563' \
               -backend-config "key=aws-${TF_VAR_name}" \
@@ -34,6 +36,12 @@ if [ "$1" = "aws-deploy" ] ; then
     # ensure kubeconfig is written to disk on infrastructure refresh
     terraform taint -module=kubeconfig null_resource.kubeconfig || true
     time terraform apply ${DIR}/aws
+    else
+        cd ${DIR}/aws
+        terraform get
+        # ensure kubeconfig is written to disk on infrastructure refresh
+        terraform taint -module=kubeconfig null_resource.kubeconfig || true
+        time terraform apply ${DIR}/aws
 
     ELB=$(terraform output external_elb)
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
@@ -43,13 +51,19 @@ if [ "$1" = "aws-deploy" ] ; then
     _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info
     kubectl cluster-info
 elif [ "$1" = "aws-destroy" ] ; then
-    cd ${DIR}/aws
-    terraform init \
-              -backend-config 'bucket=aws65972563' \
-              -backend-config "key=aws-${TF_VAR_name}" \
-              -backend-config 'region=ap-southeast-2'
-
+      cd ${DIR}/aws
+      if [ $BACKEND="true" ]; then
+          cp ../backend.tf .
+          terraform init \
+                    -backend-config 'bucket=aws65972563' \
+                    -backend-config "key=aws-${TF_VAR_name}" \
+                    -backend-config 'region=ap-southeast-2'
     time terraform destroy -force ${DIR}/aws
+      else
+          cd ${DIR}/aws
+          terraform get
+          time terraform destroy -force ${DIR}/aws
+
 elif [ "$1" = "azure-deploy" ] ; then
     # There are some dependency issues around cert,sshkey,k8s_cloud_config, and dns
     # since they use files on disk that are created on the fly

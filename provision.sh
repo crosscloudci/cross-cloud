@@ -228,6 +228,8 @@ fi
     kubectl cluster-info
 elif [ "$1" = "gke-destroy" ] ; then
 cd ${DIR}/gke
+if [ "$3" = "s3" ]; then
+    cp ../backend.tf .
     terraform init \
               -backend-config 'bucket=aws65972563' \
               -backend-config "key=gke-${TF_VAR_name}" \
@@ -236,8 +238,18 @@ cd ${DIR}/gke
     time terraform destroy -force -target module.cluster.google_container_cluster.cncf ${DIR}/gke || true 
     echo "sleep" && sleep 10 && \
     time terraform destroy -force -target module.vpc.google_compute_network.cncf ${DIR}/gke || true 
-    time terraform destroy -force ${DIR}/gke || true 
-    
+    time terraform destroy -force ${DIR}/gke || true
+
+elif [ "$1" = "file" ]; then
+
+    terrform get ${DIR}/gke
+time terraform destroy -force -target module.cluster.google_container_cluster.cncf ${DIR}/gke || true 
+echo "sleep" && sleep 10 && \
+time terraform destroy -force -target module.vpc.google_compute_network.cncf ${DIR}/gke || true 
+time terraform destroy -force ${DIR}/gke || true
+
+fi
+
 elif [ "$1" = "cross-cloud-deploy" ] ; then
     terraform get ${DIR}/cross-cloud && \
         terraform apply -target module.aws.null_resource.ssl_gen ${DIR}/cross-cloud && \

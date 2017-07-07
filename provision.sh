@@ -52,7 +52,7 @@ if [ "$1" = "aws-deploy" ] ; then
     kubectl cluster-info
 elif [ "$1" = "aws-destroy" ] ; then
       cd ${DIR}/aws
-      if [ "$3" ="s3" ]; then
+      if [ "$3" = "s3" ]; then
           cp ../backend.tf .
           terraform init \
                     -backend-config 'bucket=aws65972563' \

@@ -201,6 +201,8 @@ fi
 
 elif [ "$1" = "gke-deploy" ] ; then
 cd ${DIR}/gke
+if [ "$3" = "s3" ]; then
+    cp ../backend.tf .
     terraform init \
               -backend-config 'bucket=aws65972563' \
               -backend-config "key=gke-${TF_VAR_name}" \
@@ -209,7 +211,14 @@ cd ${DIR}/gke
     terraform taint -module=kubeconfig null_resource.kubeconfig || true          
     time terraform apply -target module.vpc ${DIR}/gke && \
     time terraform apply ${DIR}/gke
-    
+elif [ "$1" = "file" ]; then
+    terrform get ${DIR}/gke
+    # ensure kubeconfig is written to disk on infrastructure refresh
+    terraform taint -module=kubeconfig null_resource.kubeconfig || true          
+    time terraform apply -target module.vpc ${DIR}/gke && \
+    time terraform apply ${DIR}/gke
+fi
+
     ELB=$(terraform output endpoint)
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
     echo "❤ Polling for cluster life - this could take a minute or more"

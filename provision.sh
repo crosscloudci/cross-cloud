@@ -110,7 +110,7 @@ elif [ "$3" = "file" ]; then
             terraform apply -target null_resource.ssl_ssh_cloud_gen ${DIR}/azure && \
             terraform apply -target module.dns.null_resource.dns_gen ${DIR}/azure && \
     time terraform destroy -force ${DIR}/azure || true
-            if
+            fi
 
 elif [ "$1" = "packet-deploy" ] ; then
     cd ${DIR}/packet

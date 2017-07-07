@@ -37,10 +37,9 @@ if [ "$1" = "aws-deploy" ] ; then
     terraform taint -module=kubeconfig null_resource.kubeconfig || true
     time terraform apply ${DIR}/aws
     elif [ "$3" = "file" ]; then
-        cd ${DIR}/aws
-        terraform get
+        terraform get ${DIR}/aws
         # ensure kubeconfig is written to disk on infrastructure refresh
-        terraform taint -module=kubeconfig null_resource.kubeconfig || true
+        terraform taint -module=kubeconfig null_resource.kubeconfig || true ${DIR}/aws
         time terraform apply ${DIR}/aws
     fi
 
@@ -53,16 +52,15 @@ if [ "$1" = "aws-deploy" ] ; then
     kubectl cluster-info
 elif [ "$1" = "aws-destroy" ] ; then
       cd ${DIR}/aws
-      if [ $BACKEND="true" ]; then
+      if [ "$3" ="s3" ]; then
           cp ../backend.tf .
           terraform init \
                     -backend-config 'bucket=aws65972563' \
                     -backend-config "key=aws-${TF_VAR_name}" \
                     -backend-config 'region=ap-southeast-2'
     time terraform destroy -force ${DIR}/aws
-      else
-          cd ${DIR}/aws
-          terraform get
+    elif [ "$3" = "file" ]; then
+          terraform get ${DIR}/aws
           time terraform destroy -force ${DIR}/aws
        fi
 

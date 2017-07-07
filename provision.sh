@@ -91,6 +91,8 @@ elif [ "$1" = "azure-deploy" ] ; then
 
 elif [ "$1" = "azure-destroy" ] ; then
     cd ${DIR}/azure
+    if [ "$3" = "s3" ]; then
+        cp ../backend.tf .
     terraform init \
               -backend-config 'bucket=aws65972563' \
               -backend-config "key=${TF_VAR_name}" \
@@ -100,6 +102,16 @@ elif [ "$1" = "azure-destroy" ] ; then
     terraform apply -target null_resource.ssl_ssh_cloud_gen ${DIR}/azure && \
     terraform apply -target module.dns.null_resource.dns_gen ${DIR}/azure && \
     time terraform destroy -force ${DIR}/azure || true
+    
+elif [ "$3" = "file" ]; then
+        terraform get ${DIR}/azure
+            terraform destroy -force -target null_resource.ssl_ssh_cloud_gen ${DIR}/azure && \
+            terraform destroy -force -target module.dns.null_resource.dns_gen ${DIR}/azure && \
+            terraform apply -target null_resource.ssl_ssh_cloud_gen ${DIR}/azure && \
+            terraform apply -target module.dns.null_resource.dns_gen ${DIR}/azure && \
+    time terraform destroy -force ${DIR}/azure || true
+            if
+
 elif [ "$1" = "packet-deploy" ] ; then
     cd ${DIR}/packet
     terraform init \

@@ -140,13 +140,19 @@ elif [ "$1" = "packet-deploy" ] ; then
     _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info
     kubectl cluster-info
 elif [ "$1" = "packet-destroy" ] ; then
-cd ${DIR}/packet
+     cd ${DIR}/packet
+     if [ "$3" = "s3" ]; then
+         cp ../backend.tf .
     terraform init \
               -backend-config 'bucket=aws65972563' \
               -backend-config "key=packet-${TF_VAR_name}" \
               -backend-config 'region=ap-southeast-2'
     time terraform destroy -force ${DIR}/packet
-    
+
+elif [ "$1" = "file" ]; then
+         terrform get ${DIR}/packet
+         time terraform destroy -force ${DIR}/packet
+
 elif [ "$1" = "gce-deploy" ] ; then
     cd ${DIR}/gce
     terraform init \

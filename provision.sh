@@ -125,7 +125,7 @@ elif [ "$1" = "packet-deploy" ] ; then
     terraform taint -module=kubeconfig null_resource.kubeconfig || true ${DIR}/packet
     time terraform apply ${DIR}/packet
 
-    elif [ "$1" = "file" ]; then
+    elif [ "$3" = "file" ]; then
         terrform get ${DIR}/packet
         # ensure kubeconfig is written to disk on infrastructure refresh
         terraform taint -module=kubeconfig null_resource.kubeconfig || true ${DIR}/packet
@@ -149,7 +149,7 @@ elif [ "$1" = "packet-destroy" ] ; then
               -backend-config 'region=ap-southeast-2'
     time terraform destroy -force ${DIR}/packet
 
-elif [ "$1" = "file" ]; then
+elif [ "$3" = "file" ]; then
          terrform get ${DIR}/packet
          time terraform destroy -force ${DIR}/packet
 if
@@ -167,7 +167,7 @@ elif [ "$1" = "gce-deploy" ] ; then
     time terraform apply -target module.vpc.google_compute_subnetwork.cncf ${DIR}/gce
     time terraform apply ${DIR}/gce
     
-elif [ "$1" = "file" ]; then
+elif [ "$3" = "file" ]; then
         terrform get ${DIR}/gce
         # ensure kubeconfig is written to disk on infrastructure refresh
         terraform taint -module=kubeconfig null_resource.kubeconfig || true ${DIR}/gce
@@ -193,7 +193,7 @@ elif [ "$1" = "gce-destroy" ] ; then
               -backend-config 'region=ap-southeast-2'
     time terraform destroy -force ${DIR}/gce || true # Allow to Fail and clean up network on next step
     time terraform destroy -force -target module.vpc.google_compute_subnetwork.cncf ${DIR}/gce
-elif [ "$1" = "file" ]; then
+elif [ "$3" = "file" ]; then
         terrform get ${DIR}/gce
         time terraform destroy -force ${DIR}/gce || true # Allow to Fail and clean up network on next step
         time terraform destroy -force -target module.vpc.google_compute_subnetwork.cncf ${DIR}/gce
@@ -211,7 +211,7 @@ if [ "$3" = "s3" ]; then
     terraform taint -module=kubeconfig null_resource.kubeconfig || true          
     time terraform apply -target module.vpc ${DIR}/gke && \
     time terraform apply ${DIR}/gke
-elif [ "$1" = "file" ]; then
+elif [ "$3" = "file" ]; then
     terrform get ${DIR}/gke
     # ensure kubeconfig is written to disk on infrastructure refresh
     terraform taint -module=kubeconfig null_resource.kubeconfig || true          
@@ -240,7 +240,7 @@ if [ "$3" = "s3" ]; then
     time terraform destroy -force -target module.vpc.google_compute_network.cncf ${DIR}/gke || true 
     time terraform destroy -force ${DIR}/gke || true
 
-elif [ "$1" = "file" ]; then
+elif [ "$3" = "file" ]; then
 
     terrform get ${DIR}/gke
 time terraform destroy -force -target module.cluster.google_container_cluster.cncf ${DIR}/gke || true 

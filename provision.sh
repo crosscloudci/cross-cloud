@@ -152,17 +152,28 @@ elif [ "$1" = "packet-destroy" ] ; then
 elif [ "$1" = "file" ]; then
          terrform get ${DIR}/packet
          time terraform destroy -force ${DIR}/packet
+if
 
 elif [ "$1" = "gce-deploy" ] ; then
     cd ${DIR}/gce
+    if [ "$3" = "s3" ]; then
+        cp ../backend.tf .
     terraform init \
               -backend-config 'bucket=aws65972563' \
               -backend-config "key=gce-${TF_VAR_name}" \
               -backend-config 'region=ap-southeast-2'
     # ensure kubeconfig is written to disk on infrastructure refresh
-    terraform taint -module=kubeconfig null_resource.kubeconfig || true
+    terraform taint -module=kubeconfig null_resource.kubeconfig || true ${DIR}/gce
     time terraform apply -target module.vpc.google_compute_subnetwork.cncf ${DIR}/gce
     time terraform apply ${DIR}/gce
+    
+elif [ "$1" = "file" ]; then
+        terrform get ${DIR}/gce
+        # ensure kubeconfig is written to disk on infrastructure refresh
+        terraform taint -module=kubeconfig null_resource.kubeconfig || true ${DIR}/gce
+        time terraform apply -target module.vpc.google_compute_subnetwork.cncf ${DIR}/gce
+        time terraform apply ${DIR}/gce
+    fi
 
     ELB=$(terraform output external_lb)
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig

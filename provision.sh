@@ -114,15 +114,24 @@ elif [ "$3" = "file" ]; then
 
 elif [ "$1" = "packet-deploy" ] ; then
     cd ${DIR}/packet
+    if [ "$3" = "s3" ]; then
+        cp ../backend.tf .
     terraform init \
               -backend "${BACKEND}" \
               -backend-config 'bucket=aws65972563' \
               -backend-config "key=packet-${TF_VAR_name}" \
               -backend-config 'region=ap-southeast-2'
     # ensure kubeconfig is written to disk on infrastructure refresh
-    terraform taint -module=kubeconfig null_resource.kubeconfig || true
-    time terraform apply ${DIR}/packet 
-    
+    terraform taint -module=kubeconfig null_resource.kubeconfig || true ${DIR}/packet
+    time terraform apply ${DIR}/packet
+
+    elif [ "$1" = "file" ]; then
+        terrform get ${DIR}/packet
+        # ensure kubeconfig is written to disk on infrastructure refresh
+        terraform taint -module=kubeconfig null_resource.kubeconfig || true ${DIR}/packet
+        time terraform apply ${DIR}/packet
+        if
+
     ELB=$(terraform output endpoint)
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
     echo "❤ Polling for cluster life - this could take a minute or more"

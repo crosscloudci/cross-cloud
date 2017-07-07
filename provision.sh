@@ -69,13 +69,26 @@ elif [ "$1" = "azure-deploy" ] ; then
     # since they use files on disk that are created on the fly
     # should probably move these to data resources
     cd ${DIR}/azure
+    if [ "$3" = "s3" ]; then
+        cp ../backend.tf .
     terraform init \
               -backend-config 'bucket=aws65972563' \
               -backend-config "key=${TF_VAR_name}" \
               -backend-config 'region=ap-southeast-2'
+    # ensure kubeconfig is written to disk on infrastructure refresh
+    terraform taint -module=kubeconfig null_resource.kubeconfig || true
     terraform apply -target null_resource.ssl_ssh_cloud_gen ${DIR}/azure && \
         terraform apply -target module.dns.null_resource.dns_gen ${DIR}/azure && \
         time terraform apply ${DIR}/azure
+    elif [ "$3" = "file" ]; then
+        terraform get ${DIR}/azure
+        # ensure kubeconfig is written to disk on infrastructure refresh
+        terraform taint -module=kubeconfig null_resource.kubeconfig || true
+        terraform apply -target null_resource.ssl_ssh_cloud_gen ${DIR}/azure && \
+            terraform apply -target module.dns.null_resource.dns_gen ${DIR}/azure && \
+            time terraform apply ${DIR}/azure
+       fi 
+
 elif [ "$1" = "azure-destroy" ] ; then
     cd ${DIR}/azure
     terraform init \

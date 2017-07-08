@@ -108,7 +108,7 @@ cross-cloud-stable:
     url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
     on_stop: MUST BE SET
   script:
-    - /cncf/provision.sh ${CLOUD}-deploy ${CI_ENVIRONMENT_SLUG}
+    - /cncf/provision.sh ${CLOUD}-deploy ${CI_ENVIRONMENT_SLUG} s3
     - helm init ; sleep 60
     # - helm init ; until [ ! -e $(
     #     kubectl get pods --namespace=kube-system -l app=helm -l name=tiller
@@ -148,7 +148,7 @@ cross-cloud-stable:
     url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
     action: stop
   script:
-    - /cncf/provision.sh ${CLOUD}-destroy ${CI_ENVIRONMENT_SLUG}
+    - /cncf/provision.sh ${CLOUD}-destroy ${CI_ENVIRONMENT_SLUG} s3
 
 .coredns_deploy_template: &coredns_deploy_template
   allow_failure: true

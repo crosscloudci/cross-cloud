@@ -117,7 +117,6 @@ elif [ "$1" = "packet-deploy" ] ; then
     if [ "$3" = "s3" ]; then
         cp ../backend.tf .
     terraform init \
-              -backend "${BACKEND}" \
               -backend-config 'bucket=aws65972563' \
               -backend-config "key=packet-${TF_VAR_name}" \
               -backend-config 'region=ap-southeast-2'

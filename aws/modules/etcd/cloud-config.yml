@@ -70,7 +70,7 @@ write-files:
       --allow-privileged=true \
       --babysit-daemons=true \
       --cgroup-root=/ \
-      --cloud-provider=gce \
+      --cloud-provider=aws \
       --cluster-dns=10.0.0.10 \
       --cluster-domain=cluster.local \
       --pod-manifest-path=/etc/kubernetes/manifests \

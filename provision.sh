@@ -130,7 +130,7 @@ elif [ "$1" = "packet-deploy" ] ; then
         # ensure kubeconfig is written to disk on infrastructure refresh
         terraform taint -module=kubeconfig null_resource.kubeconfig || true ${DIR}/packet
         time terraform apply ${DIR}/packet
-        if
+fi
 
     ELB=$(terraform output endpoint)
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig

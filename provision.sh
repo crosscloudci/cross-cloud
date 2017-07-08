@@ -183,8 +183,6 @@ elif [ "$3" = "file" ]; then
     _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info
     kubectl cluster-info
 
-fi
-
 elif [ "$1" = "gce-destroy" ] ; then
     cd ${DIR}/gce
     if [ "$3" = "s3" ]; then

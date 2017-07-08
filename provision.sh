@@ -152,7 +152,7 @@ elif [ "$1" = "packet-destroy" ] ; then
 elif [ "$3" = "file" ]; then
          terrform get ${DIR}/packet
          time terraform destroy -force ${DIR}/packet
-if
+fi
 
 elif [ "$1" = "gce-deploy" ] ; then
     cd ${DIR}/gce

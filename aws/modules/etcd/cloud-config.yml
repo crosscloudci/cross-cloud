@@ -27,6 +27,20 @@ coreos:
     - name: docker.service
       command: start
 
+    - name: bins.service
+      command: start
+      content: |
+        [Unit]
+        Description=Download Binaries
+        [Service]
+        Type=oneshot
+        RemainAfterExit=yes
+        ExecStartPre=/usr/bin/mkdir --parents /home/kubernetes/bin
+        ExecStartPre=/usr/bin/curl -L -o /home/kubernetes/bin/kubelet https://storage.googleapis.com/kubernetes-release/release/v1.6.0/bin/linux/amd64/kubelet
+        ExecStartPre=/usr/bin/culr -L -o /home/kubernetes/bin/cni.tar https://github.com/containernetworking/cni/releases/download/v0.5.2/cni-amd64-v0.5.2.tgz
+        ExecStartPre=/usr/bin/tar -xvf /home/kubernetes/bin/cni.tar -C /home/kubernetes/bin/
+        ExecStart=/usr/bin/chmod +x /home/kuberenetes/bin/kubelet
+
     - name: kubelet.service
       command: start
       content: |
@@ -70,43 +84,23 @@ write-files:
       --feature-gates=ExperimentalCriticalPodAnnotation=true \
       "
 
-  - path: /etc/flannel/options.env
-    content: |
-      FLANNELD_IFACE=$private_ipv4
-      FLANNELD_ETCD_ENDPOINTS=http://etcd.${ internal_tld }:2379
-
-  - path: /etc/kubernetes/cni/docker_opts_cni.env
-    content: |
-      DOCKER_OPT_BIP=""
-      DOCKER_OPT_IPMASQ=""
-
-  - path: /etc/kubernetes/cni/net.d/10-flannel.conf
-    content: |
-        {
-            "name": "podnet",
-            "type": "flannel",
-            "delegate": {
-                "isDefaultGateway": true
-            }
-        }
-
-  - path: /etc/kubernetes/manifests/kube-apiserver.yml
-    encoding: "gzip+base64"
-    content: |
-      ${ kube-apiserver }
+  # - path: /etc/kubernetes/manifests/kube-apiserver.yml
+  #   encoding: "gzip+base64"
+  #   content: |
+  #     ${ kube-apiserver }
       
-  - path: /etc/kubernetes/manifests/kube-controller-manager.yml
-    encoding: "gzip+base64"
-    content: |
-      ${ kube-controller-manager }
+  # - path: /etc/kubernetes/manifests/kube-controller-manager.yml
+  #   encoding: "gzip+base64"
+  #   content: |
+  #     ${ kube-controller-manager }
 
-  - path: /etc/kubernetes/manifests/kube-proxy.yml
-    content: |
-      ${ kube-proxy }
+  # - path: /etc/kubernetes/manifests/kube-proxy.yml
+  #   content: |
+  #     ${ kube-proxy }
 
-  - path: /etc/kubernetes/manifests/kube-scheduler.yml
-    content: |
-      ${ kube-scheduler } 
+  # - path: /etc/kubernetes/manifests/kube-scheduler.yml
+  #   content: |
+  #     ${ kube-scheduler } 
 
   - path: /etc/kubernetes/ssl/ca.pem
     permissions: "0644"

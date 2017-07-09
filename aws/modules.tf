@@ -59,6 +59,8 @@ module "etcd" {
   etcd_key                       = "${ module.tls.etcd_key }"
   apiserver                      = "${ module.tls.apiserver }"
   apiserver_key                  = "${ module.tls.apiserver_key }"
+  serviceaccount                 = "${ module.tls.serviceaccount }"
+  serviceaccount                 = "${ module.tls.serviceaccount_key }"
 }
 
 
@@ -156,4 +158,11 @@ module "tls" {
   tls_worker_cert_early_renewal_hours = 100
   tls_worker_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local,*.*.compute.internal,*.ec2.internal"
   tls_worker_cert_ip_addresses = "127.0.0.1"
+
+  tls_serviceaccount_cert_subject_common_name = "k8s-serviceaccount"
+  tls_serviceaccount_cert_validity_period_hours = 1000
+  tls_serviceaccount_cert_early_renewal_hours = 100
+  tls_serviceaccount_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local,master.${ var.internal_tld },*.ap-southeast-2.elb.amazonaws.com"
+  tls_serviceaccount_cert_ip_addresses = "127.0.0.1,10.0.0.1"
+
 }

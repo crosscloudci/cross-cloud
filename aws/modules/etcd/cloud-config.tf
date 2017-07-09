@@ -18,6 +18,14 @@ resource "gzip_me" "apiserver_key" {
   input = "${ var.apiserver_key }"
 }
 
+resource "gzip_me" "serviceaccount" {
+  input = "${ var.serviceaccount }"
+}
+
+resource "gzip_me" "serviceaccount_key" {
+  input = "${ var.serviceaccount_key }"
+}
+
 data "template_file" "kube-apiserver" {
   template = "${ file( "${ path.module }/kube-apiserver.yml" )}"
 
@@ -69,6 +77,8 @@ data "template_file" "cloud-config" {
     etcd_key = "${ gzip_me.etcd_key.output }"
     apiserver = "${ gzip_me.apiserver.output }"
     apiserver_key = "${ gzip_me.apiserver_key.output }"
+    serviceaccount = "${ gzip_me.serviceaccount.output }"
+    serviceaccount_key = "${ gzip_me.serviceaccount_key.output }"
     kube-apiserver = "${ gzip_me.kube-apiserver.output }"
     kube-controller-manager = "${ gzip_me.kube-controller-manager.output }"
   }

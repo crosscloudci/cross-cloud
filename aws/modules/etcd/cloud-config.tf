@@ -30,7 +30,6 @@ data "template_file" "kube-apiserver" {
   template = "${ file( "${ path.module }/kube-apiserver.yml" )}"
 
   vars {
-    ipv4 = "${ element(aws_instance.etcd.*.private_ip, count.index) }"
     fqdn = "etcd${ count.index + 1 }.${ var.internal_tld }"
     internal_tld = "${ var.internal_tld }"
     service_cidr = "${ var.service_cidr }"
@@ -89,7 +88,6 @@ data "template_file" "kube-proxy" {
   template = "${ file( "${ path.module }/kube-proxy.yml" )}"
 
   vars {
-    ipv4 = "${ element(aws_instance.etcd.*.private_ip, count.index) }"
     fqdn = "etcd${ count.index + 1 }.${ var.internal_tld }"
     internal_tld = "${ var.internal_tld }"
     service_cidr = "${ var.service_cidr }"
@@ -100,7 +98,7 @@ data "template_file" "kube-proxy" {
 }
 
 resource "gzip_me" "kube-proxy" {
-  input = "${ data.template_file.kube-kube-proxy.rendered }"
+  input = "${ data.template_file.kube-proxy.rendered }"
 }
 
 
@@ -119,5 +117,5 @@ data "template_file" "kube-scheduler" {
 }
 
 resource "gzip_me" "kube-scheduler" {
-  input = "${ data.template_file.kube-kube-scheduler.rendered }"
+  input = "${ data.template_file.kube-scheduler.rendered }"
 }

@@ -60,7 +60,7 @@ module "etcd" {
   apiserver                      = "${ module.tls.apiserver }"
   apiserver_key                  = "${ module.tls.apiserver_key }"
   serviceaccount                 = "${ module.tls.serviceaccount }"
-  serviceaccount                 = "${ module.tls.serviceaccount_key }"
+  serviceaccount_key             = "${ module.tls.serviceaccount_key }"
 }
 
 

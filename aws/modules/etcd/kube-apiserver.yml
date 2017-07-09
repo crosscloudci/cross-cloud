@@ -39,7 +39,7 @@
                  --etcd-quorum-read=false
                  --admission-control=NamespaceLifecycle,LimitRanger,ServiceAccount,PersistentVolumeLabel,DefaultStorageClass,DefaultTolerationSeconds,ResourceQuota
                  --feature-gates=ExperimentalCriticalPodAnnotation=true
-                 --advertise-address=${ ipv4 }
+                 --advertise-address=$private_ipv4
                  1>>/var/log/kube-apiserver.log 2>&1"
                ],
     "env":[{"name": "KUBE_CACHE_MUTATION_DETECTOR", "value": "false"}],

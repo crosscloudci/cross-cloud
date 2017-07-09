@@ -35,7 +35,12 @@
       "timeoutSeconds": 15
     },
     "volumeMounts": [
- {
+        {
+          "name": "logfile",
+          "mountPath": "/var/log/kube-scheduler.log",
+          "readOnly": false
+        },
+        {
           "name": "srvkube",
           "mountPath": "/etc/srv/kubernetes",
           "readOnly": true
@@ -47,6 +52,10 @@
   {
     "name": "srvkube",
     "hostPath": {"path": "/etc/srv/kubernetes"}
+  },
+  {
+    "name": "logfile",
+    "hostPath": {"path": "/var/log/kube-scheduler.log"}
   }
 ]
 }}

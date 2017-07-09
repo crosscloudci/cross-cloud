@@ -47,6 +47,12 @@
         { "name": "srvkube",
         "mountPath": "/etc/srv/kubernetes",
         "readOnly": true},
+        { "name": "logfile",
+        "mountPath": "/var/log/kube-apiserver.log",
+        "readOnly": false},
+        { "name": "auditlogfile",
+        "mountPath": "/var/log/kube-apiserver-audit.log",
+        "readOnly": true},
         { "name": "etcssl",
         "mountPath": "/etc/ssl",
         "readOnly": true},
@@ -60,6 +66,14 @@
   { "name": "srvkube",
     "hostPath": {
         "path": "/etc/srv/kubernetes"}
+  },
+  { "name": "logfile",
+    "hostPath": {
+        "path": "/var/log/kube-apiserver.log"}
+  },
+  { "name": "auditlogfile",
+    "hostPath": {
+        "path": "/var/log/kube-apiserver-audit.log"}
   },
   { "name": "etcssl",
     "hostPath": {

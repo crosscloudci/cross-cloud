@@ -39,6 +39,9 @@
         { "name": "srvkube",
         "mountPath": "/etc/srv/kubernetes",
         "readOnly": true},
+        { "name": "logfile",
+        "mountPath": "/var/log/kube-controller-manager.log",
+        "readOnly": false},
         { "name": "etcssl",
         "mountPath": "/etc/ssl",
         "readOnly": true},
@@ -52,6 +55,10 @@
   { "name": "srvkube",
     "hostPath": {
         "path": "/etc/srv/kubernetes"}
+  },
+  { "name": "logfile",
+    "hostPath": {
+        "path": "/var/log/kube-controller-manager.log"}
   },
   { "name": "etcssl",
     "hostPath": {

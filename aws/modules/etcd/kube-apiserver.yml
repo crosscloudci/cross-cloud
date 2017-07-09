@@ -1,59 +1,93 @@
-apiVersion: v1
-kind: Pod
-metadata:
-  name: kube-apiserver
-  namespace: kube-system
-spec:
-  hostNetwork: true
-  containers:
-  - name: kube-apiserver
-    image: ${ hyperkube }
-    command:
-    - /hyperkube
-    - apiserver
-    - --cloud-provider=aws
-    - --bind-address=0.0.0.0
-    - --etcd-servers=http://etcd.${ internal_tld }:2379
-    - --allow-privileged=true
-    - --service-cluster-ip-range=${ service_cidr }
-    - --secure-port=443
-    # FIX?? Unable to use $private_ipv4 because var is unavalible if unset bind adderess is used
-    # - --advertise-address=$private_ipv4
-    - --admission-control=NamespaceLifecycle,LimitRanger,ServiceAccount,DefaultStorageClass,ResourceQuota
-    - --tls-cert-file=/etc/kubernetes/ssl/k8s-apiserver.pem
-    - --tls-private-key-file=/etc/kubernetes/ssl/k8s-apiserver-key.pem
-    - --client-ca-file=/etc/kubernetes/ssl/ca.pem
-    - --service-account-key-file=/etc/kubernetes/ssl/k8s-apiserver-key.pem
-    - --runtime-config=extensions/v1beta1/networkpolicies=true
-    - --anonymous-auth=false
-    - --storage-backend=etcd2
-    # Verbose Logging
-    - --v=2
-    livenessProbe:
-      httpGet:
-        host: 127.0.0.1
-        port: 8080
-        path: /healthz
-      initialDelaySeconds: 15
-      timeoutSeconds: 15
-    ports:
-    - containerPort: 443
-      hostPort: 443
-      name: https
-    - containerPort: 8080
-      hostPort: 8080
-      name: local
-    volumeMounts:
-    - mountPath: /etc/kubernetes/ssl
-      name: ssl-certs-kubernetes
-      readOnly: true
-    - mountPath: /etc/ssl/certs
-      name: ssl-certs-host
-      readOnly: true
-  volumes:
-  - hostPath:
-      path: /etc/kubernetes/ssl
-    name: ssl-certs-kubernetes
-  - hostPath:
-      path: /usr/share/ca-certificates
-    name: ssl-certs-host
+{
+"apiVersion": "v1",
+"kind": "Pod",
+"metadata": {
+  "name":"kube-apiserver",
+  "namespace": "kube-system",
+  "labels": {
+    "tier": "control-plane",
+    "component": "kube-apiserver"
+  }
+},
+"spec":{
+"hostNetwork": true,
+"containers":[
+    {
+    "name": "kube-apiserver",
+    "image": "gcr.io/google_containers/kube-apiserver:06d8b21afeca619348410825b683e83b",
+    "resources": {
+      "requests": {
+        "cpu": "250m"
+      }
+    },
+    "command": [
+                 "/bin/sh",
+                 "-c",
+                 "/usr/local/bin/kube-apiserver
+                 --v=2
+                 --address=127.0.0.1
+                 --allow-privileged=true
+                 --cloud-provider=aws
+                 --client-ca-file=/etc/srv/kubernetes/pki/ca-certificates.crt
+                 --etcd-servers=http://etcd.${ internal_tld }:2379
+                 --secure-port=443
+                 --tls-cert-file=/etc/srv/kubernetes/pki/apiserver.crt
+                 --tls-private-key-file=/etc/srv/kubernetes/pki/apiserver.key
+                 --service-account-key-file=/etc/srv/kubernetes/pki/serviceaccount.crt
+                 --token-auth-file=/etc/srv/kubernetes/known_tokens.csv
+                 --storage-backend=etcd2
+                 --service-cluster-ip-range=10.0.0.0/16
+                 --etcd-quorum-read=false
+                 --admission-control=NamespaceLifecycle,LimitRanger,ServiceAccount,PersistentVolumeLabel,DefaultStorageClass,DefaultTolerationSeconds,ResourceQuota
+                 --feature-gates=ExperimentalCriticalPodAnnotation=true
+                 --advertise-address=${ fqdn }
+                 --allow-privileged=true 1>>/var/log/kube-apiserver.log 2>&1"
+               ],
+    "env":[{"name": "KUBE_CACHE_MUTATION_DETECTOR", "value": "false"}],
+    "livenessProbe": {
+      "httpGet": {
+        "host": "127.0.0.1",
+        "port": 8080,
+        "path": "/healthz"
+      },
+      "initialDelaySeconds": 15,
+      "timeoutSeconds": 15
+    },
+    "ports":[
+      { "name": "https",
+        "containerPort": 443,
+        "hostPort": 443},{
+       "name": "local",
+        "containerPort": 8080,
+        "hostPort": 8080}
+        ],
+    "volumeMounts": [
+        { "name": "srvkube",
+        "mountPath": "/etc/srv/kubernetes",
+        "readOnly": true},
+        { "name": "etcssl",
+        "mountPath": "/etc/ssl",
+        "readOnly": true},
+        { "name": "usrsharecacerts",
+        "mountPath": "/usr/share/ca-certificates",
+        "readOnly": true},
+      ]
+    }
+],
+"volumes":[
+  { "name": "srvkube",
+    "hostPath": {
+        "path": "/etc/srv/kubernetes"}
+  },
+  { "name": "etcssl",
+    "hostPath": {
+        "path": "/etc/ssl"}
+  },
+  { "name": "usrsharecacerts",
+    "hostPath": {
+        "path": "/usr/share/ca-certificates"}
+  },
+]
+}}
+
+

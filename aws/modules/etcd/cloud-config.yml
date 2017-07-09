@@ -76,7 +76,7 @@ write-files:
       --pod-manifest-path=/etc/kubernetes/manifests \
       --enable-debugging-handlers=false \
       --hairpin-mode=none \
-      --api-servers=https://35.188.192.7 \
+      --api-servers=http://127.0.0.1:8080 \
       --register-schedulable=false \
       --network-plugin-dir=/home/kubernetes/bin \
       --network-plugin=kubenet \
@@ -84,7 +84,7 @@ write-files:
       --feature-gates=ExperimentalCriticalPodAnnotation=true \
       "
 
-  - path: /etc/kubernetes/ssl/ca.pem
+  - path: /etc/srv/kubernetes/pki/ca-certificates.crt
     permissions: "0644"
     encoding: "gzip+base64"
     content: |
@@ -102,15 +102,28 @@ write-files:
     content: |
       ${ etcd_key }
       
-  - path: /etc/kubernetes/ssl/k8s-apiserver.pem
+  - path: /etc/srv/kuberenetes/pki/apiserver.crt
     permissions: "0644"
     encoding: "gzip+base64"
     content: |
       ${ apiserver }
 
-  - path: /etc/kubernetes/ssl/k8s-apiserver-key.pem
+  - path: /etc/srv/kubernetes/pki/apiserver.key
     permissions: "0644"
     encoding: "gzip+base64"
     content: |
       ${ apiserver_key }
+
+  - path: /etc/srv/kubernetes/pki/serviceaccount.crt 
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ serviceaccount }
+
+  - path: /etc/srv/kubernetes/pki/serviceaccount.key
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ serviceaccount_key }
+
 

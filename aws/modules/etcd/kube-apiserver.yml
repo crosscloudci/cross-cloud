@@ -23,7 +23,7 @@
     "command": [
                  "/bin/sh",
                  "-c",
-                 "/usr/local/bin/kube-apiserver --v=2 --address=127.0.0.1 --allow-privileged=true --cloud-provider=aws --client-ca-file=/etc/srv/kubernetes/pki/ca-certificates.crt --etcd-servers=http://etcd.${ internal_tld }:2379 --secure-port=443 --tls-cert-file=/etc/srv/kubernetes/pki/apiserver.crt --tls-private-key-file=/etc/srv/kubernetes/pki/apiserver.key --service-account-key-file=/etc/srv/kubernetes/pki/apiserver.crt --storage-backend=etcd2 --service-cluster-ip-range=10.0.0.0/16 --etcd-quorum-read=false --admission-control=NamespaceLifecycle,LimitRanger,ServiceAccount,PersistentVolumeLabel,DefaultStorageClass,DefaultTolerationSeconds,ResourceQuota --feature-gates=ExperimentalCriticalPodAnnotation=true --advertise-address=$private_ipv4"
+                 "/usr/local/bin/kube-apiserver --v=2 --address=127.0.0.1 --allow-privileged=true --cloud-provider=aws --client-ca-file=/etc/srv/kubernetes/pki/ca-certificates.crt --etcd-servers=http://etcd.${ internal_tld }:2379 --secure-port=443 --tls-cert-file=/etc/srv/kubernetes/pki/apiserver.crt --tls-private-key-file=/etc/srv/kubernetes/pki/apiserver.key --service-account-key-file=/etc/srv/kubernetes/pki/apiserver.crt --storage-backend=etcd2 --service-cluster-ip-range=10.0.0.0/16 --etcd-quorum-read=false --admission-control=NamespaceLifecycle,LimitRanger,ServiceAccount,PersistentVolumeLabel,DefaultStorageClass,DefaultTolerationSeconds,ResourceQuota --feature-gates=ExperimentalCriticalPodAnnotation=true"
                ],
     "env":[{"name": "KUBE_CACHE_MUTATION_DETECTOR", "value": "false"}],
     "livenessProbe": {

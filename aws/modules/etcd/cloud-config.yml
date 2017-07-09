@@ -15,10 +15,10 @@ coreos:
     listen-client-urls: http://0.0.0.0:2379
     listen-peer-urls: https://0.0.0.0:2380
     name: ${ hostname }
-    peer-trusted-ca-file: /etc/kubernetes/ssl/ca.pem
+    peer-trusted-ca-file: /etc/srv/kubernetes/pki/ca-certificates.crt
     peer-client-cert-auth: true
-    peer-cert-file: /etc/kubernetes/ssl/k8s-etcd.pem
-    peer-key-file: /etc/kubernetes/ssl/k8s-etcd-key.pem
+    peer-cert-file: /etc/srv/kubernetes/pki/etcd.crt
+    peer-key-file: /etc/srv/kubernetes/pki/etcd.key
 
   units:
     - name: etcd2.service
@@ -83,12 +83,11 @@ write-files:
       --node-labels=beta.kubernetes.io/fluentd-ds-ready=true \
       --feature-gates=ExperimentalCriticalPodAnnotation=true \
       "
-      
   - path: /etc/kubernetes/manifests/kube-apiserver.yml
     encoding: "gzip+base64"
     content: |
       ${ kube_apiserver }
-
+      
   - path: /etc/kubernetes/manifests/kube-controller-manager.yml
     encoding: "gzip+base64"
     content: |
@@ -109,20 +108,8 @@ write-files:
     encoding: "gzip+base64"
     content: |
       ${ ca }
-      
-  - path: /etc/kubernetes/ssl/k8s-etcd.pem
-    permissions: "0644"
-    encoding: "gzip+base64"
-    content: |
-      ${ etcd }
-      
-  - path: /etc/kubernetes/ssl/k8s-etcd-key.pem
-    permissions: "0644"
-    encoding: "gzip+base64"
-    content: |
-      ${ etcd_key }
-      
-  - path: /etc/srv/kuberenetes/pki/apiserver.crt
+
+  - path: /etc/srv/kubernetes/pki/apiserver.crt
     permissions: "0644"
     encoding: "gzip+base64"
     content: |
@@ -134,16 +121,14 @@ write-files:
     content: |
       ${ apiserver_key }
 
-  - path: /etc/srv/kubernetes/pki/serviceaccount.crt 
+  - path: /etc/srv/kubernetes/pki/etcd.crt
     permissions: "0644"
     encoding: "gzip+base64"
     content: |
-      ${ serviceaccount }
+      ${ etcd }
 
-  - path: /etc/srv/kubernetes/pki/serviceaccount.key
+  - path: /etc/srv/kubernetes/pki/etcd.key
     permissions: "0644"
     encoding: "gzip+base64"
     content: |
-      ${ serviceaccount_key }
-
-
+      ${ etcd_key }

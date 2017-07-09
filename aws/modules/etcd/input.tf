@@ -21,7 +21,5 @@ variable "etcd" {}
 variable "etcd_key" {}
 variable "apiserver" {}
 variable "apiserver_key" {}
-variable "serviceaccount" {}
-variable "serviceaccount_key" {}
 variable "instance_profile_name" {}
 variable "master_node_count" {}

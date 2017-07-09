@@ -55,35 +55,6 @@ resource "gzip_me" "kube-controller-manager" {
   input = "${ data.template_file.kube-controller-manager.rendered }"
 }
 
-data "template_file" "cloud-config" {
-  count = "${ var.master_node_count }"
-  template = "${ file( "${ path.module }/cloud-config.yml" )}"
-
-  vars {
-    cluster_domain = "${ var.cluster_domain }"
-    cluster-token = "etcd-cluster-${ var.name }"
-    dns_service_ip = "${ var.dns_service_ip }"
-    fqdn = "etcd${ count.index + 1 }.${ var.internal_tld }"
-    hostname = "etcd${ count.index + 1 }"
-    hyperkube = "${ var.kubelet_image_url }:${ var.kubelet_image_tag }"
-    kubelet_image_url = "${ var.kubelet_image_url }"
-    kubelet_image_tag = "${ var.kubelet_image_tag }"
-    internal_tld = "${ var.internal_tld }"
-    pod_cidr = "${ var.pod_cidr }"
-    region = "${ var.region }"
-    service_cidr = "${ var.service_cidr }"
-    ca = "${ gzip_me.ca.output }"
-    etcd = "${ gzip_me.etcd.output }"
-    etcd_key = "${ gzip_me.etcd_key.output }"
-    apiserver = "${ gzip_me.apiserver.output }"
-    apiserver_key = "${ gzip_me.apiserver_key.output }"
-    serviceaccount = "${ gzip_me.serviceaccount.output }"
-    serviceaccount_key = "${ gzip_me.serviceaccount_key.output }"
-    kube-apiserver = "${ gzip_me.kube-apiserver.output }"
-    kube-controller-manager = "${ gzip_me.kube-controller-manager.output }"
-  }
-}
-
 data "template_file" "kube-proxy" {
   template = "${ file( "${ path.module }/kube-proxy.yml" )}"
 
@@ -106,7 +77,6 @@ data "template_file" "kube-scheduler" {
   template = "${ file( "${ path.module }/kube-scheduler.yml" )}"
 
   vars {
-    ipv4 = "${ element(aws_instance.etcd.*.private_ip, count.index) }"
     fqdn = "etcd${ count.index + 1 }.${ var.internal_tld }"
     internal_tld = "${ var.internal_tld }"
     service_cidr = "${ var.service_cidr }"
@@ -119,3 +89,34 @@ data "template_file" "kube-scheduler" {
 resource "gzip_me" "kube-scheduler" {
   input = "${ data.template_file.kube-scheduler.rendered }"
 }
+
+data "template_file" "cloud-config" {
+  count = "${ var.master_node_count }"
+  template = "${ file( "${ path.module }/cloud-config.yml" )}"
+
+  vars {
+    cluster_domain = "${ var.cluster_domain }"
+    cluster-token = "etcd-cluster-${ var.name }"
+    dns_service_ip = "${ var.dns_service_ip }"
+    fqdn = "etcd${ count.index + 1 }.${ var.internal_tld }"
+    hostname = "etcd${ count.index + 1 }"
+    hyperkube = "${ var.kubelet_image_url }:${ var.kubelet_image_tag }"
+    kubelet_image_url = "${ var.kubelet_image_url }"
+    kubelet_image_tag = "${ var.kubelet_image_tag }"
+    internal_tld = "${ var.internal_tld }"
+    pod_cidr = "${ var.pod_cidr }"
+    region = "${ var.region }"
+    service_cidr = "${ var.service_cidr }"
+    ca = "${ gzip_me.ca.output }"
+    etcd = "${ gzip_me.etcd.output }"
+    etcd_key = "${ gzip_me.etcd_key.output }"
+    apiserver = "${ gzip_me.apiserver.output }"
+    apiserver_key = "${ gzip_me.apiserver_key.output }"
+    kube_apiserver = "${ gzip_me.kube-apiserver.output }"
+    kube_controller_manager = "${ gzip_me.kube-controller-manager.output }"
+    kube_proxy = "${ gzip_me.kube-proxy.output }"
+    kube_scheduler = "${ gzip_me.kube-scheduler.output }"
+  }
+}
+
+

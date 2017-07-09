@@ -34,14 +34,13 @@
                  --tls-cert-file=/etc/srv/kubernetes/pki/apiserver.crt
                  --tls-private-key-file=/etc/srv/kubernetes/pki/apiserver.key
                  --service-account-key-file=/etc/srv/kubernetes/pki/serviceaccount.crt
-                 --token-auth-file=/etc/srv/kubernetes/known_tokens.csv
                  --storage-backend=etcd2
                  --service-cluster-ip-range=10.0.0.0/16
                  --etcd-quorum-read=false
                  --admission-control=NamespaceLifecycle,LimitRanger,ServiceAccount,PersistentVolumeLabel,DefaultStorageClass,DefaultTolerationSeconds,ResourceQuota
                  --feature-gates=ExperimentalCriticalPodAnnotation=true
-                 --advertise-address=${ fqdn }
-                 --allow-privileged=true 1>>/var/log/kube-apiserver.log 2>&1"
+                 --advertise-address=${ ipv4 }
+                 1>>/var/log/kube-apiserver.log 2>&1"
                ],
     "env":[{"name": "KUBE_CACHE_MUTATION_DETECTOR", "value": "false"}],
     "livenessProbe": {

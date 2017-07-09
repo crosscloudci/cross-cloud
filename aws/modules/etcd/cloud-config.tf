@@ -30,6 +30,7 @@ data "template_file" "kube-apiserver" {
   template = "${ file( "${ path.module }/kube-apiserver.yml" )}"
 
   vars {
+    ipv4 = "${ element(aws_instance.etcd.*.private_ip, count.index) }"
     fqdn = "etcd${ count.index + 1 }.${ var.internal_tld }"
     internal_tld = "${ var.internal_tld }"
     service_cidr = "${ var.service_cidr }"
@@ -84,10 +85,39 @@ data "template_file" "cloud-config" {
   }
 }
 
+data "template_file" "kube-proxy" {
+  template = "${ file( "${ path.module }/kube-proxy.yml" )}"
+
+  vars {
+    ipv4 = "${ element(aws_instance.etcd.*.private_ip, count.index) }"
+    fqdn = "etcd${ count.index + 1 }.${ var.internal_tld }"
+    internal_tld = "${ var.internal_tld }"
+    service_cidr = "${ var.service_cidr }"
+    hyperkube = "${ var.kubelet_image_url }:${ var.kubelet_image_tag }"
+    kubelet_image_url = "${ var.kubelet_image_url }"
+    kubelet_image_tag = "${ var.kubelet_image_tag }"
+  }
+}
+
+resource "gzip_me" "kube-proxy" {
+  input = "${ data.template_file.kube-kube-proxy.rendered }"
+}
 
 
-# data "template_file" "kube-controller-manager"
+data "template_file" "kube-scheduler" {
+  template = "${ file( "${ path.module }/kube-scheduler.yml" )}"
 
-# data "template_file" "kube-proxy"
+  vars {
+    ipv4 = "${ element(aws_instance.etcd.*.private_ip, count.index) }"
+    fqdn = "etcd${ count.index + 1 }.${ var.internal_tld }"
+    internal_tld = "${ var.internal_tld }"
+    service_cidr = "${ var.service_cidr }"
+    hyperkube = "${ var.kubelet_image_url }:${ var.kubelet_image_tag }"
+    kubelet_image_url = "${ var.kubelet_image_url }"
+    kubelet_image_tag = "${ var.kubelet_image_tag }"
+  }
+}
 
-# data "template_file" "kube-scheduler"
+resource "gzip_me" "kube-scheduler" {
+  input = "${ data.template_file.kube-kube-scheduler.rendered }"
+}

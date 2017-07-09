@@ -1,25 +1,56 @@
-apiVersion: v1
-kind: Pod
-metadata:
-  name: kube-scheduler
-  namespace: kube-system
-spec:
-  hostNetwork: true
-  containers:
-  - name: kube-scheduler
-    image: ${ hyperkube }
-    command:
-    - /hyperkube
-    - scheduler
-    - --master=http://127.0.0.1:8080
-    - --leader-elect=true
-    resources:
-      requests:
-        cpu: 100m
-    livenessProbe:
-      httpGet:
-        host: 127.0.0.1
-        path: /healthz
-        port: 10251
-      initialDelaySeconds: 15
-      timeoutSeconds: 15
+{
+"apiVersion": "v1",
+"kind": "Pod",
+"metadata": {
+  "name":"kube-scheduler",
+  "namespace": "kube-system",
+  "labels": {
+    "tier": "control-plane",
+    "component": "kube-scheduler"
+  }
+},
+"spec":{
+"hostNetwork": true,
+"containers":[
+    {
+    "name": "kube-scheduler",
+    "image": "gcr.io/google_containers/kube-scheduler:f7d4a4aa278eea10ea6ce76c171566d9",
+    "resources": {
+      "requests": {
+        "cpu": "100m"
+      }
+    },
+    "command": [
+                 "/bin/sh",
+                 "-c",
+                 "/usr/local/bin/kube-scheduler
+                 --v=2
+                 --master=http://127.0.0.1:8080
+                 --feature-gates=ExperimentalCriticalPodAnnotation=true
+                 1>>/var/log/kube-scheduler.log 2>&1"
+               ],
+    "livenessProbe": {
+      "httpGet": {
+        "host": "127.0.0.1",
+        "port": 10251,
+        "path": "/healthz"
+      },
+      "initialDelaySeconds": 15,
+      "timeoutSeconds": 15
+    },
+    "volumeMounts": [
+ {
+          "name": "srvkube",
+          "mountPath": "/etc/srv/kubernetes",
+          "readOnly": true
+        }
+      ]
+    }
+],
+"volumes":[
+  {
+    "name": "srvkube",
+    "hostPath": {"path": "/etc/srv/kubernetes"}
+  }
+]
+}}

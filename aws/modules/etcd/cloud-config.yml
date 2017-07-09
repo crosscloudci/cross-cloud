@@ -75,7 +75,7 @@ write-files:
       --cluster-domain=cluster.local \
       --pod-manifest-path=/etc/kubernetes/manifests \
       --enable-debugging-handlers=false \
-      --hairpin-mode=none \
+      --hairpin-mode=promiscuous-bridge \
       --api-servers=http://127.0.0.1:8080 \
       --register-schedulable=false \
       --network-plugin-dir=/home/kubernetes/bin \
@@ -83,6 +83,26 @@ write-files:
       --node-labels=beta.kubernetes.io/fluentd-ds-ready=true \
       --feature-gates=ExperimentalCriticalPodAnnotation=true \
       "
+      
+  - path: /etc/kubernetes/manifests/kube-apiserver.yml
+    encoding: "gzip+base64"
+    content: |
+      ${ kube_apiserver }
+
+  - path: /etc/kubernetes/manifests/kube-controller-manager.yml
+    encoding: "gzip+base64"
+    content: |
+      ${ kube_controller_manager }
+
+  - path: /etc/kubernetes/manifests/kube-proxy.yml
+    encoding: "gzip+base64"
+    content: |
+      ${ kube_proxy }
+
+  - path: /etc/kubernetes/manifests/kube-scheduler.yml
+    encoding: "gzip+base64"
+    content: |
+      ${ kube_scheduler }
 
   - path: /etc/srv/kubernetes/pki/ca-certificates.crt
     permissions: "0644"

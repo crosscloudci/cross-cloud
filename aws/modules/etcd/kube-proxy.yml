@@ -17,20 +17,14 @@ spec:
   hostNetwork: true
   containers:
   - name: kube-proxy
-    image: gcr.io/google_containers/kube-proxy:781d0bee91bccaf87449e5ad2b9fac06
+    image: gcr.io/google_containers/kube-proxy-amd64:v1.6.6
     resources:
       requests:
         cpu: 100m
     command:
     - /bin/sh
     - -c
-    - echo -998 > /proc/$$$/oom_score_adj && kube-proxy
-    --master=http://127.0.0.1:8080
-    --cluster-cidr=10.244.0.0/14
-    --resource-container=""
-    --v=2
-    --feature-gates=ExperimentalCriticalPodAnnotation=true
-    1>>/var/log/kube-proxy.log 2>&1
+    - echo -998 > /proc/$$$/oom_score_adj && kube-proxy --master=http://127.0.0.1:8080 --cluster-cidr=10.244.0.0/14 --resource-container="" --v=2 --feature-gates=ExperimentalCriticalPodAnnotation=true 1>>/var/log/kube-proxy.log 2>&1
     securityContext:
       privileged: true
     volumeMounts:

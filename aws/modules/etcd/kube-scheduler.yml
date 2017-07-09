@@ -14,7 +14,7 @@
 "containers":[
     {
     "name": "kube-scheduler",
-    "image": "gcr.io/google_containers/kube-scheduler:f7d4a4aa278eea10ea6ce76c171566d9",
+    "image": "gcr.io/google_containers/kube-scheduler-amd64:v1.6.6",
     "resources": {
       "requests": {
         "cpu": "100m"
@@ -23,11 +23,7 @@
     "command": [
                  "/bin/sh",
                  "-c",
-                 "/usr/local/bin/kube-scheduler
-                 --v=2
-                 --master=http://127.0.0.1:8080
-                 --feature-gates=ExperimentalCriticalPodAnnotation=true
-                 1>>/var/log/kube-scheduler.log 2>&1"
+                 "/usr/local/bin/kube-scheduler --v=2 --master=http://127.0.0.1:8080 --feature-gates=ExperimentalCriticalPodAnnotation=true 1>>/var/log/kube-scheduler.log 2>&1"
                ],
     "livenessProbe": {
       "httpGet": {

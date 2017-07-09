@@ -29,7 +29,7 @@
                  --use-service-account-credentials
                  --cloud-provider=aws
                  --root-ca-file=/etc/srv/kubernetes/pki/ca-certificates.crt
-                 --service-account-private-key-file=/etc/srv/kubernetes/pki/serviceaccount.key
+                 --service-account-private-key-file=/etc/srv/kubernetes/pki/apiserver.key
                  --cluster-name=kubernetes
                  --cluster-cidr=10.244.0.0/14
                  --service-cluster-ip-range=10.0.0.0/16

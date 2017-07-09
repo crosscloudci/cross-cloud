@@ -33,7 +33,7 @@
                  --secure-port=443
                  --tls-cert-file=/etc/srv/kubernetes/pki/apiserver.crt
                  --tls-private-key-file=/etc/srv/kubernetes/pki/apiserver.key
-                 --service-account-key-file=/etc/srv/kubernetes/pki/serviceaccount.crt
+                 --service-account-key-file=/etc/srv/kubernetes/pki/apiserver.crt
                  --storage-backend=etcd2
                  --service-cluster-ip-range=10.0.0.0/16
                  --etcd-quorum-read=false

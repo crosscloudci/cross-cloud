@@ -18,14 +18,6 @@ resource "gzip_me" "apiserver_key" {
   input = "${ var.apiserver_key }"
 }
 
-resource "gzip_me" "serviceaccount" {
-  input = "${ var.serviceaccount }"
-}
-
-resource "gzip_me" "serviceaccount_key" {
-  input = "${ var.serviceaccount_key }"
-}
-
 data "template_file" "kube-apiserver" {
   template = "${ file( "${ path.module }/kube-apiserver.yml" )}"
 

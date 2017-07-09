@@ -41,13 +41,34 @@ coreos:
         ExecStartPre=/usr/bin/tar -xvf /home/kubernetes/bin/cni.tar -C /home/kubernetes/bin/
         ExecStart=/usr/bin/chmod +x /home/kubernetes/bin/kubelet
 
+    - name: socat.service
+      command: start
+      content: |
+        [Unit]
+        Description=Install Socat
+        After=bins.service
+        Requires=bins.service
+
+        [Service]
+        Type=oneshot
+        RemainAfterExit=yes
+        ExecStartPre=/usr/bin/mkdir --parents /opt/bin/socat.d/bin /opt/bin/socat.d/lib
+        ExecStartPre=/usr/bin/echo '#! /bin/bash' >> /opt/bin/socat
+        ExecStartPre=/usr/bin/echo 'PATH=/usr/bin:/bin:/usr/sbin:/sbin:/opt/bin' >> /opt/bin/socat
+        ExecStartPre=/usr/bin/echo 'LD_LIBRARY_PATH=/opt/bin/socat.d/lib:$LD_LIBRARY_PATH exec /opt/bin/socat.d/bin/socat "\$@"' >> /opt/bin/socat
+        ExecStartPre=/usr/bin/chmod +x /opt/bin/socat
+        ExecStartPre=/usr/bin/toolbox dnf install -y socat
+        ExecStartPre=/usr/bin/cp -f /usr/bin/socat /media/root/opt/bin/socat.d/bin/socat
+        ExecStartPre=/usr/bin/cp -f /usr/lib64/libssl.so.1.0.2h /media/root/opt/bin/socat.d/lib/libssl.so.10
+        ExecStart=/usr/bin/cp -f /usr/lib64/libcrypto.so.1.0.2h /media/root/opt/bin/socat.d/lib/libcrypto.so.10
+
     - name: kubelet.service
       command: start
       content: |
         [Unit]
         Description=Kubernetes kubelet
-        After=bins.service
-        Requires=bins.service
+        After=socat.service
+        Requires=socat.service
 
         [Service]
         Restart=always

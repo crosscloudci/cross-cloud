@@ -14,7 +14,7 @@
 "containers":[
     {
     "name": "kube-controller-manager",
-    "image": "gcr.io/google_containers/kube-controller-manager:b944c43336e9014dd7baa2703c179674",
+    "image": "gcr.io/google_containers/kube-controller-manager-amd64:v1.6.6",
     "resources": {
       "requests": {
         "cpu": "200m"
@@ -23,18 +23,7 @@
     "command": [
                  "/bin/sh",
                  "-c",
-                 "/usr/local/bin/kube-controller-manager
-                 --master=http://127.0.0.1:8080
-                 --v=2
-                 --use-service-account-credentials
-                 --cloud-provider=aws
-                 --root-ca-file=/etc/srv/kubernetes/pki/ca-certificates.crt
-                 --service-account-private-key-file=/etc/srv/kubernetes/pki/apiserver.key
-                 --cluster-name=kubernetes
-                 --cluster-cidr=10.244.0.0/14
-                 --service-cluster-ip-range=10.0.0.0/16
-                 --allocate-node-cidrs=true
-                 --feature-gates=ExperimentalCriticalPodAnnotation=true 1>>/var/log/kube-controller-manager.log 2>&1"
+                 "/usr/local/bin/kube-controller-manager --master=http://127.0.0.1:8080 --v=2 --use-service-account-credentials --cloud-provider=aws --root-ca-file=/etc/srv/kubernetes/pki/ca-certificates.crt --service-account-private-key-file=/etc/srv/kubernetes/pki/apiserver.key --cluster-name=kubernetes --cluster-cidr=10.244.0.0/14 --service-cluster-ip-range=10.0.0.0/16 --allocate-node-cidrs=true --feature-gates=ExperimentalCriticalPodAnnotation=true 1>>/var/log/kube-controller-manager.log 2>&1"
                ],
     "env":[{"name": "KUBE_CACHE_MUTATION_DETECTOR", "value": "false"}],
     "livenessProbe": {
@@ -55,7 +44,7 @@
         "readOnly": true},
         { "name": "usrsharecacerts",
         "mountPath": "/usr/share/ca-certificates",
-        "readOnly": true},
+        "readOnly": true}
       ]
     }
 ],
@@ -71,6 +60,6 @@
   { "name": "usrsharecacerts",
     "hostPath": {
         "path": "/usr/share/ca-certificates"}
-  },
+  }
 ]
 }}

@@ -23,7 +23,7 @@
     "command": [
                  "/bin/sh",
                  "-c",
-                 "/usr/local/bin/kube-scheduler --v=2 --master=http://127.0.0.1:8080 --feature-gates=ExperimentalCriticalPodAnnotation=true 1>>/var/log/kube-scheduler.log 2>&1"
+                 "/usr/local/bin/kube-scheduler --v=2 --master=http://127.0.0.1:8080 --feature-gates=ExperimentalCriticalPodAnnotation=true"
                ],
     "livenessProbe": {
       "httpGet": {
@@ -36,11 +36,6 @@
     },
     "volumeMounts": [
         {
-          "name": "logfile",
-          "mountPath": "/var/log/kube-scheduler.log",
-          "readOnly": false
-        },
-        {
           "name": "srvkube",
           "mountPath": "/etc/srv/kubernetes",
           "readOnly": true
@@ -52,10 +47,6 @@
   {
     "name": "srvkube",
     "hostPath": {"path": "/etc/srv/kubernetes"}
-  },
-  {
-    "name": "logfile",
-    "hostPath": {"path": "/var/log/kube-scheduler.log"}
   }
 ]
 }}

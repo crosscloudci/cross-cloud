@@ -100,6 +100,8 @@ module "worker" {
   ca = "${ module.tls.ca }"
   worker = "${ module.tls.worker }"
   worker_key = "${ module.tls.worker_key }"
+  apiserver                      = "${ module.tls.apiserver }"
+  apiserver_key                  = "${ module.tls.apiserver_key }"
 
   volume_size = {
     ebs = 250

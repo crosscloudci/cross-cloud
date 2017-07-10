@@ -72,7 +72,7 @@ write-files:
 
   - path: /etc/default/kubelet
     content: |
-      KUBELET_OPTS="--v=2 --api-servers=https://master.${ internal_tld } --enable-debugging-handlers=true --cloud-provider=aws --pod-manifest-path=/etc/kubernetes/manifests --allow-privileged=True --cluster-dns=10.0.0.10 --cluster-domain=cluster.local --cgroup-root=/ --system-cgroups=/system --network-plugin=kubenet --hairpin-mode=promiscuous-bridge --runtime-cgroups=/docker-daemon --kubelet-cgroups=/kubelet --babysit-daemons=true --anonymous-auth=false --client-ca-file=/etc/kubernetes/pki/ca-certificates.crt --feature-gates=ExperimentalCriticalPodAnnotation=true --tls-cert-file=/etc/kubernetes/pki/kubelet.crt --tls-private-key-file=/etc/kubernetes/pki/kubelet.key"
+      KUBELET_OPTS="--v=2 --api-servers=https://master.${ internal_tld } --enable-debugging-handlers=true --cloud-provider=aws --pod-manifest-path=/etc/kubernetes/manifests --allow-privileged=True --cluster-dns=10.0.0.10 --cluster-domain=cluster.local --cgroup-root=/ --system-cgroups=/system --network-plugin=kubenet --hairpin-mode=promiscuous-bridge --runtime-cgroups=/docker-daemon --kubelet-cgroups=/kubelet --babysit-daemons=true --anonymous-auth=false --client-ca-file=/etc/kubernetes/pki/ca-certificates.crt --feature-gates=ExperimentalCriticalPodAnnotation=true --kubeconfig=/var/lib/kube-proxy/kubeconfig"
 
   - path: /etc/kubernetes/manifests/kube-proxy.yml
     content: |
@@ -88,16 +88,16 @@ write-files:
         cluster:
           certificate-authority: /etc/kubernetes/pki/ca-certificates.crt
       users:
-      - name: kube-proxy
+      - name: kubelet
         user:
           client-certificate: /etc/kubernetes/pki/kubelet.crt
           client-key: /etc/kubernetes/pki/kubelet.key
       contexts:
       - context:
           cluster: local
-          user: kube-proxy
-        name: service-account-context
-      current-context: service-account-context
+          user: kubelet
+        name: kubelet-context
+      current-context: kubelet-context
 
   - path: /etc/kubernetes/pki/ca-certificates.crt
     permissions: "0644"

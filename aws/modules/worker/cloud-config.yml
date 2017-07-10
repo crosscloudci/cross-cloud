@@ -73,24 +73,24 @@ write-files:
   - path: /etc/default/kubelet
     content: |
       KUBELET_OPTS=" \
-      --api-servers=https://master.${ internal_tld }
-      --enable-debugging-handlers=true
-      --cloud-provider=aws
-      --pod-manifest-path=/etc/kubernetes/manifests
-      --allow-privileged=True
-      --v=2
-      --cluster-dns=10.0.0.10
-      --cluster-domain=cluster.local
-      --cgroup-root=/
-      --system-cgroups=/system
-      --network-plugin=kubenet
-      --hairpin-mode=promiscuous-bridge
-      --runtime-cgroups=/docker-daemon
-      --kubelet-cgroups=/kubelet
-      --babysit-daemons=true
-      --anonymous-auth=false
-      --client-ca-file=/etc/kubernetes/pki/ca-certificates.crt
-      --feature-gates=ExperimentalCriticalPodAnnotation=true
+      --api-servers=https://master.${ internal_tld } \
+      --enable-debugging-handlers=true \
+      --cloud-provider=aws \ 
+      --pod-manifest-path=/etc/kubernetes/manifests \
+      --allow-privileged=True \
+      --v=2 \
+      --cluster-dns=10.0.0.10 \ 
+      --cluster-domain=cluster.local \
+      --cgroup-root=/ \
+      --system-cgroups=/system \ 
+      --network-plugin=kubenet \
+      --hairpin-mode=promiscuous-bridge \
+      --runtime-cgroups=/docker-daemon \
+      --kubelet-cgroups=/kubelet \
+      --babysit-daemons=true \
+      --anonymous-auth=false \
+      --client-ca-file=/etc/kubernetes/pki/ca-certificates.crt \
+      --feature-gates=ExperimentalCriticalPodAnnotation=true \
       "
 
   - path: /etc/kubernetes/manifests/kube-proxy.yml

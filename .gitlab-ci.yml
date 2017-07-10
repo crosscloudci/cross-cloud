@@ -279,8 +279,7 @@ aws_k8s_deploy:
   variables:
     CLOUD: aws
   environment:
-    name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
-    url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
+    name: ${CLOUD}-stable-v1
     on_stop: aws_k8s_destroy
 
 aws_k8s_e2e:
@@ -292,6 +291,8 @@ aws_k8s_destroy:
   <<: *k8s_cloud_destroy_template
   variables:
     CLOUD: aws
+  environment:
+    name: ${CLOUD}-stable-v1
 
 aws_coredns_deploy:
   <<: *coredns_deploy_template

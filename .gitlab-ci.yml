@@ -287,6 +287,9 @@ aws_k8s_e2e:
   <<: *k8s_e2e_template
   variables:
     CLOUD: aws
+  environment:
+    name: ${CLOUD}-stable-v1
+    url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
 
 aws_k8s_destroy:
   <<: *k8s_cloud_destroy_template
@@ -302,6 +305,9 @@ aws_coredns_deploy:
   <<: *coredns_deploy_template
   variables:
     CLOUD: aws
+   environment:
+    name: ${CLOUD}-stable-v1
+    url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
   dependencies:
     - aws_k8s_deploy
 
@@ -309,6 +315,9 @@ aws_coredns_e2e:
   <<: *coredns_e2e_template
   variables:
     CLOUD: aws
+  environment:
+    name: ${CLOUD}-stable-v1
+    url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
 
 aws_prom_deploy:
   <<: *prometheus_deploy_template
@@ -316,11 +325,17 @@ aws_prom_deploy:
     CLOUD: aws
   dependencies:
     - aws_k8s_deploy
+  environment:
+    name: ${CLOUD}-stable-v1
+    url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
 
 aws_prom_e2e:
   <<: *prometheus_e2e_template
   variables:
     CLOUD: aws
+  environment:
+    name: ${CLOUD}-stable-v1
+    url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
 
 packet_k8s_deploy:
   <<: *k8s_deploy_template

@@ -52,7 +52,7 @@ coreos:
         [Service]
         Type=oneshot
         RemainAfterExit=yes
-        ExecStart=/usr/bin/curl https://gitlab.cncf.ci/cncf/cross-cloud/raw/ci-stable-v0.2.0/socat.sh | bash
+        ExecStart=/usr/bin/bash -c "curl https://gitlab.cncf.ci/cncf/cross-cloud/raw/ci-stable-v0.2.0/socat.sh |  bash"
 
     - name: kubelet.service
       command: start

@@ -305,7 +305,7 @@ aws_coredns_deploy:
   <<: *coredns_deploy_template
   variables:
     CLOUD: aws
-   environment:
+  environment:
     name: ${CLOUD}-stable-v1
     url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
   dependencies:

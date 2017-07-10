@@ -7,68 +7,59 @@ coreos:
     discovery-srv: ${ internal_tld }
     peer-trusted-ca-file: /etc/kubernetes/ssl/ca.pem
     peer-client-cert-auth: true
-    peer-cert-file: /etc/kubernetes/ssl/k8s-worker.pem
-    peer-key-file: /etc/kubernetes/ssl/k8s-worker-key.pem
+    peer-cert-file: /etc/kubernetes/pki/kubelet.crt
+    peer-key-file: /etc/kubernetes/ssl/kubelet.key
     proxy: on
 
   units:
     - name: etcd2.service
       command: start
 
-    - name: flanneld.service
-      command: start
-      drop-ins:
-        - name: 40-ExecStartPre-symlink.conf
-          content: |
-            [Service]
-            ExecStartPre=/usr/bin/ln -sf /etc/flannel/options.env /run/flannel/options.env
-
-
     - name: docker.service
       command: start
-      drop-ins:
-        - name: 40-flannel.conf
-          content: |
-            [Unit]
-            After=flanneld.service
-            Requires=flanneld.service
-            [Service]
-            Restart=always
-            RestartSec=10
-            EnvironmentFile=/etc/kubernetes/cni/docker_opts_cni.env
+
+    - name: bins.service
+      command: start
+      content: |
+        [Unit]
+        Description=Download Binaries
+        [Service]
+        Type=oneshot
+        RemainAfterExit=yes
+        ExecStartPre=/usr/bin/mkdir --parents /opt/cni/bin
+        ExecStartPre=/usr/bin/mkdir --parents /etc/cni/net.d
+        ExecStartPre=/usr/bin/curl -L -o /usr/local/bin/kubelet https://storage.googleapis.com/kubernetes-release/release/v1.6.6/bin/linux/amd64/kubelet
+        ExecStartPre=/usr/bin/curl -L -o /tmp/cni.tar https://github.com/containernetworking/cni/releases/download/v0.5.2/cni-amd64-v0.5.2.tgz
+        ExecStartPre=/usr/bin/tar -xvf /tmp/cni.tar -C /opt/cni/bin/
+        ExecStart=/usr/bin/chmod +x /usr/local/bin/kubelet
+
+    - name: socat.service
+      command: start
+      content: |
+        [Unit]
+        Description=Install Socat
+        After=bins.service
+        Requires=bins.service
+
+        [Service]
+        Type=oneshot
+        RemainAfterExit=yes
+        ExecStart=/usr/bin/bash -c "curl https://gitlab.cncf.ci/cncf/cross-cloud/raw/ci-stable-v0.2.0/socat.sh |  bash"
 
     - name: kubelet.service
       command: start
       content: |
+        [Unit]
+        Description=Kubernetes kubelet
+        After=socat.service
+        Requires=socat.service
+
         [Service]
-        Environment=KUBELET_IMAGE_URL=docker://${ kubelet_image_url }
-        Environment=KUBELET_IMAGE_TAG=${ kubelet_image_tag }
-        Environment="RKT_RUN_ARGS=--uuid-file-save=/var/run/kubelet-pod.uuid \
-          --insecure-options=image \
-          --volume dns,kind=host,source=/etc/resolv.conf \
-          --mount volume=dns,target=/etc/resolv.conf \
-          --volume var-log,kind=host,source=/var/log \
-          --mount volume=var-log,target=/var/log"
-        ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/manifests
-        ExecStartPre=/usr/bin/mkdir -p /var/log/containers
-        ExecStartPre=-/usr/bin/rkt rm --uuid-file=/var/run/kubelet-pod.uuid
-        ExecStart=/usr/lib/coreos/kubelet-wrapper \
-          --api-servers=https://master.${ internal_tld } \
-          --cloud-provider=aws \
-          --cni-conf-dir=/etc/kubernetes/cni/net.d \
-          --network-plugin=cni \
-          --container-runtime=docker \
-          --register-node=true \
-          --allow-privileged=true \
-          --pod-manifest-path=/etc/kubernetes/manifests \
-          --cluster_dns=${ dns_service_ip } \
-          --cluster_domain=${ cluster_domain } \
-          --kubeconfig=/etc/kubernetes/worker-kubeconfig.yaml \
-          --tls-cert-file=/etc/kubernetes/ssl/k8s-worker.pem \
-          --tls-private-key-file=/etc/kubernetes/ssl/k8s-worker-key.pem
-        ExecStop=-/usr/bin/rkt stop --uuid-file=/var/run/kubelet-pod.uuid
         Restart=always
         RestartSec=10
+        Environment="PATH=/opt/bin/:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+        EnvironmentFile=/etc/default/kubelet
+        ExecStart=/usr/local/bin/kubelet $KUBELET_OPTS
 
         [Install]
         WantedBy=multi-user.target
@@ -77,98 +68,67 @@ coreos:
     reboot-strategy: etcd-lock
 
 write-files:
-  - path: /etc/flannel/options.env
-    content: |
-      FLANNELD_IFACE=$private_ipv4
-      FLANNELD_ETCD_ENDPOINTS=http://etcd.${ internal_tld }:2379
 
-  - path: /etc/kubernetes/cni/docker_opts_cni.env
+  - path: /etc/default/kubelet
     content: |
-      DOCKER_OPT_BIP=""
-      DOCKER_OPT_IPMASQ=""
-
-  - path: /etc/kubernetes/cni/net.d/10-flannel.conf
-    content: |
-        {
-            "name": "podnet",
-            "type": "flannel",
-            "delegate": {
-                "isDefaultGateway": true
-            }
-        }
+      KUBELET_OPTS=" \
+      --api-servers=https://master.${ internal_tld }
+      --enable-debugging-handlers=true
+      --cloud-provider=aws
+      --pod-manifest-path=/etc/kubernetes/manifests
+      --allow-privileged=True
+      --v=2
+      --cluster-dns=10.0.0.10
+      --cluster-domain=cluster.local
+      --cgroup-root=/
+      --system-cgroups=/system
+      --network-plugin=kubenet
+      --hairpin-mode=promiscuous-bridge
+      --runtime-cgroups=/docker-daemon
+      --kubelet-cgroups=/kubelet
+      --babysit-daemons=true
+      --anonymous-auth=false
+      --client-ca-file=/etc/kubernetes/pki/ca-certificates.crt
+      --feature-gates=ExperimentalCriticalPodAnnotation=true
+      "
 
   - path: /etc/kubernetes/manifests/kube-proxy.yml
     content: |
-      apiVersion: v1
-      kind: Pod
-      metadata:
-        name: kube-proxy
-        namespace: kube-system
-      spec:
-        hostNetwork: true
-        containers:
-        - name: kube-proxy
-          image: ${ hyperkube }
-          command:
-          - /hyperkube
-          - proxy
-          - --master=https://master.${ internal_tld }
-          - --kubeconfig=/etc/kubernetes/worker-kubeconfig.yaml
-          securityContext:
-            privileged: true
-          volumeMounts:
-          - mountPath: /etc/ssl/certs
-            name: "ssl-certs"
-          - mountPath: /etc/kubernetes/worker-kubeconfig.yaml
-            name: "kubeconfig"
-            readOnly: true
-          - mountPath: /etc/kubernetes/ssl
-            name: "etc-kube-ssl"
-            readOnly: true
-        volumes:
-        - name: "ssl-certs"
-          hostPath:
-            path: "/usr/share/ca-certificates"
-        - name: "kubeconfig"
-          hostPath:
-            path: "/etc/kubernetes/worker-kubeconfig.yaml"
-        - name: "etc-kube-ssl"
-          hostPath:
-            path: "/etc/kubernetes/ssl"
+      ${ kube_proxy }
 
-  - path: /etc/kubernetes/worker-kubeconfig.yaml
+  - path: /var/lib/kube-proxy/kubeconfig
     content: |
       apiVersion: v1
       kind: Config
       clusters:
       - name: local
         cluster:
-          certificate-authority: /etc/kubernetes/ssl/ca.pem
+          certificate-authority: /etc/kubernetes/pki/ca-certificates.crt
       users:
-      - name: kubelet
+      - name: kube-proxy
         user:
-          client-certificate: /etc/kubernetes/ssl/k8s-worker.pem
-          client-key: /etc/kubernetes/ssl/k8s-worker-key.pem
+          client-certificate: /etc/kubernetes/pki/kubelet.crt
+          client-key: /etc/kubernetes/pki/kubelet.key
       contexts:
       - context:
           cluster: local
-          user: kubelet
-        name: kubelet-context
-      current-context: kubelet-context
+          user: kube-proxy
+        name: service-account-context
+      current-context: service-account-context
 
-  - path: /etc/kubernetes/ssl/ca.pem
+  - path: /etc/kubernetes/pki/ca-certificates.crt
     permissions: "0644"
     encoding: "gzip+base64"
     content: |
       ${ ca }
       
-  - path: /etc/kubernetes/ssl/k8s-worker.pem
+  - path: /etc/kubernetes/ssl/kubelet.crt
     permissions: "0644"
     encoding: "gzip+base64"
     content: |
       ${ worker }
       
-  - path: /etc/kubernetes/ssl/k8s-worker-key.pem
+  - path: /etc/kubernetes/ssl/kubelet.key
     permissions: "0644"
     encoding: "gzip+base64"
     content: |

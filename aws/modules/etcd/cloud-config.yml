@@ -88,10 +88,10 @@ write-files:
       --cluster-dns=10.0.0.10 \
       --cluster-domain=cluster.local \
       --pod-manifest-path=/etc/kubernetes/manifests \
-      --enable-debugging-handlers=true \
+      --enable-debugging-handlers=false \
       --hairpin-mode=promiscuous-bridge \
       --api-servers=http://127.0.0.1:8080 \
-      --register-schedulable=true \
+      --register-schedulable=false \
       --network-plugin-dir=/home/kubernetes/bin \
       --network-plugin=kubenet \
       --node-labels=beta.kubernetes.io/fluentd-ds-ready=true \

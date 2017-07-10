@@ -10,6 +10,18 @@ resource "gzip_me" "worker_key" {
   input = "${ var.worker_key }"
 }
 
+data "template_file" "kube-proxy" {
+  template = "${ file( "${ path.module }/kube-proxy.yml" )}"
+
+  vars {
+    internal_tld = "${ var.internal_tld }"
+  }
+}
+
+resource "gzip_me" "kube-proxy" {
+  input = "${ data.template_file.kube-proxy.rendered }"
+}
+
 data "template_file" "cloud-config" {
   template = "${ file( "${ path.module }/cloud-config.yml" )}"
 
@@ -24,5 +36,6 @@ data "template_file" "cloud-config" {
     ca = "${ gzip_me.ca.output }"
     worker = "${ gzip_me.worker.output }"
     worker_key = "${ gzip_me.worker_key.output }"
+    kube_proxy = "${ gzip_me.kube-proxy.output }"
   }
 }

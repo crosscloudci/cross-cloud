@@ -105,13 +105,13 @@ write-files:
     content: |
       ${ ca }
       
-  - path: /etc/kubernetes/ssl/kubelet.crt
+  - path: /etc/kubernetes/pki/kubelet.crt
     permissions: "0644"
     encoding: "gzip+base64"
     content: |
       ${ worker }
       
-  - path: /etc/kubernetes/ssl/kubelet.key
+  - path: /etc/kubernetes/pki/kubelet.key
     permissions: "0644"
     encoding: "gzip+base64"
     content: |

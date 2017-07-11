@@ -1,5 +1,5 @@
 resource "google_compute_firewall" "allow-internal-lb" {
-  name    = "allow-internal-lb"
+  name    = "${ var.name}-allow-internal-lb"
   network = "${ var.name }"
 
   allow {
@@ -12,7 +12,7 @@ resource "google_compute_firewall" "allow-internal-lb" {
 }
 
 resource "google_compute_firewall" "allow-health-check" {
-  name    = "allow-health-check"
+  name    = "${ var.name}-allow-health-check"
   network = "${ var.name }"
 
   allow {
@@ -24,7 +24,7 @@ resource "google_compute_firewall" "allow-health-check" {
 }
 
 resource "google_compute_firewall" "allow-all-internal" {
-  name    = "allow-all-10-128-0-0-20"
+  name    = "${ var.name }-allow-all-10-128-0-0-20"
   network = "${ var.name }"
 
   allow {
@@ -43,7 +43,7 @@ resource "google_compute_firewall" "allow-all-internal" {
 }
 
 resource "google_compute_firewall" "allow-ssh-bastion" {
-  name    = "allow-ssh-bastion"
+  name    = "${ var.name }-allow-ssh-bastion"
   network = "${ var.name }"
 
   allow {
@@ -56,7 +56,7 @@ resource "google_compute_firewall" "allow-ssh-bastion" {
 }
 
 resource "google_compute_firewall" "allow-kubectl" {
-  name    = "allow-kubectl-lb"
+  name    = "${ var.name }-allow-kubectl-lb"
   network = "${ var.name }"
 
   allow {

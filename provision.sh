@@ -28,7 +28,7 @@ mkdir -p $TF_VAR_data_dir
 if [ "$1" = "aws-deploy" ] ; then
     cd ${DIR}/aws
     if [ "$3" = "s3" ]; then
-        cp ../backend.tf .
+        cp ../s3-backend.tf .
     terraform init \
               -backend-config 'bucket=aws65972563' \
               -backend-config "key=aws-${TF_VAR_name}" \
@@ -37,7 +37,9 @@ if [ "$1" = "aws-deploy" ] ; then
     terraform taint -module=kubeconfig null_resource.kubeconfig || true
     time terraform apply ${DIR}/aws
     elif [ "$3" = "file" ]; then
-        terraform get ${DIR}/aws
+        cp ../file-backend.tf .
+        terraform init \
+                  -backend-config 'path=/cncf/data/${TF_VAR_name}/terraform.tfstate' 
         # ensure kubeconfig is written to disk on infrastructure refresh
         terraform taint -module=kubeconfig null_resource.kubeconfig || true ${DIR}/aws
         time terraform apply ${DIR}/aws
@@ -53,15 +55,18 @@ if [ "$1" = "aws-deploy" ] ; then
 elif [ "$1" = "aws-destroy" ] ; then
       cd ${DIR}/aws
       if [ "$3" = "s3" ]; then
-          cp ../backend.tf .
+          cp ../s3-backend.tf .
           terraform init \
                     -backend-config 'bucket=aws65972563' \
                     -backend-config "key=aws-${TF_VAR_name}" \
                     -backend-config 'region=ap-southeast-2'
     time terraform destroy -force ${DIR}/aws
-    elif [ "$3" = "file" ]; then
-          terraform get ${DIR}/aws
+      elif [ "$3" = "file" ]; then
+          cp ../file-backend.tf .
+          terraform init \
+                    -backend-config 'path=/cncf/data/${TF_VAR_name}/terraform.tfstate' 
           time terraform destroy -force ${DIR}/aws
+
        fi
 
 elif [ "$1" = "azure-deploy" ] ; then
@@ -70,7 +75,7 @@ elif [ "$1" = "azure-deploy" ] ; then
     # should probably move these to data resources
     cd ${DIR}/azure
     if [ "$3" = "s3" ]; then
-        cp ../backend.tf .
+        cp ../s3-backend.tf .
     terraform init \
               -backend-config 'bucket=aws65972563' \
               -backend-config "key=${TF_VAR_name}" \
@@ -81,7 +86,9 @@ elif [ "$1" = "azure-deploy" ] ; then
         terraform apply -target module.dns.null_resource.dns_gen ${DIR}/azure && \
         time terraform apply ${DIR}/azure
     elif [ "$3" = "file" ]; then
-        terraform get ${DIR}/azure
+        cp ../file-backend.tf .
+        terraform init \
+                  -backend-config 'path=/cncf/data/${TF_VAR_name}/terraform.tfstate' 
         # ensure kubeconfig is written to disk on infrastructure refresh
         terraform taint -module=kubeconfig null_resource.kubeconfig || true
         terraform apply -target null_resource.ssl_ssh_cloud_gen ${DIR}/azure && \
@@ -92,7 +99,7 @@ elif [ "$1" = "azure-deploy" ] ; then
 elif [ "$1" = "azure-destroy" ] ; then
     cd ${DIR}/azure
     if [ "$3" = "s3" ]; then
-        cp ../backend.tf .
+        cp ../s3-backend.tf .
     terraform init \
               -backend-config 'bucket=aws65972563' \
               -backend-config "key=${TF_VAR_name}" \
@@ -103,19 +110,21 @@ elif [ "$1" = "azure-destroy" ] ; then
     terraform apply -target module.dns.null_resource.dns_gen ${DIR}/azure && \
     time terraform destroy -force ${DIR}/azure || true
     
-elif [ "$3" = "file" ]; then
-        terraform get ${DIR}/azure
-            terraform destroy -force -target null_resource.ssl_ssh_cloud_gen ${DIR}/azure && \
-            terraform destroy -force -target module.dns.null_resource.dns_gen ${DIR}/azure && \
-            terraform apply -target null_resource.ssl_ssh_cloud_gen ${DIR}/azure && \
-            terraform apply -target module.dns.null_resource.dns_gen ${DIR}/azure && \
+    elif [ "$3" = "file" ]; then
+        cp ../file-backend.tf .
+        terraform init \
+                  -backend-config 'path=/cncf/data/${TF_VAR_name}/terraform.tfstate' 
+        terraform destroy -force -target null_resource.ssl_ssh_cloud_gen ${DIR}/azure && \
+        terraform destroy -force -target module.dns.null_resource.dns_gen ${DIR}/azure && \
+        terraform apply -target null_resource.ssl_ssh_cloud_gen ${DIR}/azure && \
+        terraform apply -target module.dns.null_resource.dns_gen ${DIR}/azure && \
     time terraform destroy -force ${DIR}/azure || true
             fi
 
 elif [ "$1" = "packet-deploy" ] ; then
     cd ${DIR}/packet
     if [ "$3" = "s3" ]; then
-        cp ../backend.tf .
+        cp ../s3-backend.tf .
     terraform init \
               -backend-config 'bucket=aws65972563' \
               -backend-config "key=packet-${TF_VAR_name}" \
@@ -125,7 +134,9 @@ elif [ "$1" = "packet-deploy" ] ; then
     time terraform apply ${DIR}/packet
 
     elif [ "$3" = "file" ]; then
-        terrform get ${DIR}/packet
+        cp ../file-backend.tf .
+        terraform init \
+                  -backend-config 'path=/cncf/data/${TF_VAR_name}/terraform.tfstate' 
         # ensure kubeconfig is written to disk on infrastructure refresh
         terraform taint -module=kubeconfig null_resource.kubeconfig || true ${DIR}/packet
         time terraform apply ${DIR}/packet
@@ -141,7 +152,7 @@ fi
 elif [ "$1" = "packet-destroy" ] ; then
      cd ${DIR}/packet
      if [ "$3" = "s3" ]; then
-         cp ../backend.tf .
+         cp ../s3-backend.tf .
     terraform init \
               -backend-config 'bucket=aws65972563' \
               -backend-config "key=packet-${TF_VAR_name}" \
@@ -149,14 +160,16 @@ elif [ "$1" = "packet-destroy" ] ; then
     time terraform destroy -force ${DIR}/packet
 
 elif [ "$3" = "file" ]; then
-         terrform get ${DIR}/packet
+         cp ../file-backend.tf .
+         terraform init \
+                   -backend-config 'path=/cncf/data/${TF_VAR_name}/terraform.tfstate' 
          time terraform destroy -force ${DIR}/packet
 fi
 
 elif [ "$1" = "gce-deploy" ] ; then
     cd ${DIR}/gce
     if [ "$3" = "s3" ]; then
-        cp ../backend.tf .
+        cp ../s3-backend.tf .
     terraform init \
               -backend-config 'bucket=aws65972563' \
               -backend-config "key=gce-${TF_VAR_name}" \
@@ -167,7 +180,9 @@ elif [ "$1" = "gce-deploy" ] ; then
     time terraform apply ${DIR}/gce
     
 elif [ "$3" = "file" ]; then
-        terrform get ${DIR}/gce
+        cp ../file-backend.tf .
+        terraform init \
+                  -backend-config 'path=/cncf/data/${TF_VAR_name}/terraform.tfstate' 
         # ensure kubeconfig is written to disk on infrastructure refresh
         terraform taint -module=kubeconfig null_resource.kubeconfig || true ${DIR}/gce
         time terraform apply -target module.vpc.google_compute_subnetwork.cncf ${DIR}/gce
@@ -185,7 +200,7 @@ elif [ "$3" = "file" ]; then
 elif [ "$1" = "gce-destroy" ] ; then
     cd ${DIR}/gce
     if [ "$3" = "s3" ]; then
-        cp ../backend.tf .
+        cp ../s3-backend.tf .
     terraform init \
               -backend-config 'bucket=aws65972563' \
               -backend-config "key=gce-${TF_VAR_name}" \
@@ -193,7 +208,9 @@ elif [ "$1" = "gce-destroy" ] ; then
     time terraform destroy -force ${DIR}/gce || true # Allow to Fail and clean up network on next step
     time terraform destroy -force -target module.vpc.google_compute_subnetwork.cncf ${DIR}/gce
 elif [ "$3" = "file" ]; then
-        terrform get ${DIR}/gce
+        cp ../file-backend.tf .
+        terraform init \
+                  -backend-config 'path=/cncf/data/${TF_VAR_name}/terraform.tfstate' 
         time terraform destroy -force ${DIR}/gce || true # Allow to Fail and clean up network on next step
         time terraform destroy -force -target module.vpc.google_compute_subnetwork.cncf ${DIR}/gce
 fi
@@ -201,7 +218,7 @@ fi
 elif [ "$1" = "gke-deploy" ] ; then
 cd ${DIR}/gke
 if [ "$3" = "s3" ]; then
-    cp ../backend.tf .
+    cp ../s3-backend.tf .
     terraform init \
               -backend-config 'bucket=aws65972563' \
               -backend-config "key=gke-${TF_VAR_name}" \
@@ -211,7 +228,9 @@ if [ "$3" = "s3" ]; then
     time terraform apply -target module.vpc ${DIR}/gke && \
     time terraform apply ${DIR}/gke
 elif [ "$3" = "file" ]; then
-    terrform get ${DIR}/gke
+    cp ../file-backend.tf .
+    terraform init \
+              -backend-config 'path=/cncf/data/${TF_VAR_name}/terraform.tfstate' 
     # ensure kubeconfig is written to disk on infrastructure refresh
     terraform taint -module=kubeconfig null_resource.kubeconfig || true          
     time terraform apply -target module.vpc ${DIR}/gke && \
@@ -228,7 +247,7 @@ fi
 elif [ "$1" = "gke-destroy" ] ; then
 cd ${DIR}/gke
 if [ "$3" = "s3" ]; then
-    cp ../backend.tf .
+    cp ../s3-backend.tf .
     terraform init \
               -backend-config 'bucket=aws65972563' \
               -backend-config "key=gke-${TF_VAR_name}" \
@@ -240,8 +259,9 @@ if [ "$3" = "s3" ]; then
     time terraform destroy -force ${DIR}/gke || true
 
 elif [ "$3" = "file" ]; then
-
-    terrform get ${DIR}/gke
+    cp ../file-backend.tf .
+    terraform init \
+              -backend-config 'path=/cncf/data/${TF_VAR_name}/terraform.tfstate' 
 time terraform destroy -force -target module.cluster.google_container_cluster.cncf ${DIR}/gke || true 
 echo "sleep" && sleep 10 && \
 time terraform destroy -force -target module.vpc.google_compute_network.cncf ${DIR}/gke || true 

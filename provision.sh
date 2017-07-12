@@ -39,7 +39,7 @@ if [ "$1" = "aws-deploy" ] ; then
     elif [ "$3" = "file" ]; then
         cp ../file-backend.tf .
         terraform init \
-                  -backend-config 'path=/cncf/data/${TF_VAR_name}/terraform.tfstate' 
+                  -backend-config "path=/cncf/data/${TF_VAR_name}/terraform.tfstate"
         # ensure kubeconfig is written to disk on infrastructure refresh
         terraform taint -module=kubeconfig null_resource.kubeconfig || true ${DIR}/aws
         time terraform apply ${DIR}/aws
@@ -64,7 +64,7 @@ elif [ "$1" = "aws-destroy" ] ; then
       elif [ "$3" = "file" ]; then
           cp ../file-backend.tf .
           terraform init \
-                    -backend-config 'path=/cncf/data/${TF_VAR_name}/terraform.tfstate' 
+                    -backend-config "path=/cncf/data/${TF_VAR_name}/terraform.tfstate"
           time terraform destroy -force ${DIR}/aws
 
        fi
@@ -88,7 +88,7 @@ elif [ "$1" = "azure-deploy" ] ; then
     elif [ "$3" = "file" ]; then
         cp ../file-backend.tf .
         terraform init \
-                  -backend-config 'path=/cncf/data/${TF_VAR_name}/terraform.tfstate' 
+                  -backend-config "path=/cncf/data/${TF_VAR_name}/terraform.tfstate"
         # ensure kubeconfig is written to disk on infrastructure refresh
         terraform taint -module=kubeconfig null_resource.kubeconfig || true
         terraform apply -target null_resource.ssl_ssh_cloud_gen ${DIR}/azure && \
@@ -113,7 +113,7 @@ elif [ "$1" = "azure-destroy" ] ; then
     elif [ "$3" = "file" ]; then
         cp ../file-backend.tf .
         terraform init \
-                  -backend-config 'path=/cncf/data/${TF_VAR_name}/terraform.tfstate' 
+                  -backend-config "path=/cncf/data/${TF_VAR_name}/terraform.tfstate"
         terraform destroy -force -target null_resource.ssl_ssh_cloud_gen ${DIR}/azure && \
         terraform destroy -force -target module.dns.null_resource.dns_gen ${DIR}/azure && \
         terraform apply -target null_resource.ssl_ssh_cloud_gen ${DIR}/azure && \
@@ -136,7 +136,7 @@ elif [ "$1" = "packet-deploy" ] ; then
     elif [ "$3" = "file" ]; then
         cp ../file-backend.tf .
         terraform init \
-                  -backend-config 'path=/cncf/data/${TF_VAR_name}/terraform.tfstate' 
+                  -backend-config "path=/cncf/data/${TF_VAR_name}/terraform.tfstate" 
         # ensure kubeconfig is written to disk on infrastructure refresh
         terraform taint -module=kubeconfig null_resource.kubeconfig || true ${DIR}/packet
         time terraform apply ${DIR}/packet
@@ -162,7 +162,7 @@ elif [ "$1" = "packet-destroy" ] ; then
 elif [ "$3" = "file" ]; then
          cp ../file-backend.tf .
          terraform init \
-                   -backend-config 'path=/cncf/data/${TF_VAR_name}/terraform.tfstate' 
+                   -backend-config "path=/cncf/data/${TF_VAR_name}/terraform.tfstate"
          time terraform destroy -force ${DIR}/packet
 fi
 
@@ -182,7 +182,7 @@ elif [ "$1" = "gce-deploy" ] ; then
 elif [ "$3" = "file" ]; then
         cp ../file-backend.tf .
         terraform init \
-                  -backend-config 'path=/cncf/data/${TF_VAR_name}/terraform.tfstate' 
+                  -backend-config "path=/cncf/data/${TF_VAR_name}/terraform.tfstate"
         # ensure kubeconfig is written to disk on infrastructure refresh
         terraform taint -module=kubeconfig null_resource.kubeconfig || true ${DIR}/gce
         time terraform apply -target module.vpc.google_compute_subnetwork.cncf ${DIR}/gce
@@ -210,7 +210,7 @@ elif [ "$1" = "gce-destroy" ] ; then
 elif [ "$3" = "file" ]; then
         cp ../file-backend.tf .
         terraform init \
-                  -backend-config 'path=/cncf/data/${TF_VAR_name}/terraform.tfstate' 
+                  -backend-config "path=/cncf/data/${TF_VAR_name}/terraform.tfstate"
         time terraform destroy -force ${DIR}/gce || true # Allow to Fail and clean up network on next step
         time terraform destroy -force -target module.vpc.google_compute_subnetwork.cncf ${DIR}/gce
 fi
@@ -230,7 +230,7 @@ if [ "$3" = "s3" ]; then
 elif [ "$3" = "file" ]; then
     cp ../file-backend.tf .
     terraform init \
-              -backend-config 'path=/cncf/data/${TF_VAR_name}/terraform.tfstate' 
+              -backend-config "path=/cncf/data/${TF_VAR_name}/terraform.tfstate"
     # ensure kubeconfig is written to disk on infrastructure refresh
     terraform taint -module=kubeconfig null_resource.kubeconfig || true          
     time terraform apply -target module.vpc ${DIR}/gke && \
@@ -261,7 +261,7 @@ if [ "$3" = "s3" ]; then
 elif [ "$3" = "file" ]; then
     cp ../file-backend.tf .
     terraform init \
-              -backend-config 'path=/cncf/data/${TF_VAR_name}/terraform.tfstate' 
+              -backend-config "path=/cncf/data/${TF_VAR_name}/terraform.tfstate" 
 time terraform destroy -force -target module.cluster.google_container_cluster.cncf ${DIR}/gke || true 
 echo "sleep" && sleep 10 && \
 time terraform destroy -force -target module.vpc.google_compute_network.cncf ${DIR}/gke || true 

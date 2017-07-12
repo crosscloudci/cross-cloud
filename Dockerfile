@@ -9,6 +9,7 @@ ENV PACKETCLI_VERSION=1.33
 ENV TERRAFORM_VERSION=0.9.5
 ENV ARC=amd64
 
+
 # Install AWS / AZURE CLI Deps
 RUN apk update
 RUN apk add --update git bash util-linux wget tar curl build-base jq \
@@ -71,4 +72,4 @@ RUN chmod +x /cncf/provision.sh
 #ENTRYPOINT ["/cncf/provision.sh"]
 WORKDIR /cncf/
 #CMD ["/cncf/provision.sh"]
-CMD ["bash", "-c", "/cncf/provision.sh ${CLOUD}-${COMMAND} ${NAME}"]
+CMD ["bash", "-c", "/cncf/provision.sh ${CLOUD}-${COMMAND} ${NAME} ${BACKEND}"]

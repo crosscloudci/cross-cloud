@@ -36,7 +36,7 @@ spec:
     - mountPath: /usr/share/ca-certificates
       name: usr-ca-certs
       readOnly: true
-    - mountPath: /etc/kuberneters/pki
+    - mountPath: /etc/kubernetes/pki
       name: certs
       readOnly: true
     - mountPath: /var/lib/kube-proxy/kubeconfig

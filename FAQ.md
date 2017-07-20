@@ -62,3 +62,13 @@ For Kubernetes cross-cloud runs the k8s conformance test from upstream Kubernete
 ### How does someone get started using the cross-cloud project?
 See the TL;DR section in the README https://github.com/cncf/cross-cloud/#how-to-use-cross-cloud-tldr
 
+
+### What are the cloud-providers targeted by cross-cloud project?
+Currently the cross-cloud k8s end-point provisioner supports
+- AWS
+- GCE
+- GKE
+- Packet
+
+Additional cloud-providers will be added. We welcome pull requests to add new ones. :)
+

@@ -17,3 +17,18 @@ With Terraform + cloud-init we have taken an immutable approach to the infrastru
 Terraform supports templated cloud-init config across all clouds which reduces our dependency on provisioning code needing to connect back over ssh (salt/ansible etc). We supply cloud-init/userdata which supports installing software repos, configuring certificates, writing out files, and service creation. 
 
 We’ll be provide more information in the future on the public Github project, http://github.com/cncf/cross-cloud.   In the meantime we welcome more feedback and look forward to collaborating with the ContainerOps team within the CNCF landscape.
+
+
+=== What are the dependencies for your k8s clusters?
+
+The entire list is cloud dependent since we support per-cloud feature sets.  
+
+The base list of dependencies common for each cloud is
+- CNI
+- Kubelet
+- Etcd
+- Kube API server
+- Kube control manager
+- Kube scheduler
+- Kube proxy
+- Containerd/Docker

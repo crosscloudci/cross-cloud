@@ -32,3 +32,14 @@ The base list of dependencies common for each cloud is
 - Kube scheduler
 - Kube proxy
 - Containerd/Docker
+
+
+### How does cross-cloud configure a k8s cluster?  How does cross-cloud run a k8s cluster?
+
+The configuration for each k8s cluster is customized to support cloud-provider specific features.  
+
+Then the k8s cluster is configured and provisioned for each cloud with Terraform using cloud-init with the cloud specific configuration.  (See “Why Terraform for cross-cloud” for more information on this topic).
+
+The Kubelet binary is started by Systemd.  Kubelet starts the remaining Kubernetes components from the manifest files which were written to disk during provisioning.
+
+

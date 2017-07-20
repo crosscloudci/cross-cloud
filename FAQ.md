@@ -1,5 +1,29 @@
 # FREQUENTLY ASKED QUESTIONS
 
+### What are the primary components of cross-cloud project?
+
+- Cross-project CI - Build and registers containerized apps as well as their related e2e tests for Kubernetes. Triggers cross-cloud CI pipeline.  
+- Cross-cloud CI - Triggers creation of k8s on cloud providers, deploys containerized apps, and deploys e2e tests containers on the k8s end-points.
+- K8s end-point provisioner - Creates k8s clusters with cloud specific features enabled per cloud provider.
+
+### What are the cloud-providers targeted by cross-cloud project?
+Currently the cross-cloud k8s end-point provisioner supports
+- AWS
+- GCE
+- GKE
+- Packet
+
+Additional cloud-providers will be added. We welcome pull requests to add new ones. :)
+
+
+### What do cross-cloud and cross-project components test?
+
+The cross-project runs project specific CI tests.
+
+The cross-cloud project runs e2e tests for the project on each cloud.
+
+For Kubernetes cross-cloud runs the k8s conformance test from upstream Kubernetes for each cloud after the cluster has been provisioned.
+
 ### Why Terraform for cross-cloud?
 
 We chose Terraform to allow a third party to maintain the API level interaction with the cloud providers.
@@ -42,33 +66,6 @@ Then the k8s cluster is configured and provisioned for each cloud with Terraform
 
 The Kubelet binary is started by Systemd.  Kubelet starts the remaining Kubernetes components from the manifest files which were written to disk during provisioning.
 
-
-### What are the primary components of cross-cloud project?
-
-- Cross-project CI - Build and registers containerized apps as well as their related e2e tests for Kubernetes. Triggers cross-cloud CI pipeline.  
-- Cross-cloud CI - Triggers creation of k8s on cloud providers, deploys containerized apps, and deploys e2e tests containers on the k8s end-points.
-- K8s end-point provisioner - Creates k8s clusters with cloud specific features enabled per cloud provider.
-
-
-### What do cross-cloud and cross-project components test?
-
-The cross-project runs project specific CI tests.
-
-The cross-cloud project runs e2e tests for the project on each cloud.
-
-For Kubernetes cross-cloud runs the k8s conformance test from upstream Kubernetes for each cloud after the cluster has been provisioned.
-
-
 ### How does someone get started using the cross-cloud project?
 See the TL;DR section in the README https://github.com/cncf/cross-cloud/#how-to-use-cross-cloud-tldr
-
-
-### What are the cloud-providers targeted by cross-cloud project?
-Currently the cross-cloud k8s end-point provisioner supports
-- AWS
-- GCE
-- GKE
-- Packet
-
-Additional cloud-providers will be added. We welcome pull requests to add new ones. :)
 

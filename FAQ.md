@@ -43,3 +43,15 @@ Then the k8s cluster is configured and provisioned for each cloud with Terraform
 The Kubelet binary is started by Systemd.  Kubelet starts the remaining Kubernetes components from the manifest files which were written to disk during provisioning.
 
 
+### What are the primary components of Cross-cloud project?
+
+- Cross-project CI - Build and registers containerized apps as well as their related e2e tests for Kubernetes. Triggers cross-cloud CI pipeline.  
+- Cross-cloud CI - Triggers creation of k8s on cloud providers, deploys containerized apps, and deploys e2e tests containers on the k8s end-points.
+- K8s end-point provisioner - Creates k8s clusters with cloud specific features enabled per cloud provider
+
+### What do cross-cloud and cross-project components test?
+The cross-project runs project specific CI tests.
+
+The cross-cloud project runs e2e tests for the project on each cloud.
+
+For Kubernetes cross-cloud runs the k8s conformance test from upstream Kubernetes for each cloud after the cluster has been provisioned.

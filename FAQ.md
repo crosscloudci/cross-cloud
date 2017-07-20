@@ -57,3 +57,8 @@ The cross-project runs project specific CI tests.
 The cross-cloud project runs e2e tests for the project on each cloud.
 
 For Kubernetes cross-cloud runs the k8s conformance test from upstream Kubernetes for each cloud after the cluster has been provisioned.
+
+
+### How does someone get started using the cross-cloud project?
+See the TL;DR section in the README https://github.com/cncf/cross-cloud/#how-to-use-cross-cloud-tldr
+

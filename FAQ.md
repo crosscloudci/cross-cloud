@@ -1,6 +1,6 @@
-= FREQUENTLY ASKED QUESTIONS
+# FREQUENTLY ASKED QUESTIONS
 
-=== Why Terraform for cross-cloud?
+### Why Terraform for cross-cloud?
 
 We chose terraform to allow a third party to maintain the API level interaction with the cloud providers.
 
@@ -19,7 +19,7 @@ Terraform supports templated cloud-init config across all clouds which reduces o
 We’ll be provide more information in the future on the public Github project, http://github.com/cncf/cross-cloud.   In the meantime we welcome more feedback and look forward to collaborating with the ContainerOps team within the CNCF landscape.
 
 
-=== What are the dependencies for your k8s clusters?
+### What are the dependencies for your k8s clusters?
 
 The entire list is cloud dependent since we support per-cloud feature sets.  
 

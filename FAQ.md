@@ -77,3 +77,9 @@ Yes. Resource limiting includes
 - Control of the number of nodes used in a Kubernetes cluster
 - Control over the number of cloud-provider’s provisioned
 - Control the cloud providers being used
+
+
+### Does the cross-cloud project use Jenkins or CircleCI?
+No it does not use Jenkins or CircleCI.
+
+The current implementation uses Gitlab runners.

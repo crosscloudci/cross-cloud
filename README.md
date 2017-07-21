@@ -11,14 +11,13 @@ done by deploying a Kubernetes cluster with CoreDNS and Prometheus to AWS and
 Packet. The eventual goal is to support all CNCF projects on AWS, Packet, GCE,
 GKE, Bluemix and Azure.
 
-Our cross-cloud provisioning is accomplished with the terraform modules for
-[AWS](./aws), [Azure](./azure), [GCE](./gce), [GKE](./gke), [Packet](./packet)
+Our cross-cloud provisioning is accomplished with the Terraform modules for
+[AWS](./aws), [GCE](./gce), [GKE](./gke), [Packet](./packet)
 which deploy kubernetes using a common set of variables producing KUBECONFIGs
 for each.
 
-![cross-cloud-pipeline](docs/images/cross-cloud-pipeline.png)
 
-# How to Use Cross-Cloud TL;DR
+#### How to Use Cross-Cloud TL;DR
 Minimum required Configuration to use Cross-Cloud to Deploy a Kubernetes Cluster on Cloud X.
 ```bash
 docker run \

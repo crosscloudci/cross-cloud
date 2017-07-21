@@ -1,7 +1,7 @@
 # FREQUENTLY ASKED QUESTIONS
 
 ### How does someone get started using the cross-cloud project?
-See the [TL;DR section in the README](https://github.com/cncf/cross-cloud/#how-to-use-cross-cloud-tldr)
+See the [TL;DR section in the README](README.md#how-to-use-cross-cloud-tldr)
 
 ### What are the primary components of cross-cloud project?
 - Cross-project CI - Build and registers containerized apps as well as their related e2e tests for Kubernetes. Triggers cross-cloud CI pipeline.  

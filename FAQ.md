@@ -57,6 +57,8 @@ The base list of dependencies common for each cloud is:
 - Kube proxy
 - Containerd/Docker
 
+### What version of X component are you using in the cross-cloud k8s clusters?
+Cross-cloud uses pinning to set version being used.  This can be any commit, branch, tag or release. 
 
 ### How does cross-cloud configure a k8s cluster?  How does cross-cloud run a k8s cluster?
 

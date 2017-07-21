@@ -15,14 +15,14 @@ A project to continually validate the interoperability of each CNCF project, for
 - Cross-project CI - Project app and e2e test container builder / Project to Cross-cloud CI integration point
   * Builds and registers containerized apps as well as their related e2e tests for deployment. Triggers the cross-cloud CI pipeline.  
 - Cross-cloud CI - Multi-cloud container deployer / Multi-cloud project test runner
-  * Triggers the creation of k8s clusters on cloud providers, deploys containerized apps, and runs upstream project tests supplying results to the cross-cloud dashboard.
+  * Triggers the creation of K8s clusters on cloud providers, deploys containerized apps, and runs upstream project tests supplying results to the cross-cloud dashboard.
 - Multi-cloud provisioner - Cloud end-point provisioner for Kubernetes
   * Supplies conformance validated Kubernetes end-points for each cloud provider with cloud specific features enabled
 - Cross-cloud CI Dashboard - 
   * Provides a high-level view of the interoperability status of CNCF projects for each supported cloud provider.
 
 ### What are the cloud-providers targeted by cross-cloud project?
-Currently the cross-cloud k8s end-point provisioner supports
+Currently the cross-cloud K8s end-point provisioner supports
 - AWS
 - GCE
 - GKE
@@ -36,7 +36,7 @@ The cross-project runs project specific CI tests.
 
 The cross-cloud project runs e2e tests for the project on each cloud.
 
-For Kubernetes cross-cloud runs the k8s conformance test from upstream Kubernetes for each cloud after the cluster has been provisioned.
+For Kubernetes cross-cloud runs the K8s conformance test from upstream Kubernetes for each cloud after the cluster has been provisioned.
 
 ### Why Terraform for the multi-cloud provisioner?
 
@@ -54,7 +54,7 @@ It reduces our dependency on provisioning code needing to connect back over ssh 
 
 It supports [installing software repos](http://cloudinit.readthedocs.io/en/latest/topics/examples.html#adding-a-yum-repository), [configuring certificates](http://cloudinit.readthedocs.io/en/latest/topics/examples.html#configure-an-instances-trusted-ca-certificates), [writing out files](http://cloudinit.readthedocs.io/en/latest/topics/examples.html#writing-out-arbitrary-files), and service creation. 
 
-### What are the dependencies for your k8s clusters?
+### What are the dependencies for your K8s clusters?
 
 The entire list is cloud dependent since we support per-cloud feature sets.  
 
@@ -68,14 +68,14 @@ The base list of dependencies common for each cloud is:
 - Kube proxy
 - Containerd/Docker
 
-### What version of X component are you using in the cross-cloud k8s clusters?
+### What version of X component are you using in the cross-cloud K8s clusters?
 Cross-cloud uses pinning to set version being used.  This can be any commit, branch, tag or release. 
 
-### How does cross-cloud configure a k8s cluster?  How does cross-cloud run a k8s cluster?
+### How does cross-cloud configure a K8s cluster?  How does cross-cloud run a K8s cluster?
 
-The configuration for each k8s cluster is customized to support cloud-provider specific features.  
+The configuration for each K8s cluster is customized to support cloud-provider specific features.  
 
-Then the k8s cluster is configured and provisioned for each cloud with Terraform using cloud-init with the cloud specific configuration.  (See “Why Terraform for cross-cloud” for more information on this topic).
+Then the K8s cluster is configured and provisioned for each cloud with Terraform using cloud-init with the cloud specific configuration.  (See “Why Terraform for cross-cloud” for more information on this topic).
 
 The Kubelet binary is started by Systemd.  Kubelet starts the remaining Kubernetes components from the manifest files which were written to disk during provisioning.
 

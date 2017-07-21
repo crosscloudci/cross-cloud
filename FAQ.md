@@ -1,5 +1,8 @@
 # FREQUENTLY ASKED QUESTIONS
 
+### How does someone get started using the cross-cloud project?
+See the TL;DR section in the README https://github.com/cncf/cross-cloud/#how-to-use-cross-cloud-tldr
+
 ### What are the primary components of cross-cloud project?
 
 - Cross-project CI - Build and registers containerized apps as well as their related e2e tests for Kubernetes. Triggers cross-cloud CI pipeline.  
@@ -68,6 +71,9 @@ Then the k8s cluster is configured and provisioned for each cloud with Terraform
 
 The Kubelet binary is started by Systemd.  Kubelet starts the remaining Kubernetes components from the manifest files which were written to disk during provisioning.
 
-### How does someone get started using the cross-cloud project?
-See the TL;DR section in the README https://github.com/cncf/cross-cloud/#how-to-use-cross-cloud-tldr
-
+### Can I limit resources used when running the cross-cloud/cross-project CI/CD? 
+Yes. Resource limiting includes
+- Control the total number of running pipelines
+- Control of the number of nodes used in a Kubernetes cluster
+- Control over the number of cloud-provider’s provisioned
+- Control the cloud providers being used

@@ -2,7 +2,7 @@
 Cross Cloud Continuous Integration
 
 
-#### What is cross-cloud?
+### What is cross-cloud?
 
 This cross-cloud project aims to demonstrate cross-project compatibility in the
 CNCF by building, E2E testing and deploying selected CNCF projects to multiple
@@ -17,7 +17,7 @@ which deploy kubernetes using a common set of variables producing KUBECONFIGs
 for each.
 
 
-#### How to Use Cross-Cloud TL;DR
+### How to Use Cross-Cloud TL;DR
 Minimum required Configuration to use Cross-Cloud to Deploy a Kubernetes Cluster on Cloud X.
 ```bash
 docker run \
@@ -37,7 +37,7 @@ docker run \
 * -e BACKEND=<file|s3>   # File will store the Terraform State file to Disk / S3 will store the Terraform Statefile to a AWS s3 Bucket
   
 
-##### Cloud Specific Options
+#### Cloud Specific Options
 AWS
  * -e AWS_ACCESS_KEY_ID=secret
  * -e AWS_SECRET_ACCESS_KEY=secret
@@ -62,4 +62,26 @@ Custom Configuration options for the Kubernetes Cluster
 * -e TF_VAR_master_node_count=3       # Set the Number of Master nodes to be Deployed in the Cluster
 * -e TF_VAR_dns_service_ip=10.0.0.10  # Set the Kubernetes DNS Service IP
 * -e TF_VAR_k8s_service_ip=10.0.0.1   # Set the Kubernetes Service IP
+
+
+### Additional documentation
+
+ * [FAQ](FAQ.md) - Frequently Asked Questions
+
+
+### Meetings / Demos
+
+#### Upcoming
+- July 27th, 2017 - CI-WG
+- August 15th, 2017 - CNCF TOC
+- September 11th-14th 2017 [Open Source Summit North America](http://events.linuxfoundation.org/events/open-source-summit-north-america)
+
+#### Past
+- [July 11th, 2017 - Kubernetes SIG Testing](https://www.youtube.com/watch?v=DQGcv2a4qXQ&list=PL69nYSiGNLP0ofY51bEooJ4TKuQtUSizR&index=1)
+- [June 27, 2017 - CI-WG cross-cloud and containerops demos](https://www.youtube.com/watch?v=Jc5EJVK7ZZk&feature=youtu.be&t=307)
+
+
+
+
+
 

@@ -38,24 +38,21 @@ The cross-cloud project runs e2e tests for the project on each cloud.
 
 For Kubernetes cross-cloud runs the k8s conformance test from upstream Kubernetes for each cloud after the cluster has been provisioned.
 
-### Why Terraform for cross-cloud?
+### Why Terraform for the multi-cloud provisioner?
 
-We chose Terraform to allow a third party to maintain the API level interaction with the cloud providers.
+It allows a third party to maintain the API level interaction with the cloud providers.
 
-To be able to support the [cloud-provider specific features](https://kubernetes.io/docs/getting-started-guides/scratch/#cloud-provider) offered by Aws/GCE/GKE/Azure, the [Kubernetes Testing-SIG](https://github.com/kubernetes/test-infra) approach for bringing up Kubernetes clusters uses a combination of kops / kubernetes-anywhere, and kube-up to bring up clusters for multiple cloud providers.
+It supports [cloud-provider specific features](https://kubernetes.io/docs/getting-started-guides/scratch/#cloud-provider) offered by Aws/GCE/GKE/Azure.
 
-Kops officially supports AWS (GCE and VSphere forthcoming)
-Kubernetes-anywhere (GCE, Azure, vSphere)
-Kube-up (Deprecated)
+It supports [templated cloud-init config](https://www.terraform.io/docs/providers/template/d/cloudinit_config.html) across all clouds.
 
-Where tools like kube-up/kops are focused on offering mutable infrastructure which will be continually updated without offering a clean environment for testing a new Kubernetes CI Release we have taken a different approach.
+### Why cloud-init for the multi-cloud provisioner?
 
-With Terraform + cloud-init we have taken an immutable approach to the infrastructure management/provisioning which allows us to very quickly iterate over new deployments on a per-commit basis.
+To take an immutable approach to the infrastructure management/provisioning which allows us to very quickly iterate over new deployments on a per-commit basis.
 
-Terraform supports [templated cloud-init config](https://www.terraform.io/docs/providers/template/d/cloudinit_config.html) across all clouds which reduces our dependency on provisioning code needing to connect back over ssh (salt/ansible etc). We supply [cloud-init](https://cloud-init.io/)/[userdata](http://cloudinit.readthedocs.io/en/latest/topics/format.html#cloud-config-data) which supports [installing software repos](http://cloudinit.readthedocs.io/en/latest/topics/examples.html#adding-a-yum-repository), [configuring certificates](http://cloudinit.readthedocs.io/en/latest/topics/examples.html#configure-an-instances-trusted-ca-certificates), [writing out files](http://cloudinit.readthedocs.io/en/latest/topics/examples.html#writing-out-arbitrary-files), and service creation. 
+It reduces our dependency on provisioning code needing to connect back over ssh (salt/ansible etc). 
 
-We’ll be providing more information in the future on the public Github project, http://github.com/cncf/cross-cloud.  In the meantime, we welcome more feedback and look forward to collaborating with the ContainerOps team within the CNCF landscape.
-
+It supports [installing software repos](http://cloudinit.readthedocs.io/en/latest/topics/examples.html#adding-a-yum-repository), [configuring certificates](http://cloudinit.readthedocs.io/en/latest/topics/examples.html#configure-an-instances-trusted-ca-certificates), [writing out files](http://cloudinit.readthedocs.io/en/latest/topics/examples.html#writing-out-arbitrary-files), and service creation. 
 
 ### What are the dependencies for your k8s clusters?
 

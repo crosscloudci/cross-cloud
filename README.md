@@ -54,7 +54,7 @@ GCE/GKE
  * -e GOOGLE_REGION=us-central1
  * -e GOOGLE_PROJECT=test-163823
 
-### Kubernetes Cluster Options
+#### Kubernetes Cluster Options
 Custom Configuration options for the Kubernetes Cluster
 * -e TF_VAR_pod_cidr=10.2.0.0/16      # Set the Kubernetes Cluster POD CIDR
 * -e TF_VAR_service_cidr=10.0.0.0/24  # Set the Kubernetes Cluster SERVICE CIDR

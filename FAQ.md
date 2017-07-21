@@ -3,10 +3,23 @@
 ### How does someone get started using the cross-cloud project?
 See the [TL;DR section in the README](README.md#how-to-use-cross-cloud-tldr)
 
-### What are the primary components of cross-cloud project?
-- Cross-project CI - Build and registers containerized apps as well as their related e2e tests for Kubernetes. Triggers cross-cloud CI pipeline.  
-- Cross-cloud CI - Triggers creation of k8s on cloud providers, deploys containerized apps, and deploys e2e tests containers on the k8s end-points.
-- K8s end-point provisioner - Creates k8s clusters with cloud specific features enabled per cloud provider.
+### Why Cross-Cloud CI?
+
+Our CI Working Group has been tasked with demonstrating best practices for integrating, testing, and deploying projects within the CNCF ecosystem across multiple cloud providers.
+
+Help ensure the CNCF projects deploy and run sucessfully on each supported cloud providers.
+
+### What is cross-cloud?
+
+A project to continually validate the interoperability of each CNCF project, for every commit on stable and HEAD, for all supported cloud providers with the results published to the cross-cloud public dashboard. The cross-cloud project is composed of the following components:
+- Cross-project CI - Project app and e2e test container builder / Project to Cross-cloud CI integration point
+  * Builds and registers containerized apps as well as their related e2e tests for deployment. Triggers the cross-cloud CI pipeline.  
+- Cross-cloud CI - Multi-cloud container deployer / Multi-cloud project test runner
+  * Triggers the creation of k8s clusters on cloud providers, deploys containerized apps, and runs upstream project tests supplying results to the cross-cloud dashboard.
+- Multi-cloud provisioner - Cloud end-point provisioner for Kubernetes
+  * Supplies conformance validated Kubernetes end-points for each cloud provider with cloud specific features enabled
+- Cross-cloud CI Dashboard - 
+  * Provides a high-level view of the interoperability status of CNCF projects for each supported cloud provider.
 
 ### What are the cloud-providers targeted by cross-cloud project?
 Currently the cross-cloud k8s end-point provisioner supports

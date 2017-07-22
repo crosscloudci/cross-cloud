@@ -28,7 +28,7 @@ resource "null_resource" "set_dns" {
 
   provisioner "local-exec" {
     command = <<EOF
-    echo "${ module.etcd.first_master_ip } endpoint.${ var.name }.${ var.domain }" >> /etc/resolv.conf
+    echo "${ module.etcd.first_master_ip } endpoint.${ var.name }.${ var.domain }" >> /etc/hosts
     EOF
   }
 

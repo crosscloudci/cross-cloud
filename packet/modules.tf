@@ -1,11 +1,3 @@
-# module "network" {
-#   source = "./modules/network"
-#   name = "${ var.name }"
-#   cidr = "${ var.vpc_cidr }"
-#   name_servers_file = "${ module.dns.name_servers_file }"
-#   location = "${ var.location }"
-#  }
-
 # module "dns" {
 #   source = "./modules/dns"
 #   name = "${ var.name }"
@@ -41,24 +33,6 @@ module "etcd" {
   data_dir                  = "${ var.data_dir }"
 }
 
-# module "bastion" {
-#   source = "./modules/bastion"
-#   name = "${ var.name }"
-#   location = "${ var.location }"
-#   bastion_vm_size = "${ var.bastion_vm_size }"
-#   image_publisher = "${ var.image_publisher }"
-#   image_offer = "${ var.image_offer }"
-#   image_sku = "${ var.image_sku }"
-#   image_version = "${ var.image_version }"
-#   admin_username = "${ var.admin_username }"
-#   subnet_id = "${ module.network.subnet_id }"
-#   storage_primary_endpoint = "${ azurerm_storage_account.cncf.primary_blob_endpoint }"
-#   storage_container = "${ azurerm_storage_container.cncf.name }"
-#   availability_id = "${ azurerm_availability_set.cncf.id }"
-#   internal_tld = "${ var.internal_tld }"
-#   data_dir = "${ var.data_dir }"
-# }
-
 # module "worker" {
 #   source                    = "./modules/worker"
 #   name                      = "${ var.name }"
@@ -85,7 +59,7 @@ module "etcd" {
 module "kubeconfig" {
   source = "../kubeconfig"
   data_dir = "${ var.data_dir }"
-  endpoint = "endpoint.${ var.name }.${ var.domain }"
+  endpoint = "${ module.etcd.first_master_ip }"
   name = "${ var.name }"
   ca = "${ module.tls.ca}"
   client = "${ module.tls.client }"

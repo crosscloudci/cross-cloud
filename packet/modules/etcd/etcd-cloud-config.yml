@@ -10,13 +10,13 @@ coreos:
     initial-advertise-peer-urls: https://$private_ipv4:2380
     # key-file: /etc/kubernetes/ssl/k8s-etcd-key.pem
     listen-client-urls: http://$private_ipv4:2379,http://127.0.0.1:2379
-    listen-peer-urls: https://$private_ipv4:2380
+    listen-peer-urls: http://$private_ipv4:2380
     name: ${ fqdn } 
     discovery: ${ etcd_discovery }
-    peer-trusted-ca-file: /etc/srv/kubernetes/pki/ca-certificates.crt
-    peer-client-cert-auth: true
-    peer-cert-file: /etc/srv/kubernetes/pki/etcd.crt
-    peer-key-file: /etc/srv/kubernetes/pki/etcd.key
+    # peer-trusted-ca-file: /etc/srv/kubernetes/pki/ca-certificates.crt
+    # peer-client-cert-auth: true
+    # peer-cert-file: /etc/srv/kubernetes/pki/etcd.crt
+    # peer-key-file: /etc/srv/kubernetes/pki/etcd.key
 
   units:
     - name: etcd2.service

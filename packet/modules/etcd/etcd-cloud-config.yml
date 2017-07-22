@@ -7,7 +7,7 @@ coreos:
     advertise-client-urls: http://$private_ipv4:2379
     # cert-file: /etc/kubernetes/ssl/k8s-etcd.pem
     debug: true
-    initial-advertise-peer-urls: https://$private_ipv4:2380
+    initial-advertise-peer-urls: http://$private_ipv4:2380
     # key-file: /etc/kubernetes/ssl/k8s-etcd-key.pem
     listen-client-urls: http://$private_ipv4:2379,http://127.0.0.1:2379
     listen-peer-urls: http://$private_ipv4:2380

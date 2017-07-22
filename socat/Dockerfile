@@ -15,4 +15,6 @@ RUN mkdir /output
 
 ADD . /build
 
-CMD /build/build.sh
+RUN /build/build.sh
+
+CMD ["bash", "cp /output/socat /tmp/"]

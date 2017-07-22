@@ -101,7 +101,7 @@ cross-cloud-socat:
   stage: cncf-artifacts
   script:
     - docker login -u "gitlab-ci-token" -p "$CI_JOB_TOKEN" $CI_REGISTRY
-    - docker build --pull -t "$CI_REGISTRY_IMAGE/socat:$CI_COMMIT_REF_SLUG" ./socat/Dockerfile
+    - docker build --pull -t "$CI_REGISTRY_IMAGE/socat:$CI_COMMIT_REF_SLUG" ./socat/
     - docker push "$CI_REGISTRY_IMAGE/socat:$CI_COMMIT_REF_SLUG"
 
 

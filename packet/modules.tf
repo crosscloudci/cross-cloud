@@ -59,7 +59,7 @@ module "etcd" {
 module "kubeconfig" {
   source = "../kubeconfig"
   data_dir = "${ var.data_dir }"
-  endpoint = "${ module.etcd.first_master_ip }"
+  endpoint = "endpoint.${ var.name }.${ var.domain }"
   name = "${ var.name }"
   ca = "${ module.tls.ca}"
   client = "${ module.tls.client }"

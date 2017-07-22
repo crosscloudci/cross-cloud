@@ -13,70 +13,60 @@ coreos:
     listen-peer-urls: https://${ fqdn }:2380
     name: ${ fqdn } 
     discovery: ${ etcd_discovery }
-    peer-trusted-ca-file: /etc/kubernetes/ssl/ca.pem
+    peer-trusted-ca-file: /etc/srv/kubernetes/pki/ca-certificates.crt
     peer-client-cert-auth: true
-    peer-cert-file: /etc/kubernetes/ssl/k8s-etcd.pem
-    peer-key-file: /etc/kubernetes/ssl/k8s-etcd-key.pem
+    peer-cert-file: /etc/srv/kubernetes/pki/etcd.crt
+    peer-key-file: /etc/srv/kubernetes/pki/etcd.key
 
   units:
     - name: etcd2.service
       command: start
 
-    - name: flanneld.service
-      command: start
-      drop-ins:
-        - name: 40-ExecStartPre-symlink.conf
-          content: |
-            [Service]
-            ExecStartPre=/usr/bin/ln -sf /etc/flannel/options.env /run/flannel/options.env
-        - name: 50-network-config.conf
-          content: |
-            [Service]
-            ExecStartPre=-/usr/bin/etcdctl mk /coreos.com/network/config \
-              '{ "Network": "${ pod_cidr }", "Backend": { "Type": "vxlan" } }'
-            Restart=always
-            RestartSec=10
-
     - name: docker.service
       command: start
-      drop-ins:
-        - name: 40-flannel.conf
-          content: |
-            [Unit]
-            After=flanneld.service
-            Requires=flanneld.service
-            [Service]
-            EnvironmentFile=/etc/kubernetes/cni/docker_opts_cni.env
+
+    - name: bins.service
+      command: start
+      content: |
+        [Unit]
+        Description=Download Binaries
+        [Service]
+        Type=oneshot
+        RemainAfterExit=yes
+        ExecStartPre=/usr/bin/mkdir --parents /home/kubernetes/bin
+        ExecStartPre=/usr/bin/curl -L -o /home/kubernetes/bin/kubelet https://storage.googleapis.com/kubernetes-release/release/v1.6.6/bin/linux/amd64/kubelet
+        ExecStartPre=/usr/bin/curl -L -o /home/kubernetes/bin/cni.tar https://github.com/containernetworking/cni/releases/download/v0.5.2/cni-amd64-v0.5.2.tgz
+        ExecStartPre=/usr/bin/tar -xvf /home/kubernetes/bin/cni.tar -C /home/kubernetes/bin/
+        ExecStart=/usr/bin/chmod +x /home/kubernetes/bin/kubelet
+
+    - name: socat.service
+      command: start
+      content: |
+        [Unit]
+        Description=Install Socat
+        After=bins.service
+        Requires=bins.service
+
+        [Service]
+        Type=oneshot
+        RemainAfterExit=yes
+        ExecStart=/usr/bin/bash -c "curl https://gitlab.cncf.ci/cncf/cross-cloud/raw/ci-stable-v0.2.0/socat.sh |  bash"
 
     - name: kubelet.service
       command: start
       content: |
+        [Unit]
+        Description=Kubernetes kubelet
+        After=socat.service
+        Requires=socat.service
+
         [Service]
-        Environment=KUBELET_IMAGE_URL=docker://${ kubelet_image_url }
-        Environment=KUBELET_IMAGE_TAG=${ kubelet_image_tag }
-        Environment="RKT_RUN_ARGS=--uuid-file-save=/var/run/kubelet-pod.uuid \
-        --insecure-options=image \
-        --volume var-log,kind=host,source=/var/log \
-        --mount volume=var-log,target=/var/log \
-        --volume dns,kind=host,source=/etc/resolv.conf \
-        --mount volume=dns,target=/etc/resolv.conf"
-        ExecStartPre=/usr/bin/mkdir -p /etc/kubernetes/manifests
-        ExecStartPre=/usr/bin/mkdir -p /var/log/containers
-        ExecStartPre=-/usr/bin/rkt rm --uuid-file=/var/run/kubelet-pod.uuid
-        ExecStart=/usr/lib/coreos/kubelet-wrapper \
-        --api-servers=http://127.0.0.1:8080 \
-        --register-schedulable=false \
-        --cni-conf-dir=/etc/kubernetes/cni/net.d \
-        --network-plugin=cni \
-        --container-runtime=docker \
-        --allow-privileged=true \
-        --pod-manifest-path=/etc/kubernetes/manifests \
-        --hostname-override=${ fqdn } \
-        --cluster_dns=${ dns_service_ip } \
-        --cluster_domain=${ cluster_domain }
-        ExecStop=-/usr/bin/rkt stop --uuid-file=/var/run/kubelet-pod.uuid
         Restart=always
         RestartSec=10
+        Environment="PATH=/opt/bin/:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+        EnvironmentFile=/etc/default/kubelet
+        ExecStart=/home/kubernetes/bin/kubelet $KUBELET_OPTS
+
         [Install]
         WantedBy=multi-user.target
 
@@ -84,27 +74,11 @@ coreos:
     reboot-strategy: etcd-lock
 
 write-files:
-  
-  - path: /etc/flannel/options.env
-    content: |
-      FLANNELD_IFACE=$private_ipv4
-      FLANNELD_ETCD_ENDPOINTS=http://etcd.${ internal_tld }:2379
 
-  - path: /etc/kubernetes/cni/docker_opts_cni.env
+  - path: /etc/default/kubelet
     content: |
-      DOCKER_OPT_BIP=""
-      DOCKER_OPT_IPMASQ=""
-
-  - path: /etc/kubernetes/cni/net.d/10-flannel.conf
-    content: |
-        {
-            "name": "podnet",
-            "type": "flannel",
-            "delegate": {
-                "isDefaultGateway": true
-            }
-        }
-
+      KUBELET_OPTS="--v=2 --allow-privileged=true --babysit-daemons=true --cgroup-root=/ --cluster-dns=10.0.0.10 --cluster-domain=cluster.local --pod-manifest-path=/etc/kubernetes/manifests --enable-debugging-handlers=true --hairpin-mode=promiscuous-bridge --api-servers=http://127.0.0.1:8080 --register-schedulable=true --network-plugin-dir=/home/kubernetes/bin --network-plugin=kubenet --feature-gates=ExperimentalCriticalPodAnnotation=true"
+      
   - path: /etc/kubernetes/manifests/kube-apiserver.yml
     encoding: "gzip+base64"
     content: |
@@ -125,32 +99,32 @@ write-files:
     content: |
       ${ kube_scheduler }
 
-  - path: /etc/kubernetes/ssl/ca.pem
+  - path: /etc/srv/kubernetes/pki/ca-certificates.crt
     permissions: "0644"
     encoding: "gzip+base64"
     content: |
       ${ ca }
 
-  - path: /etc/kubernetes/ssl/k8s-etcd.pem
-    permissions: "0644"
-    encoding: "gzip+base64"
-    content: |
-      ${ etcd }
-
-  - path: /etc/kubernetes/ssl/k8s-etcd-key.pem
-    permissions: "0644"
-    encoding: "gzip+base64"
-    content: |
-      ${ etcd_key }
-
-  - path: /etc/kubernetes/ssl/k8s-apiserver.pem
+  - path: /etc/srv/kubernetes/pki/apiserver.crt
     permissions: "0644"
     encoding: "gzip+base64"
     content: |
       ${ apiserver }
 
-  - path: /etc/kubernetes/ssl/k8s-apiserver-key.pem
+  - path: /etc/srv/kubernetes/pki/apiserver.key
     permissions: "0644"
     encoding: "gzip+base64"
     content: |
       ${ apiserver_key }
+
+  - path: /etc/srv/kubernetes/pki/etcd.crt
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ etcd }
+
+  - path: /etc/srv/kubernetes/pki/etcd.key
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ etcd_key }

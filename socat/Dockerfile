@@ -18,4 +18,4 @@ ADD . /build
 RUN chmod +x /build/build.sh
 RUN /build/build.sh
 
-CMD ["/bin/bash"]
+CMD ["bash", "cp /output/linux/x86_64/socat /tmp/"]

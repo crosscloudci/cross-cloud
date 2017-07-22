@@ -6,16 +6,16 @@
 #   location = "${ var.location }"
 #  }
 
-module "dns" {
-  source = "./modules/dns"
-  name = "${ var.name }"
-  master_ips = "${ module.etcd.master_ips }"
-  public_master_ips = "${ module.etcd.public_master_ips }"
-  # public_worker_ips = "${ module.worker.public_worker_ips }"
-  master_node_count = "${ var.master_node_count }"
-  worker_node_count = "${ var.worker_node_count }"
-  domain = "${ var.domain }"
-}
+# module "dns" {
+#   source = "./modules/dns"
+#   name = "${ var.name }"
+#   master_ips = "${ module.etcd.master_ips }"
+#   public_master_ips = "${ module.etcd.public_master_ips }"
+#   # public_worker_ips = "${ module.worker.public_worker_ips }"
+#   master_node_count = "${ var.master_node_count }"
+#   worker_node_count = "${ var.worker_node_count }"
+#   domain = "${ var.domain }"
+# }
 
 module "etcd" {
   source                    = "./modules/etcd"

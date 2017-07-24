@@ -44,6 +44,7 @@ resource "google_compute_instance" "cncf" {
   name         = "${ var.name }-master${ count.index + 1 }"
   machine_type = "n1-standard-1"
   zone         = "${ var.zone }"
+  can_ip_forward = true
 
   tags = ["kubernetes-master", "kubernetes-minion"]
 

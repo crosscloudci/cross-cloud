@@ -73,7 +73,7 @@ resource "google_compute_instance" "cncf" {
   }
 
   service_account {
-    scopes = ["userinfo-email", "compute-ro", "storage-ro"]
+    scopes = ["userinfo-email", "compute-rw", "storage-ro"]
   }
 }
 

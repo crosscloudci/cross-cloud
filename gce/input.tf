@@ -1,4 +1,4 @@
-variable "name" { default = "test" }
+variable "name" { default = "gce" }
 variable "internal_tld" { default = "cncf.demo" }
 variable "master_node_count" { default = "3" }
 variable "worker_node_count" { default = "3" }
@@ -24,6 +24,6 @@ variable "k8s_service_ip" { default = "10.0.0.1" }
 variable "dns_service_ip" { default = "10.0.0.10" }
 variable "internal_lb_ip" { default = "10.240.0.100"}
 # variable "allow-ssh-cidr" { default = "0.0.0.0/0" }
-variable "data_dir" { default = "/cncf/data/test" }
+variable "data_dir" { default = "/cncf/data/gce" }
 # variable "name-servers-file" { default = "google_dns_zone"}
 variable "domain" { default = "cncf.ci" }

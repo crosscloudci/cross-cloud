@@ -65,6 +65,7 @@ coreos:
         [Service]
         Restart=always
         RestartSec=10
+        Environment="PATH=/opt/bin/:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
         EnvironmentFile=/etc/default/kubelet
         ExecStart=/home/kubernetes/bin/kubelet $KUBELET_OPTS
 

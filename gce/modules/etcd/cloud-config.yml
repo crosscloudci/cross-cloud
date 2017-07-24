@@ -45,13 +45,14 @@ coreos:
       content: |
         [Unit]
         Description=Install Socat
-        After=bins.service
-        Requires=bins.service
+        After=docker.service
+        Requires=docker.service
 
         [Service]
         Type=oneshot
         RemainAfterExit=yes
-        ExecStart=/usr/bin/bash -c "curl https://gitlab.cncf.ci/cncf/cross-cloud/raw/ci-stable-v0.2.0/socat.sh |  bash"
+        ExecStartPre=/usr/bin/mkdir --parents /opt/bin
+        ExecStart=/usr/bin/docker run --rm -v /opt/bin/:/socat/ registry.cncf.ci/cncf/cross-cloud/socat:ci-stable-v0-2-0 cp /output/linux/x86_64/socat /socat
 
     - name: kubelet.service
       command: start
@@ -64,7 +65,6 @@ coreos:
         [Service]
         Restart=always
         RestartSec=10
-        Environment="PATH=/opt/bin/:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
         EnvironmentFile=/etc/default/kubelet
         ExecStart=/home/kubernetes/bin/kubelet $KUBELET_OPTS
 
@@ -79,7 +79,7 @@ write-files:
   
   - path: /etc/default/kubelet
     content: |
-      KUBELET_OPTS="--v=2 --allow-privileged=true --babysit-daemons=true --cgroup-root=/ --cloud-provider=aws --cluster-dns=10.0.0.10 --cluster-domain=cluster.local --pod-manifest-path=/etc/kubernetes/manifests --enable-debugging-handlers=true --hairpin-mode=promiscuous-bridge --api-servers=http://127.0.0.1:8080 --register-schedulable=true --network-plugin-dir=/home/kubernetes/bin --network-plugin=kubenet --feature-gates=ExperimentalCriticalPodAnnotation=true"
+      KUBELET_OPTS="--v=2 --allow-privileged=true --babysit-daemons=true --cgroup-root=/ --cloud-provider=gce --cluster-dns=10.0.0.10 --cluster-domain=cluster.local --pod-manifest-path=/etc/kubernetes/manifests --enable-debugging-handlers=true --hairpin-mode=promiscuous-bridge --api-servers=http://127.0.0.1:8080 --register-schedulable=true --network-plugin-dir=/home/kubernetes/bin --network-plugin=kubenet --feature-gates=ExperimentalCriticalPodAnnotation=true"
  
   - path: /etc/kubernetes/manifests/kube-apiserver.yml
     encoding: "gzip+base64"
@@ -101,32 +101,32 @@ write-files:
     content: |
       ${ kube_scheduler }
 
-  - path: /etc/kubernetes/ssl/ca.pem
+  - path: /etc/srv/kubernetes/pki/ca-certificates.crt
     permissions: "0644"
     encoding: "gzip+base64"
     content: |
       ${ ca }
 
-  - path: /etc/kubernetes/ssl/k8s-etcd.pem
-    permissions: "0644"
-    encoding: "gzip+base64"
-    content: |
-      ${ etcd }
-
-  - path: /etc/kubernetes/ssl/k8s-etcd-key.pem
-    permissions: "0644"
-    encoding: "gzip+base64"
-    content: |
-      ${ etcd_key }
-
-  - path: /etc/kubernetes/ssl/k8s-apiserver.pem
+  - path: /etc/srv/kubernetes/pki/apiserver.crt
     permissions: "0644"
     encoding: "gzip+base64"
     content: |
       ${ apiserver }
 
-  - path: /etc/kubernetes/ssl/k8s-apiserver-key.pem
+  - path: /etc/srv/kubernetes/pki/apiserver.key
     permissions: "0644"
     encoding: "gzip+base64"
     content: |
       ${ apiserver_key }
+
+  - path: /etc/srv/kubernetes/pki/etcd.crt
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ etcd }
+
+  - path: /etc/srv/kubernetes/pki/etcd.key
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ etcd_key }

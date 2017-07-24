@@ -23,7 +23,7 @@
     "command": [
                  "/bin/sh",
                  "-c",
-                 "/usr/local/bin/kube-scheduler --v=2 --master=http://127.0.0.1:8080 --feature-gates=ExperimentalCriticalPodAnnotation=true"
+                 "/usr/local/bin/kube-scheduler --v=2 --master=http://127.0.0.1:8080 --feature-gates=ExperimentalCriticalPodAnnotation=true 1>>/tmp/kube-scheduler.log 2>&1"
                ],
     "livenessProbe": {
       "httpGet": {

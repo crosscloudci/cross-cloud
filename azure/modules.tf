@@ -2,7 +2,8 @@ module "network" {
   source = "./modules/network"
   name = "${ var.name }"
   vpc_cidr = "${ var.vpc_cidr }"
-  name_servers_file = "${ module.dns.name_servers_file }"
+  subnet_cidr = "${ var.subnet_cidr }"
+  # name_servers_file = "${ module.dns.name_servers_file }"
   location = "${ var.location }"
  }
 
@@ -98,13 +99,13 @@ module "worker" {
 }
 
 
-module "kubeconfig" {
-  source = "../kubeconfig"
+# module "kubeconfig" {
+#   source = "../kubeconfig"
 
-  admin_key_pem = "${ var.data_dir }/.cfssl/k8s-admin-key.pem"
-  admin_pem = "${ var.data_dir }/.cfssl/k8s-admin.pem"
-  ca_pem = "${ var.data_dir }/.cfssl/ca.pem"
-  data_dir = "${ var.data_dir }"
-  fqdn_k8s = "${ module.etcd.fqdn_lb }"
-  name = "${ var.name }"
-}
+#   admin_key_pem = "${ var.data_dir }/.cfssl/k8s-admin-key.pem"
+#   admin_pem = "${ var.data_dir }/.cfssl/k8s-admin.pem"
+#   ca_pem = "${ var.data_dir }/.cfssl/ca.pem"
+#   data_dir = "${ var.data_dir }"
+#   fqdn_k8s = "${ module.etcd.fqdn_lb }"
+#   name = "${ var.name }"
+# }

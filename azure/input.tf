@@ -35,3 +35,9 @@ variable "worker_node_count" { default = "3" }
 # Set from https://quay.io/repository/coreos/hyperkube?tab=tags
 variable "kubelet_image_url" { default = "quay.io/coreos/hyperkube"}
 variable "kubelet_image_tag" { default = "v1.4.7_coreos.0"}
+
+variable "client_id" {}
+variable "client_secret" {}
+variable "tenant_id" {}
+variable "subscription_id" {}
+

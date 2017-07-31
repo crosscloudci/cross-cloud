@@ -6,7 +6,7 @@ resource "gzip_me" "kube-apiserver" {
   input = "${ data.template_file.kube_apiserver.rendered }"
 }
 resource "gzip_me" "k8s_cloud_config" {
-  input = "${ var.k8s_cloud_config }"
+  input = "${ data.template_file.azure_cloud.rendered }"
 }
 
 resource "gzip_me" "ca" {
@@ -29,6 +29,19 @@ resource "gzip_me" "k8s_apiserver_key" {
   input = "${ var.k8s_apiserver_key }"
 }
 
+data "template_file" "azure_cloud" {
+  template = "${ file( "${ path.module }/azure_cloud.json" )}"
+  vars {
+    client_id = "${ var.client_id }"
+    client_secret = "${ var.client_secret }"
+    tenant_id = "${ var.tenant_id }"
+    subscription_id = "${ var.subscription_id }"
+    name = "${ var.name }"
+    location = "${ var.location }"
+    subnet_name = "subnet-${ var.name}"
+  }
+}
+
 data "template_file" "kube_apiserver" {
   template = "${ file( "${ path.module }/kube-apiserver.yml" )}"
   vars {
@@ -45,7 +58,6 @@ data "template_file" "etcd_cloud_config" {
   template = "${ file( "${ path.module }/etcd-cloud-config.yml" )}"
 
   vars {
-    # bucket = "${ var.s3_bucket }"
     cluster_domain = "${ var.cluster_domain }"
     cluster-token = "etcd-cluster-${ var.name }"
     dns_service_ip = "${ var.dns_service_ip }"

@@ -1,0 +1,13 @@
+{
+  "aadClientId": "${ client_id }",
+  "aadClientSecret": "${ client_secret }",
+  "tenantId": "${ tenant_id }",
+  "subscriptionId": "${ subscription_id }",
+  "resourceGroup": "${ name }",
+  "location": "${ location }",
+  "subnetName": "${ subnet_name }",
+  "securityGroupName": "${ name }",
+  "vnetName": "${ name }",
+  "routeTableName": "${ name }",
+  "primaryAvailabilitySetName": "${ name }"
+}

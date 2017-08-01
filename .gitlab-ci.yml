@@ -185,13 +185,21 @@ gce_k8s_deploy:
 gce_k8s_e2e:
   <<: *k8s_e2e_template
   variables:
-    CLOUD: ${GCE_E2E}
+    CLOUD: ${GCE_CLOUD}
+  environment:
+    name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
+    url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
 
 # GCE Destroy VARs
 gce_k8s_destroy:
   <<: *k8s_cloud_destroy_template
   variables:
-    CLOUD: ${GCE_DESTROY}
+    CLOUD: ${GCE_CLOUD}
+  environment:
+    name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
+    url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
+    action: stop
+ 
 
 #################################
 

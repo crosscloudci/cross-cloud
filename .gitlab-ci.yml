@@ -113,7 +113,7 @@ aws_k8s_deploy:
   variables:
     CLOUD: ${AWS_CLOUD}
   environment:
-    name: ${AWS_CLOUD}-${CI_COMMIT_REF_SLUG}
+    name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
     url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
     on_stop: aws_k8s_destroy
 
@@ -121,7 +121,7 @@ aws_k8s_deploy:
 aws_k8s_e2e:
   <<: *k8s_e2e_template
   variables:
-    CLOUD: ${AWS_E2E}
+    CLOUD: ${AWS_CLOUD}
 
 # AWS Destroy VARs 
 aws_k8s_destroy:
@@ -129,7 +129,7 @@ aws_k8s_destroy:
   variables:
     CLOUD: ${AWS_CLOUD}
   environment:
-    name: ${AWS_CLOUD}-${CI_COMMIT_REF_SLUG}
+    name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
     url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
     action: stop
  
@@ -142,7 +142,7 @@ packet_k8s_deploy:
   variables:
     CLOUD: ${PACKET_CLOUD}
   environment:
-    name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
+    name: ${PACKET_CLOUD}-${CI_COMMIT_REF_SLUG}
     url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
     on_stop: packet_k8s_destroy
 

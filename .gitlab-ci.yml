@@ -125,6 +125,7 @@ aws_k8s_e2e:
   environment:
     name: ${AWS_CLOUD}-${CI_COMMIT_REF_SLUG}
     url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
+    on_stop: aws_k8s_destroy
  
 
 # AWS Destroy VARs 
@@ -135,6 +136,7 @@ aws_k8s_destroy:
   environment:
     name: ${AWS_CLOUD}-${CI_COMMIT_REF_SLUG}
     url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
+    on_stop: aws_k8s_destroy
  
 
 #####################################

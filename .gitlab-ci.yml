@@ -57,7 +57,7 @@ cross-cloud-socat:
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
   stage: cross-cloud
   variables:
-    CLOUD: MUST BE SET 
+    CLOUD: MUST BE SET
   environment:
     name: MUST BE SET
     url: MUST BE SET
@@ -82,10 +82,8 @@ cross-cloud-socat:
 .k8s_e2e_template: &k8s_e2e_template
   image: ${CI_REGISTRY}/kubernetes/kubernetes/kubernetes-e2e:ci-v1-6-3.job.4793
   stage: cncf-e2e
-  # dependencies:
-  #   - k8s_deploy_aws
   variables:
-    CLOUD: MUST BE SET 
+    CLOUD: MUST BE SET
   environment:
     name: MUST BE SET
     url: MUST BE SET
@@ -99,7 +97,7 @@ cross-cloud-socat:
   stage: cross-cloud
   when: manual
   variables:
-    CLOUD:  MUST BE SET
+    CLOUD: MUST BE SET
   environment:
     name: MUST BE SET
     url: MUST BE SET
@@ -145,7 +143,7 @@ packet_k8s_deploy:
   variables:
     CLOUD: ${PACKET_CLOUD}
   environment:
-    name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
+    name: ${PACKET_CLOUD}-${CI_COMMIT_REF_SLUG}
     url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
     on_stop: packet_k8s_destroy
 
@@ -155,7 +153,7 @@ packet_k8s_e2e:
   variables:
     CLOUD: ${PACKET_CLOUD}
   environment:
-    name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
+    name: ${PACKET_CLOUD}-${CI_COMMIT_REF_SLUG}
     url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
 
 # Packet Destroy VARs
@@ -164,7 +162,7 @@ packet_k8s_destroy:
   variables:
     CLOUD: ${PACKET_CLOUD}
   environment:
-    name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
+    name: ${PACKET_CLOUD}-${CI_COMMIT_REF_SLUG}
     url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
     action: stop
  
@@ -177,7 +175,7 @@ gce_k8s_deploy:
   variables:
     CLOUD: ${GCE_CLOUD}
   environment:
-    name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
+    name: ${GCE_CLOUD}-${CI_COMMIT_REF_SLUG}
     url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
     on_stop: gce_k8s_destroy
 
@@ -187,7 +185,7 @@ gce_k8s_e2e:
   variables:
     CLOUD: ${GCE_CLOUD}
   environment:
-    name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
+    name: ${GCE_CLOUD}-${CI_COMMIT_REF_SLUG}
     url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
 
 # GCE Destroy VARs
@@ -196,7 +194,7 @@ gce_k8s_destroy:
   variables:
     CLOUD: ${GCE_CLOUD}
   environment:
-    name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
+    name: ${GCE_CLOUD}-${CI_COMMIT_REF_SLUG}
     url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
     action: stop
  
@@ -209,7 +207,7 @@ gke_k8s_deploy:
   variables:
     CLOUD: ${GKE_CLOUD}
   environment:
-    name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
+    name: ${GKE_CLOUD}-${CI_COMMIT_REF_SLUG}
     url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
     on_stop: gke_k8s_destroy
 
@@ -219,7 +217,7 @@ gke_k8s_e2e:
   variables:
     CLOUD: ${GKE_CLOUD}
   environment:
-    name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
+    name: ${GKE_CLOUD}-${CI_COMMIT_REF_SLUG}
     url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
 
 
@@ -229,7 +227,7 @@ gke_k8s_destroy:
   variables:
     CLOUD: ${GKE_CLOUD}
   environment:
-    name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
+    name: ${GKE_CLOUD}-${CI_COMMIT_REF_SLUG}
     url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
     action: stop
 
@@ -242,7 +240,7 @@ gke_k8s_destroy:
   variables:
     CLOUD: ${AZURE_CLOUD}
   environment:
-    name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
+    name: ${AZURE_CLOUD}-${CI_COMMIT_REF_SLUG}
     url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
     on_stop: azure_k8s_destroy
 
@@ -252,7 +250,7 @@ gke_k8s_destroy:
   variables:
     CLOUD: ${AZURE_CLOUD}
   environment:
-    name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
+    name: ${AZURE_CLOUD}-${CI_COMMIT_REF_SLUG}
     url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
 
  
@@ -262,7 +260,7 @@ gke_k8s_destroy:
   variables:
     CLOUD: ${AZURE_CLOUD}
   environment:
-    name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
+    name: ${AZURE_CLOUD}-${CI_COMMIT_REF_SLUG}
     url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
     action: stop
 

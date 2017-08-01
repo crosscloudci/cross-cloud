@@ -1,12 +1,12 @@
 FROM golang:alpine
 MAINTAINER "Denver Williams <denver@ii.coop>"
-ENV KUBECTL_VERSION=v1.5.2
+ENV KUBECTL_VERSION=v1.6.6
 ENV HELM_VERSION=v2.4.1
 ENV GCLOUD_VERSION=150.0.0
 ENV AWSCLI_VERSION=1.11.75
 ENV AZURECLI_VERSION=2.0.2
 ENV PACKETCLI_VERSION=1.33
-ENV TERRAFORM_VERSION=0.9.5
+ENV TERRAFORM_VERSION=0.9.11
 ENV ARC=amd64
 
 # Install AWS / AZURE CLI Deps
@@ -66,7 +66,9 @@ COPY cross-cloud/ /cncf/cross-cloud/
 COPY kubeconfig/ /cncf/kubeconfig/
 COPY tls/ /cncf/tls/
 COPY provision.sh /cncf/
+COPY backend.tf /cncf
 RUN chmod +x /cncf/provision.sh
 #ENTRYPOINT ["/cncf/provision.sh"]
 WORKDIR /cncf/
-#CMD ["aws-deploy"]
+#CMD ["/cncf/provision.sh"]
+CMD ["bash", "-c", "/cncf/provision.sh ${CLOUD}-${COMMAND} ${NAME}"]

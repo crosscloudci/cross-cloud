@@ -12,10 +12,3 @@
 #   public_key = "${file("${ var.data_dir }/.ssh/id_rsa.pub")}"
 # }
 
-terraform {
-  backend "s3" {
-    bucket = "aws"
-    key    = "aws"
-    region = "ap-southeast-2"
-  }
-}

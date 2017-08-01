@@ -47,4 +47,3 @@ spec:
   - hostPath:
       path: /var/log
     name: varlog
-

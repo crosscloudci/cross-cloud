@@ -28,3 +28,9 @@ variable "k8s_etcd_key" {}
 variable "k8s_apiserver" {}
 variable "k8s_apiserver_key" {}
 variable "data_dir" {}
+
+variable "client_id" {}
+variable "client_secret" {}
+variable "tenant_id" {}
+variable "subscription_id" {}
+

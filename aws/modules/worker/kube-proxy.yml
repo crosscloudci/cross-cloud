@@ -1,3 +1,5 @@
+# test_args should always go last to overwrite prior configuration
+# kube-proxy podspec
 apiVersion: v1
 kind: Pod
 metadata:
@@ -24,7 +26,7 @@ spec:
     command:
     - /bin/sh
     - -c
-    - kube-proxy --master=http://127.0.0.1:8080 --cluster-cidr=10.244.0.0/14 --resource-container="" --v=2 --feature-gates=ExperimentalCriticalPodAnnotation=true
+    - kube-proxy --master=https://master.${ internal_tld } --kubeconfig=/var/lib/kube-proxy/kubeconfig  --cluster-cidr=10.244.0.0/14 --resource-container="" --v=2 --feature-gates=ExperimentalCriticalPodAnnotation=true
     securityContext:
       privileged: true
     volumeMounts:
@@ -34,8 +36,11 @@ spec:
     - mountPath: /usr/share/ca-certificates
       name: usr-ca-certs
       readOnly: true
-    - mountPath: /var/log
-      name: varlog
+    - mountPath: /etc/kubernetes/pki
+      name: certs
+      readOnly: true
+    - mountPath: /var/lib/kube-proxy/kubeconfig
+      name: kubeconfig
       readOnly: false
   volumes:
   - hostPath:
@@ -45,6 +50,8 @@ spec:
       path: /etc/ssl/certs
     name: etc-ssl-certs
   - hostPath:
-      path: /var/log
-    name: varlog
-
+      path: /etc/kubernetes/pki
+    name: certs
+  - hostPath:
+      path: /var/lib/kube-proxy/kubeconfig
+    name: kubeconfig

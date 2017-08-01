@@ -10,6 +10,10 @@ resource "tls_cert_request" "etcd_csr" {
     common_name = "${var.tls_etcd_cert_subject_common_name}"
   }
 
+  ip_addresses = [
+    "${ split(",", var.tls_etcd_cert_ip_addresses) }"
+  ]
+
   dns_names = [
     "${ split(",", var.tls_etcd_cert_dns_names) }"
   ]

@@ -5,7 +5,8 @@ variable "data_dir" { default = "/cncf/data/azure" }
 
 # Azure Cloud Specific Settings
 variable "location"        { default = "westus" }
-variable "vpc_cidr"        { default = "10.0.0.0/16" }
+variable "vpc_cidr"        { default = "10.0.0.0/8" }
+variable "subnet_cidr"     { default = "10.240.0.0/16"}
 
 # VM Image and size
 variable "admin_username" { default = "cncf"}
@@ -34,3 +35,9 @@ variable "worker_node_count" { default = "3" }
 # Set from https://quay.io/repository/coreos/hyperkube?tab=tags
 variable "kubelet_image_url" { default = "quay.io/coreos/hyperkube"}
 variable "kubelet_image_tag" { default = "v1.4.7_coreos.0"}
+
+variable "client_id" {}
+variable "client_secret" {}
+variable "tenant_id" {}
+variable "subscription_id" {}
+

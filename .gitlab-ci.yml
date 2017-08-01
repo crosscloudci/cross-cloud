@@ -217,13 +217,22 @@ gke_k8s_deploy:
 gke_k8s_e2e:
   <<: *k8s_e2e_template
   variables:
-    CLOUD: ${GKE_E2E}
+    CLOUD: ${GKE_CLOUD}
+  environment:
+    name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
+    url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
+
 
 # GKE Destroy VARs
 gke_k8s_destroy:
   <<: *k8s_cloud_destroy_template
   variables:
-    CLOUD: ${GKE_DESTROY}
+    CLOUD: ${GKE_CLOUD}
+  environment:
+    name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
+    url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
+    action: stop
+
 
 #################################
 

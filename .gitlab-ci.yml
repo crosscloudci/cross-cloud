@@ -59,8 +59,8 @@ cross-cloud-socat:
   variables:
     CLOUD: MUST BE SET 
   environment:
-    name: MUST BE SET
-    url: MUST BE SET
+    name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
+    url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
     on_stop: MUST BE SET
   script:
     - /cncf/provision.sh ${CLOUD}-deploy ${CI_ENVIRONMENT_SLUG} s3

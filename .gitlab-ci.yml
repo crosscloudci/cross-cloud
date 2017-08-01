@@ -59,8 +59,8 @@ cross-cloud-socat:
   variables:
     CLOUD: MUST BE SET 
   environment:
-    name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
-    url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
+    name: MUST BE SET
+    url: MUST BE SET
     on_stop: MUST BE SET
   script:
     - /cncf/provision.sh ${CLOUD}-deploy ${CI_ENVIRONMENT_SLUG} s3
@@ -87,8 +87,8 @@ cross-cloud-socat:
   variables:
     CLOUD: MUST BE SET 
   environment:
-    name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
-    url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
+    name: MUST BE SET
+    url: MUST BE SET
   script:
   - /kubernetes/e2e/run-conformance.sh
 
@@ -101,8 +101,8 @@ cross-cloud-socat:
   variables:
     CLOUD:  MUST BE SET
   environment:
-    name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
-    url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
+    name: MUST BE SET
+    url: MUST BE SET
     action: stop
   script:
     - /cncf/provision.sh ${CLOUD}-destroy ${CI_ENVIRONMENT_SLUG} s3
@@ -122,12 +122,20 @@ aws_k8s_e2e:
   <<: *k8s_e2e_template
   variables:
     CLOUD: ${AWS_E2E}
+  environment:
+    name: ${AWS_CLOUD}-${CI_COMMIT_REF_SLUG}
+    url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
+ 
 
 # AWS Destroy VARs 
 aws_k8s_destroy:
   <<: *k8s_cloud_destroy_template
   variables:
     CLOUD: ${AWS_DESTROY}
+  environment:
+    name: ${AWS_CLOUD}-${CI_COMMIT_REF_SLUG}
+    url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
+ 
 
 #####################################
  

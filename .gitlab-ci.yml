@@ -59,8 +59,8 @@ cross-cloud-socat:
   variables:
     CLOUD: MUST BE SET 
   environment:
-    name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
-    url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
+    name: MUST BE SET
+    url: MUST BE SET
     on_stop: MUST BE SET
   script:
     - /cncf/provision.sh ${CLOUD}-deploy ${CI_ENVIRONMENT_SLUG} s3
@@ -113,7 +113,7 @@ aws_k8s_deploy:
   variables:
     CLOUD: ${AWS_CLOUD}
   environment:
-    name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
+    name: ${AWS_CLOUD}-${CI_COMMIT_REF_SLUG}
     url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
     on_stop: aws_k8s_destroy
 

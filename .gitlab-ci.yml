@@ -78,17 +78,17 @@ cross-cloud-socat:
     paths:
       - ./data/
 
-# # E2E Template used for Per Cloud e2e Tests
-# .k8s_e2e_template: &k8s_e2e_template
-#   image: ${CI_REGISTRY}/kubernetes/kubernetes/kubernetes-e2e:ci-v1-6-3.job.4793
-#   stage: cncf-e2e
-#   variables:
-#     CLOUD: MUST BE SET
-#   environment:
-#     name: MUST BE SET
-#     url: MUST BE SET
-#   script:
-#     - /kubernetes/e2e/run-conformance.sh
+# E2E Template used for Per Cloud e2e Tests
+.k8s_e2e_template: &k8s_e2e_template
+  image: ${CI_REGISTRY}/kubernetes/kubernetes/kubernetes-e2e:ci-v1-6-3.job.4793
+  stage: cncf-e2e
+  variables:
+    CLOUD: MUST BE SET
+  environment:
+    name: MUST BE SET
+    url: MUST BE SET
+  script:
+    - /kubernetes/e2e/run-conformance.sh
 
 # Per Cloud Destroy Template only run when DESTROY_VAR is Set
 .k8s_cloud_destroy_template: &k8s_cloud_destroy_template
@@ -115,14 +115,14 @@ aws_k8s_deploy:
     url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
     on_stop: aws_k8s_destroy
 
-# # AWS E2E VARs
-# aws_k8s_e2e:
-#   <<: *k8s_e2e_template
-#   variables:
-#     CLOUD: ${AWS_CLOUD}
-#   environment:
-#     name: ${AWS_CLOUD}-${CI_COMMIT_REF_SLUG}
-    # url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
+# AWS E2E VARs
+aws_k8s_e2e:
+  <<: *k8s_e2e_template
+  variables:
+    CLOUD: ${AWS_CLOUD}
+  environment:
+    name: ${AWS_CLOUD}-${CI_COMMIT_REF_SLUG}
+    url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
 
 # AWS Destroy VARs 
 aws_k8s_destroy:
@@ -147,14 +147,14 @@ packet_k8s_deploy:
     url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
     on_stop: packet_k8s_destroy
 
-# # Packet E2E VARs
-# packet_k8s_e2e:
-#   <<: *k8s_e2e_template
-#   variables:
-#     CLOUD: ${PACKET_CLOUD}
-#   environment:
-#     name: ${PACKET_CLOUD}-${CI_COMMIT_REF_SLUG}
-#     url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
+# Packet E2E VARs
+packet_k8s_e2e:
+  <<: *k8s_e2e_template
+  variables:
+    CLOUD: ${PACKET_CLOUD}
+  environment:
+    name: ${PACKET_CLOUD}-${CI_COMMIT_REF_SLUG}
+    url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
 
 # Packet Destroy VARs
 packet_k8s_destroy:
@@ -179,14 +179,14 @@ gce_k8s_deploy:
     url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
     on_stop: gce_k8s_destroy
 
-# # GCE E2E VARs
-# gce_k8s_e2e:
-#   <<: *k8s_e2e_template
-#   variables:
-#     CLOUD: ${GCE_CLOUD}
-#   environment:
-#     name: ${GCE_CLOUD}-${CI_COMMIT_REF_SLUG}
-#     url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
+# GCE E2E VARs
+gce_k8s_e2e:
+  <<: *k8s_e2e_template
+  variables:
+    CLOUD: ${GCE_CLOUD}
+  environment:
+    name: ${GCE_CLOUD}-${CI_COMMIT_REF_SLUG}
+    url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
 
 # GCE Destroy VARs
 gce_k8s_destroy:
@@ -211,14 +211,14 @@ gke_k8s_deploy:
     url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
     on_stop: gke_k8s_destroy
 
-# # GKE E2E VARs
-# gke_k8s_e2e:
-#   <<: *k8s_e2e_template
-#   variables:
-#     CLOUD: ${GKE_CLOUD}
-#   environment:
-#     name: ${GKE_CLOUD}-${CI_COMMIT_REF_SLUG}
-#     url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
+# GKE E2E VARs
+gke_k8s_e2e:
+  <<: *k8s_e2e_template
+  variables:
+    CLOUD: ${GKE_CLOUD}
+  environment:
+    name: ${GKE_CLOUD}-${CI_COMMIT_REF_SLUG}
+    url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
 
 
 # GKE Destroy VARs
@@ -244,14 +244,14 @@ gke_k8s_destroy:
     url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
     on_stop: azure_k8s_destroy
 
-# # Azure E2E VARs
-# .azure_k8s_e2e:
-#   <<: *k8s_e2e_template
-#   variables:
-#     CLOUD: ${AZURE_CLOUD}
-#   environment:
-#     name: ${AZURE_CLOUD}-${CI_COMMIT_REF_SLUG}
-#     url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
+# Azure E2E VARs
+.azure_k8s_e2e:
+  <<: *k8s_e2e_template
+  variables:
+    CLOUD: ${AZURE_CLOUD}
+  environment:
+    name: ${AZURE_CLOUD}-${CI_COMMIT_REF_SLUG}
+    url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
 
  
 # Azure Destroy VARs

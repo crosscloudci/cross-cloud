@@ -62,7 +62,7 @@ coredns-stable:
     - COREDNS_RELEASE_ENV=$(curl -s -L
         "$BASE_URL/coredns/coredns/builds/artifacts/${COREDNS_BRANCH}/file/release.env?job=release"
         |  sed -n 's/.*href="\([^"]*\).*/\1/p' | grep artifacts/raw | tail -1)
-    - echo curl -s -L
+    - curl -s -L
         "$BASE_URL/coredns/coredns/builds/artifacts/${COREDNS_BRANCH}/file/release.env?job=release"
         |  sed -n 's/.*href="\([^"]*\).*/\1/p' | grep artifacts/raw | tail -1
     - mkdir -p data

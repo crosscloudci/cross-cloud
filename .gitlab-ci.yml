@@ -64,7 +64,7 @@ cross-cloud-socat:
     on_stop: MUST BE SET
   script:
     - /cncf/provision.sh ${CLOUD}-deploy ${CI_ENVIRONMENT_SLUG} s3
-    - helm init ; sleep 60
+    - helm init 
     # - helm init ; until [ ! -e $(
     #     kubectl get pods --namespace=kube-system -l app=helm -l name=tiller
     #     -o jsonpath='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}'

@@ -26,6 +26,15 @@ mkdir -p $TF_VAR_data_dir
 
 # Run CMD
 if [ "$1" = "aws-deploy" ] ; then
+
+    endpoint=https://rdc5mssooi.execute-api.us-west-2.amazonaws.com/prod/api
+    dID=$(cat demoId)
+    echo $dID
+
+    step='01-Creating-Cloud-Resources'
+    curl -s --output /dev/null --request POST --include --data-binary @/tmp/${step} --no-buffer ${endpoint}/${dID}/${step}
+    {
+
     cd ${DIR}/aws
     terraform init \
               -backend-config 'bucket=aws65972563' \
@@ -35,6 +44,13 @@ if [ "$1" = "aws-deploy" ] ; then
     terraform taint -module=kubeconfig null_resource.kubeconfig || true
     time terraform apply ${DIR}/aws
 
+    } 2>&1 | tee /tmp/${step}
+    curl -s --output /dev/null --request POST --include --data-binary @/tmp/${step} --no-buffer ${endpoint}/${dID}/${step}
+
+    step='02-Instances-Booting'
+    curl -s --output /dev/null --request POST --include --data-binary @/tmp/${step} --no-buffer ${endpoint}/${dID}/${step}
+    {
+
     ELB=$(terraform output external_elb)
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
     echo "❤ Polling for cluster life - this could take a minute or more"
@@ -42,6 +58,9 @@ if [ "$1" = "aws-deploy" ] ; then
     _retry "❤ Curling apiserver external elb" curl --insecure --silent "https://${ELB}"
     _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info
     kubectl cluster-info
+  } 2>&1 | tee /tmp/${step}
+    curl -s --output /dev/null --request POST --include --data-binary @/tmp/${step} --no-buffer ${endpoint}/${dID}/${step}
+
 elif [ "$1" = "aws-destroy" ] ; then
     cd ${DIR}/aws
     terraform init \

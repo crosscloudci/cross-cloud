@@ -73,14 +73,14 @@ Custom Configuration options for the Kubernetes Cluster
 ### Meetings / Demos
 
 #### Upcoming
-- July 27th, 2017 - CI-WG
 - August 15th, 2017 - CNCF TOC
 - September 11th-14th 2017 [Open Source Summit North America](http://events.linuxfoundation.org/events/open-source-summit-north-america)
+- September 12th, 2017 - CNCF: Governing Board
+- October 12th, 2017 - CNCF: End User Committee Meeting
 
 #### Past
 - [July 11th, 2017 - Kubernetes SIG Testing](https://www.youtube.com/watch?v=DQGcv2a4qXQ&list=PL69nYSiGNLP0ofY51bEooJ4TKuQtUSizR&index=1)
 - [June 27, 2017 - CI-WG cross-cloud and containerops demos](https://www.youtube.com/watch?v=Jc5EJVK7ZZk&feature=youtu.be&t=307)
-
 
 
 

@@ -64,7 +64,7 @@ docker run \
 _Google Cloud JSON configuration file for authentication._  (This file is downloaded directly from the [Google Developers Console](https://console.developers.google.com/))
 
 1. Log into the Google Developers Console and select a project.
-1. The API Manager view should be selected, click on "Credentials" on the left, then "Create credentials", and finally "Service account key".
+1. The API Manager view should be selected, click on "Credentials" on the left, then "Create credentials," and finally "Service account key."
 1. Select "Compute Engine default service account" in the "Service account" dropdown, and select "JSON" as the key type.
 1. Clicking "Create" will download your credentials.
 1. Rename this file to credentials-gce.json and move to your home directory (~/credentials-gce.json)
@@ -106,14 +106,14 @@ docker run \
   -ti registry.cncf.ci/cncf/cross-cloud/provisioning:ci-stable-v0-2-0
 ```
 
-#### Common options
+#### Common Options
 * -e CLOUD=<aws|gke|gce|packet> # Choose the cloud provider.  Then add the appropriate cloud specific options below.
 * -e COMMAND=<deploy|destory>
 * -e BACKEND=<file|s3>   # File will store the Terraform State file to Disk / S3 will store the Terraform Statefile to a AWS s3 Bucket
   
 
 #### Cloud Specific Options
-AWS
+AWS:
  * -e AWS_ACCESS_KEY_ID=secret
  * -e AWS_SECRET_ACCESS_KEY=secret
  * -e AWS_DEFAULT_REGION=ap-southeast-2
@@ -124,13 +124,13 @@ Packet:
  * -e DNSIMPLE_TOKEN=secret
  * -e DNSIMPLE_ACCOUNT=secret   
 
-GCE/GKE
+GCE/GKE:
  * -e GOOGLE_CREDENTIALS=secret
  * -e GOOGLE_REGION=us-central1
  * -e GOOGLE_PROJECT=test-163823
 
 #### Kubernetes Cluster Options
-Custom Configuration options for the Kubernetes Cluster
+Custom Configuration options for the Kubernetes Cluster:
 * -e TF_VAR_pod_cidr=10.2.0.0/16      # Set the Kubernetes Cluster POD CIDR
 * -e TF_VAR_service_cidr=10.0.0.0/24  # Set the Kubernetes Cluster SERVICE CIDR
 * -e TF_VAR_worker_node_count=3       # Set the Number of Worker nodes to be Deployed in the Cluster
@@ -139,7 +139,7 @@ Custom Configuration options for the Kubernetes Cluster
 * -e TF_VAR_k8s_service_ip=10.0.0.1   # Set the Kubernetes Service IP
 
 
-### Additional documentation
+### Additional Documentation
 
  * [FAQ](FAQ.md) - Frequently Asked Questions
 

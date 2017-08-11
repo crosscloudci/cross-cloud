@@ -18,7 +18,81 @@ A project to continually validate the interoperability of each CNCF project, for
 - Cross-cloud CI Dashboard - 
   * Provides a high-level view of the interoperability status of CNCF projects for each supported cloud provider.
 
-### How to Use Cross-Cloud TL;DR
+### How to Use Cross-Cloud 
+
+You have to have a working [Docker environment](https://www.docker.com/get-docker)
+
+
+##### Quick start for AWS
+
+**Pre-reqs:**
+_[IAM User](https://console.aws.amazon.com/iam) with the following Permissions:_
+- AmazonEC2FullAccess
+- AmazonS3FullAccess
+- AmazonRoute53DomainsFullAccess
+- AmazonRoute53FullAccess
+- IAMFullAccess
+- IAMUserChangePassword
+
+_AWS credentials_
+```
+export AWS_ACCESS_KEY_ID="YOUR_AWS_KEY_ID"
+export AWS_SECRET_ACCESS_KEY="YOUR_AWS_SECRET_KEY"
+export AWS_DEFAULT_REGION=”YOUR_AWS_DEFAULT_REGION” # eg. ap-southeast-2
+```
+
+**Run the following to provision a Kubernetes cluster on AWS:**
+```bash
+docker run \
+  -v /tmp/data:/cncf/data \
+  -e NAME=cross-cloud
+  -e CLOUD=aws    \
+  -e COMMAND=deploy \
+  -e BACKEND=file  \ 
+  -e AWS_ACCESS_KEY_ID= $AWS_ACCESS_KEY_ID    \
+  -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY    \
+  -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION    \
+  -ti registry.cncf.ci/cncf/cross-cloud/provisioning:ci-stable-v0-2-0
+```
+
+
+##### Quick start for GCE
+ 
+**Pre-reqs:**
+[Project created on Google Cloud](https://console.developers.google.com/projectcreate) (eg. test-cncf-cross-cloud)
+
+_Google Cloud JSON configuration file for authentication._  (This file is downloaded directly from the [Google Developers Console](https://console.developers.google.com/))
+
+1. Log into the Google Developers Console and select a project.
+1. The API Manager view should be selected, click on "Credentials" on the left, then "Create credentials", and finally "Service account key".
+1. Select "Compute Engine default service account" in the "Service account" dropdown, and select "JSON" as the key type.
+1. Clicking "Create" will download your credentials.
+1. Rename this file to credentials-gce.json and move to your home directory (~/credentials-gce.json)
+
+_Google Project ID_
+
+1. Log into the [Google Developers Console](https://console.developers.google.com/) to be sent to the [Google API library page](https://console.developers.google.com/apis/library) screen
+1. Click the `Select a project` drop-down in the upper left
+1. Copy the Project ID for the desired project from the window that shows
+Eg. test-cncf-cross-cloud
+
+**Run the following to provision a Kubernetes cluster on GCE:**
+``` bash
+export GOOGLE_CREDENTIALS=$(cat ~/credentials-gce.json)
+docker run \
+  -v /tmp/data:/cncf/data  \
+  -e NAME=cross-cloud  \
+  -e CLOUD=gce    \
+  -e COMMAND=deploy  \
+  -e BACKEND=file  \ 
+  -e GOOGLE_REGION=us-central1    \
+  -e GOOGLE_PROJECT=test-cncf-cross-cloud  \
+  -e GOOGLE_CREDENTIALS=”${GOOGLE_CREDENTIALS}”
+  -ti registry.cncf.ci/cncf/cross-cloud/provisioning:ci-stable-v0-2-0
+```
+
+#### General usage and configuration
+
 Minimum required Configuration to use Cross-Cloud to Deploy a Kubernetes Cluster on Cloud X.
 ```bash
 docker run \
@@ -29,7 +103,7 @@ docker run \
   -e BACKEND=<file|s3>  \ 
   <CLOUD_SPECIFIC_OPTIONS>
   <KUBERNETES_CLUSTER_OPTIONS>
-  -ti registry.cncf.ci/cncf/cross-cloud/provisioning:ci-stable-v0-1-0
+  -ti registry.cncf.ci/cncf/cross-cloud/provisioning:ci-stable-v0-2-0
 ```
 
 #### Common options

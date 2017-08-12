@@ -64,7 +64,7 @@ cross-cloud-socat:
     on_stop: MUST BE SET
   script:
     - /cncf/provision.sh ${CLOUD}-deploy ${CI_ENVIRONMENT_SLUG} s3
-    - helm init ; sleep 60
+    - helm init 
     # - helm init ; until [ ! -e $(
     #     kubectl get pods --namespace=kube-system -l app=helm -l name=tiller
     #     -o jsonpath='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}'
@@ -88,7 +88,7 @@ cross-cloud-socat:
     name: MUST BE SET
     url: MUST BE SET
   script:
-  - /kubernetes/e2e/run-conformance.sh
+    - /kubernetes/e2e/run-conformance.sh
 
 # Per Cloud Destroy Template only run when DESTROY_VAR is Set
 .k8s_cloud_destroy_template: &k8s_cloud_destroy_template

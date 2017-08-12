@@ -1,6 +1,9 @@
 #cloud-config
 
 ---
+
+hostname: "$public_ipv4"
+
 coreos:
 
   etcd2:

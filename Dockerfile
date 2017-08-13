@@ -54,8 +54,8 @@ WORKDIR $GOPATH
 RUN go get -u github.com/jakexks/terraform-provider-gzip && \
     go get -u github.com/paperg/terraform-provider-etcdiscovery && \
   echo providers { >> ~/.terraformrc && \
-  echo '    gzip = "terraform-provider-gzip"' >> ~/.terraformrc && \
-  echo '    etcdiscovery = "terraform-provider-etcdiscovery"' >> ~/.terraformrc && \
+  echo '    gzip = "/go/bin/terraform-provider-gzip"' >> ~/.terraformrc && \
+  echo '    etcdiscovery = "/go/bin/terraform-provider-etcdiscovery"' >> ~/.terraformrc && \
   echo } >> ~/.terraformrc
 
 #Add Terraform Modules

@@ -131,6 +131,7 @@ elif [ "$1" = "packet-deploy" ] ; then
               -backend-config 'region=ap-southeast-2'
     # ensure kubeconfig is written to disk on infrastructure refresh
     terraform taint -module=kubeconfig null_resource.kubeconfig || true ${DIR}/packet
+    terraform taint null_resource.set_dns || true ${DIR}/packet
     time terraform apply ${DIR}/packet
 
     elif [ "$3" = "file" ]; then

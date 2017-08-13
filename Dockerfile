@@ -6,7 +6,9 @@ ENV GCLOUD_VERSION=150.0.0
 ENV AWSCLI_VERSION=1.11.75
 ENV AZURECLI_VERSION=2.0.2
 ENV PACKETCLI_VERSION=1.33
-ENV TERRAFORM_VERSION=0.9.11
+ENV TERRAFORM_VERSION=master
+ENV TF_DEV=true
+ENV TF_RELEASE=true
 ENV ARC=amd64
 
 
@@ -41,19 +43,19 @@ mv linux-amd64/helm /usr/local/bin && \
 rm -rf helm-*gz linux-amd64
 
 # Install Terraform 
-RUN wget https://releases.hashicorp.com/terraform/$TERRAFORM_VERSION/terraform_"${TERRAFORM_VERSION}"_linux_$ARC.zip
-RUN unzip terraform*.zip -d /usr/bin
+WORKDIR $GOPATH/src/github.com/hashicorp/terraform
+RUN git clone https://github.com/hashicorp/terraform.git ./ && \
+    git checkout ${TERRAFORM_VERSION} && \
+    /bin/bash scripts/build.sh
+WORKDIR $GOPATH
 
-# # Install CFSSL
-# RUN go get -u github.com/cloudflare/cfssl/cmd/cfssl && \
-# go get -u github.com/cloudflare/cfssl/cmd/...
 
 # Install Gzip+base64 & ETCD Provider
 RUN go get -u github.com/jakexks/terraform-provider-gzip && \
     go get -u github.com/paperg/terraform-provider-etcdiscovery && \
   echo providers { >> ~/.terraformrc && \
-  echo '    gzip = "terraform-provider-gzip"' >> ~/.terraformrc && \
-  echo '    etcdiscovery = "terraform-provider-etcdiscovery"' >> ~/.terraformrc && \
+  echo '    gzip = "/go/bin/terraform-provider-gzip"' >> ~/.terraformrc && \
+  echo '    etcdiscovery = "/go/bin/terraform-provider-etcdiscovery"' >> ~/.terraformrc && \
   echo } >> ~/.terraformrc
 
 #Add Terraform Modules

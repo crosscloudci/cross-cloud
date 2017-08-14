@@ -179,7 +179,7 @@ cross-cloud-stable:
     - COREDNS_INSTALL="helm install --name coredns
          --namespace=kube-system
          --set middleware.kubernetes.clusterCidr=10.0.0.0/24
-         --set middleware.kubernetes.clusterIP=10.0.0.10
+         --set middleware.kubernetes.clusterIP=10.0.0.11
          --set middleware.prometheus.enabled=false
          --set middleware.errors.enabled=true
          --set middleware.log.enabled=true 

@@ -153,7 +153,7 @@ Current Phase: In Design/Planning
 #### Deployment View
 ![cncf-dashboard_web_deployment-view_v3-2-default](https://user-images.githubusercontent.com/11701267/29290208-dcd53680-8104-11e7-8990-50ac5b11c91e.png)
 
- * See Additional Dashboard Views at [Dashboard](Dashboard.md)
+ * See the [Dashboard document](Dashboard.md) for additional Dashboard Views 
 
 ### Meetings / Demos
 

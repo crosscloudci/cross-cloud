@@ -144,6 +144,17 @@ Custom Configuration options for the Kubernetes Cluster:
  * [FAQ](FAQ.md) - Frequently Asked Questions
 
 
+### CI Status Dashboard Views
+Current Phase: In Design/Planning
+
+#### [Overview](/DASHBOARD.md#overview-screen)
+![cncf-dashboard_web_overview_v3-2default-b](https://user-images.githubusercontent.com/26697/29292628-70ccb612-810d-11e7-869d-13e09894c93d.png)
+
+#### [Deployment View](/DASHBOARD.md#deployment-view-screen)
+![cncf-dashboard_web_deployment-view_v3-2-default](https://user-images.githubusercontent.com/26697/29292630-73bc201a-810d-11e7-8671-307f92a7ce11.png)
+
+ * See the [Dashboard document](Dashboard.md) for additional Dashboard Views 
+
 ### Meetings / Demos
 
 #### Upcoming

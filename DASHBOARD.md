@@ -1,4 +1,4 @@
-# Cross Cloud CI Status Dashboard Design Mocks
+# Cross Cloud CI Status Dashboard
 Current Phase: In Design/Planning
 
 Last Modified: August 14, 2017

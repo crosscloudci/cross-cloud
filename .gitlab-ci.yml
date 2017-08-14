@@ -190,7 +190,7 @@ cross-cloud-stable:
          cncf/coredns"
     - echo $COREDNS_INSTALL ; $COREDNS_INSTALL || true
     - DEPLOYED_COREDNS_IMAGE=$(kubectl get pods --namespace=kube-system -l k8s-app=coredns -o jsonpath="{.items[0].spec.containers[0].image}")
-    - echo Deployed CoreDNS Image - $DEPLOYED_COREDNS_IMAGE
+    - echo Deployed CoreDNS Image - $DEPLOYED_COREDNS_IMAGE || true
     - kubectl get svc --namespace=kube-system -l k8s-app=coredns
     - kubectl get pods --namespace=kube-system -l k8s-app=coredns
 

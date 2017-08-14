@@ -148,10 +148,10 @@ Custom Configuration options for the Kubernetes Cluster:
 Current Phase: In Design/Planning
 
 #### [Overview](/DASHBOARD.md#overview-screen)
-![cncf-dashboard_web_overview_v3-2default-b](https://user-images.githubusercontent.com/11701267/29290193-d27fdf6e-8104-11e7-97cb-2e03b65a81d3.png)
+![cncf-dashboard_web_overview_v3-2default-b](https://user-images.githubusercontent.com/26697/29292628-70ccb612-810d-11e7-869d-13e09894c93d.png)
 
 #### [Deployment View](/DASHBOARD.md#deployment-view-screen)
-![cncf-dashboard_web_deployment-view_v3-2-default](https://user-images.githubusercontent.com/11701267/29290208-dcd53680-8104-11e7-8990-50ac5b11c91e.png)
+![cncf-dashboard_web_deployment-view_v3-2-default](https://user-images.githubusercontent.com/26697/29292630-73bc201a-810d-11e7-8671-307f92a7ce11.png)
 
  * See the [Dashboard document](Dashboard.md) for additional Dashboard Views 
 

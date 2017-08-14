@@ -1,13 +1,18 @@
 # Cross Cloud CI Status Dashboard
+Current Phase: In Design/Planning
+Last Modified: August 14, 2017
 
 ## Overview Screen
 
 ### Default View
 The CI Status Dashboard will be updated once per 24 hours for v1.0.
+New Projects will be added to the bottom of the "Project" column. 
+New Clouds will be added to the right of the "Cloud" row.
 
 ![cncf-dashboard_web_overview_v3-2default-b](https://user-images.githubusercontent.com/11701267/29288905-3a0e0b10-8100-11e7-9728-00d05007ea85.png)
 
 ### Success Hover State
+Hovering over a Success badge will show an inverse version of the badge, highlight the Cloud, highlight the Project
 ![cncf-dashboard_web_overview_v3-2-hover-success](https://user-images.githubusercontent.com/11701267/29288977-7b3b2cf8-8100-11e7-8779-990ed835bd20.png)
 
 ### Running Hover State
@@ -30,7 +35,7 @@ The CI Status Dashboard will be updated once per 24 hours for v1.0.
 ### Pipeline Hover State 
 ![cncf-dashboard_web_deployment-view_v3-2-hover-pipeline](https://user-images.githubusercontent.com/11701267/29289320-96a9fa36-8101-11e7-9bce-9b34802dde78.png)
 
-### Coming Soon - Commit Hash Hover State
+* Coming Soon - Commit Hash Hover State
 ----
 
 ### Project Filter

@@ -6,6 +6,7 @@ ENV GCLOUD_VERSION=150.0.0
 ENV AWSCLI_VERSION=1.11.75
 ENV AZURECLI_VERSION=2.0.2
 ENV PACKETCLI_VERSION=1.33
+#PIN to Commit on Master
 ENV TERRAFORM_VERSION=master
 ENV TF_DEV=true
 ENV TF_RELEASE=true
@@ -44,7 +45,7 @@ rm -rf helm-*gz linux-amd64
 
 # Install Terraform 
 WORKDIR $GOPATH/src/github.com/hashicorp/terraform
-RUN git clone https://github.com/hashicorp/terraform.git ./ && \
+RUN git clone https://github.com/dlx/terraform.git ./ && \
     git checkout ${TERRAFORM_VERSION} && \
     /bin/bash scripts/build.sh
 WORKDIR $GOPATH

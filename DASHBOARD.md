@@ -7,8 +7,6 @@ Last Modified: August 14, 2017
 
 ### Default View
 The CI Status Dashboard will be updated once per 24 hours for v1.0.
-New Projects will be added to the bottom of the "Project" column. 
-New Clouds will be added to the right of the "Cloud" row.
 
 ![cncf-dashboard_web_overview_v3-2default-b](https://user-images.githubusercontent.com/11701267/29288905-3a0e0b10-8100-11e7-9728-00d05007ea85.png)
 

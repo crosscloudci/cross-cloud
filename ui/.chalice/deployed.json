@@ -1,0 +1,12 @@
+{
+  "dev": {
+    "api_handler_name": "demobackend-dev",
+    "api_handler_arn": "arn:aws:lambda:us-west-2:750548967590:function:demobackend-dev",
+    "lambda_functions": {},
+    "backend": "api",
+    "chalice_version": "1.0.0",
+    "rest_api_id": "zoz5m04cyb",
+    "api_gateway_stage": "api",
+    "region": "us-west-2"
+  }
+}

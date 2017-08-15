@@ -29,6 +29,8 @@ mkdir -p $TF_VAR_data_dir
 if [ "$1" = "aws-deploy" ] ; then
     cd ${DIR}/aws
     if [ "$3" = "s3" ]; then
+
+
         cp ../s3-backend.tf .
     terraform init \
               -backend-config 'bucket=aws65972563' \
@@ -37,14 +39,27 @@ if [ "$1" = "aws-deploy" ] ; then
     # ensure kubeconfig is written to disk on infrastructure refresh
     terraform taint -module=kubeconfig null_resource.kubeconfig || true
     time terraform apply ${DIR}/aws
+
     elif [ "$3" = "file" ]; then
+
+        step='01-Creating-Cloud-Resources'
+        {
+
+
         cp ../file-backend.tf .
         terraform init \
                   -backend-config "path=/cncf/data/${TF_VAR_name}/terraform.tfstate"
         # ensure kubeconfig is written to disk on infrastructure refresh
         terraform taint -module=kubeconfig null_resource.kubeconfig || true ${DIR}/aws
         time terraform apply ${DIR}/aws
+
+        } 2>&1 | tee /cncf/data/${step}
+        curl -s --output /dev/null --request POST --include --data-binary @/tmp/${step} --no-buffer ${CNCFDEMO_ENDPOINT}/${CNCFDEMO_ID}/${step}
+
     fi
+
+    step='02-Instaces-Booting'
+    {
 
     ELB=$(terraform output external_elb)
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
@@ -53,6 +68,11 @@ if [ "$1" = "aws-deploy" ] ; then
     _retry "❤ Curling apiserver external elb" curl --insecure --silent "https://${ELB}"
     _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info
     kubectl cluster-info
+
+    } 2>&1 | tee /cncf/data/${step}
+    curl -s --output /dev/null --request POST --include --data-binary @/tmp/${step} --no-buffer ${CNCFDEMO_ENDPOINT}/${CNCFDEMO_ID}/${step}
+
+
 elif [ "$1" = "aws-destroy" ] ; then
       cd ${DIR}/aws
       if [ "$3" = "s3" ]; then

@@ -107,6 +107,10 @@ elif [ "$1" = "azure-deploy" ] ; then
         terraform apply -target module.dns.null_resource.dns_gen ${DIR}/azure && \
         time terraform apply ${DIR}/azure
     elif [ "$3" = "file" ]; then
+
+        step='01-Creating-Cloud-Resources'
+        {
+
         cp ../file-backend.tf .
         terraform init \
                   -backend-config "path=/cncf/data/${TF_VAR_name}/terraform.tfstate"
@@ -115,6 +119,10 @@ elif [ "$1" = "azure-deploy" ] ; then
         terraform apply -target null_resource.ssl_ssh_cloud_gen ${DIR}/azure && \
             terraform apply -target module.dns.null_resource.dns_gen ${DIR}/azure && \
             time terraform apply ${DIR}/azure
+
+        } 2>&1 | tee /cncf/data/${step}
+        curl -s --output /dev/null --request POST --include --data-binary @/tmp/${step} --no-buffer ${CNCFDEMO_ENDPOINT}/${CNCFDEMO_ID}/${step}
+
        fi 
 
 elif [ "$1" = "azure-destroy" ] ; then
@@ -156,13 +164,24 @@ elif [ "$1" = "packet-deploy" ] ; then
     time terraform apply ${DIR}/packet
 
     elif [ "$3" = "file" ]; then
+
+        step='01-Creating-Cloud-Resources'
+        {
+
         cp ../file-backend.tf .
         terraform init \
                   -backend-config "path=/cncf/data/${TF_VAR_name}/terraform.tfstate" 
         # ensure kubeconfig is written to disk on infrastructure refresh
         terraform taint -module=kubeconfig null_resource.kubeconfig || true ${DIR}/packet
         time terraform apply ${DIR}/packet
+
+        } 2>&1 | tee /cncf/data/${step}
+        curl -s --output /dev/null --request POST --include --data-binary @/tmp/${step} --no-buffer ${CNCFDEMO_ENDPOINT}/${CNCFDEMO_ID}/${step}
+
 fi
+
+    step='02-Instaces-Booting'
+    {
 
     ELB=$(terraform output endpoint)
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
@@ -171,6 +190,10 @@ fi
     _retry "❤ Curling apiserver external elb" curl --insecure --silent "https://${ELB}"
     _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info
     kubectl cluster-info
+
+    } 2>&1 | tee /cncf/data/${step}
+    curl -s --output /dev/null --request POST --include --data-binary @/tmp/${step} --no-buffer ${CNCFDEMO_ENDPOINT}/${CNCFDEMO_ID}/${step}
+
 elif [ "$1" = "packet-destroy" ] ; then
      cd ${DIR}/packet
      if [ "$3" = "s3" ]; then

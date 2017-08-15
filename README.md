@@ -158,12 +158,13 @@ Current Phase: In Design/Planning
 ### Meetings / Demos
 
 #### Upcoming
-- August 15th, 2017 - CNCF TOC
+- September, 2017 CNCF/K8s Storage SIG Testing Group (TBD)
 - September 11th-14th 2017 [Open Source Summit North America](http://events.linuxfoundation.org/events/open-source-summit-north-america)
 - September 12th, 2017 - CNCF: Governing Board
 - October 12th, 2017 - CNCF: End User Committee Meeting
 
 #### Past
+- August 15th, 2017 - CNCF TOC
 - [August 8th, 2017 - CI-WG ii.coop Status Updates](https://docs.google.com/presentation/d/1dgkeXN7qSJ8tSUTZ5ecB67D155Y0Mphrpqi9ZFZXWKo/edit#slide=id.g242b36cf7c_0_10)
 - [July 11th, 2017 - Kubernetes SIG Testing](https://www.youtube.com/watch?v=DQGcv2a4qXQ&list=PL69nYSiGNLP0ofY51bEooJ4TKuQtUSizR&index=1)
 - [June 27, 2017 - CI-WG cross-cloud and containerops demos](https://www.youtube.com/watch?v=Jc5EJVK7ZZk&feature=youtu.be&t=307)

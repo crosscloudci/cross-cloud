@@ -11,6 +11,7 @@ RED='\033[0;31m'
 NC='\033[0m' # No Color
 
 export TF_VAR_name="$2"
+export TF_VAR_project="$GOOGLE_PROJECT" # otherwise not picked up currently, is it best to do a general var for all clouds?
 export TF_VAR_internal_tld=${TF_VAR_name}.cncf.demo
 export TF_VAR_data_dir=$(pwd)/data/${TF_VAR_name}
 export TF_VAR_aws_key_name=${TF_VAR_name}
@@ -179,8 +180,12 @@ elif [ "$1" = "gce-deploy" ] ; then
     terraform taint -module=kubeconfig null_resource.kubeconfig || true ${DIR}/gce
     time terraform apply -target module.vpc.google_compute_subnetwork.cncf ${DIR}/gce
     time terraform apply ${DIR}/gce
-    
+
 elif [ "$3" = "file" ]; then
+
+        step='01-Creating-Cloud-Resources'
+        {
+
         cp ../file-backend.tf .
         terraform init \
                   -backend-config "path=/cncf/data/${TF_VAR_name}/terraform.tfstate"
@@ -188,7 +193,14 @@ elif [ "$3" = "file" ]; then
         terraform taint -module=kubeconfig null_resource.kubeconfig || true ${DIR}/gce
         time terraform apply -target module.vpc.google_compute_subnetwork.cncf ${DIR}/gce
         time terraform apply ${DIR}/gce
+
+        } 2>&1 | tee /cncf/data/${step}
+        curl -s --output /dev/null --request POST --include --data-binary @/tmp/${step} --no-buffer ${CNCFDEMO_ENDPOINT}/${CNCFDEMO_ID}/${step}
+
     fi
+
+    step='02-Instaces-Booting'
+    {
 
     ELB=$(terraform output external_lb)
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
@@ -197,6 +209,9 @@ elif [ "$3" = "file" ]; then
     _retry "❤ Curling apiserver external elb" curl --insecure --silent "https://${ELB}"
     _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info
     kubectl cluster-info
+
+    } 2>&1 | tee /cncf/data/${step}
+    curl -s --output /dev/null --request POST --include --data-binary @/tmp/${step} --no-buffer ${CNCFDEMO_ENDPOINT}/${CNCFDEMO_ID}/${step}
 
 elif [ "$1" = "gce-destroy" ] ; then
     cd ${DIR}/gce

@@ -45,13 +45,13 @@ export AWS_DEFAULT_REGION=”YOUR_AWS_DEFAULT_REGION” # eg. ap-southeast-2
 ```bash
 docker run \
   -v /tmp/data:/cncf/data \
-  -e NAME=cross-cloud
-  -e CLOUD=aws    \
+  -e NAME=cross-cloud \
+  -e CLOUD=aws \
   -e COMMAND=deploy \
-  -e BACKEND=file  \ 
-  -e AWS_ACCESS_KEY_ID= $AWS_ACCESS_KEY_ID    \
-  -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY    \
-  -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION    \
+  -e BACKEND=file  \
+  -e AWS_ACCESS_KEY_ID= $AWS_ACCESS_KEY_ID \
+  -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY \
+  -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION \
   -ti registry.cncf.ci/cncf/cross-cloud/provisioning:ci-stable-v0-2-0
 ```
 
@@ -81,13 +81,13 @@ Eg. test-cncf-cross-cloud
 export GOOGLE_CREDENTIALS=$(cat ~/credentials-gce.json)
 docker run \
   -v /tmp/data:/cncf/data  \
-  -e NAME=cross-cloud  \
-  -e CLOUD=gce    \
-  -e COMMAND=deploy  \
-  -e BACKEND=file  \ 
-  -e GOOGLE_REGION=us-central1    \
-  -e GOOGLE_PROJECT=test-cncf-cross-cloud  \
-  -e GOOGLE_CREDENTIALS=”${GOOGLE_CREDENTIALS}”
+  -e NAME=cross-cloud \
+  -e CLOUD=gce \
+  -e COMMAND=deploy \
+  -e BACKEND=file \ 
+  -e GOOGLE_REGION=us-central1 \
+  -e GOOGLE_PROJECT=test-cncf-cross-cloud \
+  -e GOOGLE_CREDENTIALS=”${GOOGLE_CREDENTIALS}” \
   -ti registry.cncf.ci/cncf/cross-cloud/provisioning:ci-stable-v0-2-0
 ```
 
@@ -97,12 +97,12 @@ Minimum required Configuration to use Cross-Cloud to Deploy a Kubernetes Cluster
 ```bash
 docker run \
   -v /tmp/data:/cncf/data \
-  -e NAME=cross-cloud
-  -e CLOUD=<aws|gke|gce|packet>    \
+  -e NAME=cross-cloud \
+  -e CLOUD=<aws|gke|gce|packet> \
   -e COMMAND=<deploy|destory> \
-  -e BACKEND=<file|s3>  \ 
-  <CLOUD_SPECIFIC_OPTIONS>
-  <KUBERNETES_CLUSTER_OPTIONS>
+  -e BACKEND=<file|s3> \
+  <CLOUD_SPECIFIC_OPTIONS> \
+  <KUBERNETES_CLUSTER_OPTIONS> \
   -ti registry.cncf.ci/cncf/cross-cloud/provisioning:ci-stable-v0-2-0
 ```
 

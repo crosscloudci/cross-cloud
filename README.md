@@ -80,11 +80,11 @@ Eg. test-cncf-cross-cloud
 ``` bash
 export GOOGLE_CREDENTIALS=$(cat ~/credentials-gce.json)
 docker run \
-  -v /tmp/data:/cncf/data  \
+  -v /tmp/data:/cncf/data \
   -e NAME=cross-cloud \
   -e CLOUD=gce \
   -e COMMAND=deploy \
-  -e BACKEND=file \ 
+  -e BACKEND=file \
   -e GOOGLE_REGION=us-central1 \
   -e GOOGLE_PROJECT=test-cncf-cross-cloud \
   -e GOOGLE_CREDENTIALS=”${GOOGLE_CREDENTIALS}” \

@@ -4,7 +4,7 @@ variable "name" { default = "packet" }
 variable "packet_project_id" {} # required for now
 variable "packet_api_key" {}
 # https://www.packet.net/locations/
-variable "packet_facility" { default = "ewr1" }
+variable "packet_facility" { default = "ams1" }
 variable "packet_billing_cycle" { default = "hourly" }
 variable "packet_operating_system" { default = "coreos_stable" }
 variable "packet_master_device_plan" { default = "baremetal_0" }

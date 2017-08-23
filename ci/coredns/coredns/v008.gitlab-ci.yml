@@ -32,6 +32,7 @@ build-e2e:
     COREDNS_DOCKER_IMAGE_TAG: "${CI_COMMIT_REF_SLUG}.job.${CI_JOB_ID}"
   script:
     - docker login -u "gitlab-ci-token" -p "$CI_JOB_TOKEN" $CI_REGISTRY
+    - apk update ; apk add git # so we can build from git src
     - docker build -t "$CI_REGISTRY_IMAGE/coredns-e2e:$COREDNS_DOCKER_IMAGE_TAG" $BASE_URL/cncf/cross-cloud.git#ci-centralized-config:ci/coredns/coredns/e2e/
     - docker push "$CI_REGISTRY_IMAGE/coredns-e2e:$COREDNS_DOCKER_IMAGE_TAG"
 

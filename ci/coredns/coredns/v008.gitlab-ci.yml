@@ -24,7 +24,7 @@ compile:
       - build/
       
 build-e2e:
-  image: docker:latest
+  image: docker:17.06.0
   stage: build
   variables:
     COREDNS_DOCKER_REGISTRY: "${CI_REGISTRY_IMAGE}"

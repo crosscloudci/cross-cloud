@@ -5,7 +5,6 @@ resource "google_container_cluster" "cncf" {
   initial_node_count = "${ var.node_count }"
 
   additional_zones   = [
-    "us-central1-b",
     "us-central1-c",
   ]
 

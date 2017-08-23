@@ -1,0 +1,70 @@
+stages:
+  - build
+  - package
+  - release
+  - build-e2e
+
+before_script:
+  - export CI_COMMIT_SHA_SHORT=$(echo ${CI_COMMIT_SHA} | cut -c -8)
+
+compile:
+  image: golang:1.8.1
+  stage: build
+  variables:
+    CGO_ENABLED: '0'
+  script:
+    - ls -lah
+    - ln -s /builds /go/src/github.com
+    - cd /go/src/github.com/prometheus/prometheus
+    - make -j $(getconf _NPROCESSORS_ONLN) build
+  artifacts:
+    name: "${CI_JOB_NAME}_${CI_COMMIT_REF_NAME}"
+    untracked: true
+    expire_in: 4 weeks
+
+container:
+  stage: package
+  image: docker:17.05.0
+  script:
+    - IMAGE_TAG=${CI_COMMIT_REF_NAME}.${CI_COMMIT_SHA_SHORT}.${CI_JOB_ID}
+    - cd /builds/prometheus/prometheus
+    - docker login -u "gitlab-ci-token" -p "$CI_JOB_TOKEN" $CI_REGISTRY
+    - docker build -t "$CI_REGISTRY_IMAGE:$IMAGE_TAG" .
+    - docker push "$CI_REGISTRY_IMAGE:$IMAGE_TAG"
+    - echo export PROMETHEUS_IMAGE=$CI_REGISTRY_IMAGE | tee release.env
+    - echo export PROMETHEUS_TAG=$IMAGE_TAG | tee -a release.env
+    - cat release.env
+  dependencies:
+    - compile
+  artifacts:
+    name: "${CI_JOB_NAME}_${CI_COMMIT_REF_NAME}"
+    expire_in: 4 weeks
+    paths:
+      - release.env
+
+build-e2e:
+  stage: build
+  variables:
+    PROMETHEUS_DOCKER_REGISTRY: "${CI_REGISTRY_IMAGE}"
+    PROMETHEUS_DOCKER_IMAGE_TAG: "${CI_COMMIT_REF_SLUG}.job.${CI_JOB_ID}"
+  script:
+    - docker login -u "gitlab-ci-token" -p "$CI_JOB_TOKEN" $CI_REGISTRY
+    - docker build -t "$CI_REGISTRY_IMAGE/prometheus-e2e:$PROMETHEUS_DOCKER_IMAGE_TAG" ./e2e/
+    - docker push "$CI_REGISTRY_IMAGE/prometheus-e2e:$PROMETHEUS_DOCKER_IMAGE_TAG"
+
+release:
+  stage: release
+  image: golang:1.8.1
+  script:
+    - cat release.env
+    - curl -X POST
+        -F token=$CI_JOB_TOKEN
+        -F ref=ci-stable
+        https://gitlab.cncf.ci/api/v4/projects/2/trigger/pipeline
+  dependencies:
+    - container
+  artifacts:
+    name: "${CI_JOB_NAME}_${CI_COMMIT_REF_NAME}"
+    expire_in: 4 weeks
+    paths:
+      - release.env

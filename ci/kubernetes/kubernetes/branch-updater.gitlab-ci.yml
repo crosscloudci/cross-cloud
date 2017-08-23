@@ -1,0 +1,31 @@
+image: boomtownroi/git
+variables:
+  GIT_AUTHOR_NAME: bot.cncf.ci
+  GIT_AUTHOR_EMAIL: pod@ii.coop
+  GIT_COMMITTER_NAME: bot.cncf.ci
+  GIT_COMMITTER_EMAIL: pod@ii.coop
+
+stages:
+  - ci-update
+
+ci-master:
+  stage: ci-update
+  script:
+    - git checkout ci-master
+    - git pull origin ci-master
+    - git pull origin master
+    - git commit -m "auto-merge of upstream master into ci-master" || true
+    - git remote rm rw || true
+    - git remote add rw "https://bot:${BOT_PERSONAL_ACCESS_TOKEN}@gitlab.cncf.ci/kubernetes/kubernetes.git"
+    - git push rw ci-master || true
+     
+ci-v1.6.3:
+  stage: ci-update
+  script:
+    - git checkout ci-v1.6.3
+    - git pull origin v1.6.3
+    - git pull origin ci-v1.6.3
+    - git commit -m "auto-merge of upstream v1.6.3 into ci-v1.6.3" || true
+    - git remote rm rw || true
+    - git remote add rw "https://bot:${BOT_PERSONAL_ACCESS_TOKEN}@gitlab.cncf.ci/kubernetes/kubernetes.git"
+    - git push rw ci-v1.6.3 || true

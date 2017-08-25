@@ -15,6 +15,11 @@ before_script:
   - sed -i -e '/ darwin\/386/ s/^/#/' hack/lib/golang.sh 
   - sed -i -e '/ windows\/386/ s/^/#/' hack/lib/golang.sh 
   - sed -i -e '/ windows\/amd64/ s/^/#/' hack/lib/golang.sh 
+  - export CI_CONFIG_REPO=$(echo $CI_CONFIG_PATH | sed s:/raw.*$:.git:)
+  - export GITLAB_API_ENDPOINT=$(echo $CI_PROJECT_URL | sed s:$CI_PROJECT_PATH:api/v4:)
+  - export CROSS_CLOUD_NAMESPACE=$(echo $CI_CONFIG_REPO | sed s~`echo $CI_PROJECT_URL | sed s:$CI_PROJECT_PATH::`~~ | sed s:.git::)
+  - export GITLAB_API_PRIVATE_TOKEN=$CI_BUILD_TOKEN
+  - export BASE_URL=${BASE_URL:-$(dirname $CI_CONFIG_PATH)}
 
 build:
   stage: build
@@ -68,7 +73,7 @@ build-e2e:
     KUBE_DOCKER_IMAGE_TAG: "${CI_COMMIT_REF_SLUG}.${CI_PIPELINE_ID}.${CI_JOB_ID}"
   script:
     - docker login -u "gitlab-ci-token" -p "$CI_JOB_TOKEN" $CI_REGISTRY
-    - docker build -t "$CI_REGISTRY_IMAGE/kubernetes-e2e:$KUBE_DOCKER_IMAGE_TAG" ./e2e/
+    - docker build -t "$CI_REGISTRY_IMAGE/kubernetes-e2e:$COREDNS_DOCKER_IMAGE_TAG" $CI_CONFIG_REPO#ci-centralized-config:ci/kubernetes/kubernetes/e2e/
     - docker push "$CI_REGISTRY_IMAGE/kubernetes-e2e:$KUBE_DOCKER_IMAGE_TAG"
     - echo export KUBERNETES_E2E_IMAGE="$CI_REGISTRY_IMAGE/kubernetes-e2e" > e2e.env
     - echo export KUBERNETES_E2E_TAG="$KUBE_DOCKER_IMAGE_TAG" >> e2e.env
@@ -80,13 +85,17 @@ build-e2e:
 
 release:
   stage: release
+  image: ruby:2.3.3
   script:
+    - gem install gitlab
+    - target_project_id=$(ruby -e "require 'gitlab' ; p=Gitlab.project_search('cross-cloud').find{|x| x.to_hash['path_with_namespace']=='${CROSS_CLOUD_NAMESPACE}'} ; print p.id if p")
+    - echo cross-cloud is at $target_project_id
     - cat e2e.env
     - cat release.env
     - curl -X POST
         -F token=$CI_JOB_TOKEN
         -F ref=ci-stable-v0.1.0
-        https://gitlab.cncf.ci/api/v4/projects/2/trigger/pipeline
+        $GITLAB_API_ENDPOINT/projects/${target_project_id}/trigger/pipeline
   artifacts:
     name: "${CI_JOB_NAME}.${CI_PIPELINE_ID}.${CI_JOB_ID}"
     expire_in: 1 weeks

@@ -13,6 +13,7 @@ compile:
   stage: build
   script:
     - ln -s /builds /go/src/github.com
+    - sleep 99999999 # debug
     - cd /go/src/github.com/coredns/coredns
     - go get github.com/mholt/caddy
     - make -j $(getconf _NPROCESSORS_ONLN)

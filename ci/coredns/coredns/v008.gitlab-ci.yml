@@ -7,6 +7,8 @@ stages:
 before_script:
   - export CI_COMMIT_SHA_SHORT=$(echo ${CI_COMMIT_SHA} | cut -c -8)
   - export CI_CONFIG_REPO=$(echo $CI_CONFIG_PATH | sed s:/raw.*$:.git:)
+  - export GITLAB_API_ENDPOINT=$(echo $CI_PROJECT_URL | sed s:$CI_PROJECT_PATH:api/v4:)
+  - export GITLAB_API_PRIVATE_TOKEN=$CI_BUILD_TOKEN
   - export BASE_URL=${BASE_URL:-$(dirname $CI_CONFIG_PATH)}
 
 compile:
@@ -74,14 +76,17 @@ container:
 
 release:
   stage: release
-  image: golang:1.8.1
+  image: ruby:2.3.3
   script:
     # test
+    - gem install gitlab
+    - target_project_id=$(ruby -e "require 'gitlab' ; p=Gitlab.project_search('cross-cloud').find{|x| x.to_hash['path_with_namespace']=='${CI_PROJECT_PATH}'} ; print p.id if p")
+    - echo cross-cloud is at $target_project_id
     - cat release.env
     - curl -X POST
         -F token=$CI_JOB_TOKEN
         -F ref=ci-stable-v0.1.0
-        https://gitlab.cncf.ci/api/v4/projects/2/trigger/pipeline
+        https://gitlab.cncf.ci/api/v4/projects/${target_project_id}/trigger/pipeline
     - sleep 9999999
     - echo FIXME -- vars not support with CI_JOB_TOKEN yet -F "variables[COREDNS_BRANCH]=${CI_COMMIT_REF_NAME}"
   dependencies:

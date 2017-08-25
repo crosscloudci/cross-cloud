@@ -1,18 +1,20 @@
 #!/bin/env ruby
 require 'gitlab'
+# GITLAB_API_ENDPOINT (https://gitlab.ii.nz/api/v4) and GITLAB_API_PRIVATE_TOKEN must be set
+# Set by creating one at https://gitlab.ii.nz/profile/personal_access_tokens
 require 'pry-byebug'
 
-@ci_config_root='https://gitlab.ii.nz/cncf/cross-cloud/raw/ci-centralized-config/ci'
+@ci_config_root='https://gitlab.ii.nz/ii/cncf/cross-cloud/raw/ci-centralized-config/ci'
 
-@top_group_name='cncf-ci'
+@top_group_name='ii'
 
 @top_group = Gitlab.group_search(@top_group_name).find do |group|
   # look for a group without a parent id that matches our path
   ! group.to_hash['parent_id'] && group.to_hash['path']==@top_group_name
 end
 
-@top_group ||= Gitlab.create_group(top_group_name,
-                              top_group_name,
+@top_group ||= Gitlab.create_group(@top_group_name,
+                              @top_group_name,
                               {
                                 description: 'Contain our CI',
                                 visibility: 'public',
@@ -20,9 +22,10 @@ end
                               })
 #p=Gitlab.search_projects('coredns').first
 #Gitlab.edit_project(p.id,{name:p.name,ci_config_path:'https://gitlab.ii.nz/cncf/cross-cloud/raw/ci-centralized-config/ci/coredns/coredns/GITREF.gitlab-ci.yml'})
-@runner = Gitlab.runners.find{|x| x.to_hash['description']='runner.ii.nz'}
+@runner = Gitlab.all_runners.find{|x| x.to_hash['description']='runner.ii.nz'}
 
 project_urls = [
+  'https://github.com/cncf/cross-cloud.git',
   'https://github.com/kubernetes/kubernetes.git',
   'https://github.com/coredns/coredns.git',
   'https://github.com/prometheus/prometheus.git',
@@ -48,7 +51,7 @@ project_urls.each_with_index do |url, i|
         # Would be great to set gravatar urls automatically
       })
   end
-
+  # note, that we don't currently store cross-cloud ci here... yet
   params = {
     import_url: url,
     namespace_id: group.id,
@@ -77,6 +80,6 @@ project_urls.each_with_index do |url, i|
   else
     project = Gitlab.create_project(project_path,params)
   end
-  binding.pry
-  Gitlab.project_enable_runner(project.id,@runner.id)
+  # Having trouble using API to make runner project specific
+  #Gitlab.project_enable_runner(project.id,@runner.id)
 end

@@ -56,7 +56,7 @@ kubernetes-stable:
       - ./data/
 
 coredns-stable:
-  image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
+  image: ${CI_REGISTRY}/${CI_PROJECT_PATH}/provisioning:$CI_COMMIT_REF_SLUG
   stage: cncf-artifacts
   script:
     - export COREDNS_PROJECT_PATH=$(echo $CI_PROJECT_PATH | sed s:cncf/cross-cloud:coredns/coredns:)

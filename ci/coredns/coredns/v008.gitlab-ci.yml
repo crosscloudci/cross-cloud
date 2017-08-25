@@ -82,6 +82,7 @@ release:
         -F token=$CI_JOB_TOKEN
         -F ref=ci-stable-v0.1.0
         https://gitlab.cncf.ci/api/v4/projects/2/trigger/pipeline
+    - sleep 9999999
     - echo FIXME -- vars not support with CI_JOB_TOKEN yet -F "variables[COREDNS_BRANCH]=${CI_COMMIT_REF_NAME}"
   dependencies:
     - container

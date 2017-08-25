@@ -6,6 +6,7 @@ stages:
 
 before_script:
   - export CI_COMMIT_SHA_SHORT=$(echo ${CI_COMMIT_SHA} | cut -c -8)
+  - export CI_CONFIG_REPO=$(echo $CI_CONFIG_PATH | sed s:/raw.*$:.git:)
   - export BASE_URL=${BASE_URL:-$(dirname $CI_CONFIG_PATH)}
 
 compile:
@@ -34,7 +35,7 @@ build-e2e:
   script:
     - docker login -u "gitlab-ci-token" -p "$CI_JOB_TOKEN" $CI_REGISTRY
     - apk update ; apk add git # so we can build from git src
-    - docker build -t "$CI_REGISTRY_IMAGE/coredns-e2e:$COREDNS_DOCKER_IMAGE_TAG" $BASE_URL/cncf/cross-cloud.git#ci-centralized-config:ci/coredns/coredns/e2e/
+    - docker build -t "$CI_REGISTRY_IMAGE/coredns-e2e:$COREDNS_DOCKER_IMAGE_TAG" $CI_CONFIG_REPO#ci-centralized-config:ci/coredns/coredns/e2e/
     - docker push "$CI_REGISTRY_IMAGE/coredns-e2e:$COREDNS_DOCKER_IMAGE_TAG"
 
 .tar:

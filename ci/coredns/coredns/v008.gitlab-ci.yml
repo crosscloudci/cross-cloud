@@ -8,6 +8,7 @@ before_script:
   - export CI_COMMIT_SHA_SHORT=$(echo ${CI_COMMIT_SHA} | cut -c -8)
   - export CI_CONFIG_REPO=$(echo $CI_CONFIG_PATH | sed s:/raw.*$:.git:)
   - export GITLAB_API_ENDPOINT=$(echo $CI_PROJECT_URL | sed s:$CI_PROJECT_PATH:api/v4:)
+  - export CROSS_CLOUD_NAMESPACE=$(echo $CI_CONFIG_REPO | sed s~`echo $CI_PROJECT_URL | sed s:$CI_PROJECT_PATH::`~~ | sed s:.git::)
   - export GITLAB_API_PRIVATE_TOKEN=$CI_BUILD_TOKEN
   - export BASE_URL=${BASE_URL:-$(dirname $CI_CONFIG_PATH)}
 
@@ -80,7 +81,7 @@ release:
   script:
     # test
     - gem install gitlab
-    - target_project_id=$(ruby -e "require 'gitlab' ; p=Gitlab.project_search('cross-cloud').find{|x| x.to_hash['path_with_namespace']=='${CI_PROJECT_PATH}'} ; print p.id if p")
+    - target_project_id=$(ruby -e "require 'gitlab' ; p=Gitlab.project_search('cross-cloud').find{|x| x.to_hash['path_with_namespace']=='${CROSS_CLOUD_NAMESPACE}'} ; print p.id if p")
     - echo cross-cloud is at $target_project_id
     - cat release.env
     - curl -X POST

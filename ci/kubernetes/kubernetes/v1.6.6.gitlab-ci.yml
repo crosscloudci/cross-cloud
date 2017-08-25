@@ -73,7 +73,7 @@ build-e2e:
     KUBE_DOCKER_IMAGE_TAG: "${CI_COMMIT_REF_SLUG}.${CI_PIPELINE_ID}.${CI_JOB_ID}"
   script:
     - docker login -u "gitlab-ci-token" -p "$CI_JOB_TOKEN" $CI_REGISTRY
-    - docker build -t "$CI_REGISTRY_IMAGE/kubernetes-e2e:$COREDNS_DOCKER_IMAGE_TAG" $CI_CONFIG_REPO#ci-centralized-config:ci/kubernetes/kubernetes/e2e/
+    - docker build -t "$CI_REGISTRY_IMAGE/kubernetes-e2e:$KUBE_DOCKER_IMAGE_TAG" $CI_CONFIG_REPO#ci-centralized-config:ci/kubernetes/kubernetes/e2e/
     - docker push "$CI_REGISTRY_IMAGE/kubernetes-e2e:$KUBE_DOCKER_IMAGE_TAG"
     - echo export KUBERNETES_E2E_IMAGE="$CI_REGISTRY_IMAGE/kubernetes-e2e" > e2e.env
     - echo export KUBERNETES_E2E_TAG="$KUBE_DOCKER_IMAGE_TAG" >> e2e.env

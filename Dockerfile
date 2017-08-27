@@ -53,7 +53,7 @@ WORKDIR $GOPATH
 # Install Bluemix Provider
 RUN mkdir -p $GOPATH/src/github.com/terraform-providers \
 && cd $GOPATH/src/github.com/terraform-providers \
-&& git clone git@github.com:IBM-Bluemix/terraform-provider-ibm.git \
+&& git clone https://github.com/IBM-Bluemix/terraform-provider-ibm.git \
 && cd $GOPATH/src/github.com/terraform-providers/terraform-provider-ibm \
 && make build
 

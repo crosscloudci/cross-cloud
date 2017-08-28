@@ -1,5 +1,6 @@
 variable "name" { default = "ibm" }
 variable "org" { default = "cncf" }
+variable "worker_nodes" { default = "{name = "worker1", action = "add"}, {name = "worker2", action = "add"}, {name = "worker3", action = "add"}"}
 
 # variable "region" { default = "us-central1" }
 # variable "zone" { default = "us-central1-a" }

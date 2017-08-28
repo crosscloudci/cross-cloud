@@ -27,7 +27,7 @@ resource "ibm_container_cluster" "testacc_cluster" {
   machine_type    = "${ var.type }"
   isolation       = "${ var.isolation }"
   public_vlan_id  = "${ data.ibm_network_vlan.vlan_public.id }"
-  private_vlan_id = "${ data.ibn_network_vlan.vlan_privateid }"
+  private_vlan_id = "${ data.ibm_network_vlan.vlan_private.id }"
   no_subnet       = false
   # subnet_id       = ["1154643"]
   wait_time_minutes = 10

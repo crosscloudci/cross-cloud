@@ -19,7 +19,7 @@ RUN apk add --update git bash util-linux wget tar curl build-base jq \
   py-pip groff less openssh bind-tools python python-dev libffi-dev openssl-dev
 
 # no way to pin this packet-cli at the moment
-RUN go get -u github.com/ebsarr/packet
+# RUN go get -u github.com/ebsarr/packet
 RUN pip install packet-python==${PACKETCLI_VERSION} argh tabulate
 RUN pip install azure-cli==${AZURECLI_VERSION}
 RUN pip install awscli==${AWSCLI_VERSION}

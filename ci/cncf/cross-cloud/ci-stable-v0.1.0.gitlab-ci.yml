@@ -1,0 +1,521 @@
+variables:
+  K8S_BRANCH: v1.6.6
+  COREDNS_BRANCH: v009
+  PROMETHEUS_BRANCH: v1.7.1
+  NODE_EXPORTER_BRANCH: v0.14.0
+  ALERT_MANAGER_BRANCH: v0.8.0
+  CNI_BRANCH: v0.5.2
+  FLUENTD_BRANCH: v0.14.17
+  CONTAINERD_BRANCH: v0.2.8
+
+stages:
+  - cncf-artifacts
+  - cross-cloud
+  - cross-project
+  - cncf-e2e
+
+before_script:
+  - export BASE_URL=${BASE_URL:-$(echo $CI_PROJECT_URL |  cut -d'/' -f1-3)}
+  - export KUBECONFIG=$(pwd)/data/${CI_ENVIRONMENT_SLUG}/kubeconfig
+  - mkdir -p ./data ; touch ./data/empty.env
+  - find ./data
+  - echo KUBECONFIG=${KUBECONFIG}
+  - for envfile in data/*env ; do source $envfile ; echo ----- $envfile ---- ; cat $envfile ; done
+
+kubernetes-stable:
+  image: ${CI_REGISTRY}/${CI_PROJECT_PATH}/provisioning:$CI_COMMIT_REF_SLUG
+  stage: cncf-artifacts
+  script:
+    - set -e
+    - set -x
+    - export KUBERNETES_PROJECT_PATH=$(echo $CI_PROJECT_PATH | sed s:cncf/cross-cloud:kubernetes/kubernetes:)
+    - KUBERNETES_RELEASE_ENV=$(curl -s -L
+        "$BASE_URL/$KUBERNETES_PROJECT_PATH/builds/artifacts/${K8S_BRANCH}/file/release.env?job=build"
+        |  sed -n 's/.*href="\([^"]*\).*/\1/p' | grep artifacts/raw | tail -1)
+    - mkdir -p data
+    - curl -s -o data/kubernetes.env -L ${BASE_URL}/$KUBERNETES_RELEASE_ENV
+    - cat data/kubernetes.env
+  artifacts:
+    when: always
+    expire_in: 4 weeks
+    paths:
+      - ./data/
+
+.fluentd:
+  image: ${CI_REGISTRY}/${CI_PROJECT_PATH}/provisioning:$CI_COMMIT_REF_SLUG
+  stage: cncf-artifacts
+  script:
+    - echo $RELEASE_ENV_URL
+    - CNI_RELEASE_ENV=$(curl -s -L
+        $RELEASE_ENV_URL
+        |  sed -n 's/.*href="\([^"]*\).*/\1/p' | grep artifacts/raw | tail -1)
+    - curl -s -o data/cni.env -L ${BASE_URL}/$CNI_RELEASE_ENV
+    - cat data/cni.env
+  artifacts:
+    when: always
+    expire_in: 4 weeks
+    paths:
+      - ./data/
+
+coredns-stable:
+  image: ${CI_REGISTRY}/${CI_PROJECT_PATH}/provisioning:$CI_COMMIT_REF_SLUG
+  stage: cncf-artifacts
+  script:
+    - export COREDNS_PROJECT_PATH=$(echo $CI_PROJECT_PATH | sed s:cncf/cross-cloud:coredns/coredns:)
+    - COREDNS_RELEASE_ENV=$(curl -s -L
+        "$BASE_URL/$COREDNS_PROJECT_PATH/builds/artifacts/${COREDNS_BRANCH}/file/release.env?job=release"
+        |  sed -n 's/.*href="\([^"]*\).*/\1/p' | grep artifacts/raw | tail -1)
+    - curl -s -L
+        "$BASE_URL/$COREDNS_PROJECT_PATH/builds/artifacts/${COREDNS_BRANCH}/file/release.env?job=release"
+        |  sed -n 's/.*href="\([^"]*\).*/\1/p' | grep artifacts/raw | tail -1
+    - mkdir -p data
+    - curl -s -o data/coredns.env -L ${BASE_URL}/$COREDNS_RELEASE_ENV
+    - cat data/coredns.env
+  artifacts:
+    when: always
+    expire_in: 4 weeks
+    paths:
+      - ./data/
+
+prometheus-stable:
+  image: ${CI_REGISTRY}/${CI_PROJECT_PATH}/provisioning:$CI_COMMIT_REF_SLUG
+  stage: cncf-artifacts
+  script:
+    - set -e
+    - set -x
+    - mkdir -p data
+    - export PROMETHEUS_GROUP_PATH=$(echo $CI_PROJECT_PATH | sed s:cncf/cross-cloud:prometheus:)
+    - PROMETHEUS_URL="$BASE_URL/$PROMETHEUS_GROUP_PATH/prometheus/builds/artifacts/${PROMETHEUS_BRANCH}/file/release.env?job=release"
+    - PROMETHEUS_RELEASE_ENV=$(curl -s -L $PROMETHEUS_URL | sed -n 's/.*href="\([^"]*\).*/\1/p' | grep artifacts/raw | tail -1)
+    - curl -s -o data/prom.env -L ${BASE_URL}/$PROMETHEUS_RELEASE_ENV
+    - NODE_EXPORTER_URL="$BASE_URL/$PROMETHEUS_GROUP_PATH/node_exporter/builds/artifacts/${NODE_EXPORTER_BRANCH}/file/release.env?job=release"
+    - NODE_EXPORTER_RELEASE_ENV=$(curl -s -L $NODE_EXPORTER_URL | sed -n 's/.*href="\([^"]*\).*/\1/p' | grep artifacts/raw | tail -1)
+    - curl -s -o data/node_exporter.env -L ${BASE_URL}/$NODE_EXPORTER_RELEASE_ENV
+    - ALERT_MANAGER_URL="$BASE_URL/$PROMETHEUS_GROUP_PATH/alertmanager/builds/artifacts/${ALERT_MANAGER_BRANCH}/file/release.env?job=release"
+    - ALERT_MANAGER_RELEASE_ENV=$(curl -s -L $ALERT_MANAGER_URL | sed -n 's/.*href="\([^"]*\).*/\1/p' | grep artifacts/raw | tail -1)
+    - curl -s -o data/alert_manager.env -L ${BASE_URL}/$ALERT_MANAGER_RELEASE_ENV
+    - cat data/prom.env data/node_exporter.env data/alert_manager.env
+  artifacts:
+    when: always
+    expire_in: 4 weeks
+    paths:
+      - ./data/
+
+cross-cloud-stable:
+  stage: cncf-artifacts
+  script:
+    - docker login -u "gitlab-ci-token" -p "$CI_JOB_TOKEN" $CI_REGISTRY
+    - docker build --pull -t "$CI_REGISTRY_IMAGE/provisioning:$CI_COMMIT_REF_SLUG" .
+    - docker push "$CI_REGISTRY_IMAGE/provisioning:$CI_COMMIT_REF_SLUG"
+
+.k8s_deploy_template: &k8s_deploy_template
+  allow_failure: true
+  image: ${CI_REGISTRY}/${CI_PROJECT_PATH}/provisioning:$CI_COMMIT_REF_SLUG
+  stage: cross-cloud
+  variables:
+    CLOUD: MUST BE SET 
+  environment:
+    name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
+    url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
+    on_stop: MUST BE SET
+  script:
+    - /cncf/provision.sh ${CLOUD}-deploy ${CI_ENVIRONMENT_SLUG} s3
+    - helm init ; sleep 60
+    # - helm init ; until [ ! -e $(
+    #     kubectl get pods --namespace=kube-system -l app=helm -l name=tiller
+    #     -o jsonpath='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}'
+    #     | grep "Ready=True") ] ;
+    #     do echo 'tiller not up yet' ;
+    #     sleep 2 ;
+    #     done
+  artifacts:
+    when: always
+    expire_in: 4 weeks
+    paths:
+      - ./data/
+
+.k8s_e2e_template: &k8s_e2e_template
+  image: ${CI_REGISTRY}/kubernetes/kubernetes/kubernetes-e2e:ci-v1-6-3.job.4793
+  stage: cncf-e2e
+  # dependencies:
+  #   - k8s_deploy_aws
+  variables:
+    CLOUD: MUST BE SET 
+  environment:
+    name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
+    url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
+  script:
+  - /kubernetes/e2e/run-conformance.sh || true
+
+.k8s_cloud_destroy_template: &k8s_cloud_destroy_template
+  allow_failure: true
+  image: ${CI_REGISTRY}/${CI_PROJECT_PATH}/provisioning:$CI_COMMIT_REF_SLUG
+  stage: cross-cloud
+  when: manual
+  variables:
+    CLOUD:  MUST BE SET
+  environment:
+    name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
+    url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
+    action: stop
+  script:
+    - /cncf/provision.sh ${CLOUD}-destroy ${CI_ENVIRONMENT_SLUG} s3
+
+.coredns_deploy_template: &coredns_deploy_template
+  allow_failure: true
+  image: ${CI_REGISTRY}/${CI_PROJECT_PATH}/provisioning:$CI_COMMIT_REF_SLUG
+  stage: cross-project
+  # when: manual
+  variables:
+    CLOUD: MUST BE SET
+  environment:
+    name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
+    url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
+  script:
+    - cat ./data/coredns.env
+    - env | grep COREDNS
+    - kubectl get nodes
+    - kubectl get componentstatuses
+    - helm init
+    - echo Removing any previous deploys of coredns
+    - helm get coredns > /dev/null 2>&1 && helm delete --purge coredns
+    - kubectl get svc --namespace=kube-system -l name=coredns
+    - kubectl get pods --namespace=kube-system -l name=kube-dns
+    - helm repo add cncf http://cncf.gitlab.io/stable
+    - COREDNS_INSTALL="helm install --name coredns
+         --namespace=kube-system
+         --set middleware.kubernetes.clusterCidr=10.0.0.0/24
+         --set middleware.kubernetes.clusterIP=10.0.0.11
+         --set middleware.prometheus.enabled=false
+         --set middleware.errors.enabled=true
+         --set middleware.log.enabled=true 
+         --set middleware.loadbalance.enabled=false
+         --set middleware.test.enabled=true
+         --set image.repository=${COREDNS_IMAGE}
+         --set image.tag=${COREDNS_TAG}
+         cncf/coredns"
+    - echo $COREDNS_INSTALL ; $COREDNS_INSTALL || true
+    - DEPLOYED_COREDNS_IMAGE=$(kubectl get pods --namespace=kube-system -l k8s-app=coredns -o jsonpath="{.items[0].spec.containers[0].image}" || true)
+    - echo Deployed CoreDNS Image - $DEPLOYED_COREDNS_IMAGE
+    - kubectl get svc --namespace=kube-system -l k8s-app=coredns
+    - kubectl get pods --namespace=kube-system -l k8s-app=coredns
+
+.coredns_e2e_template: &coredns_e2e_template
+  image: ${CI_REGISTRY}/${CI_PROJECT_PATH}/provisioning:$CI_COMMIT_REF_SLUG
+  stage: cncf-e2e
+  # dependencies:
+  #   - coredns_deploy_aws
+  variables:
+    CLOUD: MUST BE SET
+  environment:
+    name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
+    url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
+  script:
+    - helm init 
+    - helm repo add cncf http://cncf.gitlab.io/stable
+    - echo Removing any previous deploys of coredns
+    - helm get corednstest > /dev/null 2>&1 && helm delete --purge corednstest
+    - COREDNS_TEST_INSTALL="helm install --name corednstest
+         --namespace=kube-system
+         --set image.repository=registry.cncf.ci/coredns/coredns/coredns-e2e
+         --set image.tag=ci-v007.job.8415
+         cncf/coredns-test"
+    - echo $COREDNS_TEST_INSTALL ; $COREDNS_TEST_INSTALL
+    - sleep 5
+    #- kubectl logs -l job-name=corednstest-coredns-test --namespace=kube-system --tail=200000
+      
+    
+
+.prometheus_deploy_template: &prometheus_deploy_template
+  allow_failure: true
+  image: ${CI_REGISTRY}/${CI_PROJECT_PATH}/provisioning:$CI_COMMIT_REF_SLUG
+  stage: cross-project
+  # when: manual
+  variables:
+    CLOUD:  must be set
+  environment:
+    name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
+    url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
+  script:
+    - find ./data/
+    - ls -la $(pwd)/data/${CI_ENVIRONMENT_SLUG}/
+    - kubectl get nodes
+    - kubectl get pods
+    - kubectl get componentstatuses
+    - helm init
+    - echo Removing any previous deploys of prometheus
+    - helm get prometheus > /dev/null 2>&1 && helm delete --purge prometheus
+    - PROMETHEUS_INSTALL="helm install --name prometheus
+        --set server.image.repository=$PROMETHEUS_IMAGE
+        --set server.image.tag=$PROMETHEUS_TAG
+        --set server.persistentVolume.enabled=false
+        --set nodeExporter.image.repository=$NODE_EXPORTER_IMAGE
+        --set nodeExporter.image.tag=$NODE_EXPORTER_TAG
+        --set alertManager.image.repository=$ALERT_MANAGER_IMAGE
+        --set alertManager.image.tag=$ALERT_MANAGER_TAG
+        --set alertManager.persistentVolume.enabled=false
+        stable/prometheus"
+    - echo $PROMETHEUS_INSTALL ; $PROMETHEUS_INSTALL
+    - DEPLOYED_PROMETHEUS_IMAGE="$(kubectl describe pods -l app=prometheus,component=server  | grep cncf.ci| grep prometheus | awk '{print $2}')"
+    - echo Deployed Prometheus Image - $DEPLOYED_PROMETHEUS_IMAGE
+    - kubectl get svc
+    - kubectl get pods
+
+.prometheus_e2e_template: &prometheus_e2e_template
+  image: ${CI_REGISTRY}/${CI_PROJECT_PATH}/provisioning:$CI_COMMIT_REF_SLUG
+  stage: cncf-e2e
+  variables:
+    CLOUD: MUST BE SET
+  environment:
+    name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
+    url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
+  script:
+  - helm init
+  - helm repo add cncf http://cncf.gitlab.io/stable
+  - echo Removing any previous deploys of coredns
+  - helm get prometheustest > /dev/null && helm delete --purge prometheustest
+  - PROMETHEUS_TEST_INSTALL="helm install --name prometheustest
+       --namespace=default
+       --set image.repository=registry.cncf.ci/prometheus/prometheus/prometheus-e2e
+       --set image.tag=ci-v1-7-1.job.8887
+       cncf/prometheus-tests"
+  - echo $PROMETHEUS_TEST_INSTALL
+  - sleep 5
+  #- kubectl logs -l job-name=prometheustest-prometheus-tests  --tail=100000
+  # ; $PROMETHEUS_TEST_INSTALL
+
+
+aws_k8s_deploy:
+  <<: *k8s_deploy_template
+  variables:
+    CLOUD: aws
+  environment:
+    name: ${CLOUD}-stable-v1
+    url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
+    on_stop: aws_k8s_destroy
+
+aws_k8s_e2e:
+  <<: *k8s_e2e_template
+  variables:
+    CLOUD: aws
+  environment:
+    name: ${CLOUD}-stable-v1
+    url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
+
+aws_k8s_destroy:
+  <<: *k8s_cloud_destroy_template
+  variables:
+    CLOUD: aws
+  environment:
+    name: ${CLOUD}-stable-v1
+    url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
+    action: stop
+
+
+aws_coredns_deploy:
+  <<: *coredns_deploy_template
+  variables:
+    CLOUD: aws
+  environment:
+    name: ${CLOUD}-stable-v1
+    url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
+  dependencies:
+    - aws_k8s_deploy
+
+aws_coredns_e2e:
+  <<: *coredns_e2e_template
+  variables:
+    CLOUD: aws
+  environment:
+    name: ${CLOUD}-stable-v1
+    url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
+
+aws_prom_deploy:
+  <<: *prometheus_deploy_template
+  variables:
+    CLOUD: aws
+  dependencies:
+    - aws_k8s_deploy
+  environment:
+    name: ${CLOUD}-stable-v1
+    url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
+
+aws_prom_e2e:
+  <<: *prometheus_e2e_template
+  variables:
+    CLOUD: aws
+  environment:
+    name: ${CLOUD}-stable-v1
+    url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
+
+packet_k8s_deploy:
+  <<: *k8s_deploy_template
+  variables:
+    CLOUD: packet
+  environment:
+    name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
+    url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
+    on_stop: packet_k8s_destroy
+
+packet_k8s_e2e:
+  <<: *k8s_e2e_template
+  variables:
+    CLOUD: packet
+
+packet_k8s_destroy:
+  <<: *k8s_cloud_destroy_template
+  variables:
+    CLOUD: packet
+
+packet_coredns_deploy:
+  <<: *coredns_deploy_template
+  variables:
+    CLOUD: packet
+  dependencies:
+    - packet_k8s_deploy
+
+packet_coredns_e2e:
+  <<: *coredns_e2e_template
+  variables:
+    CLOUD: packet
+
+packet_prom_deploy:
+  <<: *prometheus_deploy_template
+  variables:
+    CLOUD: packet
+  dependencies:
+    - packet_k8s_deploy
+
+packet_prom_e2e:
+  <<: *prometheus_e2e_template
+  variables:
+    CLOUD: packet
+
+gce_k8s_deploy:
+  <<: *k8s_deploy_template
+  variables:
+    CLOUD: gce
+  environment:
+    name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
+    url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
+    on_stop: gce_k8s_destroy
+
+gce_k8s_e2e:
+  <<: *k8s_e2e_template
+  variables:
+    CLOUD: gce
+
+gce_k8s_destroy:
+  <<: *k8s_cloud_destroy_template
+  variables:
+    CLOUD: gce
+
+gce_coredns_deploy:
+  <<: *coredns_deploy_template
+  variables:
+    CLOUD: gce
+  dependencies:
+    - gce_k8s_deploy
+
+gce_coredns_e2e:
+  <<: *coredns_e2e_template
+  variables:
+    CLOUD: gce
+
+gce_prom_deploy:
+  <<: *prometheus_deploy_template
+  variables:
+    CLOUD: gce
+  dependencies:
+    - gce_k8s_deploy
+
+gce_prom_e2e:
+  <<: *prometheus_e2e_template
+  variables:
+    CLOUD: gce
+
+gke_k8s_deploy:
+  <<: *k8s_deploy_template
+  variables:
+    CLOUD: gke
+  environment:
+    name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
+    url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
+    on_stop: gke_k8s_destroy
+
+gke_k8s_e2e:
+  <<: *k8s_e2e_template
+  variables:
+    CLOUD: gke
+
+gke_k8s_destroy:
+  <<: *k8s_cloud_destroy_template
+  variables:
+    CLOUD: gke
+
+gke_coredns_deploy:
+  <<: *coredns_deploy_template
+  variables:
+    CLOUD: gke
+  dependencies:
+    - gke_k8s_deploy
+
+gke_coredns_e2e:
+  <<: *coredns_e2e_template
+  variables:
+    CLOUD: gke
+
+gke_prom_deploy:
+  <<: *prometheus_deploy_template
+  variables:
+    CLOUD: gke
+  dependencies:
+    - gke_k8s_deploy
+
+gke_prom_e2e:
+  <<: *prometheus_e2e_template
+  variables:
+    CLOUD: gke
+
+.azure_k8s_deploy:
+  <<: *k8s_deploy_template
+  variables:
+    CLOUD: azure
+  environment:
+    name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
+    url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
+    on_stop: azure_k8s_destroy
+
+.azure_k8s_e2e:
+  <<: *k8s_e2e_template
+  variables:
+    CLOUD: azure
+
+.azure_k8s_destroy:
+  <<: *k8s_cloud_destroy_template
+  variables:
+    CLOUD: azure
+
+.azure_coredns_deploy:
+  <<: *coredns_deploy_template
+  variables:
+    CLOUD: azure
+  dependencies:
+    - azure_k8s_deploy
+
+.azure_coredns_e2e:
+  <<: *coredns_e2e_template
+  variables:
+    CLOUD: azure
+
+.azure_prom_deploy:
+  <<: *prometheus_deploy_template
+  variables:
+    CLOUD: azure
+  dependencies:
+    - azure_k8s_deploy
+
+.azure_prom_e2e:
+  <<: *prometheus_e2e_template
+  variables:
+    CLOUD: azure

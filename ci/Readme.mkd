@@ -18,16 +18,18 @@ RUN apt-get update ; apt-get install -y patch
 RUN cd /opt/gitlab/embedded/service/gitlab-rails ; patch -p1 < ci.patch
 ```
 
-We configure upstream mirrors projects xxcan to use the ci/GROUP/PROJECT/*gitlab-ci.yml from this repo
+## Our centralized CI config and resulting pipelines
+
+We configure upstream mirrors projects to use the ci/GROUP/PROJECT/*gitlab-ci.yml from this repo
 rather than requiring us to add a .gitlab-ci.yml file to the top level of each repo.
 
-* [ci/coredns/coredns](https://gitlab.ii.nz/ii/cncf/cross-cloud/tree/ci-centralized-config/ci/coredns/coredns) : https://gitlab.ii.nz/ii/coredns/coredns/pipelines/32
-* [ci/kubernetes/kubernetes/](https://gitlab.ii.nz/ii/cncf/cross-cloud/tree/ci-centralized-config/ci/coredns/coredns) : https://gitlab.ii.nz/ii/kubernetes/kubernetes/pipelines/49
-* [ci/kubernetes/kubernetes/](https://gitlab.ii.nz/ii/cncf/cross-cloud/tree/ci-centralized-config/ci/coredns/coredns) https://gitlab.ii.nz/ii/coredns/coredns/pipelines/32
-* [ci/prometheus/prometheus/](https://gitlab.ii.nz/ii/cncf/cross-cloud/tree/ci-centralized-config/ci/prometheus/prometheus) https://gitlab.ii.nz/ii/prometheus/prometheus/pipelines/41
-* [ci/prometheus/alertmanager/](https://gitlab.ii.nz/ii/cncf/cross-cloud/tree/ci-centralized-config/ci/prometheus/alertmanager) https://gitlab.ii.nz/ii/prometheus/alertmanager/pipelines/34
-* [ci/prometheus/node_exporter/](https://gitlab.ii.nz/ii/cncf/cross-cloud/tree/ci-centralized-config/ci/prometheus/node_exporter) https://gitlab.ii.nz/ii/prometheus/node_exporter/pipelines/37
-* [ci/cncf/cross-cloud/](https://gitlab.ii.nz/ii/cncf/cross-cloud/tree/ci-centralized-config/ci/cncf/cross-cloud) http://gitlab.ii.nz/ii/cncf/cross-cloud/pipelines/50
+* [ci/coredns/coredns](https://gitlab.ii.nz/ii/cncf/cross-cloud/tree/ci-centralized-config/ci/coredns/coredns) => https://gitlab.ii.nz/ii/coredns/coredns/pipelines/32
+* [ci/kubernetes/kubernetes/](https://gitlab.ii.nz/ii/cncf/cross-cloud/tree/ci-centralized-config/ci/coredns/coredns) => https://gitlab.ii.nz/ii/kubernetes/kubernetes/pipelines/49
+* [ci/kubernetes/kubernetes/](https://gitlab.ii.nz/ii/cncf/cross-cloud/tree/ci-centralized-config/ci/coredns/coredns) => https://gitlab.ii.nz/ii/coredns/coredns/pipelines/32
+* [ci/prometheus/prometheus/](https://gitlab.ii.nz/ii/cncf/cross-cloud/tree/ci-centralized-config/ci/prometheus/prometheus) => https://gitlab.ii.nz/ii/prometheus/prometheus/pipelines/41
+* [ci/prometheus/alertmanager/](https://gitlab.ii.nz/ii/cncf/cross-cloud/tree/ci-centralized-config/ci/prometheus/alertmanager) => https://gitlab.ii.nz/ii/prometheus/alertmanager/pipelines/34
+* [ci/prometheus/node_exporter/](https://gitlab.ii.nz/ii/cncf/cross-cloud/tree/ci-centralized-config/ci/prometheus/node_exporter) => https://gitlab.ii.nz/ii/prometheus/node_exporter/pipelines/37
+* [ci/cncf/cross-cloud/](https://gitlab.ii.nz/ii/cncf/cross-cloud/tree/ci-centralized-config/ci/cncf/cross-cloud) => http://gitlab.ii.nz/ii/cncf/cross-cloud/pipelines/50
 
 ## Automation
 

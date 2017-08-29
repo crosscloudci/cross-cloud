@@ -72,6 +72,8 @@ build-e2e:
     KUBE_DOCKER_REGISTRY: "${CI_REGISTRY_IMAGE}"
     KUBE_DOCKER_IMAGE_TAG: "${CI_COMMIT_REF_SLUG}.${CI_PIPELINE_ID}.${CI_JOB_ID}"
   script:
+    - apk update
+    - apk add git
     - docker login -u "gitlab-ci-token" -p "$CI_JOB_TOKEN" $CI_REGISTRY
     - docker build -t "$CI_REGISTRY_IMAGE/kubernetes-e2e:$KUBE_DOCKER_IMAGE_TAG" $CI_CONFIG_REPO#ci-centralized-config:ci/kubernetes/kubernetes/e2e/
     - docker push "$CI_REGISTRY_IMAGE/kubernetes-e2e:$KUBE_DOCKER_IMAGE_TAG"

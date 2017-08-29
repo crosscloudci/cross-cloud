@@ -17,6 +17,7 @@ stages:
 before_script:
   - export BASE_URL=${BASE_URL:-$(echo $CI_PROJECT_URL |  cut -d'/' -f1-3)}
   - export KUBECONFIG=$(pwd)/data/${CI_ENVIRONMENT_SLUG}/kubeconfig
+  - echo $CI_PROJECT_NAMESPACE | grep / ; then export TOP_LEVEL=$(echo $CI_PROJECT_NAMESPACE | awk -F/ '{print $1}'/ ); fi
   - mkdir -p ./data ; touch ./data/empty.env
   - find ./data
   - echo KUBECONFIG=${KUBECONFIG}
@@ -26,8 +27,9 @@ kubernetes-stable:
   image: ${CI_REGISTRY}/${CI_PROJECT_PATH}/provisioning:$CI_COMMIT_REF_SLUG
   stage: cncf-artifacts
   script:
+    - export KUBERNETES_PROJECT_PATH=$(echo $CI_PROJECT_PATH | sed s:cncf/cross-cloud:kubernetes/kubernetes:)
     - KUBERNETES_RELEASE_ENV=$(curl -s -L
-        "$BASE_URL/kubernetes/kubernetes/builds/artifacts/${K8S_BRANCH}/file/release.env?job=build"
+        "$BASE_URL/$KUBERNETES_PROJECT_PATH/builds/artifacts/${K8S_BRANCH}/file/release.env?job=build"
         |  sed -n 's/.*href="\([^"]*\).*/\1/p' | grep artifacts/raw | tail -1)
     - mkdir -p data
     - curl -s -o data/kubernetes.env -L ${BASE_URL}/$KUBERNETES_RELEASE_ENV
@@ -42,7 +44,7 @@ kubernetes-stable:
   image: ${CI_REGISTRY}/${CI_PROJECT_PATH}/provisioning:$CI_COMMIT_REF_SLUG
   stage: cncf-artifacts
   script:
-    - RELEASE_ENV_URL="$BASE_URL/fluent/fluentd/builds/artifacts/${FLUENTD_BRANCH}/file/release.env?job=release"
+    - RELEASE_ENV_URL="${BASE_URL}/${TOP_LEVEL}fluent/fluentd/builds/artifacts/${FLUENTD_BRANCH}/file/release.env?job=release"
     - echo $RELEASE_ENV_URL
     - CNI_RELEASE_ENV=$(curl -s -L
         $RELEASE_ENV_URL
@@ -80,13 +82,14 @@ prometheus-stable:
   stage: cncf-artifacts
   script:
     - mkdir -p data
-    - PROMETHEUS_URL="$BASE_URL/prometheus/prometheus/builds/artifacts/${PROMETHEUS_BRANCH}/file/release.env?job=release"
+    - export PROMETHEUS_GROUP_PATH=$(echo $CI_PROJECT_PATH | sed s:cncf/cross-cloud:prometheus:)
+    - PROMETHEUS_URL="$BASE_URL/$PROMETHEUS_GROUP_PATH/prometheus/builds/artifacts/${PROMETHEUS_BRANCH}/file/release.env?job=release"
     - PROMETHEUS_RELEASE_ENV=$(curl -s -L $PROMETHEUS_URL | sed -n 's/.*href="\([^"]*\).*/\1/p' | grep artifacts/raw | tail -1)
     - curl -s -o data/prom.env -L ${BASE_URL}/$PROMETHEUS_RELEASE_ENV
-    - NODE_EXPORTER_URL="$BASE_URL/prometheus/node_exporter/builds/artifacts/${NODE_EXPORTER_BRANCH}/file/release.env?job=release"
+    - NODE_EXPORTER_URL="$BASE_URL/$PROMETHEUS_GROUP_PATH/node_exporter/builds/artifacts/${NODE_EXPORTER_BRANCH}/file/release.env?job=release"
     - NODE_EXPORTER_RELEASE_ENV=$(curl -s -L $NODE_EXPORTER_URL | sed -n 's/.*href="\([^"]*\).*/\1/p' | grep artifacts/raw | tail -1)
     - curl -s -o data/node_exporter.env -L ${BASE_URL}/$NODE_EXPORTER_RELEASE_ENV
-    - ALERT_MANAGER_URL="$BASE_URL/prometheus/alertmanager/builds/artifacts/${ALERT_MANAGER_BRANCH}/file/release.env?job=release"
+    - ALERT_MANAGER_URL="$BASE_URL/$PROMETHEUS_GROUP_PATH/alertmanager/builds/artifacts/${ALERT_MANAGER_BRANCH}/file/release.env?job=release"
     - ALERT_MANAGER_RELEASE_ENV=$(curl -s -L $ALERT_MANAGER_URL | sed -n 's/.*href="\([^"]*\).*/\1/p' | grep artifacts/raw | tail -1)
     - curl -s -o data/alert_manager.env -L ${BASE_URL}/$ALERT_MANAGER_RELEASE_ENV
     - cat data/prom.env data/node_exporter.env data/alert_manager.env

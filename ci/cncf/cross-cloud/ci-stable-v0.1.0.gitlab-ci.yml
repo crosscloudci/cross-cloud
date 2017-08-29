@@ -26,6 +26,8 @@ kubernetes-stable:
   image: ${CI_REGISTRY}/${CI_PROJECT_PATH}/provisioning:$CI_COMMIT_REF_SLUG
   stage: cncf-artifacts
   script:
+    - set -e
+    - set -x
     - export KUBERNETES_PROJECT_PATH=$(echo $CI_PROJECT_PATH | sed s:cncf/cross-cloud:kubernetes/kubernetes:)
     - KUBERNETES_RELEASE_ENV=$(curl -s -L
         "$BASE_URL/$KUBERNETES_PROJECT_PATH/builds/artifacts/${K8S_BRANCH}/file/release.env?job=build"
@@ -79,6 +81,8 @@ prometheus-stable:
   image: ${CI_REGISTRY}/${CI_PROJECT_PATH}/provisioning:$CI_COMMIT_REF_SLUG
   stage: cncf-artifacts
   script:
+    - set -e
+    - set -x
     - mkdir -p data
     - export PROMETHEUS_GROUP_PATH=$(echo $CI_PROJECT_PATH | sed s:cncf/cross-cloud:prometheus:)
     - PROMETHEUS_URL="$BASE_URL/$PROMETHEUS_GROUP_PATH/prometheus/builds/artifacts/${PROMETHEUS_BRANCH}/file/release.env?job=release"

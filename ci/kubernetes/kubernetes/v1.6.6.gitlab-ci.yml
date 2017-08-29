@@ -4,17 +4,6 @@ stages:
   - release
 
 before_script:
-  - apk update
-  - apk add bash tar rsync git curl make file
-  - echo "We are only going to build for amd64 for this demo"
-  - sed -i -e '/ linux\/arm/ s/^/#/' hack/lib/golang.sh 
-  - sed -i -e '/ linux\/s390/ s/^/#/' hack/lib/golang.sh 
-  - sed -i -e '/ linux\/386/ s/^/#/' hack/lib/golang.sh 
-  - sed -i -e '/ linux\/ppc64le/ s/^/#/' hack/lib/golang.sh 
-  - sed -i -e '/ darwin\/amd64/ s/^/#/' hack/lib/golang.sh 
-  - sed -i -e '/ darwin\/386/ s/^/#/' hack/lib/golang.sh 
-  - sed -i -e '/ windows\/386/ s/^/#/' hack/lib/golang.sh 
-  - sed -i -e '/ windows\/amd64/ s/^/#/' hack/lib/golang.sh 
   - export CI_CONFIG_REPO=$(echo $CI_CONFIG_PATH | sed s:/raw.*$:.git:)
   - export GITLAB_API_ENDPOINT=$(echo $CI_PROJECT_URL | sed s:$CI_PROJECT_PATH:api/v4:)
   - export CROSS_CLOUD_NAMESPACE=$(echo $CI_CONFIG_REPO | sed s~`echo $CI_PROJECT_URL | sed s:$CI_PROJECT_PATH::`~~ | sed s:.git::)
@@ -31,6 +20,17 @@ build:
     KUBE_VERBOSE: "0"
     FEDERATION: "false"
   script:
+    - apk update
+    - apk add bash tar rsync git curl make file
+    - echo "We are only going to build for amd64 for this demo"
+    - sed -i -e '/ linux\/arm/ s/^/#/' hack/lib/golang.sh 
+    - sed -i -e '/ linux\/s390/ s/^/#/' hack/lib/golang.sh 
+    - sed -i -e '/ linux\/386/ s/^/#/' hack/lib/golang.sh 
+    - sed -i -e '/ linux\/ppc64le/ s/^/#/' hack/lib/golang.sh 
+    - sed -i -e '/ darwin\/amd64/ s/^/#/' hack/lib/golang.sh 
+    - sed -i -e '/ darwin\/386/ s/^/#/' hack/lib/golang.sh 
+    - sed -i -e '/ windows\/386/ s/^/#/' hack/lib/golang.sh 
+    - sed -i -e '/ windows\/amd64/ s/^/#/' hack/lib/golang.sh 
     - ./build/release.sh || sleep 99999
     - docker images | grep kubernetes/kubernetes
     - docker login -u "gitlab-ci-token" -p "$CI_JOB_TOKEN" $CI_REGISTRY

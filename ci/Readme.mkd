@@ -1,4 +1,4 @@
-# Centralize CNCF CI Config
+# Centralized CNCF CI Config
 
 Since our project deals with many upstream repos that we don't necessarily control,
 developing the CI configs seprate from them simplifies the workflow and speeds up cross-project development.

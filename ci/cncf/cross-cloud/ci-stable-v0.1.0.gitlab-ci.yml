@@ -23,7 +23,7 @@ before_script:
   - for envfile in data/*env ; do source $envfile ; echo ----- $envfile ---- ; cat $envfile ; done
 
 kubernetes-stable:
-  image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
+  image: ${CI_REGISTRY}/${CI_PROJECT_PATH}/provisioning:$CI_COMMIT_REF_SLUG
   stage: cncf-artifacts
   script:
     - KUBERNETES_RELEASE_ENV=$(curl -s -L
@@ -39,7 +39,7 @@ kubernetes-stable:
       - ./data/
 
 .fluentd:
-  image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
+  image: ${CI_REGISTRY}/${CI_PROJECT_PATH}/provisioning:$CI_COMMIT_REF_SLUG
   stage: cncf-artifacts
   script:
     - RELEASE_ENV_URL="$BASE_URL/fluent/fluentd/builds/artifacts/${FLUENTD_BRANCH}/file/release.env?job=release"
@@ -76,7 +76,7 @@ coredns-stable:
       - ./data/
 
 prometheus-stable:
-  image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
+  image: ${CI_REGISTRY}/${CI_PROJECT_PATH}/provisioning:$CI_COMMIT_REF_SLUG
   stage: cncf-artifacts
   script:
     - mkdir -p data
@@ -105,7 +105,7 @@ cross-cloud-stable:
 
 .k8s_deploy_template: &k8s_deploy_template
   allow_failure: true
-  image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
+  image: ${CI_REGISTRY}/${CI_PROJECT_PATH}/provisioning:$CI_COMMIT_REF_SLUG
   stage: cross-cloud
   variables:
     CLOUD: MUST BE SET 
@@ -144,7 +144,7 @@ cross-cloud-stable:
 
 .k8s_cloud_destroy_template: &k8s_cloud_destroy_template
   allow_failure: true
-  image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
+  image: ${CI_REGISTRY}/${CI_PROJECT_PATH}/provisioning:$CI_COMMIT_REF_SLUG
   stage: cross-cloud
   when: manual
   variables:
@@ -158,7 +158,7 @@ cross-cloud-stable:
 
 .coredns_deploy_template: &coredns_deploy_template
   allow_failure: true
-  image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
+  image: ${CI_REGISTRY}/${CI_PROJECT_PATH}/provisioning:$CI_COMMIT_REF_SLUG
   stage: cross-project
   # when: manual
   variables:
@@ -196,7 +196,7 @@ cross-cloud-stable:
     - kubectl get pods --namespace=kube-system -l k8s-app=coredns
 
 .coredns_e2e_template: &coredns_e2e_template
-  image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
+  image: ${CI_REGISTRY}/${CI_PROJECT_PATH}/provisioning:$CI_COMMIT_REF_SLUG
   stage: cncf-e2e
   # dependencies:
   #   - coredns_deploy_aws
@@ -223,7 +223,7 @@ cross-cloud-stable:
 
 .prometheus_deploy_template: &prometheus_deploy_template
   allow_failure: true
-  image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
+  image: ${CI_REGISTRY}/${CI_PROJECT_PATH}/provisioning:$CI_COMMIT_REF_SLUG
   stage: cross-project
   # when: manual
   variables:
@@ -257,7 +257,7 @@ cross-cloud-stable:
     - kubectl get pods
 
 .prometheus_e2e_template: &prometheus_e2e_template
-  image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
+  image: ${CI_REGISTRY}/${CI_PROJECT_PATH}/provisioning:$CI_COMMIT_REF_SLUG
   stage: cncf-e2e
   variables:
     CLOUD: MUST BE SET

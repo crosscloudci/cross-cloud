@@ -1,0 +1,77 @@
+# Centralize CNCF CI Config
+
+Since our project deals with many upstream repos that we don't necessarily control,
+developing the CI configs seprate from them simplifies the workflow and speeds up cross-project development.
+
+As an added benefit, the commit-hashes need to match upstream without being disturbed by our adding a CI configuration.
+
+That allows us to configure these pipelines to use pristine upstream sources.
+
+This is accomplished by overloading the [Custom CI Config Path](https://docs.gitlab.com/ee/user/project/pipelines/settings.html#custom-ci-config-path) feature by replacing it with a URL (back to this repo).
+
+It's available as a small [patch](https://gitlab.com/cncf/gitlab/blob/master/ci_yaml_http.patch) which we apply to the recent releases:
+
+```
+FROM gitlab/gitlab-ee:9.4.5-ee.0
+COPY ci_yaml_http.patch /opt/gitlab/embedded/service/gitlab-rails/ci.patch
+RUN apt-get update ; apt-get install -y patch
+RUN cd /opt/gitlab/embedded/service/gitlab-rails ; patch -p1 < ci.patch
+```
+
+We configure upstream mirrors projects xxcan to use the ci/GROUP/PROJECT/*gitlab-ci.yml from this repo
+rather than requiring us to add a .gitlab-ci.yml file to the top level of each repo.
+
+* [ci/coredns/coredns](https://gitlab.ii.nz/ii/cncf/cross-cloud/tree/ci-centralized-config/ci/coredns/coredns) : https://gitlab.ii.nz/ii/coredns/coredns/pipelines/32
+* [ci/kubernetes/kubernetes/](https://gitlab.ii.nz/ii/cncf/cross-cloud/tree/ci-centralized-config/ci/coredns/coredns) : https://gitlab.ii.nz/ii/kubernetes/kubernetes/pipelines/49
+* [ci/kubernetes/kubernetes/](https://gitlab.ii.nz/ii/cncf/cross-cloud/tree/ci-centralized-config/ci/coredns/coredns) https://gitlab.ii.nz/ii/coredns/coredns/pipelines/32
+* [ci/prometheus/prometheus/](https://gitlab.ii.nz/ii/cncf/cross-cloud/tree/ci-centralized-config/ci/prometheus/prometheus) https://gitlab.ii.nz/ii/prometheus/prometheus/pipelines/41
+* [ci/prometheus/alertmanager/](https://gitlab.ii.nz/ii/cncf/cross-cloud/tree/ci-centralized-config/ci/prometheus/alertmanager) https://gitlab.ii.nz/ii/prometheus/alertmanager/pipelines/34
+* [ci/prometheus/node_exporter/](https://gitlab.ii.nz/ii/cncf/cross-cloud/tree/ci-centralized-config/ci/prometheus/node_exporter) https://gitlab.ii.nz/ii/prometheus/node_exporter/pipelines/37
+* [ci/cncf/cross-cloud/](https://gitlab.ii.nz/ii/cncf/cross-cloud/tree/ci-centralized-config/ci/cncf/cross-cloud) http://gitlab.ii.nz/ii/cncf/cross-cloud/pipelines/50
+
+## Automation
+
+There are some ruby related files at the top level that support running the gitlab-config.rb
+This script creates a gitlab org, with sub-orgs for each github org.
+
+```
+cd cross-cloud/ci
+export GITLAB_API_PRIVATE_TOKEN='aoeu'
+export GITLAB_API_ENDPOINT='https://gitlab.mydomain.com/api/v4'
+bundle exec ruby gitlab-config.rb
+```
+
+This results in a working copy with it's own top level org allowing with suborgs for each project configured with the a centralized CI_CONFIG_PATH defaulting to it's own clone of the cross-cloud repo.
+
+
+### Not-yet automated portions
+
+* [ ] provision a gitlab instance
+* [ ] configure a shared runner
+* [ ] generate an api-key
+* [ ] checking the 'mirror repository' box for each project
+* [ ] configuring the cross-cloud CI variables (cloud creds)
+
+Setup a gitlab instance and connect a runner with the following config:
+
+```
+#/etc/gitlab-runner/config.toml 
+concurrent = 100
+check_interval = 0
+
+[[runners]]
+  name = "packet"
+  limit = 100
+  output_limit = 24576
+  url = "https://gitlab.cncf.ii.coop/ci"
+  token = "293dc83173077cd4eb48c0367d6237"
+  executor = "docker"
+  [runners.docker]
+    tls_verify = false
+    image = "docker:latest"
+    privileged = false
+    disable_cache = false
+    volumes = ["/var/run/docker.sock:/var/run/docker.sock", "/cache"]
+    shm_size = 0
+```
+

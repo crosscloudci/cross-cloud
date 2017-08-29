@@ -4,9 +4,9 @@ require 'gitlab'
 # Set by creating one at https://gitlab.ii.nz/profile/personal_access_tokens
 require 'pry-byebug'
 
-@ci_config_root='https://gitlab.ii.nz/ii/cncf/cross-cloud/raw/ci-centralized-config/ci'
-
 @top_group_name='ii'
+@ci_config_root='https://gitlab.ii.nz/@top_group_name/cncf/cross-cloud/raw/ci-centralized-config/ci'
+
 
 @top_group = Gitlab.group_search(@top_group_name).find do |group|
   # look for a group without a parent id that matches our path

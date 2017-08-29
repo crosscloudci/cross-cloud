@@ -53,7 +53,8 @@ build-e2e:
     PROMETHEUS_DOCKER_IMAGE_TAG: "${CI_COMMIT_REF_SLUG}.job.${CI_JOB_ID}"
   script:
     - docker login -u "gitlab-ci-token" -p "$CI_JOB_TOKEN" $CI_REGISTRY
-    - docker build -t "$CI_REGISTRY_IMAGE/prometheus-e2e:$PROMETHEUS_DOCKER_IMAGE_TAG" ./e2e/
+    - apk update ; apk add git # so we can build from git src
+    - docker build -t "$CI_REGISTRY_IMAGE/prometheus-e2e:$COREDNS_DOCKER_IMAGE_TAG" $CI_CONFIG_REPO#ci-centralized-config:ci/coredns/coredns/e2e/
     - docker push "$CI_REGISTRY_IMAGE/prometheus-e2e:$PROMETHEUS_DOCKER_IMAGE_TAG"
 
 release:

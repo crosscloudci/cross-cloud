@@ -83,3 +83,5 @@ project_urls.each_with_index do |url, i|
   # Having trouble using API to make runner project specific
   #Gitlab.project_enable_runner(project.id,@runner.id)
 end
+
+# TODO: https://gitlab.ii.nz/admin/application_settings - set Maximum artifacts size (MB)

@@ -17,7 +17,6 @@ stages:
 before_script:
   - export BASE_URL=${BASE_URL:-$(echo $CI_PROJECT_URL |  cut -d'/' -f1-3)}
   - export KUBECONFIG=$(pwd)/data/${CI_ENVIRONMENT_SLUG}/kubeconfig
-  - echo $CI_PROJECT_NAMESPACE | grep / ; then export TOP_LEVEL=$(echo $CI_PROJECT_NAMESPACE | awk -F/ '{print $1}'/ ); fi
   - mkdir -p ./data ; touch ./data/empty.env
   - find ./data
   - echo KUBECONFIG=${KUBECONFIG}
@@ -44,7 +43,6 @@ kubernetes-stable:
   image: ${CI_REGISTRY}/${CI_PROJECT_PATH}/provisioning:$CI_COMMIT_REF_SLUG
   stage: cncf-artifacts
   script:
-    - RELEASE_ENV_URL="${BASE_URL}/${TOP_LEVEL}fluent/fluentd/builds/artifacts/${FLUENTD_BRANCH}/file/release.env?job=release"
     - echo $RELEASE_ENV_URL
     - CNI_RELEASE_ENV=$(curl -s -L
         $RELEASE_ENV_URL

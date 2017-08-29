@@ -6,6 +6,11 @@ stages:
 
 before_script:
   - export CI_COMMIT_SHA_SHORT=$(echo ${CI_COMMIT_SHA} | cut -c -8)
+  - export CI_CONFIG_REPO=$(echo $CI_CONFIG_PATH | sed s:/raw.*$:.git:)
+  - export GITLAB_API_ENDPOINT=$(echo $CI_PROJECT_URL | sed s:$CI_PROJECT_PATH:api/v4:)
+  - export CROSS_CLOUD_NAMESPACE=$(echo $CI_CONFIG_REPO | sed s~`echo $CI_PROJECT_URL | sed s:$CI_PROJECT_PATH::`~~ | sed s:.git::)
+  - export GITLAB_API_PRIVATE_TOKEN=$CI_BUILD_TOKEN
+  - export BASE_URL=${BASE_URL:-$(dirname $CI_CONFIG_PATH)}
 
 compile:
   image: golang:1.8.1
@@ -13,8 +18,8 @@ compile:
   variables:
     CGO_ENABLED: '0'
   script:
-    - ls -lah
     - ln -s /builds /go/src/github.com
+    - ln -s `dirname /go/src/github.com/$CI_PROJECT_PATH` /go/src/github.com/$CI_PROJECT_GROUP || true
     - cd /go/src/github.com/prometheus/prometheus
     - make -j $(getconf _NPROCESSORS_ONLN) build
   artifacts:
@@ -27,7 +32,6 @@ container:
   image: docker:17.05.0
   script:
     - IMAGE_TAG=${CI_COMMIT_REF_NAME}.${CI_COMMIT_SHA_SHORT}.${CI_JOB_ID}
-    - cd /builds/prometheus/prometheus
     - docker login -u "gitlab-ci-token" -p "$CI_JOB_TOKEN" $CI_REGISTRY
     - docker build -t "$CI_REGISTRY_IMAGE:$IMAGE_TAG" .
     - docker push "$CI_REGISTRY_IMAGE:$IMAGE_TAG"
@@ -54,13 +58,16 @@ build-e2e:
 
 release:
   stage: release
-  image: golang:1.8.1
+  image: ruby:2.3.3
   script:
+    - gem install gitlab
+    - target_project_id=$(ruby -e "require 'gitlab' ; p=Gitlab.project_search('cross-cloud').find{|x| x.to_hash['path_with_namespace']=='${CROSS_CLOUD_NAMESPACE}'} ; print p.id if p")
+    - echo cross-cloud is at $target_project_id
     - cat release.env
     - curl -X POST
         -F token=$CI_JOB_TOKEN
-        -F ref=ci-stable
-        https://gitlab.cncf.ci/api/v4/projects/2/trigger/pipeline
+        -F ref=ci-stable-v0.1.0
+        $GITLAB_API_ENDPOINT/projects/${target_project_id}/trigger/pipeline
   dependencies:
     - container
   artifacts:

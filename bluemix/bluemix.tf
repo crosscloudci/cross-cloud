@@ -31,7 +31,19 @@ resource "ibm_container_cluster" "testacc_cluster" {
   no_subnet       = false
   # subnet_id       = ["1154643"]
   wait_time_minutes = 10
-  workers = [{name = "worker1", action = "add"},{name = "worker2", action = "add"},{name = "worker3", action = "add"}]
+  workers = [{
+    name = "worker1"
+    action = "add"
+  },
+  {
+    name = "worker2"
+    action = "add"
+  },
+  {
+    name = "worker3"
+    action = "add"
+  },
+]
 
   org_guid     = "${ data.ibm_org.orgdata.id }"
   space_guid   = "${ var.name }"

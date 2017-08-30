@@ -31,9 +31,7 @@ resource "ibm_container_cluster" "testacc_cluster" {
   no_subnet       = false
   # subnet_id       = ["1154643"]
   wait_time_minutes = 10
-
-  workers = ["${join(",", var.worker_nodes)}"]
-  # workers = [{name = "worker1", action = "add"}]
+  workers = [{name = "worker1", action = "add"},{name = "worker2", action = "add"},{name = "worker3", action = "add"}]
 
   org_guid     = "${ data.ibm_org.orgdata.id }"
   space_guid   = "${ var.name }"
@@ -41,8 +39,10 @@ resource "ibm_container_cluster" "testacc_cluster" {
 }
 
 data "ibm_container_cluster_config" "cluster_config" {
-  cluster_name_id = "${ibm_container_cluster.cluster.name}"
-  org_guid        = "${data.ibm_org.org.id}"
-  space_guid      = "${data.ibm_space.space.id}"
-  account_guid    = "${data.ibm_account.account.id}"
+  cluster_name_id = "${ibm_container_cluster.testacc_cluster.name}"
+  org_guid        = "${data.ibm_org.orgdata.id}"
+  space_guid      = "${ibm_space.space.id}"
+  account_guid    = "${data.ibm_account.accountData.id}"
 }
+
+output "kubeconfig" { value = "${ data.ibm_container_cluster_config.cluster_config.config_file_path }" }

@@ -1,6 +1,12 @@
 variable "name" { default = "ibm" }
 variable "org" { default = "cncf" }
-variable "worker_nodes" { default = "{name = "worker1", action = "add"}, {name = "worker2", action = "add"}, {name = "worker3", action = "add"}"}
+# variable "worker_nodes_name" {
+#   type = "list"
+#   default = [ "name = worker1", "name = worker2", "name = worker3" ]}
+
+variable "zone" { default = "dal10"}
+variable "type" { default = "b1c.4x16"}
+variable "isolation" { default = "public"}
 
 # variable "region" { default = "us-central1" }
 # variable "zone" { default = "us-central1-a" }

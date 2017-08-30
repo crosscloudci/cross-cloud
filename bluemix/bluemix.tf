@@ -13,21 +13,21 @@ data "ibm_account" "accountData" {
   org_guid = "${data.ibm_org.orgdata.id}"
 }
 
-data "ibm_network_vlan" "vlan_public" {
-  name = "public"
-}
+# data "ibm_network_vlan" "vlan_public" {
+#   name = "public"
+# }
 
-data "ibm_network_vlan" "vlan_private" {
-  name = "private"
-}
+# data "ibm_network_vlan" "vlan_private" {
+#   name = "private"
+# }
 
 resource "ibm_container_cluster" "testacc_cluster" {
   name            = "${ var.name }"
   datacenter      = "${ var.zone }"
   machine_type    = "${ var.type }"
   isolation       = "${ var.isolation }"
-  public_vlan_id  = "${ data.ibm_network_vlan.vlan_public.id }"
-  private_vlan_id = "${ data.ibm_network_vlan.vlan_private.id }"
+  # public_vlan_id  = "${ data.ibm_network_vlan.vlan_public.id }"
+  # private_vlan_id = "${ data.ibm_network_vlan.vlan_private.id }"
   no_subnet       = false
   # subnet_id       = ["1154643"]
   wait_time_minutes = 10

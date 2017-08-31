@@ -54,13 +54,15 @@ data "ibm_container_cluster_config" "cluster_config" {
   org_guid        = "${data.ibm_org.orgdata.id}"
   space_guid      = "${ibm_space.space.id}"
   account_guid    = "${data.ibm_account.accountData.id}"
+  config_dir      = "${ var.data_dir }"
 }
 
 resource "null_resource" "kubeconfig" {
 
   provisioner "local-exec" {
     command = <<LOCAL_EXEC
-cat "${ data.ibm_container_cluster_config.cluster_config.config_file_path }" > "${ var.data_dir}/kubeconifg"
+cp "${ var.data_dir }"/*/* "${ var.data_dir }"
+mv "${ var.data_dir }"/config.yml "${ var.data_dir}"/kubeconfig
 LOCAL_EXEC
   }
 }

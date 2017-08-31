@@ -268,21 +268,3 @@ time terraform destroy -force -target module.vpc.google_compute_network.cncf ${D
 time terraform destroy -force ${DIR}/gke || true
 
 fi
-
-elif [ "$1" = "cross-cloud-deploy" ] ; then
-    terraform get ${DIR}/cross-cloud && \
-        terraform apply -target module.aws.null_resource.ssl_gen ${DIR}/cross-cloud && \
-        terraform apply -target module.gce.null_resource.ssl_gen ${DIR}/cross-cloud && \
-        terraform apply -target module.gce.module.etcd.null_resource.discovery_gen ${DIR}/cross-cloud && \
-        terraform apply -target module.azure.null_resource.ssl_ssh_cloud_gen ${DIR}/cross-cloud && \
-        terraform apply -target module.azure.module.dns.null_resource.dns_gen ${DIR}/cross-cloud && \
-        terraform apply -target module.packet.null_resource.ssl_ssh_gen ${DIR}/cross-cloud && \
-        terraform apply -target module.packet.module.etcd.null_resource.discovery_gen ${DIR}/cross-cloud && \
-        time terraform apply ${DIR}/cross-cloud && \
-        printf "${RED}\n#Commands to Configue Kubectl \n\n" && \
-        printf 'sudo chown -R $(whoami):$(whoami) $(pwd)/data/${name} \n\n' && \
-        printf 'export KUBECONFIG=$(pwd)/data/${name}/kubeconfig \n\n'${NC}
-    # terraform apply -target module.azure.azurerm_resource_group.cncf ${DIR}/cross-cloud && \
-elif [ "$1" = "cross-cloud-destroy" ] ; then
-    time terraform destroy -force ${DIR}/cross-cloud
-fi

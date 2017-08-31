@@ -57,4 +57,11 @@ data "ibm_container_cluster_config" "cluster_config" {
   account_guid    = "${data.ibm_account.accountData.id}"
 }
 
-output "kubeconfig" { value = "${ data.ibm_container_cluster_config.cluster_config.config_file_path }" }
+resource "null_resource" "kubeconfig" {
+
+  provisioner "local-exec" {
+    command = <<LOCAL_EXEC
+cat "${ data.ibm_container_cluster_config.cluster_config.config_file_path }" > "${ var.data_dir}/kubeconifg"
+LOCAL_EXEC
+  }
+

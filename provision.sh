@@ -293,7 +293,7 @@ fi
     echo "❤ Polling for cluster life - this could take a minute or more"
     _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info
     kubectl cluster-info
-elif [ "$1" = "gke-destroy" ] ; then
+elif [ "$1" = "bluemix-destroy" ] ; then
 cd ${DIR}/gke
 if [ "$3" = "s3" ]; then
     cp ../s3-backend.tf .

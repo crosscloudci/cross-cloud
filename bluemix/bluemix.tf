@@ -64,4 +64,5 @@ resource "null_resource" "kubeconfig" {
 cat "${ data.ibm_container_cluster_config.cluster_config.config_file_path }" > "${ var.data_dir}/kubeconifg"
 LOCAL_EXEC
   }
+}
 

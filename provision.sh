@@ -270,6 +270,7 @@ fi
 
 
 elif [ "$1" = "bluemix-deploy" ] ; then
+ls -la
 cd ${DIR}/bluemix
 if [ "$3" = "s3" ]; then
     cp ../s3-backend.tf .
@@ -294,7 +295,7 @@ fi
     _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info
     kubectl cluster-info
 elif [ "$1" = "bluemix-destroy" ] ; then
-cd ${DIR}/gke
+cd ${DIR}/bluemix
 if [ "$3" = "s3" ]; then
     cp ../s3-backend.tf .
     terraform init \

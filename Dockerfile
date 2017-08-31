@@ -50,6 +50,12 @@ RUN git clone https://github.com/dlx/terraform.git ./ && \
     /bin/bash scripts/build.sh
 WORKDIR $GOPATH
 
+# Install Bluemix Provider
+RUN mkdir -p $GOPATH/src/github.com/terraform-providers \
+&& cd $GOPATH/src/github.com/terraform-providers \
+&& git clone https://github.com/IBM-Bluemix/terraform-provider-ibm.git \
+&& cd $GOPATH/src/github.com/terraform-providers/terraform-provider-ibm \
+&& make build
 
 # Install Gzip+base64 & ETCD Provider
 RUN go get -u github.com/jakexks/terraform-provider-gzip && \

@@ -30,7 +30,6 @@ resource "ibm_container_cluster" "testacc_cluster" {
   private_vlan_id = "${ data.ibm_network_vlan.vlan_private.id }"
   no_subnet       = false
   # subnet_id       = ["1154643"]
-  wait_time_minutes = 10
   workers = [{
     name = "worker1"
     action = "add"

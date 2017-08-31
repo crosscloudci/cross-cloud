@@ -266,5 +266,49 @@ time terraform destroy -force -target module.cluster.google_container_cluster.cn
 echo "sleep" && sleep 10 && \
 time terraform destroy -force -target module.vpc.google_compute_network.cncf ${DIR}/gke || true 
 time terraform destroy -force ${DIR}/gke || true
-
 fi
+
+
+elif [ "$1" = "bluemix-deploy" ] ; then
+cd ${DIR}/bluemix
+if [ "$3" = "s3" ]; then
+    cp ../s3-backend.tf .
+    terraform init \
+              -backend-config 'bucket=aws65972563' \
+              -backend-config "key=bluemix-${TF_VAR_name}" \
+              -backend-config 'region=ap-southeast-2'
+    # ensure kubeconfig is written to disk on infrastructure refresh
+    terraform taint null_resource.kubeconfig || true
+    time terraform apply ${DIR}/bluemix
+elif [ "$3" = "file" ]; then
+    cp ../file-backend.tf .
+    terraform init \
+              -backend-config "path=/cncf/data/${TF_VAR_name}/terraform.tfstate"
+    # ensure kubeconfig is written to disk on infrastructure refresh
+    terraform taint null_resource.kubeconfig || true
+    time terraform apply ${DIR}/bluemix
+fi
+
+    export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
+    echo "❤ Polling for cluster life - this could take a minute or more"
+    _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info
+    kubectl cluster-info
+elif [ "$1" = "gke-destroy" ] ; then
+cd ${DIR}/gke
+if [ "$3" = "s3" ]; then
+    cp ../s3-backend.tf .
+    terraform init \
+              -backend-config 'bucket=aws65972563' \
+              -backend-config "key=bluemix-${TF_VAR_name}" \
+              -backend-config 'region=ap-southeast-2'
+
+    time terraform destroy -force ${DIR}/bluemix 
+
+elif [ "$3" = "file" ]; then
+    cp ../file-backend.tf .
+    terraform init \
+              -backend-config "path=/cncf/data/${TF_VAR_name}/terraform.tfstate" 
+time terraform destroy -force ${DIR}/bluemix
+fi
+fi
+

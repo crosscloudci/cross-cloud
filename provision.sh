@@ -270,7 +270,6 @@ fi
 
 
 elif [ "$1" = "bluemix-deploy" ] ; then
-ls -la
 cd ${DIR}/bluemix
 if [ "$3" = "s3" ]; then
     cp ../s3-backend.tf .

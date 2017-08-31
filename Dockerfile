@@ -72,6 +72,7 @@ COPY azure/ /cncf/azure/
 COPY gce/ /cncf/gce/
 COPY gke/ /cncf/gke/
 COPY packet/ /cncf/packet/
+COPY bluemix/ /cncf/bluemix/
 COPY cross-cloud/ /cncf/cross-cloud/
 COPY kubeconfig/ /cncf/kubeconfig/
 COPY tls/ /cncf/tls/

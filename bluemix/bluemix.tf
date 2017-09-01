@@ -64,7 +64,7 @@ resource "null_resource" "kubeconfig" {
 echo "${ data.ibm_container_cluster_config.cluster_config.config_file_path }"
 cp "${ var.data_dir }"/*/* "${ var.data_dir }"
 mv "${ var.data_dir }"/config.yml "${ var.data_dir}"/kubeconfig
-sed -i "/certificate-authority:/c\    certificate-authority-data: $( base64 ./*.pem | tr -d '\n')" "${ var.data_dir}"/kubeconfig
+sed -i "/certificate-authority:/c\    certificate-authority-data: $( base64 *.pem | tr -d '\n')" "${ var.data_dir}/kubeconfig"
 LOCAL_EXEC
   }
 }

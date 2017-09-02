@@ -30,7 +30,6 @@ resource "ibm_container_cluster" "testacc_cluster" {
   private_vlan_id = "${ data.ibm_network_vlan.vlan_private.id }"
   no_subnet       = false
   # subnet_id       = ["1154643"]
-  wait_time_minutes = 10
   workers = [{
     name = "worker1"
     action = "add"
@@ -55,6 +54,17 @@ data "ibm_container_cluster_config" "cluster_config" {
   org_guid        = "${data.ibm_org.orgdata.id}"
   space_guid      = "${ibm_space.space.id}"
   account_guid    = "${data.ibm_account.accountData.id}"
+  config_dir      = "${ var.data_dir }"
 }
 
-output "kubeconfig" { value = "${ data.ibm_container_cluster_config.cluster_config.config_file_path }" }
+resource "null_resource" "kubeconfig" {
+
+  provisioner "local-exec" {
+    command = <<LOCAL_EXEC
+cp "${ var.data_dir }"/*/* "${ var.data_dir }"
+mv "${ var.data_dir }"/config.yml "${ var.data_dir}"/kubeconfig
+sed -i "/certificate-authority:/c\    certificate-authority-data: $( base64 ./*.pem | tr -d '\n')" "${ var.data_dir}"/kubeconfig
+LOCAL_EXEC
+  }
+}
+

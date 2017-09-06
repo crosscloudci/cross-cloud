@@ -38,7 +38,7 @@ kubernetes-stable:
     paths:
       - ./data/
 
-.fluentd:
+fluentd:
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
   stage: cncf-artifacts
   script:

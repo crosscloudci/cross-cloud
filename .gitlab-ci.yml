@@ -5,7 +5,7 @@ variables:
   NODE_EXPORTER_BRANCH: ci-v0.14.0
   ALERT_MANAGER_BRANCH: ci-v0.7.1
   CNI_BRANCH: ci-v0.5.2
-  FLUENTD_BRANCH: ci-v0.14.17
+  FLUENTD_BRANCH: ci-v0.12
   CONTAINERD_BRANCH: ci-v0.2.8
 
 stages:
@@ -42,13 +42,13 @@ kubernetes-stable:
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
   stage: cncf-artifacts
   script:
-    - RELEASE_ENV_URL="$BASE_URL/fluent/fluentd/builds/artifacts/${FLUENTD_BRANCH}/file/release.env?job=release"
+    - RELEASE_ENV_URL="$BASE_URL/fluent/fluentd/builds/artifacts/${FLUENTD_BRANCH}/file/fluentd.env?job=Container"
     - echo $RELEASE_ENV_URL
-    - CNI_RELEASE_ENV=$(curl -s -L
+    - FLUENTD_RELEASE_ENV=$(curl -s -L
         $RELEASE_ENV_URL
         |  sed -n 's/.*href="\([^"]*\).*/\1/p' | grep artifacts/raw | tail -1)
-    - curl -s -o data/cni.env -L ${BASE_URL}/$CNI_RELEASE_ENV
-    - cat data/cni.env
+    - curl -s -o data/fluentd.env -L ${BASE_URL}/$FLUENTD_RELEASE_ENV
+    - cat data/fluentd.env
   artifacts:
     when: always
     expire_in: 4 weeks

@@ -1,0 +1,53 @@
+image: "ruby:2.4.1"
+
+# Cache gems in between builds (Disabled)
+# cache:
+#   paths:
+# - vendor/bundle
+
+before_script:
+  - ruby -v                                   # Print out ruby version for debugging
+  - gem install bundler  --no-ri --no-rdoc    # Bundler is not installed with the image
+  - bundle install -j $(nproc) --path vendor  # Install dependencies into ./vendor/ruby
+
+stages:
+  - Build
+  - Package
+
+
+Build fluentd:
+  stage: Build
+  script:
+    - bundle exec rake build
+    - mv pkg/*gem .
+    - echo FLUENTD_GEM=$CI_PROJECT_URL/builds/$CI_JOB_ID/artifacts/download >> release.env
+  artifacts:
+    name: "${CI_JOB_NAME}_${CI_COMMIT_REF_NAME}"
+    untracked: true
+    expire_in: 4 weeks
+    paths:
+      - "*gem"
+      - "vendor"
+      - Gemfile.lock
+      - release.env
+
+Container:
+  stage: Package
+  script:
+    - apt update && apt -y install jq
+    - cat release.env
+    - source release.env
+    - echo $FLUENTD_GEM
+    - PROJECT_PIPELINE=$(curl -X POST -F token=$FLUENTD_DOCKER_CI_JOB_TOKEN -F ref=ci-master -F "variables[FLUENTD_GEM]=$FLUENTD_GEM" -F "variables[Dockerfile]=v0.12/debian" https://gitlab.cncf.ci/api/v4/projects/32/trigger/pipeline | jq '.id')
+    - until [ "$JOB_STATUS" == '"success"' ]; do JOB_STATUS="$(curl -s --header "PRIVATE-TOKEN:${TOKEN}" "https://gitlab.cncf.ci/api/v4/projects/32/pipelines/${PROJECT_PIPELINE}/jobs?scope=success" | jq '.[] | select(.name=="Container") | .status')" ; sleep 0.5 ; done ; echo 'Container is Ready'
+    - PROJECT_JOB=$(curl --header "PRIVATE-TOKEN:${TOKEN}" "https://gitlab.cncf.ci/api/v4/projects/32/pipelines/${PROJECT_PIPELINE}/jobs?scope=success" | jq '.[] | select(.name=="Container") | .id')
+    - export BASE_URL=${BASE_URL:-$(echo $CI_PROJECT_URL |  cut -d'/' -f1-3)}
+    - curl -s -o fluentd.env -L "$BASE_URL/fluent/fluentd-docker-image/-/jobs/${PROJECT_JOB}/artifacts/raw/release.env"
+    - cat fluentd.env
+
+  artifacts:
+    name: "${CI_JOB_NAME}_${CI_COMMIT_REF_NAME}"
+    untracked: true
+    expire_in: 4 weeks
+    paths:
+      - fluentd.env

@@ -30,7 +30,8 @@ project_urls = [
   'https://github.com/coredns/coredns.git',
   'https://github.com/prometheus/prometheus.git',
   'https://github.com/prometheus/node_exporter.git',
-  'https://github.com/prometheus/alertmanager.git'
+  'https://github.com/prometheus/alertmanager.git',
+  'https://github.com/fluent/fluentd.git'
 ]
 
 project_urls.each_with_index do |url, i|

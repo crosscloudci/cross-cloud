@@ -45,7 +45,7 @@ if [ "$1" = "aws-deploy" ] ; then
 elif [ "$1" = "aws-destroy" ] ; then
     cd ${DIR}/aws
     terraform init \
-              -backend-config 'bucket=aws65972563' \
+              -backend-config 'bucket=cross-cloud' \
               -backend-config "key=aws-${TF_VAR_name}" \
               -backend-config 'region=ap-southeast-2'
 

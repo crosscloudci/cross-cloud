@@ -30,7 +30,7 @@ if [ "$1" = "aws-deploy" ] ; then
     if [ "$3" = "s3" ]; then
         cp ../s3-backend.tf .
     terraform init \
-              -backend-config 'bucket=aws65972563' \
+              -backend-config 'bucket=cross-cloud' \
               -backend-config "key=aws-${TF_VAR_name}" \
               -backend-config 'region=ap-southeast-2'
     # ensure kubeconfig is written to disk on infrastructure refresh

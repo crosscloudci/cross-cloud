@@ -57,7 +57,7 @@ elif [ "$1" = "aws-destroy" ] ; then
       if [ "$3" = "s3" ]; then
           cp ../s3-backend.tf .
           terraform init \
-                    -backend-config 'bucket=aws65972563' \
+                    -backend-config 'bucket=cross-cloud' \
                     -backend-config "key=aws-${TF_VAR_name}" \
                     -backend-config 'region=ap-southeast-2'
     time terraform destroy -force ${DIR}/aws
@@ -77,7 +77,7 @@ elif [ "$1" = "azure-deploy" ] ; then
     if [ "$3" = "s3" ]; then
         cp ../s3-backend.tf .
     terraform init \
-              -backend-config 'bucket=aws65972563' \
+              -backend-config 'bucket=cross-cloud' \
               -backend-config "key=${TF_VAR_name}" \
               -backend-config 'region=ap-southeast-2'
     # ensure kubeconfig is written to disk on infrastructure refresh
@@ -101,7 +101,7 @@ elif [ "$1" = "azure-destroy" ] ; then
     if [ "$3" = "s3" ]; then
         cp ../s3-backend.tf .
     terraform init \
-              -backend-config 'bucket=aws65972563' \
+              -backend-config 'bucket=cross-cloud' \
               -backend-config "key=${TF_VAR_name}" \
               -backend-config 'region=ap-southeast-2'
     terraform destroy -force -target null_resource.ssl_ssh_cloud_gen ${DIR}/azure && \
@@ -126,7 +126,7 @@ elif [ "$1" = "packet-deploy" ] ; then
     if [ "$3" = "s3" ]; then
         cp ../s3-backend.tf .
     terraform init \
-              -backend-config 'bucket=aws65972563' \
+              -backend-config 'bucket=cross-cloud' \
               -backend-config "key=packet-${TF_VAR_name}" \
               -backend-config 'region=ap-southeast-2'
     # ensure kubeconfig is written to disk on infrastructure refresh
@@ -154,7 +154,7 @@ elif [ "$1" = "packet-destroy" ] ; then
      if [ "$3" = "s3" ]; then
          cp ../s3-backend.tf .
     terraform init \
-              -backend-config 'bucket=aws65972563' \
+              -backend-config 'bucket=cross-cloud' \
               -backend-config "key=packet-${TF_VAR_name}" \
               -backend-config 'region=ap-southeast-2'
     time terraform destroy -force ${DIR}/packet
@@ -171,7 +171,7 @@ elif [ "$1" = "gce-deploy" ] ; then
     if [ "$3" = "s3" ]; then
         cp ../s3-backend.tf .
     terraform init \
-              -backend-config 'bucket=aws65972563' \
+              -backend-config 'bucket=cross-cloud' \
               -backend-config "key=gce-${TF_VAR_name}" \
               -backend-config 'region=ap-southeast-2'
     # ensure kubeconfig is written to disk on infrastructure refresh
@@ -202,7 +202,7 @@ elif [ "$1" = "gce-destroy" ] ; then
     if [ "$3" = "s3" ]; then
         cp ../s3-backend.tf .
     terraform init \
-              -backend-config 'bucket=aws65972563' \
+              -backend-config 'bucket=cross-cloud' \
               -backend-config "key=gce-${TF_VAR_name}" \
               -backend-config 'region=ap-southeast-2'
     time terraform destroy -force ${DIR}/gce || true # Allow to Fail and clean up network on next step
@@ -220,7 +220,7 @@ cd ${DIR}/gke
 if [ "$3" = "s3" ]; then
     cp ../s3-backend.tf .
     terraform init \
-              -backend-config 'bucket=aws65972563' \
+              -backend-config 'bucket=cross-cloud' \
               -backend-config "key=gke-${TF_VAR_name}" \
               -backend-config 'region=ap-southeast-2'
     # ensure kubeconfig is written to disk on infrastructure refresh
@@ -249,7 +249,7 @@ cd ${DIR}/gke
 if [ "$3" = "s3" ]; then
     cp ../s3-backend.tf .
     terraform init \
-              -backend-config 'bucket=aws65972563' \
+              -backend-config 'bucket=cross-cloud' \
               -backend-config "key=gke-${TF_VAR_name}" \
               -backend-config 'region=ap-southeast-2'
 
@@ -274,7 +274,7 @@ cd ${DIR}/bluemix
 if [ "$3" = "s3" ]; then
     cp ../s3-backend.tf .
     terraform init \
-              -backend-config 'bucket=aws65972563' \
+              -backend-config 'bucket=cross-cloud' \
               -backend-config "key=bluemix-${TF_VAR_name}" \
               -backend-config 'region=ap-southeast-2'
     # ensure kubeconfig is written to disk on infrastructure refresh
@@ -297,8 +297,8 @@ elif [ "$1" = "bluemix-destroy" ] ; then
 cd ${DIR}/bluemix
 if [ "$3" = "s3" ]; then
     cp ../s3-backend.tf .
-    terraform init \
-              -backend-config 'bucket=aws65972563' \
+    terraform init 
+              -backend-config 'bucket=cross-cloud' \
               -backend-config "key=bluemix-${TF_VAR_name}" \
               -backend-config 'region=ap-southeast-2'
 

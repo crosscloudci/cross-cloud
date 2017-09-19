@@ -7,14 +7,12 @@ coreos:
     advertise-client-urls: http://${ fqdn }:2379
     # cert-file: /etc/kubernetes/ssl/k8s-etcd.pem
     debug: true
-    discovery-srv: ${ internal_tld }
     initial-advertise-peer-urls: https://${ fqdn }:2380
-    initial-cluster-state: new
-    initial-cluster-token: ${ cluster-token }
     # key-file: /etc/kubernetes/ssl/k8s-etcd-key.pem
-    listen-client-urls: http://${ node-ip }:2379,http://127.0.0.1:2379
-    listen-peer-urls: https://${ node-ip }:2380
-    name: ${ hostname } 
+    listen-client-urls: http://${ fqdn }:2379,http://127.0.0.1:2379
+    listen-peer-urls: https://${ fqdn }:2380
+    name: ${ fqdn } 
+    discovery: ${ etcd_discovery }
     peer-trusted-ca-file: /etc/kubernetes/ssl/ca.pem
     peer-client-cert-auth: true
     peer-cert-file: /etc/kubernetes/ssl/etcd.pem

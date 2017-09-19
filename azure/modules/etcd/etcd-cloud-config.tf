@@ -60,8 +60,9 @@ data "template_file" "etcd_cloud_config" {
   vars {
     cluster_domain = "${ var.cluster_domain }"
     cluster-token = "etcd-cluster-${ var.name }"
+    etcd_discovery = "${ etcdiscovery_token.etcd.id }"
     dns_service_ip = "${ var.dns_service_ip }"
-    fqdn = "etcd${ count.index + 1 }.${ var.internal_tld }"
+    fqdn = "${ var.name }-master${ count.index + 1 }"
     hostname = "etcd${ count.index + 1 }"
     kubelet_image_url = "${ var.kubelet_image_url }"
     kubelet_image_tag = "${ var.kubelet_image_tag }"
@@ -76,7 +77,6 @@ data "template_file" "etcd_cloud_config" {
     apiserver = "${ gzip_me.apiserver.output }"
     apiserver_key = "${ gzip_me.apiserver_key.output }"
     k8s_apiserver_yml = "${ gzip_me.kube-apiserver.output }"
-    node-ip = "${ element(azurerm_network_interface.cncf.*.private_ip_address, count.index) }"
 
   }
 }

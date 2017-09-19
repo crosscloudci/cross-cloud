@@ -7,15 +7,15 @@ module "network" {
   location = "${ var.location }"
  }
 
-module "dns" {
-  source = "./modules/dns"
-  name = "${ var.name }"
-  internal_tld = "${ var.internal_tld }"
-  master_ips = "${ module.etcd.master_ips }"
-  master_node_count = "${ var.master_node_count }"
-  name_servers_file = "${ var.data_dir }/dns"
+# module "dns" {
+#   source = "./modules/dns"
+#   name = "${ var.name }"
+#   internal_tld = "${ var.internal_tld }"
+#   master_ips = "${ module.etcd.master_ips }"
+#   master_node_count = "${ var.master_node_count }"
+#   name_servers_file = "${ var.data_dir }/dns"
 
-}
+# }
 
 module "etcd" {
   source = "./modules/etcd"

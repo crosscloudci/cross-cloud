@@ -17,8 +17,8 @@ coreos:
     name: ${ hostname } 
     peer-trusted-ca-file: /etc/kubernetes/ssl/ca.pem
     peer-client-cert-auth: true
-    peer-cert-file: /etc/kubernetes/ssl/k8s-etcd.pem
-    peer-key-file: /etc/kubernetes/ssl/k8s-etcd-key.pem
+    peer-cert-file: /etc/kubernetes/ssl/etcd.pem
+    peer-key-file: /etc/kubernetes/ssl/etcd-key.pem
 
   units:
     - name: etcd2.service
@@ -104,7 +104,7 @@ write-files:
           - --leader-elect=true
           - --master=http://127.0.0.1:8080
           - --root-ca-file=/etc/kubernetes/ssl/ca.pem
-          - --service-account-private-key-file=/etc/kubernetes/ssl/k8s-apiserver-key.pem
+          - --service-account-private-key-file=/etc/kubernetes/ssl/apiserver-key.pem
           resources:
             requests:
               cpu: 200m
@@ -204,29 +204,29 @@ write-files:
     content: |
       ${ ca }
     
-  - path: /etc/kubernetes/ssl/k8s-etcd.pem
+  - path: /etc/kubernetes/ssl/etcd.pem
     permissions: "0644"
     encoding: "gzip+base64"
     content: |
-      ${ k8s_etcd }
+      ${ etcd }
     
-  - path: /etc/kubernetes/ssl/k8s-etcd-key.pem
+  - path: /etc/kubernetes/ssl/etcd-key.pem
     permissions: "0644"
     encoding: "gzip+base64"
     content: |
-      ${ k8s_etcd_key }
+      ${ etcd_key }
     
-  - path: /etc/kubernetes/ssl/k8s-apiserver.pem
+  - path: /etc/kubernetes/ssl/apiserver.pem
     permissions: "0644"
     encoding: "gzip+base64"
     content: |
-      ${ k8s_apiserver }
+      ${ apiserver }
 
-  - path: /etc/kubernetes/ssl/k8s-apiserver-key.pem
+  - path: /etc/kubernetes/ssl/apiserver-key.pem
     permissions: "0644"
     encoding: "gzip+base64"
     content: |
-      ${ k8s_apiserver_key }
+      ${ apiserver_key }
 
   - path: /etc/kubernetes/ssl/azure-config.json
     permissions: "0644"

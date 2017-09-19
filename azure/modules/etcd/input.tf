@@ -23,10 +23,10 @@ variable "k8s_cloud_config" {}
 # variable "etcd_security_group_id" {}
 # variable "external_elb_security_group_id" {}
 variable "ca" {}
-variable "k8s_etcd" {}
-variable "k8s_etcd_key" {}
-variable "k8s_apiserver" {}
-variable "k8s_apiserver_key" {}
+variable "etcd" {}
+variable "etcd_key" {}
+variable "apiserver" {}
+variable "apiserver_key" {}
 variable "data_dir" {}
 
 variable "client_id" {}

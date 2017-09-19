@@ -158,12 +158,14 @@ Current Phase: In Design/Planning
 ### Meetings / Demos
 
 #### Upcoming
-- September, 2017 CNCF/K8s Storage SIG Testing Group (TBD)
-- September 11th-14th 2017 [Open Source Summit North America](http://events.linuxfoundation.org/events/open-source-summit-north-america)
-- September 12th, 2017 - CNCF: Governing Board
+- September, 2017 - CNCF: OpenStack project demo (TBD)
+- September 27th, 2017 - CNCF: AWS project demo 
 - October 12th, 2017 - CNCF: End User Committee Meeting
 
 #### Past
+- September 12th, 2017 - CNCF: Governing Board
+- September 11th-14th 2017 [Open Source Summit North America](http://events.linuxfoundation.org/events/open-source-summit-north-america)
+- August 30th, 2017 CNCF/K8s Storage SIG Testing Group
 - [August 22nd, 2017 - CI-WG ii.coop Status Updates](https://docs.google.com/presentation/d/1MixvezbkqJP4VeA09kUd-Po18V3SLHS-nSlOnkzowms/edit#slide=id.g242b36cf7c_0_10), [meeting recording](https://www.youtube.com/watch?v=TXZ151MRTpc)
 - [August 15th, 2017 - CNCF TOC](https://youtu.be/aX12ituxdOU?t=51m32s)
 - [August 8th, 2017 - CI-WG ii.coop Status Updates](https://docs.google.com/presentation/d/1dgkeXN7qSJ8tSUTZ5ecB67D155Y0Mphrpqi9ZFZXWKo/edit#slide=id.g242b36cf7c_0_10)

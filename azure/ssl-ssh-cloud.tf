@@ -1,8 +1,9 @@
 #Gen Certs and SSH KeyPair
-resource "null_resource" "ssh_gen" {
+resource "null_resource" "ssl_gen" {
 
   provisioner "local-exec" {
     command = <<EOF
+mkdir -p ${ var.data_dir }/.cfssl
 ${ path.module }/init-cfssl \
 ${ var.data_dir }/.cfssl \
 ${ azurerm_resource_group.cncf.location } \
@@ -37,7 +38,4 @@ EOF
 
 }
 
-resource "null_resource" "dummy_dependency" {
-  depends_on = [ "null_resource.ssh_gen" ]
-}
 

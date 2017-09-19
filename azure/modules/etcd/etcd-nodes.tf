@@ -15,7 +15,7 @@ resource "azurerm_network_interface" "cncf" {
 
 resource "azurerm_virtual_machine" "cncf" {
   count = "${ var.master_node_count }"
-  name                  = "etcd-master${ count.index + 1 }"
+  name                  = "${ var.name }-master${ count.index + 1 }.${ var.internal_tld }"
   location              = "${ var.location }"
   availability_set_id   = "${ var.availability_id }"
   resource_group_name = "${ var.name }"

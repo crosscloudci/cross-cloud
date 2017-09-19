@@ -1,6 +1,6 @@
 variable "name" { default = "azure" }
 
-variable "internal_tld" { default = "azure.cncf.demo" }
+variable "internal_tld" { default = "cncf.demo" }
 variable "data_dir" { default = "/cncf/data/azure" }
 
 # Azure Cloud Specific Settings

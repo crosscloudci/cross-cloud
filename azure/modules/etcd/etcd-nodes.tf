@@ -15,7 +15,7 @@ resource "azurerm_network_interface" "cncf" {
 
 resource "azurerm_virtual_machine" "cncf" {
   count = "${ var.master_node_count }"
-  name                  = "${ var.name }.master-${ count.index + 1 }.${ var.internal_tld }"
+  name                  = "${ var.name }-master${ count.index + 1 }"
   location              = "${ var.location }"
   availability_set_id   = "${ var.availability_id }"
   resource_group_name = "${ var.name }"
@@ -37,7 +37,7 @@ resource "azurerm_virtual_machine" "cncf" {
   }
 
   os_profile {
-    computer_name  = "${ var.name }.master-${ count.index + 1 }.${ var.internal_tld }"
+    computer_name  = "${ var.name }-master${ count.index + 1 }.${ var.internal_tld }"
     admin_username = "${ var.admin_username }"
     admin_password = "Password1234!"
     custom_data = "${ element(data.template_file.etcd_cloud_config.*.rendered, count.index) }"

@@ -37,7 +37,7 @@ resource "azurerm_virtual_machine" "cncf" {
   }
 
   os_profile {
-    computer_name  = "etcd-master${ count.index + 1 }"
+    computer_name  = "${ var.name }.master-${ count.index + 1 }.${ var.internal_tld }"
     admin_username = "${ var.admin_username }"
     admin_password = "Password1234!"
     custom_data = "${ element(data.template_file.etcd_cloud_config.*.rendered, count.index) }"

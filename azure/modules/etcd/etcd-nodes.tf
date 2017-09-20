@@ -3,6 +3,7 @@ resource "azurerm_network_interface" "cncf" {
   name                = "etcd-interface${ count.index + 1 }"
   location            = "${ var.location }"
   resource_group_name = "${ var.name }"
+  internal_dns_name_label = "${ var.name }${ count.index + 1 }.cncf.demo"
 
   ip_configuration {
     name                          = "etcd-nic${ count.index + 1 }"

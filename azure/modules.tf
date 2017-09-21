@@ -132,13 +132,13 @@ module "tls" {
 # }
 
 
-# module "kubeconfig" {
-#   source = "../kubeconfig"
+module "kubeconfig" {
+  source = "../kubeconfig"
 
-#   admin_key_pem = "${ var.data_dir }/.cfssl/k8s-admin-key.pem"
-#   admin_pem = "${ var.data_dir }/.cfssl/k8s-admin.pem"
-#   ca_pem = "${ var.data_dir }/.cfssl/ca.pem"
-#   data_dir = "${ var.data_dir }"
-#   fqdn_k8s = "${ module.etcd.fqdn_lb }"
-#   name = "${ var.name }"
-# }
+  data_dir = "${ var.data_dir }"
+  endpoint = "${ module.etcd.fqdn_lb }"
+  name = "${ var.name }"
+  ca = "${ module.tls.ca }"
+  client = "${ module.tls.client }"
+  client_key = "${ module.tls.client_key }"
+}

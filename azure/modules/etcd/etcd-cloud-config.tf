@@ -36,6 +36,19 @@ data "template_file" "kube_scheduler" {
   }
 }
 
+data "template_file" "azure_cloud" {
+  template = "${ file( "${ path.module }/azure_cloud.json" )}"
+  vars {
+    client_id = "${ var.client_id }"
+    client_secret = "${ var.client_secret }"
+    tenant_id = "${ var.tenant_id }"
+    subscription_id = "${ var.subscription_id }"
+    name = "${ var.name }"
+    location = "${ var.location }"
+    subnet_name = "subnet-${ var.name}"
+  }
+}
+
 resource "gzip_me" "kube_apiserver" {
   count = "${ var.master_node_count }"
   input = "${ element(data.template_file.kube_apiserver.*.rendered, count.index) }"
@@ -53,7 +66,7 @@ resource "gzip_me" "kube_scheduler" {
   input = "${ data.template_file.kube_scheduler.rendered }"
 }
 
-resource "gzip_me" "k8s_cloud_config" {
+resource "gzip_me" "cloud_config" {
   input = "${ data.template_file.azure_cloud.rendered }"
 }
 
@@ -77,29 +90,7 @@ resource "gzip_me" "apiserver_key" {
   input = "${ var.apiserver_key }"
 }
 
-data "template_file" "azure_cloud" {
-  template = "${ file( "${ path.module }/azure_cloud.json" )}"
-  vars {
-    client_id = "${ var.client_id }"
-    client_secret = "${ var.client_secret }"
-    tenant_id = "${ var.tenant_id }"
-    subscription_id = "${ var.subscription_id }"
-    name = "${ var.name }"
-    location = "${ var.location }"
-    subnet_name = "subnet-${ var.name}"
-  }
-}
 
-data "template_file" "kube_apiserver" {
-  template = "${ file( "${ path.module }/kube-apiserver.yml" )}"
-  vars {
-    internal_tld = "${ var.internal_tld }"
-    service_cidr = "${ var.service_cidr }"
-    hyperkube = "${ var.kubelet_image_url }:${ var.kubelet_image_tag }"
-    kubelet_image_url = "${ var.kubelet_image_url }"
-    kubelet_image_tag = "${ var.kubelet_image_tag }"
-  }
-}
 
 data "template_file" "etcd_cloud_config" {
   count = "${ var.master_node_count }"
@@ -118,7 +109,7 @@ data "template_file" "etcd_cloud_config" {
     pod_cidr = "${ var.pod_cidr }"
     location = "${ var.location }"
     service_cidr = "${ var.service_cidr }"
-    k8s_cloud_config = "${ gzip_me.k8s_cloud_config.output }"
+    cloud_config = "${ gzip_me.cloud_config.output }"
     ca = "${ gzip_me.ca.output }"
     etcd = "${ gzip_me.etcd.output }"
     etcd_key = "${ gzip_me.etcd_key.output }"

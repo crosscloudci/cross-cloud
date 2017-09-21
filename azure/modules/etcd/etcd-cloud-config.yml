@@ -132,7 +132,7 @@ write-files:
     content: |
       ${ etcd_key }
 
-  - path: /etc/kubernetes/azure-config.json
+  - path: /etc/srv/kubernetes/azure-config.json
     permissions: "0644"
     encoding: "gzip+base64"
     content: |

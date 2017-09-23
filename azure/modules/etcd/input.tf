@@ -19,7 +19,6 @@ variable "service_cidr" {}
 variable "admin_username" {}
 variable "kubelet_image_url" {}
 variable "kubelet_image_tag" {}
-variable "k8s_cloud_config" {}
 # variable "etcd_security_group_id" {}
 # variable "external_elb_security_group_id" {}
 variable "ca" {}

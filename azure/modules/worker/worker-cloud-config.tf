@@ -1,21 +1,13 @@
-provider "gzip" {
-  compressionlevel = "BestCompression"
-}
-
-resource "gzip_me" "k8s_cloud_config" {
-  input = "${ var.k8s_cloud_config }"
-}
-
 resource "gzip_me" "ca" {
   input = "${ var.ca }"
 }
 
-resource "gzip_me" "k8s_worker" {
-  input = "${ var.k8s_worker }"
+resource "gzip_me" "worker" {
+  input = "${ var.worker }"
 }
 
-resource "gzip_me" "k8s_worker_key" {
-  input = "${ var.k8s_worker_key }"
+resource "gzip_me" "worker_key" {
+  input = "${ var.worker_key }"
 }
 
 data "template_file" "worker_cloud_config" {
@@ -28,10 +20,10 @@ data "template_file" "worker_cloud_config" {
     kubelet_image_tag = "${ var.kubelet_image_tag }"
     internal_tld = "${ var.internal_tld }"
     location = "${ var.location }"
-    k8s_cloud_config = "${ gzip_me.k8s_cloud_config.output }"
+    azure_cloud = "${ var.azure_cloud }"
     ca = "${ gzip_me.ca.output }"
-    k8s_worker = "${ gzip_me.k8s_worker.output }"
-    k8s_worker_key = "${ gzip_me.k8s_worker_key.output }"
+    worker = "${ gzip_me.worker.output }"
+    worker_key = "${ gzip_me.worker_key.output }"
   }
 }
 

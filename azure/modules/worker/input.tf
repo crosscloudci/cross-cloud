@@ -18,8 +18,8 @@ variable "internal_tld" {}
 variable "admin_username" {}
 variable "kubelet_image_url" {}
 variable "kubelet_image_tag" {}
-variable "k8s_cloud_config" {}
 variable "ca" {}
-variable "k8s_worker" {}
-variable "k8s_worker_key" {}
+variable "worker" {}
+variable "worker_key" {}
 variable "data_dir" {}
+variable "azure_cloud" {}

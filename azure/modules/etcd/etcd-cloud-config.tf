@@ -1,6 +1,7 @@
 provider "gzip" {
   compressionlevel = "BestCompression"
 }
+
 data "template_file" "kube_apiserver" {
   count = "${ var.master_node_count }"
   template = "${ file( "${ path.module }/kube-apiserver.yml" )}"
@@ -119,6 +120,8 @@ data "template_file" "etcd_cloud_config" {
     kube_proxy = "${ gzip_me.kube_proxy.output }"
     kube_scheduler = "${ gzip_me.kube_scheduler.output }"
     kube_controller_manager = "${ gzip_me.kube_controller_manager.output }"
+    known_tokens_csv = "${ gzip_me.known_tokens_csv.output }"
+    basic_auth_csv = "${ gzip_me.basic_auth_csv.output }"
 
   }
 }

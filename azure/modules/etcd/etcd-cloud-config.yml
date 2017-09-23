@@ -137,3 +137,16 @@ write-files:
     encoding: "gzip+base64"
     content: |
       ${ cloud_config }
+
+  - path: /etc/srv/kubernetes/known_tokens.csv
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ known_tokens_csv }
+
+  - path: /etc/srv/kubernetes/basic_auth.csv
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ basic_auth_csv }
+

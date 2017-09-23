@@ -1,7 +1,3 @@
-provider "gzip" {
-  compressionlevel = "BestCompression"
-}
-
 resource "gzip_me" "known_tokens_csv" {
   input = "${ data.template_file.known_tokens_csv.rendered }"
 }

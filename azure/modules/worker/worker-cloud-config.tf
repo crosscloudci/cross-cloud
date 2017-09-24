@@ -27,3 +27,12 @@ data "template_file" "worker_cloud_config" {
   }
 }
 
+data "template_file" "kubeconfig" {
+  template = "${ file( "${ path.module }/kubeconfig" )}"
+
+  vars {
+    ca = "${ base64encode( var.ca ) }"
+    token = "${ var.kube_proxy_token }"
+  }
+}
+

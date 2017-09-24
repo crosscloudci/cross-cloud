@@ -3,3 +3,4 @@ output "fqdn_lb" { value = "${ azurerm_public_ip.cncf.fqdn }" }
 output "master_ips" { value = ["${ azurerm_network_interface.cncf.*.private_ip_address }"] }
 output "dns_suffix" { value = "${ replace("${azurerm_network_interface.cncf.0.internal_fqdn}", "${ var.name}1.", "")}" }
 output "azure_cloud" { value = "${ gzip_me.cloud_config.output }" }
+output "kube_proxy_token" { value = "${ random_string.kube_proxy.result }" }

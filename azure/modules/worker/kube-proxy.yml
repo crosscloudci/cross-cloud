@@ -24,7 +24,7 @@ spec:
     command:
     - /bin/sh
     - -c
-    - echo -998 > /proc/$$$/oom_score_adj && kube-proxy --master= ${ master_node } --kubeconfig=/var/lib/kube-proxy/kubeconfig  --cluster-cidr=10.244.0.0/14 --resource-container="" --v=2 --feature-gates=ExperimentalCriticalPodAnnotation=true  1>>/var/log/kube-proxy.log 2>&1
+    - echo -998 > /proc/$$$/oom_score_adj && kube-proxy --master=https://${ master_node } --kubeconfig=/var/lib/kube-proxy/kubeconfig  --cluster-cidr=10.244.0.0/14 --resource-container="" --v=2 --feature-gates=ExperimentalCriticalPodAnnotation=true  1>>/var/log/kube-proxy.log 2>&1
     securityContext:
       privileged: true
     volumeMounts:

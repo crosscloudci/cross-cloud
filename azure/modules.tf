@@ -31,7 +31,6 @@ module "etcd" {
   internal_tld = "${ var.internal_tld }"
   pod_cidr = "${ var.pod_cidr }"
   service_cidr = "${ var.service_cidr }"
-  k8s_cloud_config = "${file("${ var.data_dir }/azure-config.json")}"
   ca                             = "${ module.tls.ca }"
   etcd                           = "${ module.tls.etcd }"
   etcd_key                       = "${ module.tls.etcd_key }"
@@ -127,9 +126,8 @@ module "worker" {
   ca                             = "${ module.tls.ca }"
   worker                         = "${ module.tls.worker }"
   worker_key                     = "${ module.tls.worker_key }"
-  apiserver                      = "${ module.tls.apiserver }"
-  apiserver_key                  = "${ module.tls.apiserver_key }"
   data_dir = "${ var.data_dir }"
+  azure_cloud = "${ module.etcd.azure_cloud }"
 }
 
 

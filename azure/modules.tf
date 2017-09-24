@@ -128,6 +128,8 @@ module "worker" {
   worker_key                     = "${ module.tls.worker_key }"
   data_dir = "${ var.data_dir }"
   azure_cloud = "${ module.etcd.azure_cloud }"
+  kube_proxy_token = "${ module.etcd.kube_proxy_token }"
+  dns_suffix = "${ module.etcd.dns_suffix }"
 }
 
 

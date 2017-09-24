@@ -24,3 +24,4 @@ variable "worker_key" {}
 variable "data_dir" {}
 variable "azure_cloud" {}
 variable "kube_proxy_token" {}
+variable "dns_suffix" {}

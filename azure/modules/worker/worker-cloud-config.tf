@@ -21,6 +21,7 @@ data "template_file" "worker_cloud_config" {
     internal_tld = "${ var.internal_tld }"
     location = "${ var.location }"
     azure_cloud = "${ var.azure_cloud }"
+    master_node = "${ var.name }-master1.${ var.dns_suffix }"
     ca = "${ gzip_me.ca.output }"
     worker = "${ gzip_me.worker.output }"
     worker_key = "${ gzip_me.worker_key.output }"

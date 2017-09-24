@@ -3,17 +3,17 @@
 ---
 coreos:
 
-  etcd2:
-    discovery-srv: ${ internal_tld }
-    peer-trusted-ca-file: /etc/kubernetes/ssl/ca.pem
-    peer-client-cert-auth: true
-    peer-cert-file: /etc/kubernetes/pki/kubelet.crt
-    peer-key-file: /etc/kubernetes/ssl/kubelet.key
-    proxy: on
+  # etcd2:
+  #   discovery-srv: ${ internal_tld }
+  #   peer-trusted-ca-file: /etc/kubernetes/ssl/ca.pem
+  #   peer-client-cert-auth: true
+  #   peer-cert-file: /etc/kubernetes/pki/kubelet.crt
+  #   peer-key-file: /etc/kubernetes/ssl/kubelet.key
+  #   proxy: on
 
   units:
-    - name: etcd2.service
-      command: start
+    # - name: etcd2.service
+      # command: start
 
     - name: docker.service
       command: start

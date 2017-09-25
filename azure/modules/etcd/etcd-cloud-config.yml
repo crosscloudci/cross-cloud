@@ -150,7 +150,7 @@ write-files:
     content: |
       ${ basic_auth_csv }
 
-  - path: /etc/srv/kubernetes/etc/srv/kubernetes/abac-authz-policy.jsonl
+  - path: /etc/srv/kubernetes/abac-authz-policy.jsonl
     permissions: "0644"
     encoding: "gzip+base64"
     content: |

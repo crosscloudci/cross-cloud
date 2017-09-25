@@ -22,6 +22,7 @@ variable "kubelet_image_tag" {}
 # variable "etcd_security_group_id" {}
 # variable "external_elb_security_group_id" {}
 variable "ca" {}
+variable "ca_key" {}
 variable "etcd" {}
 variable "etcd_key" {}
 variable "apiserver" {}

@@ -23,7 +23,7 @@
     "command": [
                  "/bin/sh",
                  "-c",
-                 "/usr/local/bin/kube-controller-manager --master=http://127.0.0.1:8080 --v=2 --use-service-account-credentials --cloud-provider=azure --cloud-config=/etc/srv/kubernetes/azure-config.json --root-ca-file=/etc/srv/kubernetes/pki/ca-certificates.crt --service-account-private-key-file=/etc/srv/kubernetes/pki/apiserver.key --cluster-name=kubernetes --cluster-cidr=10.244.0.0/14 --service-cluster-ip-range=10.0.0.0/16 --allocate-node-cidrs=true --feature-gates=ExperimentalCriticalPodAnnotation=true 1>>/tmp/kube-controller-manager.log 2>&1"
+                 "/usr/local/bin/kube-controller-manager --master=http://127.0.0.1:8080 --v=2 --use-service-account-credentials --cloud-provider=azure --cloud-config=/etc/srv/kubernetes/azure-config.json --root-ca-file=/etc/srv/kubernetes/pki/ca-certificates.crt --service-account-private-key-file=/etc/srv/kubernetes/pki/apiserver.key --cluster-name=kubernetes --cluster-cidr=10.244.0.0/14 --cluster-signing-cert-file=/etc/srv/kubernetes/pki/ca-certificates.crt --cluster-signing-key-file=/etc/srv/kubernetes/pki/ca-certificates.key --service-cluster-ip-range=10.0.0.0/16 --allocate-node-cidrs=true --feature-gates=ExperimentalCriticalPodAnnotation=true 1>>/tmp/kube-controller-manager.log 2>&1"
                ],
     "env":[{"name": "KUBE_CACHE_MUTATION_DETECTOR", "value": "false"}],
     "livenessProbe": {

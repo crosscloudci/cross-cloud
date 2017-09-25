@@ -32,6 +32,7 @@ module "etcd" {
   pod_cidr = "${ var.pod_cidr }"
   service_cidr = "${ var.service_cidr }"
   ca                             = "${ module.tls.ca }"
+  ca_key                         = "${ module.tls.ca_key }"
   etcd                           = "${ module.tls.etcd }"
   etcd_key                       = "${ module.tls.etcd_key }"
   apiserver                      = "${ module.tls.apiserver }"

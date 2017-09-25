@@ -122,6 +122,7 @@ data "template_file" "etcd_cloud_config" {
     kube_controller_manager = "${ gzip_me.kube_controller_manager.output }"
     known_tokens_csv = "${ gzip_me.known_tokens_csv.output }"
     basic_auth_csv = "${ gzip_me.basic_auth_csv.output }"
+    abac_authz_policy = "${ gzip_me.abac_authz_policy.output}"
 
   }
 }

@@ -45,7 +45,7 @@ data "template_file" "known_tokens_csv" {
     kube_controller_manager = "${ random_string.kube-controller-manager.result }"
     kube_scheduler = "${ random_string.kube-scheduler.result }"
     nodes = "${ random_string.nodes.result }"
-    kube_proxy = "${ random_string.masters.result }"
+    kube_proxy = "${ random_string.kube_proxy.result }"
 
   }
 }

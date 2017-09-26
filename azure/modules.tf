@@ -82,7 +82,7 @@ module "tls" {
   tls_etcd_cert_dns_names = "*.${ module.etcd.dns_suffix }"
   tls_etcd_cert_ip_addresses = "127.0.0.1"
 
-  tls_client_cert_subject_common_name = "k8s-admin"
+  tls_client_cert_subject_common_name = "admin"
   tls_client_cert_validity_period_hours = 1000
   tls_client_cert_early_renewal_hours = 100
   tls_client_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local,*.${ module.etcd.dns_suffix }"

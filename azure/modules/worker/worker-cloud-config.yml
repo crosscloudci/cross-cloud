@@ -84,7 +84,13 @@ write-files:
     permissions: "0644"
     encoding: "gzip+base64"
     content: |
-      ${ kube_config }
+      ${ proxy_kubeconfig }
+
+  - path: /var/lib/kubelet/kubeconfig
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ kubelet_kubeconfig }
 
   - path: /etc/kubernetes/pki/ca-certificates.crt
     permissions: "0644"

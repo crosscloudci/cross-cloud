@@ -10,8 +10,12 @@ resource "gzip_me" "worker_key" {
   input = "${ var.worker_key }"
 }
 
-resource "gzip_me" "kubeconfig" {
-  input = "${ data.template_file.kubeconfig.rendered }"
+resource "gzip_me" "proxy_kubeconfig" {
+  input = "${ data.template_file.proxy_kubeconfig.rendered }"
+}
+
+resource "gzip_me" "kubelet_kubeconfig" {
+  input = "${ data.template_file.kubelet_kubeconfig.rendered }"
 }
 
 resource "gzip_me" "kube_proxy" {
@@ -33,7 +37,8 @@ data "template_file" "worker_cloud_config" {
     ca = "${ gzip_me.ca.output }"
     worker = "${ gzip_me.worker.output }"
     worker_key = "${ gzip_me.worker_key.output }"
-    kube_config = "${ gzip_me.kubeconfig.output }"
+    proxy_kubeconfig = "${ gzip_me.proxy_kubeconfig.output }"
+    kubelet_kubeconfig = "${ gzip_me.kubelet_kubeconfig.output }"
     kube_proxy = "${ gzip_me.kube_proxy.output }"
   }
 }
@@ -46,12 +51,23 @@ data "template_file" "kube-proxy" {
   }
 }
 
-data "template_file" "kubeconfig" {
+data "template_file" "proxy_kubeconfig" {
   template = "${ file( "${ path.module }/kubeconfig" )}"
 
   vars {
+    user = "kube-proxy"
+    user_authentication = "token: ${ var.kube_proxy_token }"
     ca = "${ base64encode( var.ca ) }"
-    token = "${ var.kube_proxy_token }"
+  }
+}
+
+data "template_file" "kubelet_kubeconfig" {
+  template = "${ file( "${ path.module }/kubeconfig" )}"
+
+  vars {
+    user = "kubelet"
+    user_authentication = "client-certificate: ${ base64encode(var.worker) } \n client-key-data: ${ base64encode( var.worker_key ) }"
+    ca = "${ base64encode( var.ca ) }"
   }
 }
 

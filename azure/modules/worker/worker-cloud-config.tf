@@ -33,7 +33,7 @@ data "template_file" "worker_cloud_config" {
     internal_tld = "${ var.internal_tld }"
     location = "${ var.location }"
     azure_cloud = "${ var.azure_cloud }"
-    master_node = "${ var.name }-master1.${ var.dns_suffix }"
+    master_node = "${ var.internal_lb_ip }"
     ca = "${ gzip_me.ca.output }"
     worker = "${ gzip_me.worker.output }"
     worker_key = "${ gzip_me.worker_key.output }"
@@ -47,7 +47,7 @@ data "template_file" "kube-proxy" {
   template = "${ file( "${ path.module }/kube-proxy.yml" )}"
 
   vars {
-    master_node = "${ var.name }-master1.${ var.dns_suffix }"
+    master_node = "${ var.internal_lb_ip }"
   }
 }
 

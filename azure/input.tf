@@ -7,6 +7,7 @@ variable "data_dir" { default = "/cncf/data/azure" }
 variable "location"        { default = "westus" }
 variable "vpc_cidr"        { default = "10.0.0.0/8" }
 variable "subnet_cidr"     { default = "10.240.0.0/16"}
+variable "internal_lb_ip"  { default = "10.240.0.100"}
 
 # VM Image and size
 variable "admin_username" { default = "cncf"}

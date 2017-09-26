@@ -7,9 +7,10 @@ ENV AWSCLI_VERSION=1.11.75
 ENV AZURECLI_VERSION=2.0.2
 ENV PACKETCLI_VERSION=1.33
 #PIN to Commit on Master
-ENV TERRAFORM_VERSION=master
-ENV TF_DEV=true
-ENV TF_RELEASE=true
+ENV TERRAFORM_VERSION=0.10.6
+# ENV TERRAFORM_VERSION=master
+# ENV TF_DEV=true
+# ENV TF_RELEASE=true
 ENV ARC=amd64
 
 
@@ -43,12 +44,17 @@ tar xvzf helm-${HELM_VERSION}-linux-amd64.tar.gz && \
 mv linux-amd64/helm /usr/local/bin && \
 rm -rf helm-*gz linux-amd64
 
-# Install Terraform 
-WORKDIR $GOPATH/src/github.com/hashicorp/terraform
-RUN git clone https://github.com/dlx/terraform.git ./ && \
-    git checkout ${TERRAFORM_VERSION} && \
-    /bin/bash scripts/build.sh
-WORKDIR $GOPATH
+#Install Terraform from Upstream
+RUN wget https://releases.hashicorp.com/terraform/$TERRAFORM_VERSION/terraform_"${TERRAFORM_VERSION}"_linux_$ARC.zip
+RUN unzip terraform*.zip -d /usr/bin
+
+
+# # Install Terraform 
+# WORKDIR $GOPATH/src/github.com/hashicorp/terraform
+# RUN git clone https://github.com/dlx/terraform.git ./ && \
+#     git checkout ${TERRAFORM_VERSION} && \
+#     /bin/bash scripts/build.sh
+# WORKDIR $GOPATH
 
 # Install Bluemix Provider
 RUN mkdir -p $GOPATH/src/github.com/terraform-providers \

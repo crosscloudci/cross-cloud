@@ -1,21 +1,25 @@
-provider "gzip" {
-  compressionlevel = "BestCompression"
-}
-
-resource "gzip_me" "k8s_cloud_config" {
-  input = "${ var.k8s_cloud_config }"
-}
-
 resource "gzip_me" "ca" {
   input = "${ var.ca }"
 }
 
-resource "gzip_me" "k8s_worker" {
-  input = "${ var.k8s_worker }"
+resource "gzip_me" "worker" {
+  input = "${ var.worker }"
 }
 
-resource "gzip_me" "k8s_worker_key" {
-  input = "${ var.k8s_worker_key }"
+resource "gzip_me" "worker_key" {
+  input = "${ var.worker_key }"
+}
+
+resource "gzip_me" "proxy_kubeconfig" {
+  input = "${ data.template_file.proxy_kubeconfig.rendered }"
+}
+
+resource "gzip_me" "kubelet_kubeconfig" {
+  input = "${ data.template_file.kubelet_kubeconfig.rendered }"
+}
+
+resource "gzip_me" "kube_proxy" {
+  input = "${ data.template_file.kube-proxy.rendered }"
 }
 
 data "template_file" "worker_cloud_config" {
@@ -28,10 +32,42 @@ data "template_file" "worker_cloud_config" {
     kubelet_image_tag = "${ var.kubelet_image_tag }"
     internal_tld = "${ var.internal_tld }"
     location = "${ var.location }"
-    k8s_cloud_config = "${ gzip_me.k8s_cloud_config.output }"
+    azure_cloud = "${ var.azure_cloud }"
+    master_node = "${ var.name }-master1.${ var.dns_suffix }"
     ca = "${ gzip_me.ca.output }"
-    k8s_worker = "${ gzip_me.k8s_worker.output }"
-    k8s_worker_key = "${ gzip_me.k8s_worker_key.output }"
+    worker = "${ gzip_me.worker.output }"
+    worker_key = "${ gzip_me.worker_key.output }"
+    proxy_kubeconfig = "${ gzip_me.proxy_kubeconfig.output }"
+    kubelet_kubeconfig = "${ gzip_me.kubelet_kubeconfig.output }"
+    kube_proxy = "${ gzip_me.kube_proxy.output }"
+  }
+}
+
+data "template_file" "kube-proxy" {
+  template = "${ file( "${ path.module }/kube-proxy.yml" )}"
+
+  vars {
+    master_node = "${ var.name }-master1.${ var.dns_suffix }"
+  }
+}
+
+data "template_file" "proxy_kubeconfig" {
+  template = "${ file( "${ path.module }/kubeconfig" )}"
+
+  vars {
+    user = "kube-proxy"
+    user_authentication = "token: ${ var.kube_proxy_token }"
+    ca = "${ base64encode( var.ca ) }"
+  }
+}
+
+data "template_file" "kubelet_kubeconfig" {
+  template = "${ file( "${ path.module }/kubeconfig" )}"
+
+  vars {
+    user = "kubelet"
+    user_authentication = "client-certificate-data: ${ base64encode(var.worker) } \n    client-key-data: ${ base64encode( var.worker_key ) }"
+    ca = "${ base64encode( var.ca ) }"
   }
 }
 

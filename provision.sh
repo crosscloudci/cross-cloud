@@ -24,6 +24,48 @@ fi
 # tfstate, sslcerts, and ssh keys are currently stored in TF_VAR_data_dir
 mkdir -p $TF_VAR_data_dir
 
+# Create known_tokens
+local -r known_tokens_csv="${TF_VAR_data_dir}/known_tokens.csv"
+
+KUBE_BEARER_TOKEN=$(dd if=/dev/urandom bs=128 count=1 2>/dev/null | base64 | tr -d "=+/" | dd bs=32 count=1 2>/dev/null)
+
+KUBE_CONTROLLER_MANAGER_TOKEN=$(dd if=/dev/urandom bs=128 count=1 2>/dev/null | base64 | tr -d "=+/" | dd bs=32 count=1 2>/dev/null)
+
+KUBE_SCHEDULER_TOKEN=$(dd if=/dev/urandom bs=128 count=1 2>/dev/null | base64 | tr -d "=+/" | dd bs=32 count=1 2>/dev/null)
+
+KUBELET_TOKEN=$(dd if=/dev/urandom bs=128 count=1 2>/dev/null | base64 | tr -d "=+/" | dd bs=32 count=1 2>/dev/null)
+
+KUBE_PROXY_TOKEN=$(dd if=/dev/urandom bs=128 count=1 2>/dev/null | base64 | tr -d "=+/" | dd bs=32 count=1 2>/dev/null)
+
+if [[ -n "${KUBE_BEARER_TOKEN:-}" ]]; then
+    append_prefixed_line "${known_tokens_csv}" "${KUBE_BEARER_TOKEN},"             "admin,admin,system:masters"
+fi
+
+if [[ -n "${KUBE_CONTROLLER_MANAGER_TOKEN:-}" ]]; then
+    append_prefixed_line "${known_tokens_csv}" "${KUBE_CONTROLLER_MANAGER_TOKEN}," "system:kube-controller-manager,uid:system:kube-controller-manager"
+fi
+
+if [[ -n "${KUBE_SCHEDULER_TOKEN:-}" ]]; then
+    append_prefixed_line "${known_tokens_csv}" "${KUBE_SCHEDULER_TOKEN},"          "system:kube-scheduler,uid:system:kube-scheduler"
+fi
+
+if [[ -n "${KUBELET_TOKEN:-}" ]]; then
+    append_prefixed_line "${known_tokens_csv}" "${KUBELET_TOKEN},"                 "kubelet,uid:kubelet,system:nodes"
+fi
+
+if [[ -n "${KUBE_PROXY_TOKEN:-}" ]]; then
+    append_prefixed_line "${known_tokens_csv}" "${KUBE_PROXY_TOKEN},"              "system:kube-proxy,uid:kube_proxy"
+fi
+
+KUBE_USER=admin
+KUBE_PASSWORD=$(dd if=/dev/urandom bs=128 count=1 2>/dev/null | base64 | tr -d "=+/" | dd bs=32 count=1 2>/dev/null)
+
+local -r basic_auth_csv="${TF_VAR_data_dir}/basic_auth.csv"
+
+if [[ -n "${KUBE_PASSWORD:-}" && -n "${KUBE_USER:-}" ]]; then
+    append_prefixed_line "${basic_auth_csv}" "${KUBE_PASSWORD},${KUBE_USER}," "admin,system:masters"
+fi
+
 # Run CMD
 if [ "$1" = "aws-deploy" ] ; then
     cd ${DIR}/aws

@@ -1,21 +1,31 @@
+resource "azurerm_public_ip" "cncf2" {
+  count = "${ var.master_node_count }"
+  name = "PublicIPFor${ count.index + 1 }"
+  location = "${ var.location }"
+  resource_group_name = "${ var.name }"
+  public_ip_address_allocation = "static"
+  domain_name_label = "master-${ var.name }${ count.index + 1}"
+}
+
 resource "azurerm_network_interface" "cncf" {
   count = "${ var.master_node_count }"
   name                = "etcd-interface${ count.index + 1 }"
   location            = "${ var.location }"
   resource_group_name = "${ var.name }"
+  internal_dns_name_label = "${ var.name }${ count.index + 1 }"
 
   ip_configuration {
     name                          = "etcd-nic${ count.index + 1 }"
     subnet_id                     = "${ var.subnet_id }"
     private_ip_address_allocation = "dynamic"
-    # private_ip_address            = "${ element( split(",", var.etcd-ips), count.index ) }"
+    public_ip_address_id = "${ element(azurerm_public_ip.cncf2.*.id, count.index) }"
     load_balancer_backend_address_pools_ids = ["${ azurerm_lb_backend_address_pool.cncf.id }"]
   }
 }
 
 resource "azurerm_virtual_machine" "cncf" {
   count = "${ var.master_node_count }"
-  name                  = "etcd-master${ count.index + 1 }"
+  name                  = "${ var.name }-master${ count.index + 1 }"
   location              = "${ var.location }"
   availability_set_id   = "${ var.availability_id }"
   resource_group_name = "${ var.name }"
@@ -37,7 +47,7 @@ resource "azurerm_virtual_machine" "cncf" {
   }
 
   os_profile {
-    computer_name  = "etcd-master${ count.index + 1 }"
+    computer_name  = "${ var.name }-master${ count.index + 1 }"
     admin_username = "${ var.admin_username }"
     admin_password = "Password1234!"
     custom_data = "${ element(data.template_file.etcd_cloud_config.*.rendered, count.index) }"

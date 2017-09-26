@@ -66,7 +66,7 @@ data "template_file" "kubelet_kubeconfig" {
 
   vars {
     user = "kubelet"
-    user_authentication = "client-certificate: ${ base64encode(var.worker) } \n client-key-data: ${ base64encode( var.worker_key ) }"
+    user_authentication = "client-certificate: ${ base64encode(var.worker) } \n    client-key-data: ${ base64encode( var.worker_key ) }"
     ca = "${ base64encode( var.ca ) }"
   }
 }

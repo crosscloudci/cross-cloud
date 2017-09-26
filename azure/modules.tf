@@ -29,6 +29,7 @@ module "etcd" {
   kubelet_image_tag = "${ var.kubelet_image_tag }"
   dns_service_ip = "${ var.dns_service_ip }"
   internal_tld = "${ var.internal_tld }"
+  internal_lb_ip = "${ var.internal_lb_ip }"
   pod_cidr = "${ var.pod_cidr }"
   service_cidr = "${ var.service_cidr }"
   ca                             = "${ module.tls.ca }"

@@ -34,3 +34,5 @@ variable "client_secret" {}
 variable "tenant_id" {}
 variable "subscription_id" {}
 
+variable "internal_lb_ip" {}
+

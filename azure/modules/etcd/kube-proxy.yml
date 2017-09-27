@@ -24,7 +24,7 @@ spec:
     command:
     - /bin/sh
     - -c
-    - kube-proxy --master=http://127.0.0.1:8080 --cluster-cidr=10.244.0.0/14 --resource-container="" --v=2 --feature-gates=ExperimentalCriticalPodAnnotation=true 2>&1
+    - kube-proxy --master=http://127.0.0.1:8080 --cluster-cidr=10.244.0.0/14 --resource-container="" --v=2 --feature-gates=ExperimentalCriticalPodAnnotation=true 1>>/tmp/kube-proxy.log 2>&1
     securityContext:
       privileged: true
     volumeMounts:

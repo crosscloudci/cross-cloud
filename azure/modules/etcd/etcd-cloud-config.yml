@@ -25,6 +25,11 @@ coreos:
 
     - name: docker.service
       command: start
+      drop-ins:
+        - name: docker.conf
+          content: |
+            [Service]
+            EnvironmentFile=/etc/default/docker
 
     - name: bins.service
       command: start
@@ -77,7 +82,11 @@ coreos:
 
 
 write-files:
-  
+
+  - path: /etc/default/docker
+    content: |
+      DOCKER_OPTS=" --iptables=false --ip-masq=false --log-level=warn --bip=169.254.123.1/24"
+
   - path: /etc/default/kubelet
     content: |
       KUBELET_OPTS="--v=2 --allow-privileged=true --babysit-daemons=true --cgroup-root=/ --cloud-provider=azure --cloud-config=/etc/srv/kubernetes/azure-config.json --cluster-dns=10.0.0.10 --cluster-domain=cluster.local --pod-manifest-path=/etc/kubernetes/manifests --enable-debugging-handlers=true --hairpin-mode=promiscuous-bridge --api-servers=http://127.0.0.1:8080 --register-schedulable=true --network-plugin-dir=/home/kubernetes/bin --network-plugin=kubenet --feature-gates=ExperimentalCriticalPodAnnotation=true"

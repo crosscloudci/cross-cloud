@@ -11,6 +11,12 @@ coreos:
   #   peer-key-file: /etc/kubernetes/ssl/kubelet.key
   #   proxy: on
 
+  network:
+    version: 1
+    config:
+    - type: bridge
+    name: cbr0
+    
   units:
     # - name: etcd2.service
       # command: start
@@ -77,7 +83,7 @@ write-files:
 
   - path: /etc/default/docker
     content: |
-      DOCKER_OPTS=" --iptables=false --ip-masq=false --log-level=warn"
+      DOCKER_OPTS="--bridge=cbr0 --iptables=false --ip-masq=false --log-level=warn"
   - path: /etc/default/kubelet
     content: |
       KUBELET_OPTS="--v=2 --api-servers=https://${ master_node } --enable-debugging-handlers=true --cloud-provider=azure --cloud-config=/etc/srv/kubernetes/azure-config.json --pod-manifest-path=/etc/kubernetes/manifests --allow-privileged=True --cluster-dns=10.0.0.10 --cluster-domain=cluster.local --cgroup-root=/ --system-cgroups=/system --network-plugin-dir=/home/kubernetes/bin --network-plugin=kubenet --hairpin-mode=promiscuous-bridge --runtime-cgroups=/docker-daemon --kubelet-cgroups=/kubelet --babysit-daemons=true --anonymous-auth=false --authorization-mode=Webhook --client-ca-file=/etc/kubernetes/pki/ca-certificates.crt --tls-cert-file=/etc/kubernetes/pki/kubelet.crt --tls-private-key-file=/etc/kubernetes/pki/kubelet.key --feature-gates=ExperimentalCriticalPodAnnotation=true"

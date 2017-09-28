@@ -18,12 +18,6 @@ coreos:
     peer-cert-file: /etc/srv/kubernetes/pki/etcd.crt
     peer-key-file: /etc/srv/kubernetes/pki/etcd.key
 
-  network:
-    version: 1
-    config:
-    - type: bridge
-    name: cbr0
-    
   units:
     - name: etcd2.service
       command: start
@@ -35,6 +29,7 @@ coreos:
           content: |
             [Service]
             EnvironmentFile=/etc/default/docker
+            ExecStartPre=/usr/bin/ip link add name cbr0 type bridge
 
     - name: bins.service
       command: start

@@ -11,12 +11,6 @@ coreos:
   #   peer-key-file: /etc/kubernetes/ssl/kubelet.key
   #   proxy: on
 
-  network:
-    version: 1
-    config:
-    - type: bridge
-    name: cbr0
-    
   units:
     # - name: etcd2.service
       # command: start
@@ -28,6 +22,7 @@ coreos:
           content: |
             [Service]
             EnvironmentFile=/etc/default/docker
+            ExecStartPre=/usr/bin/ip link add name cbr0 type bridge
 
     - name: bins.service
       command: start

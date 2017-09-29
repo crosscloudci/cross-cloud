@@ -22,7 +22,7 @@ coreos:
           content: |
             [Service]
             EnvironmentFile=/etc/default/docker
-            ExecStartPre=/usr/bin/ip link add name cbr0 type bridge
+            # ExecStartPre=/usr/bin/ip link add name cbr0 type bridge
 
     - name: bins.service
       command: start
@@ -36,7 +36,7 @@ coreos:
         ExecStartPre=/usr/bin/mkdir --parents /etc/cni/net.d
         ExecStartPre=/usr/bin/mkdir --parents /home/kubernetes/bin
         ExecStartPre=/usr/bin/curl -L -o /home/kubernetes/bin/kubelet https://storage.googleapis.com/kubernetes-release/release/v1.6.6/bin/linux/amd64/kubelet
-        ExecStartPre=/usr/bin/curl -L -o /tmp/cni.tar https://github.com/containernetworking/cni/releases/download/v0.5.2/cni-amd64-v0.5.2.tgz
+        ExecStartPre=/usr/bin/curl -L -o /tmp/cni.tar https://github.com/containernetworking/cni/releases/download/v0.6.0/cni-amd64-v0.6.0.tgz
         ExecStartPre=/usr/bin/tar -xvf /tmp/cni.tar -C /home/kubernetes/bin/
         ExecStart=/usr/bin/chmod +x /home/kubernetes/bin/kubelet
 
@@ -78,7 +78,7 @@ write-files:
 
   - path: /etc/default/docker
     content: |
-      DOCKER_OPTS="--bridge=cbr0 --iptables=false --ip-masq=false --log-level=warn"
+      DOCKER_OPTS=" --bip=169.254.123.1/24 --iptables=false --ip-masq=false --log-level=warn"
   - path: /etc/default/kubelet
     content: |
       KUBELET_OPTS="--v=2 --api-servers=https://${ master_node } --enable-debugging-handlers=true --cloud-provider=azure --cloud-config=/etc/srv/kubernetes/azure-config.json --pod-manifest-path=/etc/kubernetes/manifests --allow-privileged=True --cluster-dns=10.0.0.10 --cluster-domain=cluster.local --cgroup-root=/ --system-cgroups=/system --network-plugin-dir=/home/kubernetes/bin --network-plugin=kubenet --hairpin-mode=promiscuous-bridge --runtime-cgroups=/docker-daemon --kubelet-cgroups=/kubelet --babysit-daemons=true --anonymous-auth=false --authorization-mode=Webhook --client-ca-file=/etc/kubernetes/pki/ca-certificates.crt --tls-cert-file=/etc/kubernetes/pki/kubelet.crt --tls-private-key-file=/etc/kubernetes/pki/kubelet.key --feature-gates=ExperimentalCriticalPodAnnotation=true"

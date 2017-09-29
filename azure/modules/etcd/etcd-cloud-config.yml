@@ -29,7 +29,7 @@ coreos:
           content: |
             [Service]
             EnvironmentFile=/etc/default/docker
-            ExecStartPre=/usr/bin/ip link add name cbr0 type bridge
+            # ExecStartPre=/usr/bin/ip link add name cbr0 type bridge
 
     - name: bins.service
       command: start
@@ -41,7 +41,7 @@ coreos:
         RemainAfterExit=yes
         ExecStartPre=/usr/bin/mkdir --parents /home/kubernetes/bin
         ExecStartPre=/usr/bin/curl -L -o /home/kubernetes/bin/kubelet https://storage.googleapis.com/kubernetes-release/release/v1.6.6/bin/linux/amd64/kubelet
-        ExecStartPre=/usr/bin/curl -L -o /home/kubernetes/bin/cni.tar https://github.com/containernetworking/cni/releases/download/v0.5.2/cni-amd64-v0.5.2.tgz
+        ExecStartPre=/usr/bin/curl -L -o /home/kubernetes/bin/cni.tar https://github.com/containernetworking/cni/releases/download/v0.6.0/cni-amd64-v0.6.0.tgz
         ExecStartPre=/usr/bin/tar -xvf /home/kubernetes/bin/cni.tar -C /home/kubernetes/bin/
         ExecStart=/usr/bin/chmod +x /home/kubernetes/bin/kubelet
 
@@ -85,7 +85,7 @@ write-files:
 
   - path: /etc/default/docker
     content: |
-      DOCKER_OPTS="--bridge=cbr0 --iptables=false --ip-masq=false --log-level=warn"
+      DOCKER_OPTS=" --bip=169.254.123.1/24 --iptables=false --ip-masq=false --log-level=warn"
 
   - path: /etc/default/kubelet
     content: |
@@ -101,10 +101,9 @@ write-files:
     content: |
       ${ kube_controller_manager }
 
-  - path: /etc/kubernetes/manifests/kube-proxy.yml
-    encoding: "gzip+base64"
-    content: |
-      ${ kube_proxy }
+  # - path: /etc/kubernetes/manifests/kube-proxy.yml
+  #   encoding: "gzip+base64"
+  #   content: |
 
   - path: /etc/kubernetes/manifests/kube-scheduler.yml
     encoding: "gzip+base64"

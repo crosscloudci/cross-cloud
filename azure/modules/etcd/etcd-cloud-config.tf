@@ -122,7 +122,7 @@ data "template_file" "etcd_cloud_config" {
     apiserver = "${ gzip_me.apiserver.output }"
     apiserver_key = "${ gzip_me.apiserver_key.output }"
     kube_apiserver = "${ element(gzip_me.kube_apiserver.*.output, count.index) }"
-    kube_proxy = "${ gzip_me.kube_proxy.output }"
+    # kube_proxy = "${ gzip_me.kube_proxy.output }"
     kube_scheduler = "${ gzip_me.kube_scheduler.output }"
     kube_controller_manager = "${ gzip_me.kube_controller_manager.output }"
     known_tokens_csv = "${ gzip_me.known_tokens_csv.output }"

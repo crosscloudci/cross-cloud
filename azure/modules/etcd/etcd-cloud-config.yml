@@ -89,7 +89,7 @@ write-files:
 
   - path: /etc/default/kubelet
     content: |
-      KUBELET_OPTS="--v=2 --allow-privileged=true --babysit-daemons=true --cgroup-root=/ --cloud-provider=azure --cloud-config=/etc/srv/kubernetes/azure-config.json --cluster-dns=10.0.0.10 --cluster-domain=cluster.local --pod-manifest-path=/etc/kubernetes/manifests --enable-debugging-handlers=true --hairpin-mode=promiscuous-bridge --api-servers=http://127.0.0.1:8080 --register-schedulable=true --network-plugin-dir=/home/kubernetes/bin --network-plugin=kubenet --feature-gates=ExperimentalCriticalPodAnnotation=true"
+      KUBELET_OPTS="--v=2 --allow-privileged=true --babysit-daemons=true --cgroup-root=/ --cloud-provider=azure --cloud-config=/etc/srv/kubernetes/azure-config.json --cluster-dns=10.0.0.10 --cluster-domain=cluster.local --pod-manifest-path=/etc/kubernetes/manifests --enable-debugging-handlers=true --hairpin-mode=none --api-servers=http://127.0.0.1:8080 --register-schedulable=false --network-plugin-dir=/home/kubernetes/bin --network-plugin=kubenet --feature-gates=ExperimentalCriticalPodAnnotation=true"
  
   - path: /etc/kubernetes/manifests/kube-apiserver.yml
     encoding: "gzip+base64"

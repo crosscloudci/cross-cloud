@@ -41,7 +41,7 @@ coreos:
         RemainAfterExit=yes
         ExecStartPre=/usr/bin/mkdir --parents /home/kubernetes/bin
         ExecStartPre=/usr/bin/curl -L -o /home/kubernetes/bin/kubelet https://storage.googleapis.com/kubernetes-release/release/v1.6.6/bin/linux/amd64/kubelet
-        ExecStartPre=/usr/bin/curl -L -o /home/kubernetes/bin/cni.tar https://github.com/containernetworking/cni/releases/download/v0.6.0/cni-amd64-v0.6.0.tgz
+        ExecStartPre=/usr/bin/curl -L -o /home/kubernetes/bin/cni.tar https://github.com/containernetworking/cni/releases/download/v0.5.2/cni-amd64-v0.5.2.tgz
         ExecStartPre=/usr/bin/tar -xvf /home/kubernetes/bin/cni.tar -C /home/kubernetes/bin/
         ExecStart=/usr/bin/chmod +x /home/kubernetes/bin/kubelet
 

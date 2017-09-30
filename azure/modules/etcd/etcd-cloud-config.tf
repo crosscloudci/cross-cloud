@@ -33,13 +33,6 @@ data "template_file" "kube_controller_manager_kubeconfig" {
   }
 }
 
-data "template_file" "kube_proxy" {
-  template = "${ file( "${ path.module }/kube-proxy.yml" )}"
-  vars {
-    hyperkube = "${ var.kubelet_image_url }:${ var.kubelet_image_tag }"
-  }
-}
-
 data "template_file" "kube_scheduler" {
   template = "${ file( "${ path.module }/kube-scheduler.yml" )}"
   vars {

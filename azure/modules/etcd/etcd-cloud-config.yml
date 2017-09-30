@@ -101,14 +101,20 @@ write-files:
     content: |
       ${ kube_controller_manager }
 
-  # - path: /etc/kubernetes/manifests/kube-proxy.yml
-  #   encoding: "gzip+base64"
-  #   content: |
+  - path: /etc/srv/kubernetes/kube-controller-manager/kubeconfig
+    encoding: "gzip+base64"
+    content: |
+      ${ kube_controller_manager_kubeconfig }
 
   - path: /etc/kubernetes/manifests/kube-scheduler.yml
     encoding: "gzip+base64"
     content: |
       ${ kube_scheduler }
+
+  - path: /etc/srv/kubernetes/kube-scheduler/kubeconfig
+    encoding: "gzip+base64"
+    content: |
+      ${ kube_scheduler_kubeconfig }
 
   - path: /etc/srv/kubernetes/pki/ca-certificates.crt
     permissions: "0644"

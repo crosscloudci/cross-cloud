@@ -23,6 +23,16 @@ data "template_file" "kube_controller_manager" {
   }
 }
 
+data "template_file" "kube_controller_manager_kubeconfig" {
+  template = "${ file( "${ path.module }/kubeconfig" )}"
+  vars {
+    user = "kube-controller-manager"
+    user_authentication = "token: ${ random_string.kube-controller-manager.result }"
+    cluster = "insecure-skip-tls-verify: true \n    server: http://localhost:8080"
+    name = "service-account-context"
+  }
+}
+
 data "template_file" "kube_proxy" {
   template = "${ file( "${ path.module }/kube-proxy.yml" )}"
   vars {
@@ -34,6 +44,16 @@ data "template_file" "kube_scheduler" {
   template = "${ file( "${ path.module }/kube-scheduler.yml" )}"
   vars {
     hyperkube = "${ var.kubelet_image_url }:${ var.kubelet_image_tag }"
+  }
+}
+
+data "template_file" "kube_scheduler_kubeconfig" {
+  template = "${ file( "${ path.module }/kubeconfig" )}"
+  vars {
+    user = "kube-scheduler"
+    user_authentication = "token: ${ random_string.kube-scheduler.result }"
+    cluster = "insecure-skip-tls-verify: true \n    server: http://localhost:8080"
+    name = "kube-scheduler"
   }
 }
 
@@ -59,12 +79,16 @@ resource "gzip_me" "kube_controller_manager" {
   input = "${ data.template_file.kube_controller_manager.rendered }"
 }
 
-resource "gzip_me" "kube_proxy" {
-  input = "${ data.template_file.kube_proxy.rendered }"
+resource "gzip_me" "kube_controller_manager_kubeconfig" {
+  input = "${ data.template_file.kube_controller_manager_kubeconfig.rendered }"
 }
 
 resource "gzip_me" "kube_scheduler" {
   input = "${ data.template_file.kube_scheduler.rendered }"
+}
+
+resource "gzip_me" "kube_scheduler_kubeconfig" {
+  input = "${ data.template_file.kube_scheduler_kubeconfig.rendered }"
 }
 
 resource "gzip_me" "cloud_config" {
@@ -122,9 +146,10 @@ data "template_file" "etcd_cloud_config" {
     apiserver = "${ gzip_me.apiserver.output }"
     apiserver_key = "${ gzip_me.apiserver_key.output }"
     kube_apiserver = "${ element(gzip_me.kube_apiserver.*.output, count.index) }"
-    # kube_proxy = "${ gzip_me.kube_proxy.output }"
     kube_scheduler = "${ gzip_me.kube_scheduler.output }"
+    kube_scheduler_kubeconfig = "${ gzip_me.kube_scheduler_kubeconfig.output }"
     kube_controller_manager = "${ gzip_me.kube_controller_manager.output }"
+    kube_controller_manager_kubeconfig = "${ gzip_me.kube_controller_manager_kubeconfig.output }"
     known_tokens_csv = "${ gzip_me.known_tokens_csv.output }"
     basic_auth_csv = "${ gzip_me.basic_auth_csv.output }"
     abac_authz_policy = "${ gzip_me.abac_authz_policy.output}"

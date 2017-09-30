@@ -45,13 +45,14 @@ coreos:
       content: |
         [Unit]
         Description=Install Socat
-        After=bins.service
-        Requires=bins.service
+        After=docker.service
+        Requires=docker.service
 
         [Service]
         Type=oneshot
         RemainAfterExit=yes
-        ExecStart=/usr/bin/bash -c "curl https://gitlab.cncf.ci/cncf/cross-cloud/raw/ci-stable-v0.2.0/socat.sh |  bash"
+        ExecStartPre=/usr/bin/mkdir --parents /opt/bin
+        ExecStart=/usr/bin/docker run --rm -v /opt/bin/:/socat/ registry.cncf.ci/cncf/cross-cloud/socat:ci-stable-v0-2-0 cp /output/linux/x86_64/socat /socat
 
     - name: kubelet.service
       command: start

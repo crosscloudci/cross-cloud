@@ -40,6 +40,8 @@ coreos:
         Type=oneshot
         RemainAfterExit=yes
         ExecStartPre=/usr/bin/mkdir --parents /home/kubernetes/bin
+        ExecStartPre=/usr/bin/mkdir --parents /opt/cni/bin
+        ExecStartPre=/usr/bin/mkdir --parents /etc/cni/net.d
         ExecStartPre=/usr/bin/curl -L -o /home/kubernetes/bin/kubelet https://storage.googleapis.com/kubernetes-release/release/v1.7.2/bin/linux/amd64/kubelet
         ExecStartPre=/usr/bin/curl -L -o /home/kubernetes/bin/cni.tar https://github.com/containernetworking/cni/releases/download/v0.5.2/cni-amd64-v0.5.2.tgz
         ExecStartPre=/usr/bin/tar -xvf /home/kubernetes/bin/cni.tar -C /opt/cni/bin/

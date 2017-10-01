@@ -3,7 +3,7 @@ resource "azurerm_network_interface" "cncf" {
   name                = "worker-interface${ count.index + 1 }"
   location            = "${ var.location }"
   resource_group_name = "${ var.name }"
-  internal_dns_name_label = "${ var.name }${ count.index + 1 }"
+  internal_dns_name_label = "woker-${ var.name }${ count.index + 1 }"
 
   ip_configuration {
     name                          = "worker-nic${ count.index + 1 }"

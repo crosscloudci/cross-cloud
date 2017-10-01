@@ -85,7 +85,7 @@ write-files:
 
   - path: /etc/default/docker
     content: |
-      DOCKER_OPTS=" --bip=169.254.123.1/24 --iptables=false --ip-masq=false --log-level=warn"
+      DOCKER_OPTS="--bridge=cbr0 --iptables=false --ip-masq=false --log-level=warn"
 
   - path: /etc/default/kubelet
     content: |

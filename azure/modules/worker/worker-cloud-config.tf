@@ -48,7 +48,7 @@ data "template_file" "kube-proxy" {
 
   vars {
     master_node = "${ var.internal_lb_ip }"
-    fqdn = "${ }"
+    fqdn = "${ var.name }-worker${ count.index + 1 }.${ replace("${azurerm_network_interface.cncf.0.internal_fqdn}", "${ var.name}1.", "")}"
   }
 }
 

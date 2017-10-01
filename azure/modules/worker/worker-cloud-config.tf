@@ -56,9 +56,10 @@ data "template_file" "proxy_kubeconfig" {
   template = "${ file( "${ path.module }/kubeconfig" )}"
 
   vars {
+    cluster = "certificate-authority-data: ${ base64encode(var.ca) } \n    server: https://${ var.internal_lb_ip }"
     user = "kube-proxy"
-    user_authentication = "token: ${ var.kube_proxy_token }"
-    ca = "${ base64encode( var.ca ) }"
+    name = "service-account-context"
+    user_authentication = "client-certificate-data: ${ base64encode(var.worker) } \n    client-key-data: ${ base64encode(var.worker_key) }"
   }
 }
 

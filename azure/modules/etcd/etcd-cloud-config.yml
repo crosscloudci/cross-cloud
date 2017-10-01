@@ -118,7 +118,7 @@ write-files:
     content: |
       ${ kube_scheduler }
 
-  - path: /etc/srv/kubernetes/kube-scheduler/kubeconfig
+  - path: /var/lib/kube-scheduler/kubeconfig
     encoding: "gzip+base64"
     content: |
       ${ kube_scheduler_kubeconfig }

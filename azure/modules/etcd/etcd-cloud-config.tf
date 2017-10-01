@@ -2,6 +2,16 @@ provider "gzip" {
   compressionlevel = "BestCompression"
 }
 
+data "template_file" "kubelet_kubeconfig" {
+  template = "${ file( "${ path.module }/kubeconfig" )}"
+  vars {
+    cluster = "certificate-authority-data: ${ base64encode(var.ca) } \n    server: https://127.0.0.1"
+    user = "kubelet"
+    name = "service-account-context"
+    user_authentication = "client-certificate-data: ${ base64encode(var.apiserver) } \n    client-key-data: ${ base64encode(var.apiserver_key) }"
+  }
+}
+
 data "template_file" "kube_apiserver" {
   count = "${ var.master_node_count }"
   template = "${ file( "${ path.module }/kube-apiserver.yml" )}"
@@ -26,10 +36,10 @@ data "template_file" "kube_controller_manager" {
 data "template_file" "kube_controller_manager_kubeconfig" {
   template = "${ file( "${ path.module }/kubeconfig" )}"
   vars {
+    cluster = "certificate-authority-data: ${ base64encode(var.ca) } \n    server: https://127.0.0.1"
     user = "kube-controller-manager"
-    user_authentication = "token: ${ random_string.kube-controller-manager.result }"
-    cluster = "insecure-skip-tls-verify: true \n    server: http://localhost:8080"
     name = "service-account-context"
+    user_authentication = "client-certificate-data: ${ base64encode(var.apiserver) } \n    client-key-data: ${ base64encode(var.apiserver_key) }"
   }
 }
 
@@ -43,10 +53,10 @@ data "template_file" "kube_scheduler" {
 data "template_file" "kube_scheduler_kubeconfig" {
   template = "${ file( "${ path.module }/kubeconfig" )}"
   vars {
+    cluster = "certificate-authority-data: ${ base64encode(var.ca) } \n    server: https://127.0.0.1"
     user = "kube-scheduler"
-    user_authentication = "token: ${ random_string.kube-scheduler.result }"
-    cluster = "insecure-skip-tls-verify: true \n    server: http://localhost:8080"
-    name = "kube-scheduler"
+    name = "service-account-context"
+    user_authentication = "client-certificate-data: ${ base64encode(var.apiserver) } \n    client-key-data: ${ base64encode(var.apiserver_key) }"
   }
 }
 
@@ -61,6 +71,10 @@ data "template_file" "azure_cloud" {
     location = "${ var.location }"
     subnet_name = "subnet-${ var.name}"
   }
+}
+
+resource "gzip_me" "kubelet_kubeconfig" {
+  input = "${ data.template_file.kubelet_kubeconfig.rendered }"
 }
 
 resource "gzip_me" "kube_apiserver" {
@@ -138,6 +152,7 @@ data "template_file" "etcd_cloud_config" {
     etcd_key = "${ gzip_me.etcd_key.output }"
     apiserver = "${ gzip_me.apiserver.output }"
     apiserver_key = "${ gzip_me.apiserver_key.output }"
+    kubelet_kubeconfig = "${ gzip_me.kubelet_kubeconfig.output }"
     kube_apiserver = "${ element(gzip_me.kube_apiserver.*.output, count.index) }"
     kube_scheduler = "${ gzip_me.kube_scheduler.output }"
     kube_scheduler_kubeconfig = "${ gzip_me.kube_scheduler_kubeconfig.output }"

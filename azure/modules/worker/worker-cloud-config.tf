@@ -48,6 +48,7 @@ data "template_file" "kube-proxy" {
 
   vars {
     master_node = "${ var.internal_lb_ip }"
+    fqdn = "${ }"
   }
 }
 
@@ -65,9 +66,10 @@ data "template_file" "kubelet_kubeconfig" {
   template = "${ file( "${ path.module }/kubeconfig" )}"
 
   vars {
+    cluster = "certificate-authority-data: ${ base64encode(var.ca) } \n    server: https://${ var.internal_lb_ip }"
     user = "kubelet"
-    user_authentication = "client-certificate-data: ${ base64encode(var.worker) } \n    client-key-data: ${ base64encode( var.worker_key ) }"
-    ca = "${ base64encode( var.ca ) }"
+    name = "service-account-context"
+    user_authentication = "client-certificate-data: ${ base64encode(var.worker) } \n    client-key-data: ${ base64encode(var.worker_key) }"
   }
 }
 

@@ -9,7 +9,6 @@ resource "azurerm_network_interface" "cncf" {
     name                          = "etcd-nic${ count.index + 1 }"
     subnet_id                     = "${ var.subnet_id }"
     private_ip_address_allocation = "dynamic"
-    public_ip_address_id = "${ element(azurerm_public_ip.cncf2.*.id, count.index) }"
     load_balancer_backend_address_pools_ids = [
       "${ azurerm_lb_backend_address_pool.cncf.id }",
       "${ azurerm_lb_backend_address_pool.apiserver_internal.id }",

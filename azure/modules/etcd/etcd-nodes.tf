@@ -1,12 +1,3 @@
-resource "azurerm_public_ip" "cncf2" {
-  count = "${ var.master_node_count }"
-  name = "PublicIPFor${ count.index + 1 }"
-  location = "${ var.location }"
-  resource_group_name = "${ var.name }"
-  public_ip_address_allocation = "static"
-  domain_name_label = "master-${ var.name }${ count.index + 1}"
-}
-
 resource "azurerm_network_interface" "cncf" {
   count = "${ var.master_node_count }"
   name                = "etcd-interface${ count.index + 1 }"

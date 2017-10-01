@@ -29,7 +29,7 @@ spec:
     - mountPath: /var/lib/kube-scheduler
       name: varlibkubescheduler
       readOnly: true
-    - mountPath: /var/log/kube-scheduler.log
+    - mountPath: /var/log
       name: logfile
   hostNetwork: true
   volumes:
@@ -37,6 +37,6 @@ spec:
       path: /var/lib/kube-scheduler
     name: varlibkubescheduler
   - hostPath:
-      path: /var/log/kube-scheduler.log
+      path: /var/log
     name: logfile
 status: {}

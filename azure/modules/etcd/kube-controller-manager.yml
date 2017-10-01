@@ -63,7 +63,7 @@ spec:
     - mountPath: /etc/srv/kubernetes
       name: srvkube
       readOnly: true
-    - mountPath: /var/log/kube-controller-manager.log
+    - mountPath: /var/log
       name: logfile
     - mountPath: /var/lib/kube-controller-manager
       name: varlibkcm
@@ -101,7 +101,7 @@ spec:
       path: /etc/srv/kubernetes
     name: srvkube
   - hostPath:
-      path: /var/log/kube-controller-manager.log
+      path: /var/log
     name: logfile
   - hostPath:
       path: /var/lib/kube-controller-manager

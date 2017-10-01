@@ -73,7 +73,7 @@ spec:
     - mountPath: /srv/sshproxy
       name: srvsshproxy
       readOnly: true
-    - mountPath: /var/log/kube-apiserver.log
+    - mountPath: /var/log
       name: logfile
   hostNetwork: true
   volumes:
@@ -111,6 +111,6 @@ spec:
       path: /srv/sshproxy
     name: srvsshproxy
   - hostPath:
-      path: /var/log/kube-apiserver.log
+      path: /var/log
     name: logfile
 status: {}

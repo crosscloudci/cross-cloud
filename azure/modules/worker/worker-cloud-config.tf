@@ -40,7 +40,8 @@ data "template_file" "worker_cloud_config" {
     proxy_kubeconfig = "${ gzip_me.proxy_kubeconfig.output }"
     kubelet_kubeconfig = "${ gzip_me.kubelet_kubeconfig.output }"
     kube_proxy = "${ gzip_me.kube_proxy.output }"
-    fqdn = "${ var.name }-worker${ count.index + 1 }.${ replace("${azurerm_network_interface.cncf.0.internal_fqdn}", "worker-${ var.name}1.", "")}"
+    # fqdn = "${ var.name }-worker${ count.index + 1 }.${ replace("${azurerm_network_interface.cncf.0.internal_fqdn}", "worker-${ var.name}1.", "")}"
+    fqdn = "${ var.name }-worker${ count.index + 1 }"
   }
 }
 
@@ -49,8 +50,8 @@ data "template_file" "kube-proxy" {
 
   vars {
     master_node = "${ var.internal_lb_ip }"
-    fqdn = "${ var.name }-worker${ count.index + 1 }"
     # fqdn = "${ var.name }-worker${ count.index + 1 }.${ replace("${azurerm_network_interface.cncf.0.internal_fqdn}", "worker-${ var.name}1.", "")}"
+    fqdn = "${ var.name }-worker${ count.index + 1 }"
   }
 }
 

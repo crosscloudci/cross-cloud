@@ -16,7 +16,7 @@ spec:
     - -c
     - kube-proxy --kubeconfig=/var/lib/kube-proxy/kubeconfig
       --conntrack-max-per-core=131072 --resource-container="" --cluster-cidr=100.96.0.0/11
-      --hostname-override=${ fqdn } --master=https://${ master_node }
+      --hostname-override=${ fqdn } 
       --v=2 2>&1 | /usr/bin/tee /var/log/kube-proxy.log
     image: gcr.io/google_containers/kube-proxy:v1.7.2
     imagePullPolicy: IfNotPresent

@@ -18,7 +18,9 @@ spec:
       --etcd-servers=http://${ fqdn }:2379 --insecure-port=8080 --kubelet-preferred-address-types=InternalIP,Hostname,ExternalIP
       --secure-port=443 --service-cluster-ip-range=100.64.0.0/13 --storage-backend=etcd2
       --tls-cert-file=/etc/srv/kubernetes/pki/apiserver.crt --tls-private-key-file=/etc/srv/kubernetes/pki/apiserver.key
-      --token-auth-file=/etc/srv/kubernetes/known_tokens.csv --v=2 1>>/var/log/kube-apiserver.log
+      --token-auth-file=/etc/srv/kubernetes/known_tokens.csv
+      --authorization-policy-file=/etc/srv/kubernetes/abac-authz-policy.jsonl --authorization-mode=RBAC,ABAC
+      --v=2 1>>/var/log/kube-apiserver.log
       2>&1
     image: gcr.io/google_containers/kube-apiserver:v1.7.2
     livenessProbe:

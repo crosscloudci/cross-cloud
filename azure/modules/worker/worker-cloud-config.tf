@@ -20,7 +20,7 @@ resource "gzip_me" "kubelet_kubeconfig" {
 
 resource "gzip_me" "kube_proxy" {
   count = "${ var.worker_node_count}"
-  input = "${ data.template_file.kube-proxy.rendered }"
+  input = "${ element(data.template_file.kube-proxy.*.rendered, count.index) }"
 }
 
 data "template_file" "worker_cloud_config" {

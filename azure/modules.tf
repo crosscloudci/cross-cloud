@@ -29,6 +29,7 @@ module "etcd" {
   kubelet_image_tag = "${ var.kubelet_image_tag }"
   dns_service_ip = "${ var.dns_service_ip }"
   internal_tld = "${ var.internal_tld }"
+  internal_lb_ip = "${ var.internal_lb_ip }"
   pod_cidr = "${ var.pod_cidr }"
   service_cidr = "${ var.service_cidr }"
   ca                             = "${ module.tls.ca }"
@@ -92,7 +93,7 @@ module "tls" {
   tls_apiserver_cert_validity_period_hours = 1000
   tls_apiserver_cert_early_renewal_hours = 100
   tls_apiserver_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local,*.${ module.etcd.dns_suffix },*.${ var.location }.cloudapp.azure.com"
-  tls_apiserver_cert_ip_addresses = "127.0.0.1,10.0.0.1"
+  tls_apiserver_cert_ip_addresses = "127.0.0.1,10.0.0.1,100.64.0.1,${ var.internal_lb_ip }"
 
   tls_worker_cert_subject_common_name = "kubelet"
   tls_worker_cert_validity_period_hours = 1000
@@ -131,6 +132,7 @@ module "worker" {
   azure_cloud = "${ module.etcd.azure_cloud }"
   kube_proxy_token = "${ module.etcd.kube_proxy_token }"
   dns_suffix = "${ module.etcd.dns_suffix }"
+  internal_lb_ip = "${ var.internal_lb_ip }"
 }
 
 

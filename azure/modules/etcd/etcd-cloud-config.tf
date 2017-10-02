@@ -2,6 +2,16 @@ provider "gzip" {
   compressionlevel = "BestCompression"
 }
 
+data "template_file" "kubelet_kubeconfig" {
+  template = "${ file( "${ path.module }/kubeconfig" )}"
+  vars {
+    cluster = "certificate-authority-data: ${ base64encode(var.ca) } \n    server: https://127.0.0.1"
+    user = "kubelet"
+    name = "service-account-context"
+    user_authentication = "client-certificate-data: ${ base64encode(var.apiserver) } \n    client-key-data: ${ base64encode(var.apiserver_key) }"
+  }
+}
+
 data "template_file" "kube_apiserver" {
   count = "${ var.master_node_count }"
   template = "${ file( "${ path.module }/kube-apiserver.yml" )}"
@@ -23,10 +33,13 @@ data "template_file" "kube_controller_manager" {
   }
 }
 
-data "template_file" "kube_proxy" {
-  template = "${ file( "${ path.module }/kube-proxy.yml" )}"
+data "template_file" "kube_controller_manager_kubeconfig" {
+  template = "${ file( "${ path.module }/kubeconfig" )}"
   vars {
-    hyperkube = "${ var.kubelet_image_url }:${ var.kubelet_image_tag }"
+    cluster = "certificate-authority-data: ${ base64encode(var.ca) } \n    server: https://127.0.0.1"
+    user = "kube-controller-manager"
+    name = "service-account-context"
+    user_authentication = "client-certificate-data: ${ base64encode(var.apiserver) } \n    client-key-data: ${ base64encode(var.apiserver_key) }"
   }
 }
 
@@ -34,6 +47,16 @@ data "template_file" "kube_scheduler" {
   template = "${ file( "${ path.module }/kube-scheduler.yml" )}"
   vars {
     hyperkube = "${ var.kubelet_image_url }:${ var.kubelet_image_tag }"
+  }
+}
+
+data "template_file" "kube_scheduler_kubeconfig" {
+  template = "${ file( "${ path.module }/kubeconfig" )}"
+  vars {
+    cluster = "certificate-authority-data: ${ base64encode(var.ca) } \n    server: https://127.0.0.1"
+    user = "kube-scheduler"
+    name = "service-account-context"
+    user_authentication = "client-certificate-data: ${ base64encode(var.apiserver) } \n    client-key-data: ${ base64encode(var.apiserver_key) }"
   }
 }
 
@@ -50,6 +73,10 @@ data "template_file" "azure_cloud" {
   }
 }
 
+resource "gzip_me" "kubelet_kubeconfig" {
+  input = "${ data.template_file.kubelet_kubeconfig.rendered }"
+}
+
 resource "gzip_me" "kube_apiserver" {
   count = "${ var.master_node_count }"
   input = "${ element(data.template_file.kube_apiserver.*.rendered, count.index) }"
@@ -59,12 +86,16 @@ resource "gzip_me" "kube_controller_manager" {
   input = "${ data.template_file.kube_controller_manager.rendered }"
 }
 
-resource "gzip_me" "kube_proxy" {
-  input = "${ data.template_file.kube_proxy.rendered }"
+resource "gzip_me" "kube_controller_manager_kubeconfig" {
+  input = "${ data.template_file.kube_controller_manager_kubeconfig.rendered }"
 }
 
 resource "gzip_me" "kube_scheduler" {
   input = "${ data.template_file.kube_scheduler.rendered }"
+}
+
+resource "gzip_me" "kube_scheduler_kubeconfig" {
+  input = "${ data.template_file.kube_scheduler_kubeconfig.rendered }"
 }
 
 resource "gzip_me" "cloud_config" {
@@ -107,6 +138,7 @@ data "template_file" "etcd_cloud_config" {
     etcd_discovery = "${ etcdiscovery_token.etcd.id }"
     dns_service_ip = "${ var.dns_service_ip }"
     fqdn = "${ var.name }-master${ count.index + 1 }.${ replace("${azurerm_network_interface.cncf.0.internal_fqdn}", "${ var.name}1.", "")}"
+    fqdn_short = "${ var.name }-master${ count.index + 1}"
     hostname = "${ var.name}-master${ count.index + 1 }"
     kubelet_image_url = "${ var.kubelet_image_url }"
     kubelet_image_tag = "${ var.kubelet_image_tag }"
@@ -121,10 +153,12 @@ data "template_file" "etcd_cloud_config" {
     etcd_key = "${ gzip_me.etcd_key.output }"
     apiserver = "${ gzip_me.apiserver.output }"
     apiserver_key = "${ gzip_me.apiserver_key.output }"
+    kubelet_kubeconfig = "${ gzip_me.kubelet_kubeconfig.output }"
     kube_apiserver = "${ element(gzip_me.kube_apiserver.*.output, count.index) }"
-    kube_proxy = "${ gzip_me.kube_proxy.output }"
     kube_scheduler = "${ gzip_me.kube_scheduler.output }"
+    kube_scheduler_kubeconfig = "${ gzip_me.kube_scheduler_kubeconfig.output }"
     kube_controller_manager = "${ gzip_me.kube_controller_manager.output }"
+    kube_controller_manager_kubeconfig = "${ gzip_me.kube_controller_manager_kubeconfig.output }"
     known_tokens_csv = "${ gzip_me.known_tokens_csv.output }"
     basic_auth_csv = "${ gzip_me.basic_auth_csv.output }"
     abac_authz_policy = "${ gzip_me.abac_authz_policy.output}"

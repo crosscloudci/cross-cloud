@@ -25,3 +25,4 @@ variable "data_dir" {}
 variable "azure_cloud" {}
 variable "kube_proxy_token" {}
 variable "dns_suffix" {}
+variable "internal_lb_ip" {}

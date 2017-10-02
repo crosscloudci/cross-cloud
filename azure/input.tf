@@ -7,13 +7,14 @@ variable "data_dir" { default = "/cncf/data/azure" }
 variable "location"        { default = "westus" }
 variable "vpc_cidr"        { default = "10.0.0.0/8" }
 variable "subnet_cidr"     { default = "10.240.0.0/16"}
+variable "internal_lb_ip"  { default = "10.240.0.100"}
 
 # VM Image and size
 variable "admin_username" { default = "cncf"}
 variable "image_publisher" { default = "CoreOS" }
 variable "image_offer"     { default = "CoreOS" }
 variable "image_sku"       { default = "Stable" }
-variable "image_version"   { default = "1298.6.0" }
+variable "image_version"   { default = "1465.8.0" }
 variable "master_vm_size"   { default = "Standard_A2" }
 variable "worker_vm_size"   { default = "Standard_A2" }
 variable "bastion_vm_size"   { default = "Standard_A2" }

@@ -1,65 +1,91 @@
-{
-"apiVersion": "v1",
-"kind": "Pod",
-"metadata": {
-  "name":"kube-controller-manager",
-  "namespace": "kube-system",
-  "labels": {
-    "tier": "control-plane",
-    "component": "kube-controller-manager"
-  }
-},
-"spec":{
-"hostNetwork": true,
-"containers":[
-    {
-    "name": "kube-controller-manager",
-    "image": "gcr.io/google_containers/kube-controller-manager-amd64:v1.6.6",
-    "resources": {
-      "requests": {
-        "cpu": "200m"
-      }
-    },
-    "command": [
-                 "/bin/sh",
-                 "-c",
-                 "/usr/local/bin/kube-controller-manager --master=http://127.0.0.1:8080 --v=2 --use-service-account-credentials --cloud-provider=azure --cloud-config=/etc/srv/kubernetes/azure-config.json --root-ca-file=/etc/srv/kubernetes/pki/ca-certificates.crt --service-account-private-key-file=/etc/srv/kubernetes/pki/apiserver.key --cluster-name=kubernetes --cluster-cidr=10.244.0.0/14 --cluster-signing-cert-file=/etc/srv/kubernetes/pki/ca-certificates.crt --cluster-signing-key-file=/etc/srv/kubernetes/pki/ca-certificates.key --service-cluster-ip-range=10.0.0.0/16 --allocate-node-cidrs=true --feature-gates=ExperimentalCriticalPodAnnotation=true 1>>/tmp/kube-controller-manager.log 2>&1"
-               ],
-    "env":[{"name": "KUBE_CACHE_MUTATION_DETECTOR", "value": "false"}],
-    "livenessProbe": {
-      "httpGet": {
-        "host": "127.0.0.1",
-        "port": 10252,
-        "path": "/healthz"
-      },
-      "initialDelaySeconds": 15,
-      "timeoutSeconds": 15
-    },
-    "volumeMounts": [
-        { "name": "srvkube",
-        "mountPath": "/etc/srv/kubernetes",
-        "readOnly": true},
-        { "name": "etcssl",
-        "mountPath": "/etc/ssl",
-        "readOnly": true},
-        { "name": "usrsharecacerts",
-        "mountPath": "/usr/share/ca-certificates",
-        "readOnly": true}
-      ]
-    }
-],
-"volumes":[
-  { "name": "srvkube",
-    "hostPath": {
-        "path": "/etc/srv/kubernetes"}
-  },
-  { "name": "etcssl",
-    "hostPath": {
-        "path": "/etc/ssl"}
-  },
-  { "name": "usrsharecacerts",
-    "hostPath": {
-        "path": "/usr/share/ca-certificates"}
-  }
-]
-}}
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    k8s-app: kube-controller-manager
+  name: kube-controller-manager
+  namespace: kube-system
+spec:
+  containers:
+  - command:
+    - /bin/sh
+    - -c
+    - /usr/local/bin/kube-controller-manager --allocate-node-cidrs=true --attach-detach-reconcile-sync-period=1m0s
+      --cloud-provider=azure --cloud-config=/etc/srv/kubernetes/azure-config.json --cluster-cidr=100.96.0.0/11
+      --cluster-name=cluster.limenarch.com
+      --configure-cloud-routes=true --leader-elect=true --root-ca-file=/etc/srv/kubernetes/pki/ca-certificates.crt
+      --service-account-private-key-file=/etc/srv/kubernetes/pki/apiserver.key --use-service-account-credentials=true
+      --v=2 --kubeconfig=/var/lib/kube-controller-manager/kubeconfig
+      --cluster-signing-cert-file=/etc/srv/kubernetes/pki/ca-certificates.crt
+      --cluster-signing-key-file=/etc/srv/kubernetes/pki/ca-certificates.key 1>>/var/log/kube-controller-manager.log
+      2>&1
+    image: gcr.io/google_containers/kube-controller-manager:v1.7.2
+    livenessProbe:
+      httpGet:
+        host: 127.0.0.1
+        path: /healthz
+        port: 10252
+      initialDelaySeconds: 15
+      timeoutSeconds: 15
+    name: kube-controller-manager
+    resources:
+      requests:
+        cpu: 100m
+    volumeMounts:
+    - mountPath: /etc/ssl
+      name: etcssl
+      readOnly: true
+    - mountPath: /etc/pki/tls
+      name: etcpkitls
+      readOnly: true
+    - mountPath: /etc/pki/ca-trust
+      name: etcpkica-trust
+      readOnly: true
+    - mountPath: /usr/share/ssl
+      name: usrsharessl
+      readOnly: true
+    - mountPath: /var/ssl
+      name: varssl
+      readOnly: true
+    - mountPath: /etc/openssl
+      name: etcopenssl
+      readOnly: true
+    - mountPath: /etc/srv/kubernetes
+      name: srvkube
+      readOnly: true
+    - mountPath: /var/log
+      name: logfile
+    - mountPath: /var/lib/kube-controller-manager
+      name: varlibkcm
+      readOnly: true
+  hostNetwork: true
+  volumes:
+  - hostPath:
+      path: /etc/ssl
+    name: etcssl
+  - hostPath:
+      path: /etc/pki/tls
+    name: etcpkitls
+  - hostPath:
+      path: /etc/pki/ca-trust
+    name: etcpkica-trust
+  - hostPath:
+      path: /usr/share/ssl
+    name: usrsharessl
+  - hostPath:
+      path: /var/ssl
+    name: varssl
+  - hostPath:
+      path: /etc/openssl
+    name: etcopenssl
+  - hostPath:
+      path: /etc/srv/kubernetes
+    name: srvkube
+  - hostPath:
+      path: /var/log
+    name: logfile
+  - hostPath:
+      path: /var/lib/kube-controller-manager
+    name: varlibkcm
+status: {}

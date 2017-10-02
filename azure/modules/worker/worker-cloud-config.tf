@@ -49,7 +49,8 @@ data "template_file" "kube-proxy" {
   template = "${ file( "${ path.module }/kube-proxy.yml" )}"
 
   vars {
-    master_node = "${ var.internal_lb_ip }"
+    master_node = "${ var.name }-master1.${ replace("${azurerm_network_interface.cncf.0.internal_fqdn }", "worker-${ var.name}1", "")}"
+    # master_node = "${ var.internal_lb_ip }"
     # fqdn = "${ var.name }-worker${ count.index + 1 }.${ replace("${azurerm_network_interface.cncf.0.internal_fqdn}", "worker-${ var.name}1.", "")}"
     fqdn = "${ var.name }-worker${ count.index + 1 }"
   }
@@ -59,7 +60,7 @@ data "template_file" "proxy_kubeconfig" {
   template = "${ file( "${ path.module }/kubeconfig" )}"
 
   vars {
-    cluster = "certificate-authority-data: ${ base64encode(var.ca) } \n    server: https://${ var.internal_lb_ip }"
+    cluster = "certificate-authority-data: ${ base64encode(var.ca) } \n    server: https://${ var.name }-master1.${ replace("${azurerm_network_interface.cncf.0.internal_fqdn }", "worker-${ var.name}1", "")}"
     user = "kube-proxy"
     name = "service-account-context"
     user_authentication = "client-certificate-data: ${ base64encode(var.worker) } \n    client-key-data: ${ base64encode(var.worker_key) }"
@@ -70,7 +71,7 @@ data "template_file" "kubelet_kubeconfig" {
   template = "${ file( "${ path.module }/kubeconfig" )}"
 
   vars {
-    cluster = "certificate-authority-data: ${ base64encode(var.ca) } \n    server: https://${ var.internal_lb_ip }"
+    cluster = "certificate-authority-data: ${ base64encode(var.ca) } \n    server: https://${ var.name }-master1.${ replace("${azurerm_network_interface.cncf.0.internal_fqdn }", "worker-${ var.name}1", "")}"
     user = "kubelet"
     name = "service-account-context"
     user_authentication = "client-certificate-data: ${ base64encode(var.worker) } \n    client-key-data: ${ base64encode(var.worker_key) }"

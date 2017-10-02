@@ -79,6 +79,7 @@ spec:
     name: etcpkica-trust
   - hostPath:
       path: /usr/share/ssl
+    name: usrsharessl
   - hostPath:
       path: /var/ssl
     name: varssl

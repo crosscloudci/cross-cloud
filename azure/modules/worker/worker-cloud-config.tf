@@ -19,10 +19,12 @@ resource "gzip_me" "kubelet_kubeconfig" {
 }
 
 resource "gzip_me" "kube_proxy" {
+  count = "${ var.worker_node_count}"
   input = "${ data.template_file.kube-proxy.rendered }"
 }
 
 data "template_file" "worker_cloud_config" {
+  count = "${ var.worker_node_count }"
   template = "${ file( "${ path.module }/worker-cloud-config.yml" )}"
 
   vars {
@@ -39,13 +41,14 @@ data "template_file" "worker_cloud_config" {
     worker_key = "${ gzip_me.worker_key.output }"
     proxy_kubeconfig = "${ gzip_me.proxy_kubeconfig.output }"
     kubelet_kubeconfig = "${ gzip_me.kubelet_kubeconfig.output }"
-    kube_proxy = "${ gzip_me.kube_proxy.output }"
+    kube_proxy = "${ element(gzip_me.kube_proxy.*.output, count.index) }"
     # fqdn = "${ var.name }-worker${ count.index + 1 }.${ replace("${azurerm_network_interface.cncf.0.internal_fqdn}", "worker-${ var.name}1.", "")}"
     fqdn = "${ var.name }-worker${ count.index + 1 }"
   }
 }
 
 data "template_file" "kube-proxy" {
+  count = "${ var.worker_node_count }"
   template = "${ file( "${ path.module }/kube-proxy.yml" )}"
 
   vars {

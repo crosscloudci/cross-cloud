@@ -16,6 +16,8 @@ data "template_file" "kube_apiserver" {
   count = "${ var.master_node_count }"
   template = "${ file( "${ path.module }/kube-apiserver.yml" )}"
   vars {
+    kube_apiserver_registry = "${ var.kube_apiserver_tag }"
+    kube_apiserver_tag = "${ var.kube_apiserver_tag }"
     fqdn = "${ var.name }-master${ count.index + 1 }.${ replace("${azurerm_network_interface.cncf.0.internal_fqdn}", "${ var.name}1.", "")}"
     service_cidr = "${ var.service_cidr }"
     master_node_count = "${ var.master_node_count }"
@@ -25,7 +27,8 @@ data "template_file" "kube_apiserver" {
 data "template_file" "kube_controller_manager" {
   template = "${ file( "${ path.module }/kube-controller-manager.yml" )}"
   vars {
-    hyperkube = "${ var.kubelet_image_url }:${ var.kubelet_image_tag }"
+    kube_controller_manager_registry = "${ var.kube_controller_manager_tag }"
+    kube_controller_manager_tag = "${ var.kube_controller_manager_tag }"
   }
 }
 
@@ -42,7 +45,8 @@ data "template_file" "kube_controller_manager_kubeconfig" {
 data "template_file" "kube_scheduler" {
   template = "${ file( "${ path.module }/kube-scheduler.yml" )}"
   vars {
-    hyperkube = "${ var.kubelet_image_url }:${ var.kubelet_image_tag }"
+    kube_scheduler_registry = "${ var.kube_scheduler_tag }"
+    kube_scheduler_tag = "${ var.kube_scheduler_tag }"
   }
 }
 

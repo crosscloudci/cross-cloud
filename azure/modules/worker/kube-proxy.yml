@@ -18,7 +18,7 @@ spec:
       --conntrack-max-per-core=131072 --resource-container="" --cluster-cidr=${ pod_cidr }
       --hostname-override=${ fqdn } 
       --v=2 2>&1 | /usr/bin/tee /var/log/kube-proxy.log
-    image: gcr.io/google_containers/kube-proxy:v1.7.2
+    image: ${ kube_proxy_registry }:${ kube_proxy_tag }
     imagePullPolicy: IfNotPresent
     name: kube-proxy
     resources:

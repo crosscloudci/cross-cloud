@@ -18,8 +18,14 @@ variable "pod_cidr" {}
 variable "service_cidr" {}
 variable "non_masquerade_cidr" {}
 variable "admin_username" {}
-variable "kubelet_image_url" {}
-variable "kubelet_image_tag" {}
+variable "kube_apiserver_registry" {}
+variable "kube_apiserver_tag" {}
+variable "kube_controller_manager_registry" {}
+variable "kube_controller_manager_tag" {}
+variable "kube_scheduler_registry" {}
+variable "kube_scheduler_tag" {}
+variable "kube_proxy_registry" {}
+variable "kube_proxy_tag" {}
 # variable "etcd_security_group_id" {}
 # variable "external_elb_security_group_id" {}
 variable "ca" {}

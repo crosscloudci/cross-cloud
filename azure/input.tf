@@ -33,10 +33,16 @@ variable "worker_node_count" { default = "3" }
 # variable "worker_node_max" { default = "5" }
 
 # Deployment Artifact Versions
-# Hyperkube
-# Set from https://quay.io/repository/coreos/hyperkube?tab=tags
-variable "kubelet_image_url" { default = "quay.io/coreos/hyperkube"}
-variable "kubelet_image_tag" { default = "v1.4.7_coreos.0"}
+variable "kube_apiserver_registry" { default = "gcr.io/google_containers/kube-apiserver"}
+variable "kube_apiserver_tag" { default = "v1.7.2"}
+variable "kube_controller_manager_registry" { default = "gcr.io/google_containers/kube-controller-manager"}
+variable "kube_controller_manager_tag" { default = "v1.7.2"}
+variable "kube_scheduler_registry" { default = "gcr.io/google_containers/kube-scheduler"}
+variable "kube_scheduler_tag" { default = "v1.7.2"}
+variable "kube_proxy_registry" { default = "gcr.io/google_containers/kube-proxy"}
+variable "kube_proxy_tag" { default = "v1.7.2"}
+
+
 
 variable "client_id" {}
 variable "client_secret" {}

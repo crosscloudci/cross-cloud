@@ -18,8 +18,8 @@ variable "pod_cidr" {}
 variable "non_masquerade_cidr" {}
 variable "internal_tld" {}
 variable "admin_username" {}
-variable "kubelet_image_url" {}
-variable "kubelet_image_tag" {}
+variable "kube_proxy_registry" {}
+variable "kube_proxy_tag" {}
 variable "ca" {}
 variable "worker" {}
 variable "worker_key" {}

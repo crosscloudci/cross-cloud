@@ -5,14 +5,14 @@ resource "google_compute_instance" "cncf" {
 
   tags = ["bastion", "bar"]
 
-  disk {
-    image = "coreos-stable-1298-7-0-v20170401"
+  boot_disk {
+    initialize_params {
+      image = "coreos-stable-1298-7-0-v20170401"
+    }
   }
 
   // Local SSD disk
-  disk {
-    type    = "local-ssd"
-    scratch = true
+  scratch_disk {
   }
 
   network_interface {

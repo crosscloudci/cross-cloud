@@ -16,6 +16,7 @@ variable "dns_service_ip" {}
 variable "internal_tld" {}
 variable "pod_cidr" {}
 variable "service_cidr" {}
+variable "non_masquerade_cidr" {}
 variable "admin_username" {}
 variable "kubelet_image_url" {}
 variable "kubelet_image_tag" {}

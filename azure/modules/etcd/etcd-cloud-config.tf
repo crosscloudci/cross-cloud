@@ -17,12 +17,8 @@ data "template_file" "kube_apiserver" {
   template = "${ file( "${ path.module }/kube-apiserver.yml" )}"
   vars {
     fqdn = "${ var.name }-master${ count.index + 1 }.${ replace("${azurerm_network_interface.cncf.0.internal_fqdn}", "${ var.name}1.", "")}"
-    internal_tld = "${ var.internal_tld }"
     service_cidr = "${ var.service_cidr }"
     master_node_count = "${ var.master_node_count }"
-    hyperkube = "${ var.kubelet_image_url }:${ var.kubelet_image_tag }"
-    kubelet_image_url = "${ var.kubelet_image_url }"
-    kubelet_image_tag = "${ var.kubelet_image_tag }"
   }
 }
 

@@ -30,6 +30,7 @@ data "template_file" "worker_cloud_config" {
   vars {
     cluster_domain = "${ var.cluster_domain }"
     dns_service_ip = "${ var.dns_service_ip }"
+    non_masquerade_cidr = "${ var.non_masqquerade_cidr }"
     kubelet_image_url = "${ var.kubelet_image_url }"
     kubelet_image_tag = "${ var.kubelet_image_tag }"
     internal_tld = "${ var.internal_tld }"
@@ -53,8 +54,8 @@ data "template_file" "kube-proxy" {
 
   vars {
     master_node = "${ var.internal_lb_ip }"
-    # fqdn = "${ var.name }-worker${ count.index + 1 }.${ replace("${azurerm_network_interface.cncf.0.internal_fqdn}", "worker-${ var.name}1.", "")}"
     fqdn = "${ var.name }-worker${ count.index + 1 }"
+    pod_cidr = "${ var.pod_cidr }"
   }
 }
 

@@ -12,11 +12,11 @@ spec:
     - /bin/sh
     - -c
     - /usr/local/bin/kube-apiserver --address=127.0.0.1 --admission-control=NamespaceLifecycle,LimitRanger,ServiceAccount,PersistentVolumeLabel,DefaultStorageClass,DefaultTolerationSeconds,ResourceQuota
-      --allow-privileged=true --anonymous-auth=false --apiserver-count=3 --authorization-mode=AlwaysAllow
+      --allow-privileged=true --anonymous-auth=false --apiserver-count=${ master_node_count }
       --basic-auth-file=/etc/srv/kubernetes/basic_auth.csv --client-ca-file=/etc/srv/kubernetes/pki/ca-certificates.crt
       --cloud-provider=azure --cloud-config=/etc/srv/kubernetes/azure-config.json
       --etcd-servers=http://${ fqdn }:2379 --insecure-port=8080 --kubelet-preferred-address-types=InternalIP,Hostname,ExternalIP
-      --secure-port=443 --service-cluster-ip-range=100.64.0.0/13 --storage-backend=etcd2
+      --secure-port=443 --service-cluster-ip-range=${ service_cidr } --storage-backend=etcd2
       --tls-cert-file=/etc/srv/kubernetes/pki/apiserver.crt --tls-private-key-file=/etc/srv/kubernetes/pki/apiserver.key
       --token-auth-file=/etc/srv/kubernetes/known_tokens.csv
       --authorization-policy-file=/etc/srv/kubernetes/abac-authz-policy.jsonl --authorization-mode=RBAC,ABAC

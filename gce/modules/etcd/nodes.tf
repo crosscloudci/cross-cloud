@@ -48,12 +48,13 @@ resource "google_compute_instance" "cncf" {
   tags = ["foo", "bar"]
 
   boot_disk {
-    image = "coreos-stable-1298-7-0-v20170401"
+    initialize_params {
+      image = "coreos-stable-1298-7-0-v20170401"
+    }
   }
 
   // Local SSD disk
   scratch_disk {
-    type    = "local-ssd"
   }
 
   network_interface {

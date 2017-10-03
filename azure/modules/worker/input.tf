@@ -20,6 +20,8 @@ variable "internal_tld" {}
 variable "admin_username" {}
 variable "kube_proxy_registry" {}
 variable "kube_proxy_tag" {}
+variable "kubelet_artifact" {}
+variable "cni_artifact" {}
 variable "ca" {}
 variable "worker" {}
 variable "worker_key" {}

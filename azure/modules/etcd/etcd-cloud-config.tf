@@ -154,6 +154,8 @@ data "template_file" "etcd_cloud_config" {
     apiserver = "${ gzip_me.apiserver.output }"
     apiserver_key = "${ gzip_me.apiserver_key.output }"
     kubelet_kubeconfig = "${ gzip_me.kubelet_kubeconfig.output }"
+    kubelet_artifact = "${ var.kubelet_artifact }"
+    cni_artifact = "${ var.cni_artifact }"
     kube_apiserver = "${ element(gzip_me.kube_apiserver.*.output, count.index) }"
     kube_scheduler = "${ gzip_me.kube_scheduler.output }"
     kube_scheduler_kubeconfig = "${ gzip_me.kube_scheduler_kubeconfig.output }"

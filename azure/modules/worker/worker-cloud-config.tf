@@ -43,6 +43,8 @@ data "template_file" "worker_cloud_config" {
     proxy_kubeconfig = "${ gzip_me.proxy_kubeconfig.output }"
     kubelet_kubeconfig = "${ gzip_me.kubelet_kubeconfig.output }"
     kube_proxy = "${ element(gzip_me.kube_proxy.*.output, count.index) }"
+    kubelet_artifact = "${ var.kubelet_artifact }"
+    cni_artifact = "${ var.cni_artifact }"
     # fqdn = "${ var.name }-worker${ count.index + 1 }.${ replace("${azurerm_network_interface.cncf.0.internal_fqdn}", "worker-${ var.name}1.", "")}"
     fqdn = "${ var.name }-worker${ count.index + 1 }"
   }

@@ -26,6 +26,8 @@ variable "kube_scheduler_registry" {}
 variable "kube_scheduler_tag" {}
 variable "kube_proxy_registry" {}
 variable "kube_proxy_tag" {}
+variable "kubelet_artifact" {}
+variable "cni_artifact" {}
 # variable "etcd_security_group_id" {}
 # variable "external_elb_security_group_id" {}
 variable "ca" {}

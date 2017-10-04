@@ -16,7 +16,7 @@ data "template_file" "kube_apiserver" {
   count = "${ var.master_node_count }"
   template = "${ file( "${ path.module }/kube-apiserver.yml" )}"
   vars {
-    kube_apiserver_registry = "${ var.kube_apiserver_tag }"
+    kube_apiserver_registry = "${ var.kube_apiserver_registry }"
     kube_apiserver_tag = "${ var.kube_apiserver_tag }"
     fqdn = "${ var.name }-master${ count.index + 1 }.${ replace("${azurerm_network_interface.cncf.0.internal_fqdn}", "${ var.name}1.", "")}"
     service_cidr = "${ var.service_cidr }"
@@ -27,8 +27,10 @@ data "template_file" "kube_apiserver" {
 data "template_file" "kube_controller_manager" {
   template = "${ file( "${ path.module }/kube-controller-manager.yml" )}"
   vars {
-    kube_controller_manager_registry = "${ var.kube_controller_manager_tag }"
+    kube_controller_manager_registry = "${ var.kube_controller_manager_registry }"
     kube_controller_manager_tag = "${ var.kube_controller_manager_tag }"
+    pod_cidr = "${ var.pod_cidr }"
+    cluster_domain = "${ var.cluster_domain }"
   }
 }
 
@@ -45,7 +47,7 @@ data "template_file" "kube_controller_manager_kubeconfig" {
 data "template_file" "kube_scheduler" {
   template = "${ file( "${ path.module }/kube-scheduler.yml" )}"
   vars {
-    kube_scheduler_registry = "${ var.kube_scheduler_tag }"
+    kube_scheduler_registry = "${ var.kube_scheduler_registry }"
     kube_scheduler_tag = "${ var.kube_scheduler_tag }"
   }
 }
@@ -140,12 +142,11 @@ data "template_file" "etcd_cloud_config" {
     fqdn = "${ var.name }-master${ count.index + 1 }.${ replace("${azurerm_network_interface.cncf.0.internal_fqdn}", "${ var.name}1.", "")}"
     fqdn_short = "${ var.name }-master${ count.index + 1}"
     hostname = "${ var.name}-master${ count.index + 1 }"
-    kubelet_image_url = "${ var.kubelet_image_url }"
-    kubelet_image_tag = "${ var.kubelet_image_tag }"
     internal_tld = "${ var.internal_tld }"
     pod_cidr = "${ var.pod_cidr }"
     location = "${ var.location }"
     service_cidr = "${ var.service_cidr }"
+    non_masquerade_cidr = "${ var.non_masquerade_cidr }"
     cloud_config = "${ gzip_me.cloud_config.output }"
     ca = "${ gzip_me.ca.output }"
     ca_key = "${ gzip_me.ca_key.output }"

@@ -30,9 +30,7 @@ data "template_file" "worker_cloud_config" {
   vars {
     cluster_domain = "${ var.cluster_domain }"
     dns_service_ip = "${ var.dns_service_ip }"
-    non_masquerade_cidr = "${ var.non_masqquerade_cidr }"
-    kubelet_image_url = "${ var.kubelet_image_url }"
-    kubelet_image_tag = "${ var.kubelet_image_tag }"
+    non_masquerade_cidr = "${ var.non_masquerade_cidr }"
     internal_tld = "${ var.internal_tld }"
     location = "${ var.location }"
     azure_cloud = "${ var.azure_cloud }"

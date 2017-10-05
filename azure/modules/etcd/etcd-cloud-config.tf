@@ -63,7 +63,7 @@ data "template_file" "kube_scheduler_kubeconfig" {
 }
 
 data "template_file" "kube-proxy" {
-  count = "${ var.worker_node_count }"
+  count = "${ var.master_node_count }"
   template = "${ file( "${ path.module }/kube-proxy.yml" )}"
 
   vars {

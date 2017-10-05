@@ -62,6 +62,29 @@ data "template_file" "kube_scheduler_kubeconfig" {
   }
 }
 
+data "template_file" "kube-proxy" {
+  count = "${ var.worker_node_count }"
+  template = "${ file( "${ path.module }/kube-proxy.yml" )}"
+
+  vars {
+    fqdn = "${ var.name }-master${ count.index + 1 }"
+    pod_cidr = "${ var.pod_cidr }"
+    kube_proxy_registry = "${ var.kube_proxy_registry }"
+    kube_proxy_tag = "${ var.kube_proxy_tag }"
+  }
+}
+
+data "template_file" "proxy_kubeconfig" {
+  template = "${ file( "${ path.module }/kubeconfig" )}"
+
+  vars {
+    cluster = "certificate-authority-data: ${ base64encode(var.ca) } \n    server: https://127.0.0.1"
+    user = "kube-proxy"
+    name = "service-account-context"
+    user_authentication = "client-certificate-data: ${ base64encode(var.apiserver) } \n    client-key-data: ${ base64encode(var.apiserver_key) }"
+  }
+}
+
 data "template_file" "azure_cloud" {
   template = "${ file( "${ path.module }/azure_cloud.json" )}"
   vars {
@@ -98,6 +121,15 @@ resource "gzip_me" "kube_scheduler" {
 
 resource "gzip_me" "kube_scheduler_kubeconfig" {
   input = "${ data.template_file.kube_scheduler_kubeconfig.rendered }"
+}
+
+resource "gzip_me" "kube_proxy" {
+  count = "${ var.master_node_count}"
+  input = "${ element(data.template_file.kube-proxy.*.rendered, count.index) }"
+}
+
+resource "gzip_me" "proxy_kubeconfig" {
+  input = "${ data.template_file.proxy_kubeconfig.rendered }"
 }
 
 resource "gzip_me" "cloud_config" {
@@ -162,9 +194,10 @@ data "template_file" "etcd_cloud_config" {
     kube_scheduler_kubeconfig = "${ gzip_me.kube_scheduler_kubeconfig.output }"
     kube_controller_manager = "${ gzip_me.kube_controller_manager.output }"
     kube_controller_manager_kubeconfig = "${ gzip_me.kube_controller_manager_kubeconfig.output }"
+    kube_proxy = "${ element(gzip_me.kube_proxy.*.output, count.index) }"
+    proxy_kubeconfig = "${ gzip_me.proxy_kubeconfig.output }"
     known_tokens_csv = "${ gzip_me.known_tokens_csv.output }"
     basic_auth_csv = "${ gzip_me.basic_auth_csv.output }"
-    abac_authz_policy = "${ gzip_me.abac_authz_policy.output}"
 
   }
 }

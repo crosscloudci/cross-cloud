@@ -123,6 +123,20 @@ write-files:
     content: |
       ${ kube_scheduler_kubeconfig }
 
+
+  - path: /etc/kubernetes/manifests/kube-proxy.yml
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ kube_proxy }
+
+
+  - path: /var/lib/kube-proxy/kubeconfig
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ proxy_kubeconfig }
+
   - path: /etc/srv/kubernetes/pki/ca-certificates.crt
     permissions: "0644"
     encoding: "gzip+base64"
@@ -178,10 +192,5 @@ write-files:
     content: |
       ${ basic_auth_csv }
 
-  - path: /etc/srv/kubernetes/abac-authz-policy.jsonl
-    permissions: "0644"
-    encoding: "gzip+base64"
-    content: |
-      ${ abac_authz_policy }
 
 

@@ -2,6 +2,24 @@ provider "gzip" {
   compressionlevel = "BestCompression"
 }
 
+data "template_file" "etcd" {
+  template = "${ file( "${ path.module }/etcd.yml" )}"
+  vars {
+    etcd_discovery = "${ etcdiscovery_token.etcd.id }"
+    count = "${ var.master_node_count }"
+    fqdn = "${ var.name }-master${ count.index + 1 }.${ replace("${azurerm_network_interface.cncf.0.internal_fqdn}", "${ var.name}1.", "")}"
+  }
+}
+
+data "template_file" "etcd_events" {
+  template = "${ file( "${ path.module }/etcd-events.yml" )}"
+  vars {
+    etcd_events_discovery = "${ etcdiscovery_token.etcd_events.id }"
+    count = "${ var.master_node_count }"
+    fqdn = "${ var.name }-master${ count.index + 1 }.${ replace("${azurerm_network_interface.cncf.0.internal_fqdn}", "${ var.name}1.", "")}"
+  }
+}
+
 data "template_file" "kubelet_kubeconfig" {
   template = "${ file( "${ path.module }/kubeconfig" )}"
   vars {
@@ -98,6 +116,16 @@ data "template_file" "azure_cloud" {
   }
 }
 
+resource "gzip_me" "etcd" {
+  count = "${ var.master_node_count }"
+  input = "${ element(data.template_file.etcd.*.rendered, count.index) }"
+}
+
+resource "gzip_me" "etcd_events" {
+  count = "${ var.master_node_count }"
+  input = "${ element(data.template_file.etcd_events.*.rendered, count.index) }"
+}
+
 resource "gzip_me" "kubelet_kubeconfig" {
   input = "${ data.template_file.kubelet_kubeconfig.rendered }"
 }
@@ -182,13 +210,13 @@ data "template_file" "etcd_cloud_config" {
     cloud_config = "${ gzip_me.cloud_config.output }"
     ca = "${ gzip_me.ca.output }"
     ca_key = "${ gzip_me.ca_key.output }"
-    etcd = "${ gzip_me.etcd.output }"
-    etcd_key = "${ gzip_me.etcd_key.output }"
     apiserver = "${ gzip_me.apiserver.output }"
     apiserver_key = "${ gzip_me.apiserver_key.output }"
     kubelet_kubeconfig = "${ gzip_me.kubelet_kubeconfig.output }"
     kubelet_artifact = "${ var.kubelet_artifact }"
     cni_artifact = "${ var.cni_artifact }"
+    etcd = "${ element(gzip_me.etcd.*.output, count.index) }"
+    etcd_events = "${ element(gzip_me.etcd_events.*.output, count.index) }"
     kube_apiserver = "${ element(gzip_me.kube_apiserver.*.output, count.index) }"
     kube_scheduler = "${ gzip_me.kube_scheduler.output }"
     kube_scheduler_kubeconfig = "${ gzip_me.kube_scheduler_kubeconfig.output }"

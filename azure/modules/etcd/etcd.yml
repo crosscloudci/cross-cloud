@@ -1,0 +1,62 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    k8s-app: etcd-server
+  name: etcd-server
+  namespace: kube-system
+spec:
+  containers:
+  - command:
+    - /bin/sh
+    - -c
+    - /usr/local/bin/etcd 1>>/var/log/etcd.log 2>&1
+    env:
+    - name: ETCD_NAME
+      value: ${ fqdn }
+    - name: ETCD_DATA_DIR
+      value: /var/etcd/data
+    - name: ETCD_LISTEN_PEER_URLS
+      value: http://${ fqdn }:2380
+    - name: ETCD_LISTEN_CLIENT_URLS
+      value: http://${ fqdn }:2379,http://127.0.0.1:2379
+    - name: ETCD_ADVERTISE_CLIENT_URLS
+      value: http://${ fqdn }:2379
+    - name: ETCD_INITIAL_ADVERTISE_PEER_URLS
+      value: http://${ fqdn }:2380
+    - name: ETCD_DISCOVERY
+      value: ${ etcd_discovery }
+    image: gcr.io/google_containers/etcd:2.2.1
+    livenessProbe:
+      httpGet:
+        host: 127.0.0.1
+        path: /health
+        port: 4001
+      initialDelaySeconds: 15
+      timeoutSeconds: 15
+    name: etcd-container
+    ports:
+    - containerPort: 2380
+      hostPort: 2380
+      name: serverport
+    - containerPort: 4001
+      hostPort: 4001
+      name: clientport
+    resources:
+      requests:
+        cpu: 200m
+    volumeMounts:
+    - mountPath: /var/etcd/data
+      name: varetcdata
+    - mountPath: /var/log/etcd.log
+      name: varlogetcd
+  hostNetwork: true
+  volumes:
+  - hostPath:
+      path: /var/etcd/data
+    name: varetcdata
+  - hostPath:
+      path: /var/log/etcd.log
+    name: varlogetcd
+status: {}

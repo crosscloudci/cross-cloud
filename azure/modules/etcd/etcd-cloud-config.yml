@@ -3,25 +3,7 @@
 ---
 coreos:
 
-  etcd2:
-    advertise-client-urls: http://${ fqdn }:2379
-    # cert-file: /etc/kubernetes/ssl/k8s-etcd.pem
-    debug: true
-    initial-advertise-peer-urls: https://${ fqdn }:2380
-    # key-file: /etc/kubernetes/ssl/k8s-etcd-key.pem
-    listen-client-urls: http://${ fqdn }:2379,http://127.0.0.1:2379
-    listen-peer-urls: https://${ fqdn }:2380
-    name: ${ fqdn } 
-    discovery: ${ etcd_discovery }
-    peer-trusted-ca-file: /etc/srv/kubernetes/pki/ca-certificates.crt
-    peer-client-cert-auth: true
-    peer-cert-file: /etc/srv/kubernetes/pki/etcd.crt
-    peer-key-file: /etc/srv/kubernetes/pki/etcd.key
-
   units:
-    - name: etcd2.service
-      command: start
-
     - name: docker.service
       command: start
       drop-ins:
@@ -98,6 +80,16 @@ write-files:
     content: |
       ${ kubelet_kubeconfig }
 
+  - path: /etc/kubernetes/manifests/etcd.yml
+    encoding: "gzip+base64"
+    content: |
+      ${ etcd }
+
+  - path: /etc/kubernetes/manifests/etcd-events.yml
+    encoding: "gzip+base64"
+    content: |
+      ${ etcd_events }
+
   - path: /etc/kubernetes/manifests/kube-apiserver.yml
     encoding: "gzip+base64"
     content: |
@@ -161,18 +153,6 @@ write-files:
     encoding: "gzip+base64"
     content: |
       ${ apiserver_key }
-
-  - path: /etc/srv/kubernetes/pki/etcd.crt
-    permissions: "0644"
-    encoding: "gzip+base64"
-    content: |
-      ${ etcd }
-
-  - path: /etc/srv/kubernetes/pki/etcd.key
-    permissions: "0644"
-    encoding: "gzip+base64"
-    content: |
-      ${ etcd_key }
 
   - path: /etc/srv/kubernetes/azure-config.json
     permissions: "0644"

@@ -1,7 +1,3 @@
-provider "gzip" {
-  compressionlevel = "BestCompression"
-}
-
 resource "gzip_me" "ca" {
   input = "${ var.ca }"
 }

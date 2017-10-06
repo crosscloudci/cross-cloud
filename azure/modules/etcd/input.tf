@@ -12,6 +12,8 @@ variable "storage_account" {}
 variable "storage_primary_endpoint" {}
 variable "storage_container" {}
 variable "cluster_domain" {}
+variable "cloud_provider" {}
+variable "cloud_config" {}
 variable "dns_service_ip" {}
 variable "internal_tld" {}
 variable "pod_cidr" {}
@@ -34,8 +36,6 @@ variable "cni_artifact" {}
 # variable "external_elb_security_group_id" {}
 variable "ca" {}
 variable "ca_key" {}
-variable "etcd" {}
-variable "etcd_key" {}
 variable "apiserver" {}
 variable "apiserver_key" {}
 variable "data_dir" {}

@@ -29,11 +29,13 @@ data "template_file" "worker_cloud_config" {
 
   vars {
     cluster_domain = "${ var.cluster_domain }"
+    cloud_provider = "${ var.cloud_provider }"
+    cloud_config = "${ var.cloud_config }"
     dns_service_ip = "${ var.dns_service_ip }"
     non_masquerade_cidr = "${ var.non_masquerade_cidr }"
     internal_tld = "${ var.internal_tld }"
     location = "${ var.location }"
-    azure_cloud = "${ var.azure_cloud }"
+    cloud_config_file = "${ var.cloud_config_file }"
     master_node = "${ var.internal_lb_ip }"
     ca = "${ gzip_me.ca.output }"
     worker = "${ gzip_me.worker.output }"

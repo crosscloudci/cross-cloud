@@ -43,6 +43,8 @@ data "template_file" "kube_apiserver" {
     fqdn = "${ var.name }-master${ count.index + 1 }.${ replace("${azurerm_network_interface.cncf.0.internal_fqdn}", "${ var.name}1.", "")}"
     service_cidr = "${ var.service_cidr }"
     master_node_count = "${ var.master_node_count }"
+    cloud_provider = "${ var.cloud_provider }"
+    cloud_config = "${ var.cloud_config }"
   }
 }
 
@@ -53,6 +55,8 @@ data "template_file" "kube_controller_manager" {
     kube_controller_manager_tag = "${ var.kube_controller_manager_tag }"
     pod_cidr = "${ var.pod_cidr }"
     cluster_domain = "${ var.cluster_domain }"
+    cloud_provider = "${ var.cloud_provider }"
+    cloud_config = "${ var.cloud_config }"
   }
 }
 
@@ -107,7 +111,7 @@ data "template_file" "proxy_kubeconfig" {
   }
 }
 
-data "template_file" "azure_cloud" {
+data "template_file" "cloud_config_file" {
   template = "${ file( "${ path.module }/azure_cloud.json" )}"
   vars {
     client_id = "${ var.client_id }"
@@ -164,8 +168,8 @@ resource "gzip_me" "proxy_kubeconfig" {
   input = "${ data.template_file.proxy_kubeconfig.rendered }"
 }
 
-resource "gzip_me" "cloud_config" {
-  input = "${ data.template_file.azure_cloud.rendered }"
+resource "gzip_me" "cloud_config_file" {
+  input = "${ data.template_file.cloud_config_file.rendered }"
 }
 
 resource "gzip_me" "ca" {
@@ -192,6 +196,8 @@ data "template_file" "etcd_cloud_config" {
 
   vars {
     cluster_domain = "${ var.cluster_domain }"
+    cloud_provider = "${ var.cloud_provider }"
+    cloud_config = "${ var.cloud_config }"
     cluster-token = "etcd-cluster-${ var.name }"
     etcd_discovery = "${ etcdiscovery_token.etcd.id }"
     dns_service_ip = "${ var.dns_service_ip }"
@@ -203,7 +209,7 @@ data "template_file" "etcd_cloud_config" {
     location = "${ var.location }"
     service_cidr = "${ var.service_cidr }"
     non_masquerade_cidr = "${ var.non_masquerade_cidr }"
-    cloud_config = "${ gzip_me.cloud_config.output }"
+    cloud_config_file = "${ gzip_me.cloud_config_file.output }"
     ca = "${ gzip_me.ca.output }"
     ca_key = "${ gzip_me.ca_key.output }"
     apiserver = "${ gzip_me.apiserver.output }"

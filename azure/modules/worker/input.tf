@@ -13,6 +13,8 @@ variable "storage_container" {}
 variable "availability_id" {}
 variable "external_lb" {}
 variable "cluster_domain" {}
+variable "cloud_provider" {}
+variable "cloud_config" {}
 variable "dns_service_ip" {}
 variable "pod_cidr" {}
 variable "non_masquerade_cidr" {}
@@ -26,7 +28,7 @@ variable "ca" {}
 variable "worker" {}
 variable "worker_key" {}
 variable "data_dir" {}
-variable "azure_cloud" {}
+variable "cloud_config_file" {}
 variable "kube_proxy_token" {}
 variable "dns_suffix" {}
 variable "internal_lb_ip" {}

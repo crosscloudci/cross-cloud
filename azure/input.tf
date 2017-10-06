@@ -20,6 +20,8 @@ variable "worker_vm_size"   { default = "Standard_A2" }
 variable "bastion_vm_size"   { default = "Standard_A2" }
 
 # Kubernetes
+variable "cloud_provider" { default = "azure" }
+variable "cloud_config" { default = "--cloud-config=/etc/srv/kubernetes/azure-config.json" }
 variable "cluster_domain" { default = "cluster.local" }
 variable "pod_cidr" { default = "100.96.0.0/11" }
 variable "service_cidr"   { default = "100.64.0.0/13" }

@@ -7,8 +7,26 @@ module "network" {
   location = "${ var.location }"
  }
 
-module "etcd" {
-  source = "./modules/etcd"
+ module "bastion" {
+   source = "./modules/bastion"
+   name = "${ var.name }"
+   location = "${ var.location }"
+   bastion_vm_size = "${ var.bastion_vm_size }"
+   image_publisher = "${ var.image_publisher }"
+   image_offer = "${ var.image_offer }"
+   image_sku = "${ var.image_sku }"
+   image_version = "${ var.image_version }"
+   admin_username = "${ var.admin_username }"
+   subnet_id = "${ module.network.subnet_id }"
+   storage_primary_endpoint = "${ azurerm_storage_account.cncf.primary_blob_endpoint }"
+   storage_container = "${ azurerm_storage_container.cncf.name }"
+   availability_id = "${ azurerm_availability_set.cncf.id }"
+   internal_tld = "${ var.internal_tld }"
+   data_dir = "${ var.data_dir }"
+}
+
+module "master" {
+  source = "./modules/master"
   name = "${ var.name }"
   location = "${ var.location }"
   admin_username = "${ var.admin_username }"
@@ -25,22 +43,21 @@ module "etcd" {
   data_dir = "${ var.data_dir }"
 }
 
-
-module "bastion" {
-  source = "./modules/bastion"
+module "worker" {
+  source = "./modules/worker"
   name = "${ var.name }"
   location = "${ var.location }"
-  bastion_vm_size = "${ var.bastion_vm_size }"
+  admin_username = "${ var.admin_username }"
+  worker_node_count = "${ var.worker_node_count }"
+  worker_vm_size = "${ var.worker_vm_size }"
   image_publisher = "${ var.image_publisher }"
   image_offer = "${ var.image_offer }"
   image_sku = "${ var.image_sku }"
   image_version = "${ var.image_version }"
-  admin_username = "${ var.admin_username }"
   subnet_id = "${ module.network.subnet_id }"
   storage_primary_endpoint = "${ azurerm_storage_account.cncf.primary_blob_endpoint }"
   storage_container = "${ azurerm_storage_container.cncf.name }"
   availability_id = "${ azurerm_availability_set.cncf.id }"
-  internal_tld = "${ var.internal_tld }"
   data_dir = "${ var.data_dir }"
 }
 
@@ -82,45 +99,6 @@ module "tls" {
   tls_worker_cert_ip_addresses = "127.0.0.1"
 
 }
-
-module "worker" {
-  source = "./modules/worker"
-  name = "${ var.name }"
-  location = "${ var.location }"
-  admin_username = "${ var.admin_username }"
-  worker_node_count = "${ var.worker_node_count }"
-  worker_vm_size = "${ var.worker_vm_size }"
-  image_publisher = "${ var.image_publisher }"
-  image_offer = "${ var.image_offer }"
-  image_sku = "${ var.image_sku }"
-  image_version = "${ var.image_version }"
-  subnet_id = "${ module.network.subnet_id }"
-  storage_account = "${ azurerm_storage_account.cncf.name }"
-  storage_primary_endpoint = "${ azurerm_storage_account.cncf.primary_blob_endpoint }"
-  storage_container = "${ azurerm_storage_container.cncf.name }"
-  availability_id = "${ azurerm_availability_set.cncf.id }"
-  external_lb = "${ module.etcd.external_lb }"
-  cluster_domain = "${ var.cluster_domain }"
-  cloud_provider = "${ var.cloud_provider }"
-  cloud_config = "${ var.cloud_config }"
-  kubelet_artifact = "${ var.kubelet_artifact }"
-  cni_artifact = "${ var.cni_artifact }"
-  kube_proxy_registry = "${ var.kube_proxy_registry }"
-  kube_proxy_tag = "${ var.kube_proxy_tag }"
-  dns_service_ip = "${ var.dns_service_ip }"
-  pod_cidr = "${ var.pod_cidr }"
-  non_masquerade_cidr = "${ var.non_masquerade_cidr }"
-  internal_tld = "${ var.internal_tld }"
-  ca                             = "${ module.tls.ca }"
-  worker                         = "${ module.tls.worker }"
-  worker_key                     = "${ module.tls.worker_key }"
-  data_dir = "${ var.data_dir }"
-  cloud_config_file = "${ module.etcd.cloud_config_file }"
-  kube_proxy_token = "${ module.etcd.kube_proxy_token }"
-  dns_suffix = "${ module.etcd.dns_suffix }"
-  internal_lb_ip = "${ var.internal_lb_ip }"
-}
-
 
 module "kubeconfig" {
   source = "../kubeconfig"

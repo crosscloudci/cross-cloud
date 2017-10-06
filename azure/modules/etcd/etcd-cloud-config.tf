@@ -3,19 +3,19 @@ provider "gzip" {
 }
 
 data "template_file" "etcd" {
+  count = "${ var.master_node_count }"
   template = "${ file( "${ path.module }/etcd.yml" )}"
   vars {
     etcd_discovery = "${ etcdiscovery_token.etcd.id }"
-    count = "${ var.master_node_count }"
     fqdn = "${ var.name }-master${ count.index + 1 }.${ replace("${azurerm_network_interface.cncf.0.internal_fqdn}", "${ var.name}1.", "")}"
   }
 }
 
 data "template_file" "etcd_events" {
+  count = "${ var.master_node_count }"
   template = "${ file( "${ path.module }/etcd-events.yml" )}"
   vars {
     etcd_events_discovery = "${ etcdiscovery_token.etcd_events.id }"
-    count = "${ var.master_node_count }"
     fqdn = "${ var.name }-master${ count.index + 1 }.${ replace("${azurerm_network_interface.cncf.0.internal_fqdn}", "${ var.name}1.", "")}"
   }
 }
@@ -170,14 +170,6 @@ resource "gzip_me" "ca" {
 
 resource "gzip_me" "ca_key" {
   input = "${ var.ca_key }"
-}
-
-resource "gzip_me" "etcd" {
-  input = "${ var.etcd }"
-}
-
-resource "gzip_me" "etcd_key" {
-  input = "${ var.etcd_key }"
 }
 
 resource "gzip_me" "apiserver" {

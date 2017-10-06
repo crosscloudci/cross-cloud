@@ -11,7 +11,7 @@ spec:
   - command:
     - /bin/sh
     - -c
-    - /usr/local/bin/etcd 1>>/var/log/etcd.log 2>&1
+    - /usr/local/bin/etcd 1>>/var/log/etcd-events.log 2>&1
     env:
     - name: ETCD_NAME
       value: events-${ fqdn }
@@ -20,14 +20,14 @@ spec:
     - name: ETCD_LISTEN_PEER_URLS
       value: http://${ fqdn }:2381
     - name: ETCD_LISTEN_CLIENT_URLS
-      value: http://${ fqdn }:2381,http://127.0.0.1:2381
+      value: http://${ fqdn }:4002,http://127.0.0.1:4002
     - name: ETCD_ADVERTISE_CLIENT_URLS
-      value: http://${ fqdn }:2381
+      value: http://${ fqdn }:4002
     - name: ETCD_INITIAL_ADVERTISE_PEER_URLS
-      value: http://${ fqdn }:2382
-    - name: ETCD_INITIAL_CLUSTER
+      value: http://${ fqdn }:2381
+    - name: ETCD_DISCOVERY
       value: ${ etcd_events_discovery }
-    image: gcr.io/google_containers/etcd:2.2.1
+    image: registry.cncf.ci/etcd/etcd-docker:master.38cc76af.26448
     livenessProbe:
       httpGet:
         host: 127.0.0.1
@@ -49,7 +49,7 @@ spec:
     volumeMounts:
     - mountPath: /var/etcd/data-events
       name: varetcdata
-    - mountPath: /var/log/etcd.log
+    - mountPath: /var/log
       name: varlogetcd
   hostNetwork: true
   volumes:
@@ -57,6 +57,6 @@ spec:
       path: /var/etcd/data-events
     name: varetcdata
   - hostPath:
-      path: /var/log/etcd-events.log
+      path: /var/log
     name: varlogetcd
 status: {}

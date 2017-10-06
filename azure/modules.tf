@@ -23,6 +23,8 @@ module "etcd" {
   storage_primary_endpoint = "${ azurerm_storage_account.cncf.primary_blob_endpoint }"
   storage_container = "${ var.name }"
   # storage_container = "${ azurerm_storage_container.cncf.name }"
+  etcd_registry = "${ var.etcd_registry }"
+  etcd_tag = "${ var.etcd_tag }"
   kube_apiserver_registry = "${ var.kube_apiserver_registry }"
   kube_apiserver_tag = "${ var.kube_apiserver_tag }"
   kube_controller_manager_registry = "${ var.kube_controller_manager_registry }"
@@ -93,7 +95,6 @@ module "tls" {
   tls_etcd_cert_ip_addresses = "127.0.0.1"
 
   tls_client_cert_subject_common_name = "kubecfg"
-  # tls_client_cert_subject_organization = "system:masters"
   tls_client_cert_validity_period_hours = 1000
   tls_client_cert_early_renewal_hours = 100
   tls_client_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local,*.${ module.etcd.dns_suffix }"

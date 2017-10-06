@@ -96,7 +96,36 @@ module "tls" {
 module "master_templates" {
   source = "../master_templates"
 
+  master_node_count = "${ var.master_node_count }"
 
+  kubelet_artifact = "${ var.kubelet_artifact }"
+  cni_artifact = "${ var.cni_artifact }"
+  etcd_registry = "${ var.etcd_artifact }"
+  etcd_tag = "${ var.etcd_tag }"
+  kube_apiserver_registry = "${ var.kube_apiserver_registry }"
+  kube_apiserver_tag = "${ var.kube_apiserver_tag }"
+  kube_controller_manager_registry = "${ var.kube_controller_manager_registry }"
+  kube_controller_manager_tag = "${ var.kube_controller_manager_tag }"
+  kube_scheduler_registry = "${ var.kube_scheduler_registry }"
+  kube_scheduler_tag = "${ var.kube_scheduler_tag }"
+  kube_proxy_registry = "${ var.kube_proxy_registry }"
+  kube_proxy_tag = "${ var.kube_proxy_tag }"
+
+  cloud_provider = "${ var.cloud_provider }"
+  cloud_config = "${ var.cloud_config }"
+  cluster_domain = "${ var.cluster_domain }"
+  pod_cidr = "${ var.pod_cidr }"
+  service_cidr = "${ var.service_cidr }"
+  non_masquerade_cidr = "${ var.non_masquerade_cidr }"
+  dns_service_ip = "${ var.dns_service_ip }"
+
+  ca = "${ var.ca }"
+  ca_key = "${ var.ca_key }"
+  apiserver = "${ var.apiserver }"
+  apiserver_key = "${ var.apiserver_key }"
+  cloud_config_file = "${ var.cloud_config_file }"
+
+}
 
 
 module "kubeconfig" {

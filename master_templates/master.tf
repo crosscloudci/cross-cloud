@@ -26,6 +26,10 @@ resource "gzip_me" "basic_auth_csv" {
   input = "${ data.template_file.basic_auth_csv.rendered }"
 }
 
+resource "gzip_me" "cloud_config_file" {
+  input = "${ var.cloud_config_file }"
+}
+
 
 
 

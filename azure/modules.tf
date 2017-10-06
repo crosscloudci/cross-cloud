@@ -123,7 +123,7 @@ module "master_templates" {
   ca_key = "${ var.ca_key }"
   apiserver = "${ var.apiserver }"
   apiserver_key = "${ var.apiserver_key }"
-  cloud_config_file = "${ var.cloud_config_file }"
+  cloud_config_file = "${ data.template_file.cloud_config_file.rendered }"
 
 }
 
@@ -148,7 +148,7 @@ module "worker_templates" {
   ca = "${ var.ca }"
   worker = "${ var.worker }"
   worker_key = "${ var.worker_key }"
-  cloud_config_file = "${ var.cloud_config_file }"
+  cloud_config_file = "${ data.template_file.cloud_config_file.rendered }"
 
 }
 

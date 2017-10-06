@@ -93,6 +93,11 @@ module "tls" {
 
 }
 
+module "master_templates" {
+  source = "../master_templates"
+
+
+
 
 module "kubeconfig" {
   source = "../kubeconfig"

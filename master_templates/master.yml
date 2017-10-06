@@ -140,7 +140,6 @@ write-files:
     content: |
       ${ ca_key }
 
-
   - path: /etc/srv/kubernetes/pki/apiserver.crt
     permissions: "0644"
     encoding: "gzip+base64"

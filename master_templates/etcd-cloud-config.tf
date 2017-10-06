@@ -111,19 +111,6 @@ data "template_file" "proxy_kubeconfig" {
   }
 }
 
-data "template_file" "cloud_config_file" {
-  template = "${ file( "${ path.module }/azure_cloud.json" )}"
-  vars {
-    client_id = "${ var.client_id }"
-    client_secret = "${ var.client_secret }"
-    tenant_id = "${ var.tenant_id }"
-    subscription_id = "${ var.subscription_id }"
-    name = "${ var.name }"
-    location = "${ var.location }"
-    subnet_name = "subnet-${ var.name}"
-  }
-}
-
 resource "gzip_me" "etcd" {
   count = "${ var.master_node_count }"
   input = "${ element(data.template_file.etcd.*.rendered, count.index) }"
@@ -166,10 +153,6 @@ resource "gzip_me" "kube_proxy" {
 
 resource "gzip_me" "proxy_kubeconfig" {
   input = "${ data.template_file.proxy_kubeconfig.rendered }"
-}
-
-resource "gzip_me" "cloud_config_file" {
-  input = "${ data.template_file.cloud_config_file.rendered }"
 }
 
 resource "gzip_me" "ca" {

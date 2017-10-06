@@ -1,6 +1,0 @@
-#cloud-config
-
----
-coreos:
-  update:
-    reboot-strategy: etcd-lock

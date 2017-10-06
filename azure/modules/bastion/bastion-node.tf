@@ -45,8 +45,6 @@ resource "azurerm_virtual_machine" "cncf" {
     computer_name  = "hostname"
     admin_username = "${ var.admin_username }"
     admin_password = "Password1234!"
-    custom_data = "${ data.template_file.bastion-user-data.rendered }"
-    #custom_data = "${file("${path.module}/user-data2.yml")}"
   }
 
   os_profile_linux_config {

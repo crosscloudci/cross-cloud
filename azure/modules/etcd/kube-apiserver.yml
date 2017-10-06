@@ -15,7 +15,7 @@ spec:
       --allow-privileged=true --anonymous-auth=false --apiserver-count=${ master_node_count }
       --basic-auth-file=/etc/srv/kubernetes/basic_auth.csv --client-ca-file=/etc/srv/kubernetes/pki/ca-certificates.crt
       --cloud-provider=azure --cloud-config=/etc/srv/kubernetes/azure-config.json
-      --etcd-servers=http://${ fqdn }:2379 --insecure-port=8080 --kubelet-preferred-address-types=InternalIP,Hostname,ExternalIP
+      --etcd-servers=http://${ fqdn }:4001 --insecure-port=8080 --kubelet-preferred-address-types=InternalIP,Hostname,ExternalIP
       --secure-port=443 --service-cluster-ip-range=${ service_cidr } --storage-backend=etcd2
       --tls-cert-file=/etc/srv/kubernetes/pki/apiserver.crt --tls-private-key-file=/etc/srv/kubernetes/pki/apiserver.key
       --token-auth-file=/etc/srv/kubernetes/known_tokens.csv

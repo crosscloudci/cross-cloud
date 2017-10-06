@@ -21,7 +21,6 @@ module "network" {
    storage_primary_endpoint = "${ azurerm_storage_account.cncf.primary_blob_endpoint }"
    storage_container = "${ azurerm_storage_container.cncf.name }"
    availability_id = "${ azurerm_availability_set.cncf.id }"
-   internal_tld = "${ var.internal_tld }"
    data_dir = "${ var.data_dir }"
 }
 

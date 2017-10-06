@@ -55,10 +55,3 @@ resource "azurerm_virtual_machine" "cncf" {
     }
   }
 }
-
-data "template_file" "bastion-user-data" {
-  template = "${ file( "${ path.module }/bastion-user-data.yml" )}"
-  vars {
-    internal_tld = "${ var.internal_tld }"
-  }
-}

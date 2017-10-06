@@ -6,6 +6,8 @@ data "template_file" "etcd" {
   count = "${ var.master_node_count }"
   template = "${ file( "${ path.module }/etcd.yml" )}"
   vars {
+    etcd_registry = "${ var.etcd_registry }"
+    etcd_tag = "${ var.etcd_tag }"
     etcd_discovery = "${ etcdiscovery_token.etcd.id }"
     fqdn = "${ var.name }-master${ count.index + 1 }.${ replace("${azurerm_network_interface.cncf.0.internal_fqdn}", "${ var.name}1.", "")}"
   }
@@ -15,6 +17,8 @@ data "template_file" "etcd_events" {
   count = "${ var.master_node_count }"
   template = "${ file( "${ path.module }/etcd-events.yml" )}"
   vars {
+    etcd_registry = "${ var.etcd_registry }"
+    etcd_tag = "${ var.etcd_tag }"
     etcd_events_discovery = "${ etcdiscovery_token.etcd_events.id }"
     fqdn = "${ var.name }-master${ count.index + 1 }.${ replace("${azurerm_network_interface.cncf.0.internal_fqdn}", "${ var.name}1.", "")}"
   }

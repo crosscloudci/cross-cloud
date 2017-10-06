@@ -27,7 +27,7 @@ spec:
       value: http://${ fqdn }:2381
     - name: ETCD_DISCOVERY
       value: ${ etcd_events_discovery }
-    image: registry.cncf.ci/etcd/etcd-docker:master.38cc76af.26448
+    image: ${ etcd_registry }:${ etcd_tag }
     livenessProbe:
       httpGet:
         host: 127.0.0.1

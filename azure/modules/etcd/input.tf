@@ -18,6 +18,8 @@ variable "pod_cidr" {}
 variable "service_cidr" {}
 variable "non_masquerade_cidr" {}
 variable "admin_username" {}
+variable "etcd_registry" {}
+variable "etcd_tag" {}
 variable "kube_apiserver_registry" {}
 variable "kube_apiserver_tag" {}
 variable "kube_controller_manager_registry" {}

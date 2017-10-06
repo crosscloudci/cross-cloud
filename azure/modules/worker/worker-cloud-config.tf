@@ -30,8 +30,7 @@ data "template_file" "worker_cloud_config" {
   vars {
     cluster_domain = "${ var.cluster_domain }"
     dns_service_ip = "${ var.dns_service_ip }"
-    kubelet_image_url = "${ var.kubelet_image_url }"
-    kubelet_image_tag = "${ var.kubelet_image_tag }"
+    non_masquerade_cidr = "${ var.non_masquerade_cidr }"
     internal_tld = "${ var.internal_tld }"
     location = "${ var.location }"
     azure_cloud = "${ var.azure_cloud }"
@@ -42,6 +41,8 @@ data "template_file" "worker_cloud_config" {
     proxy_kubeconfig = "${ gzip_me.proxy_kubeconfig.output }"
     kubelet_kubeconfig = "${ gzip_me.kubelet_kubeconfig.output }"
     kube_proxy = "${ element(gzip_me.kube_proxy.*.output, count.index) }"
+    kubelet_artifact = "${ var.kubelet_artifact }"
+    cni_artifact = "${ var.cni_artifact }"
     # fqdn = "${ var.name }-worker${ count.index + 1 }.${ replace("${azurerm_network_interface.cncf.0.internal_fqdn}", "worker-${ var.name}1.", "")}"
     fqdn = "${ var.name }-worker${ count.index + 1 }"
   }
@@ -53,8 +54,11 @@ data "template_file" "kube-proxy" {
 
   vars {
     master_node = "${ var.internal_lb_ip }"
-    # fqdn = "${ var.name }-worker${ count.index + 1 }.${ replace("${azurerm_network_interface.cncf.0.internal_fqdn}", "worker-${ var.name}1.", "")}"
     fqdn = "${ var.name }-worker${ count.index + 1 }"
+    pod_cidr = "${ var.pod_cidr }"
+    kube_proxy_registry = "${ var.kube_proxy_registry }"
+    kube_proxy_tag = "${ var.kube_proxy_tag }"
+
   }
 }
 

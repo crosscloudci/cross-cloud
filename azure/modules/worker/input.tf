@@ -14,10 +14,14 @@ variable "availability_id" {}
 variable "external_lb" {}
 variable "cluster_domain" {}
 variable "dns_service_ip" {}
+variable "pod_cidr" {}
+variable "non_masquerade_cidr" {}
 variable "internal_tld" {}
 variable "admin_username" {}
-variable "kubelet_image_url" {}
-variable "kubelet_image_tag" {}
+variable "kube_proxy_registry" {}
+variable "kube_proxy_tag" {}
+variable "kubelet_artifact" {}
+variable "cni_artifact" {}
 variable "ca" {}
 variable "worker" {}
 variable "worker_key" {}

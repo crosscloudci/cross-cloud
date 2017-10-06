@@ -16,7 +16,7 @@ spec:
     - -c
     - kube-proxy --kubeconfig=/var/lib/kube-proxy/kubeconfig
       --conntrack-max-per-core=131072 --resource-container="" --cluster-cidr=${ pod_cidr }
-      --hostname-override=${ fqdn } 
+      --hostname-override=${ fqdn }
       --v=2 2>&1 | /usr/bin/tee /var/log/kube-proxy.log
     image: ${ kube_proxy_registry }:${ kube_proxy_tag }
     imagePullPolicy: IfNotPresent

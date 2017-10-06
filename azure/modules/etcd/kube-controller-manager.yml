@@ -12,15 +12,15 @@ spec:
     - /bin/sh
     - -c
     - /usr/local/bin/kube-controller-manager --allocate-node-cidrs=true --attach-detach-reconcile-sync-period=1m0s
-      --cloud-provider=azure --cloud-config=/etc/srv/kubernetes/azure-config.json --cluster-cidr=100.96.0.0/11
-      --cluster-name=cluster.limenarch.com
+      --cloud-provider=azure --cloud-config=/etc/srv/kubernetes/azure-config.json --cluster-cidr=${ pod_cidr }
+      --cluster-name=${ cluster_domain }
       --configure-cloud-routes=true --leader-elect=true --root-ca-file=/etc/srv/kubernetes/pki/ca-certificates.crt
       --service-account-private-key-file=/etc/srv/kubernetes/pki/apiserver.key --use-service-account-credentials=true
       --v=2 --kubeconfig=/var/lib/kube-controller-manager/kubeconfig
       --cluster-signing-cert-file=/etc/srv/kubernetes/pki/ca-certificates.crt
       --cluster-signing-key-file=/etc/srv/kubernetes/pki/ca-certificates.key 1>>/var/log/kube-controller-manager.log
       2>&1
-    image: gcr.io/google_containers/kube-controller-manager:v1.7.2
+    image: ${ kube_controller_manager_registry }:${ kube_controller_manager_tag }
     livenessProbe:
       httpGet:
         host: 127.0.0.1

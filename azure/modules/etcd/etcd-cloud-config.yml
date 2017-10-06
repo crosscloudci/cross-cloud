@@ -3,25 +3,7 @@
 ---
 coreos:
 
-  etcd2:
-    advertise-client-urls: http://${ fqdn }:2379
-    # cert-file: /etc/kubernetes/ssl/k8s-etcd.pem
-    debug: true
-    initial-advertise-peer-urls: https://${ fqdn }:2380
-    # key-file: /etc/kubernetes/ssl/k8s-etcd-key.pem
-    listen-client-urls: http://${ fqdn }:2379,http://127.0.0.1:2379
-    listen-peer-urls: https://${ fqdn }:2380
-    name: ${ fqdn } 
-    discovery: ${ etcd_discovery }
-    peer-trusted-ca-file: /etc/srv/kubernetes/pki/ca-certificates.crt
-    peer-client-cert-auth: true
-    peer-cert-file: /etc/srv/kubernetes/pki/etcd.crt
-    peer-key-file: /etc/srv/kubernetes/pki/etcd.key
-
   units:
-    - name: etcd2.service
-      command: start
-
     - name: docker.service
       command: start
       drop-ins:
@@ -42,8 +24,8 @@ coreos:
         ExecStartPre=/usr/bin/mkdir --parents /home/kubernetes/bin
         ExecStartPre=/usr/bin/mkdir --parents /opt/cni/bin
         ExecStartPre=/usr/bin/mkdir --parents /etc/cni/net.d
-        ExecStartPre=/usr/bin/curl -L -o /home/kubernetes/bin/kubelet https://storage.googleapis.com/kubernetes-release/release/v1.7.2/bin/linux/amd64/kubelet
-        ExecStartPre=/usr/bin/curl -L -o /home/kubernetes/bin/cni.tar https://github.com/containernetworking/cni/releases/download/v0.5.2/cni-amd64-v0.5.2.tgz
+        ExecStartPre=/usr/bin/curl -L -o /home/kubernetes/bin/kubelet ${ kubelet_artifact }
+        ExecStartPre=/usr/bin/curl -L -o /home/kubernetes/bin/cni.tar ${ cni_artifact }
         ExecStartPre=/usr/bin/tar -xvf /home/kubernetes/bin/cni.tar -C /opt/cni/bin/
         ExecStart=/usr/bin/chmod +x /home/kubernetes/bin/kubelet
 
@@ -91,12 +73,22 @@ write-files:
 
   - path: /etc/default/kubelet
     content: |
-      KUBELET_OPTS="--allow-privileged=true --cgroup-root=/ --cloud-provider=azure --cloud-config=/etc/srv/kubernetes/azure-config.json --cluster-dns=100.64.0.10 --cluster-domain=cluster.local --enable-debugging-handlers=true --eviction-hard=memory.available<100Mi,nodefs.available<10%,nodefs.inodesFree<5%,imagefs.available<10%,imagefs.inodesFree<5% --hostname-override=${ fqdn_short } --kubeconfig=/var/lib/kubelet/kubeconfig --network-plugin-mtu=9001 --network-plugin=kubenet --node-labels=kubernetes.io/role=master --non-masquerade-cidr=100.64.0.0/10 --pod-infra-container-image=gcr.io/google_containers/pause-amd64:3.0 --pod-manifest-path=/etc/kubernetes/manifests --register-schedulable=true --register-with-taints=node-role.kubernetes.io/master=:NoSchedule --require-kubeconfig=true --v=2 --cni-bin-dir=/opt/cni/bin/ --cni-conf-dir=/etc/cni/net.d/ --network-plugin-dir=/opt/cni/bin/"
+      KUBELET_OPTS="--allow-privileged=true --cgroup-root=/ --cloud-provider=azure --cloud-config=/etc/srv/kubernetes/azure-config.json --cluster-dns=${ dns_service_ip } --cluster-domain=${ cluster_domain } --enable-debugging-handlers=true --eviction-hard=memory.available<100Mi,nodefs.available<10%,nodefs.inodesFree<5%,imagefs.available<10%,imagefs.inodesFree<5% --hostname-override=${ fqdn_short } --kubeconfig=/var/lib/kubelet/kubeconfig --network-plugin-mtu=9001 --network-plugin=kubenet --node-labels=kubernetes.io/role=master --non-masquerade-cidr=${ non_masquerade_cidr } --pod-infra-container-image=gcr.io/google_containers/pause-amd64:3.0 --pod-manifest-path=/etc/kubernetes/manifests --register-schedulable=true --register-with-taints=node-role.kubernetes.io/master=:NoSchedule --require-kubeconfig=true --v=2 --cni-bin-dir=/opt/cni/bin/ --cni-conf-dir=/etc/cni/net.d/ --network-plugin-dir=/opt/cni/bin/"
 
   - path: /var/lib/kubelet/kubeconfig
     encoding: "gzip+base64"
     content: |
       ${ kubelet_kubeconfig }
+
+  - path: /etc/kubernetes/manifests/etcd.yml
+    encoding: "gzip+base64"
+    content: |
+      ${ etcd }
+
+  - path: /etc/kubernetes/manifests/etcd-events.yml
+    encoding: "gzip+base64"
+    content: |
+      ${ etcd_events }
 
   - path: /etc/kubernetes/manifests/kube-apiserver.yml
     encoding: "gzip+base64"
@@ -123,6 +115,20 @@ write-files:
     content: |
       ${ kube_scheduler_kubeconfig }
 
+
+  - path: /etc/kubernetes/manifests/kube-proxy.yml
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ kube_proxy }
+
+
+  - path: /var/lib/kube-proxy/kubeconfig
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ proxy_kubeconfig }
+
   - path: /etc/srv/kubernetes/pki/ca-certificates.crt
     permissions: "0644"
     encoding: "gzip+base64"
@@ -148,18 +154,6 @@ write-files:
     content: |
       ${ apiserver_key }
 
-  - path: /etc/srv/kubernetes/pki/etcd.crt
-    permissions: "0644"
-    encoding: "gzip+base64"
-    content: |
-      ${ etcd }
-
-  - path: /etc/srv/kubernetes/pki/etcd.key
-    permissions: "0644"
-    encoding: "gzip+base64"
-    content: |
-      ${ etcd_key }
-
   - path: /etc/srv/kubernetes/azure-config.json
     permissions: "0644"
     encoding: "gzip+base64"
@@ -178,10 +172,5 @@ write-files:
     content: |
       ${ basic_auth_csv }
 
-  - path: /etc/srv/kubernetes/abac-authz-policy.jsonl
-    permissions: "0644"
-    encoding: "gzip+base64"
-    content: |
-      ${ abac_authz_policy }
 
 

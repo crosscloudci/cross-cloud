@@ -3,6 +3,10 @@ provider "gzip" {
   compressionlevel = "BestCompression"
 }
 
+resource "random_id" "cncf" {
+  byte_length = 8
+}
+
 # Configure the Microsoft Azure Provider
 provider "azurerm" {
   subscription_id = "${ var.subscription_id }"
@@ -18,10 +22,7 @@ resource "azurerm_resource_group" "cncf" {
 }
 
 resource "azurerm_storage_account" "cncf" {
-  # * azurerm_storage_account.cncf: name can only consist of lowercase letters
-  # and numbers, and must be between 3 and 24 characters long FIXME:
-  # storage_account name must be globally unique
-  name                = "${ var.name }x"
+  name                = "${ random_id.cncf.dec }"
   resource_group_name = "${ var.name }"
   location            = "${ var.location }"
   account_type        = "Standard_LRS"

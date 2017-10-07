@@ -220,7 +220,7 @@ data "template_file" "proxy_kubeconfig" {
 
 data "template_file" "etcd_cloud_config" {
   count = "${ var.master_node_count }"
-  template = "${ file( "${ path.module }/etcd-cloud-config.yml" )}"
+  template = "${ file( "${ path.module }/master.yml" )}"
 
   vars {
     cluster_domain = "${ var.cluster_domain }"

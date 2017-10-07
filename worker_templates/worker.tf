@@ -74,7 +74,7 @@ data "template_file" "kube-proxy" {
 
 data "template_file" "worker_cloud_config" {
   count = "${ var.worker_node_count }"
-  template = "${ file( "${ path.module }/worker-cloud-config.yml" )}"
+  template = "${ file( "${ path.module }/worker.yml" )}"
 
   vars {
     cluster_domain = "${ var.cluster_domain }"

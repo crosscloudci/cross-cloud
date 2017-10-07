@@ -41,6 +41,7 @@ module "master" {
   availability_id = "${ azurerm_availability_set.cncf.id }"
   internal_lb_ip = "${ var.internal_lb_ip }"
   data_dir = "${ var.data_dir }"
+  master_cloud_init = "${ module.master_templates.master_cloud_init }"
 }
 
 module "worker" {
@@ -59,6 +60,7 @@ module "worker" {
   storage_container = "${ azurerm_storage_container.cncf.name }"
   availability_id = "${ azurerm_availability_set.cncf.id }"
   data_dir = "${ var.data_dir }"
+  worker_cloud_init = "${ module.worker_templates.worker_cloud_init }"
 }
 
 module "tls" {

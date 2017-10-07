@@ -11,4 +11,5 @@ variable "subnet_id" {}
 variable "storage_primary_endpoint" {}
 variable "storage_container" {}
 variable "availability_id" {}
+variable "worker_cloud_init" {}
 variable "data_dir" {}

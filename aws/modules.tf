@@ -55,8 +55,6 @@ module "etcd" {
   subnet_ids_public              = "${ module.vpc.subnet_ids_public }"
   vpc_id                         = "${ module.vpc.id }"
   ca                             = "${ module.tls.ca }"
-  etcd                           = "${ module.tls.etcd }"
-  etcd_key                       = "${ module.tls.etcd_key }"
   apiserver                      = "${ module.tls.apiserver }"
   apiserver_key                  = "${ module.tls.apiserver_key }"
 }
@@ -134,12 +132,6 @@ module "tls" {
   tls_ca_cert_subject_country = "US"
   tls_ca_cert_validity_period_hours = 1000
   tls_ca_cert_early_renewal_hours = 100
-
-  tls_etcd_cert_subject_common_name = "k8s-etcd"
-  tls_etcd_cert_validity_period_hours = 1000
-  tls_etcd_cert_early_renewal_hours = 100
-  tls_etcd_cert_dns_names = "etcd.${ var.internal_tld },etcd1.${ var.internal_tld },etcd2.${ var.internal_tld },etcd3.${ var.internal_tld }"
-  tls_etcd_cert_ip_addresses = "127.0.0.1"
 
   tls_client_cert_subject_common_name = "k8s-admin"
   tls_client_cert_validity_period_hours = 1000

@@ -2,14 +2,6 @@ resource "gzip_me" "ca" {
   input = "${ var.ca }"
 }
 
-resource "gzip_me" "etcd" {
-  input = "${ var.etcd }"
-}
-
-resource "gzip_me" "etcd_key" {
-  input = "${ var.etcd_key }"
-}
-
 resource "gzip_me" "apiserver" {
   input = "${ var.apiserver }"
 }
@@ -100,8 +92,6 @@ data "template_file" "cloud-config" {
     region = "${ var.region }"
     service_cidr = "${ var.service_cidr }"
     ca = "${ gzip_me.ca.output }"
-    etcd = "${ gzip_me.etcd.output }"
-    etcd_key = "${ gzip_me.etcd_key.output }"
     apiserver = "${ gzip_me.apiserver.output }"
     apiserver_key = "${ gzip_me.apiserver_key.output }"
     kube_apiserver = "${ gzip_me.kube-apiserver.output }"

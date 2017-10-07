@@ -17,8 +17,6 @@ coreos:
     name: ${ hostname }
     peer-trusted-ca-file: /etc/srv/kubernetes/pki/ca-certificates.crt
     peer-client-cert-auth: true
-    peer-cert-file: /etc/srv/kubernetes/pki/etcd.crt
-    peer-key-file: /etc/srv/kubernetes/pki/etcd.key
 
   units:
     - name: etcd2.service
@@ -118,14 +116,3 @@ write-files:
     content: |
       ${ apiserver_key }
 
-  - path: /etc/srv/kubernetes/pki/etcd.crt
-    permissions: "0644"
-    encoding: "gzip+base64"
-    content: |
-      ${ etcd }
-
-  - path: /etc/srv/kubernetes/pki/etcd.key
-    permissions: "0644"
-    encoding: "gzip+base64"
-    content: |
-      ${ etcd_key }

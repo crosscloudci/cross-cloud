@@ -10,6 +10,35 @@ resource "gzip_me" "worker_key" {
   input = "${ var.worker_key }"
 }
 
+resource "gzip_me" "cloud_config_file" {
+  input = "${ var.cloud_config_file }"
+}
+
+
+
+resource "gzip_me" "kubelet" {
+  count = "${ var.worker_node_count }"
+  input = "${ element(data.template_file.kubelet.*.rendered, count.index) }"
+}
+
+data "template_file" "kubelet" {
+  count = "${ var.worker_node_count }"
+  template = "${ file( "${ path.module }/kubelet" )}"
+
+  vars {
+    cluster_domain = "${ var.cluster_domain }"
+    cloud_provider = "${ var.cloud_provider }"
+    cloud_config = "${ var.cloud_config }"
+    fqdn = "${ var.name }-worker${ count.index + 1 }"
+    dns_service_ip = "${ var.dns_service_ip }"
+    non_masquerade_cidr = "${ var.non_masquerade_cidr }"
+  }
+}
+
+
+
+
+
 
 resource "gzip_me" "kubelet_kubeconfig" {
   input = "${ data.template_file.kubelet_kubeconfig.rendered }"
@@ -77,20 +106,15 @@ data "template_file" "worker_cloud_config" {
   template = "${ file( "${ path.module }/worker.yml" )}"
 
   vars {
-    cluster_domain = "${ var.cluster_domain }"
-    cloud_provider = "${ var.cloud_provider }"
-    cloud_config = "${ var.cloud_config }"
-    cloud_config_file = "${ var.cloud_config_file }"
-    dns_service_ip = "${ var.dns_service_ip }"
-    non_masquerade_cidr = "${ var.non_masquerade_cidr }"
+    cloud_config_file = "${ gzip_me.cloud_config_file.output }"
     ca = "${ gzip_me.ca.output }"
     worker = "${ gzip_me.worker.output }"
     worker_key = "${ gzip_me.worker_key.output }"
-    proxy_kubeconfig = "${ gzip_me.proxy_kubeconfig.output }"
+    kubelet = "${ element(gzip_me.kubelet.*.output, count.index) }"
     kubelet_kubeconfig = "${ gzip_me.kubelet_kubeconfig.output }"
     kube_proxy = "${ element(gzip_me.kube_proxy.*.output, count.index) }"
+    proxy_kubeconfig = "${ gzip_me.proxy_kubeconfig.output }"
     kubelet_artifact = "${ var.kubelet_artifact }"
     cni_artifact = "${ var.cni_artifact }"
-    fqdn = "${ var.name }-worker${ count.index + 1 }"
   }
 }

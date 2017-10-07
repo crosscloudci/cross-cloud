@@ -247,7 +247,7 @@ data "template_file" "proxy_kubeconfig" {
 
 
 
-data "template_file" "etcd_cloud_config" {
+data "template_file" "master" {
   count = "${ var.master_node_count }"
   template = "${ file( "${ path.module }/master.yml" )}"
 

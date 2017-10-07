@@ -159,13 +159,13 @@ module "worker_templates" {
 }
 
 
-# module "kubeconfig" {
-#   source = "../kubeconfig"
+module "kubeconfig" {
+  source = "../kubeconfig"
 
-#   data_dir = "${ var.data_dir }"
-#   endpoint = "${ module.etcd.fqdn_lb }"
-#   name = "${ var.name }"
-#   ca = "${ module.tls.ca }"
-#   client = "${ module.tls.client }"
-#   client_key = "${ module.tls.client_key }"
-# }
+  data_dir = "${ var.data_dir }"
+  endpoint = "${ module.master.fqdn_lb }"
+  name = "${ var.name }"
+  ca = "${ module.tls.ca }"
+  client = "${ module.tls.client }"
+  client_key = "${ module.tls.client_key }"
+}

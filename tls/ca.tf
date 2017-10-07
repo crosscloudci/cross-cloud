@@ -20,6 +20,6 @@ resource "tls_self_signed_cert" "ca_cert" {
     "server_auth",
     "client_auth"
   ]
-  early_renewal_hours = "${var.tls_etcd_cert_early_renewal_hours}"
+  early_renewal_hours = "${var.tls_ca_cert_early_renewal_hours}"
   is_ca_certificate = true
 }

@@ -6,12 +6,6 @@ variable "tls_ca_cert_subject_country" {}
 variable "tls_ca_cert_validity_period_hours" {}
 variable "tls_ca_cert_early_renewal_hours" {}
 
-variable "tls_etcd_cert_subject_common_name" {}
-variable "tls_etcd_cert_validity_period_hours" {}
-variable "tls_etcd_cert_early_renewal_hours" {}
-variable "tls_etcd_cert_ip_addresses" {}
-variable "tls_etcd_cert_dns_names" {}
-
 
 variable "tls_client_cert_subject_common_name" {}
 variable "tls_client_cert_validity_period_hours" {}

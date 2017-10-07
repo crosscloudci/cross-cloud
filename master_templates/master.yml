@@ -11,7 +11,6 @@ coreos:
           content: |
             [Service]
             EnvironmentFile=/etc/default/docker
-            # ExecStartPre=/usr/bin/ip link add name cbr0 type bridge
 
     - name: bins.service
       command: start
@@ -72,8 +71,9 @@ write-files:
       DOCKER_OPTS="--ip-masq=false --iptables=false --log-driver=json-file --log-level=warn --log-opt=max-file=5 --log-opt=max-size=10m --storage-driver=overlay"
 
   - path: /etc/default/kubelet
+    encoding: "gzip+base64"
     content: |
-      KUBELET_OPTS="--allow-privileged=true --cgroup-root=/ --cloud-provider=azure --cloud-config=/etc/srv/kubernetes/azure-config.json --cluster-dns=${ dns_service_ip } --cluster-domain=${ cluster_domain } --enable-debugging-handlers=true --eviction-hard=memory.available<100Mi,nodefs.available<10%,nodefs.inodesFree<5%,imagefs.available<10%,imagefs.inodesFree<5% --hostname-override=${ fqdn_short } --kubeconfig=/var/lib/kubelet/kubeconfig --network-plugin-mtu=9001 --network-plugin=kubenet --node-labels=kubernetes.io/role=master --non-masquerade-cidr=${ non_masquerade_cidr } --pod-infra-container-image=gcr.io/google_containers/pause-amd64:3.0 --pod-manifest-path=/etc/kubernetes/manifests --register-schedulable=true --register-with-taints=node-role.kubernetes.io/master=:NoSchedule --require-kubeconfig=true --v=2 --cni-bin-dir=/opt/cni/bin/ --cni-conf-dir=/etc/cni/net.d/ --network-plugin-dir=/opt/cni/bin/"
+      ${ kubelet }
 
   - path: /var/lib/kubelet/kubeconfig
     encoding: "gzip+base64"
@@ -141,7 +141,6 @@ write-files:
     content: |
       ${ ca_key }
 
-
   - path: /etc/srv/kubernetes/pki/apiserver.crt
     permissions: "0644"
     encoding: "gzip+base64"
@@ -158,7 +157,7 @@ write-files:
     permissions: "0644"
     encoding: "gzip+base64"
     content: |
-      ${ cloud_config }
+      ${ cloud_config_file }
 
   - path: /etc/srv/kubernetes/known_tokens.csv
     permissions: "0644"

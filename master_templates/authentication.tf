@@ -1,15 +1,3 @@
-resource "gzip_me" "known_tokens_csv" {
-  input = "${ data.template_file.known_tokens_csv.rendered }"
-}
-
-resource "gzip_me" "basic_auth_csv" {
-  input = "${ data.template_file.basic_auth_csv.rendered }"
-}
-
-resource "gzip_me" "abac_authz_policy" {
-  input = "${ data.template_file.abac_authz_policy.rendered }"
-}
-
 # Known Tokens
 
 resource "random_string" "masters" {
@@ -64,12 +52,3 @@ data "template_file" "basic_auth_csv" {
     master = "${ random_string.masters_auth.result }"
   }
 }
-
-# Authorization
-
-data "template_file" "abac_authz_policy" {
-  template = "${ file( "${ path.module }/abac-authz-policy.json" )}"
-
-}
-
-

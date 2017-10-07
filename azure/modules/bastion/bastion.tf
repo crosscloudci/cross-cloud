@@ -45,8 +45,6 @@ resource "azurerm_virtual_machine" "cncf" {
     computer_name  = "hostname"
     admin_username = "${ var.admin_username }"
     admin_password = "Password1234!"
-    custom_data = "${ data.template_file.bastion-user-data.rendered }"
-    #custom_data = "${file("${path.module}/user-data2.yml")}"
   }
 
   os_profile_linux_config {
@@ -55,12 +53,5 @@ resource "azurerm_virtual_machine" "cncf" {
      path = "/home/${ var.admin_username }/.ssh/authorized_keys"
       key_data = "${file("${ var.data_dir }/.ssh/id_rsa.pub")}"
     }
-  }
-}
-
-data "template_file" "bastion-user-data" {
-  template = "${ file( "${ path.module }/bastion-user-data.yml" )}"
-  vars {
-    internal_tld = "${ var.internal_tld }"
   }
 }

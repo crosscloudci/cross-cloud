@@ -1,9 +1,6 @@
 output "ca" { value = "${ tls_self_signed_cert.ca_cert.cert_pem }" }
 output "ca_key" { value = "${ tls_private_key.ca_key.private_key_pem }" }
 
-output "etcd" { value = "${ tls_locally_signed_cert.etcd_cert.cert_pem }" }
-output "etcd_key" { value = "${ tls_private_key.etcd_key.private_key_pem }" }
-
 output "apiserver" { value = "${ tls_locally_signed_cert.apiserver_cert.cert_pem}" }
 output "apiserver_key" { value = "${ tls_private_key.apiserver_key.private_key_pem }" }
 

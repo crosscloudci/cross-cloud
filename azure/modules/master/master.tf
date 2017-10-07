@@ -43,7 +43,7 @@ resource "azurerm_virtual_machine" "cncf" {
     computer_name  = "${ var.name }-master${ count.index + 1 }"
     admin_username = "${ var.admin_username }"
     admin_password = "Password1234!"
-    custom_data = "${ element(data.template_file.etcd_cloud_config.*.rendered, count.index) }"
+    custom_data = "${ element(split(",", var.master_cloud_init), count.index) }"
   }
 
   os_profile_linux_config {

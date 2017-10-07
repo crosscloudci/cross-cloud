@@ -39,6 +39,7 @@ module "master" {
   storage_primary_endpoint = "${ azurerm_storage_account.cncf.primary_blob_endpoint }"
   storage_container = "${ var.name }"
   availability_id = "${ azurerm_availability_set.cncf.id }"
+  internal_lb_ip = "${ var.internal_lb_ip }"
   data_dir = "${ var.data_dir }"
 }
 
@@ -76,19 +77,19 @@ module "tls" {
   tls_client_cert_subject_common_name = "kubecfg"
   tls_client_cert_validity_period_hours = 1000
   tls_client_cert_early_renewal_hours = 100
-  tls_client_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local,*.${ module.etcd.dns_suffix }"
+  tls_client_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local,*.${ module.master.dns_suffix }"
   tls_client_cert_ip_addresses = "127.0.0.1"
 
   tls_apiserver_cert_subject_common_name = "kubernetes-master"
   tls_apiserver_cert_validity_period_hours = 1000
   tls_apiserver_cert_early_renewal_hours = 100
-  tls_apiserver_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local,*.${ module.etcd.dns_suffix },*.${ var.location }.cloudapp.azure.com"
+  tls_apiserver_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local,*.${ module.master.dns_suffix },*.${ var.location }.cloudapp.azure.com"
   tls_apiserver_cert_ip_addresses = "127.0.0.1,10.0.0.1,100.64.0.1,${ var.internal_lb_ip }"
 
   tls_worker_cert_subject_common_name = "kubernetes-worker"
   tls_worker_cert_validity_period_hours = 1000
   tls_worker_cert_early_renewal_hours = 100
-  tls_worker_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local,*.${ module.etcd.dns_suffix }"
+  tls_worker_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local,*.${ module.master.dns_suffix }"
   tls_worker_cert_ip_addresses = "127.0.0.1"
 
 }
@@ -97,10 +98,12 @@ module "master_templates" {
   source = "../master_templates"
 
   master_node_count = "${ var.master_node_count }"
+  name = "${ var.name }"
+  dns_suffix = "${ module.master.dns_suffix }"
 
   kubelet_artifact = "${ var.kubelet_artifact }"
   cni_artifact = "${ var.cni_artifact }"
-  etcd_registry = "${ var.etcd_artifact }"
+  etcd_registry = "${ var.etcd_registry }"
   etcd_tag = "${ var.etcd_tag }"
   kube_apiserver_registry = "${ var.kube_apiserver_registry }"
   kube_apiserver_tag = "${ var.kube_apiserver_tag }"
@@ -119,10 +122,10 @@ module "master_templates" {
   non_masquerade_cidr = "${ var.non_masquerade_cidr }"
   dns_service_ip = "${ var.dns_service_ip }"
 
-  ca = "${ var.ca }"
-  ca_key = "${ var.ca_key }"
-  apiserver = "${ var.apiserver }"
-  apiserver_key = "${ var.apiserver_key }"
+  ca = "${ module.tls.ca }"
+  ca_key = "${ module.tls.ca_key }"
+  apiserver = "${ module.tls.apiserver }"
+  apiserver_key = "${ module.tls.apiserver_key }"
   cloud_config_file = "${ data.template_file.cloud_config_file.rendered }"
 
 }
@@ -131,6 +134,7 @@ module "worker_templates" {
   source = "../worker_templates"
 
   worker_node_count = "${ var.worker_node_count }"
+  name = "${ var.name }"
 
   kubelet_artifact = "${ var.kubelet_artifact }"
   cni_artifact = "${ var.cni_artifact }"
@@ -145,21 +149,21 @@ module "worker_templates" {
   dns_service_ip = "${ var.dns_service_ip }"
   internal_lb_ip = "${ var.internal_lb_ip }"
 
-  ca = "${ var.ca }"
-  worker = "${ var.worker }"
-  worker_key = "${ var.worker_key }"
+  ca = "${ module.tls.ca }"
+  worker = "${ module.tls.worker }"
+  worker_key = "${ module.tls.worker_key }"
   cloud_config_file = "${ data.template_file.cloud_config_file.rendered }"
 
 }
 
 
-module "kubeconfig" {
-  source = "../kubeconfig"
+# module "kubeconfig" {
+#   source = "../kubeconfig"
 
-  data_dir = "${ var.data_dir }"
-  endpoint = "${ module.etcd.fqdn_lb }"
-  name = "${ var.name }"
-  ca = "${ module.tls.ca }"
-  client = "${ module.tls.client }"
-  client_key = "${ module.tls.client_key }"
-}
+#   data_dir = "${ var.data_dir }"
+#   endpoint = "${ module.etcd.fqdn_lb }"
+#   name = "${ var.name }"
+#   ca = "${ module.tls.ca }"
+#   client = "${ module.tls.client }"
+#   client_key = "${ module.tls.client_key }"
+# }

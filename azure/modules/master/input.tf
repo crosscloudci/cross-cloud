@@ -11,5 +11,6 @@ variable "subnet_id" {}
 variable "storage_primary_endpoint" {}
 variable "storage_container" {}
 variable "availability_id" {}
+variable "internal_lb_ip" {}
 variable "data_dir" {}
 

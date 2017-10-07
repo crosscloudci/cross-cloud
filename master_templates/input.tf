@@ -1,4 +1,6 @@
 variable "master_node_count" {}
+variable "name" {}
+variable "dns_suffix" {}
 
 variable "kubelet_artifact" {}
 variable "cni_artifact" {}

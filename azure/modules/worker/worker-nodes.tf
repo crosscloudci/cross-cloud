@@ -39,7 +39,7 @@ resource "azurerm_virtual_machine" "cncf" {
     computer_name  = "${ var.name }-worker${ count.index + 1 }"
     admin_username = "${ var.admin_username }"
     admin_password = "Password1234!"
-    custom_data = "${ element(data.template_file.worker_cloud_config.*.rendered, count.index) }"
+    # custom_data = "${ element(data.template_file.worker_cloud_config.*.rendered, count.index) }"
   }
 
   os_profile_linux_config {

@@ -42,12 +42,10 @@ data "template_file" "etcd" {
     etcd_registry = "${ var.etcd_registry }"
     etcd_tag = "${ var.etcd_tag }"
     etcd_discovery = "${ etcdiscovery_token.etcd.id }"
-    fqdn = "${ var.name }-master${ count.index + 1 }.${ replace("${azurerm_network_interface.cncf.0.internal_fqdn}", "${ var.name}1.", "")}"
+    fqdn = "${ var.name }-master${ count.index + 1 }.${ var.dns_suffix }"
+
   }
 }
-
-
-
 
 resource "gzip_me" "etcd_events" {
   count = "${ var.master_node_count }"
@@ -61,7 +59,7 @@ data "template_file" "etcd_events" {
     etcd_registry = "${ var.etcd_registry }"
     etcd_tag = "${ var.etcd_tag }"
     etcd_events_discovery = "${ etcdiscovery_token.etcd_events.id }"
-    fqdn = "${ var.name }-master${ count.index + 1 }.${ replace("${azurerm_network_interface.cncf.0.internal_fqdn}", "${ var.name}1.", "")}"
+    fqdn = "${ var.name }-master${ count.index + 1 }.${ var.dns_suffix }"
   }
 }
 
@@ -97,7 +95,7 @@ data "template_file" "kube_apiserver" {
   vars {
     kube_apiserver_registry = "${ var.kube_apiserver_registry }"
     kube_apiserver_tag = "${ var.kube_apiserver_tag }"
-    fqdn = "${ var.name }-master${ count.index + 1 }.${ replace("${azurerm_network_interface.cncf.0.internal_fqdn}", "${ var.name}1.", "")}"
+    fqdn = "${ var.name }-master${ count.index + 1 }.${ var.dns_suffix }"
     service_cidr = "${ var.service_cidr }"
     master_node_count = "${ var.master_node_count }"
     cloud_provider = "${ var.cloud_provider }"

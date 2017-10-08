@@ -33,6 +33,7 @@ module "etcd" {
   key_name                       = "${ var.aws_key_name }"
   master_security                = "${ module.security.master_id }"
   external_lb_security           = "${ module.security.external_lb_id }"
+  internal_lb_security           = "${ module.security.internal_lb_id }"
   instance_type                  = "${ var.aws_master_vm_size }"
   region                         = "${ var.aws_region }"
   subnet_id                      = "${ module.vpc.subnet_id }"

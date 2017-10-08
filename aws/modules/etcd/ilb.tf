@@ -1,7 +1,9 @@
-resource "aws_elb" "external" {
-  name = "k8-api-${replace(var.name, "/(.{0,25})(.*)/", "$1")}"
+resource "aws_elb" "internal" {
+  name = "k8-api2-${replace(var.name, "/(.{0,25})(.*)/", "$1")}"
 
   cross_zone_load_balancing = false
+
+  internal = true
 
   health_check {
     healthy_threshold = 2
@@ -20,18 +22,18 @@ resource "aws_elb" "external" {
     lb_protocol = "tcp"
   }
 
-  security_groups = [ "${ var.external_lb_security }" ]
+  security_groups = [ "${ var.internal_lb_security }" ]
   subnets = [ "${ var.subnet_id }" ]
 
   tags {
-    Name = "external-${ var.name }"
+    Name = "internal-${ var.name }"
     KubernetesCluster = "${ var.name }"
   }
 }
 
-resource "aws_elb_attachment" "master_external" {
+resource "aws_elb_attachment" "master_internal" {
   count = "${ var.master_node_count }"
 
-  elb      = "${ aws_elb.external.id }"
+  elb      = "${ aws_elb.internal.id }"
   instance = "${ element(aws_instance.master.*.id, count.index) }"
 }

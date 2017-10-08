@@ -1,6 +1,7 @@
 variable "ami_id" {}
 variable "master_security" {}
 variable "external_lb_security" {}
+variable "internal_lb_security" {}
 variable "instance_type" {}
 variable "key_name" {}
 variable "name" {}

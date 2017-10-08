@@ -23,6 +23,7 @@ data "template_file" "kube-apiserver" {
   }
 }
 
+
 resource "gzip_me" "kube-apiserver" {
   input = "${ data.template_file.kube-apiserver.rendered }"
 }

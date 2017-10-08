@@ -1,7 +1,7 @@
 resource "aws_network_interface" "master" {
   count = "${ var.master_node_count }"
   subnet_id = "${ var.subnet_id }"
-  security_groups = [ "${ var.etcd_security_group_id }" ]
+  security_groups = [ "${ var.master_security }" ]
   source_dest_check = false
 }
 

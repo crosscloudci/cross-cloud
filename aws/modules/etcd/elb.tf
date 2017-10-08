@@ -20,7 +20,7 @@ resource "aws_elb" "external" {
     lb_protocol = "tcp"
   }
 
-  security_groups = [ "${ var.external_elb_security_group_id }" ]
+  security_groups = [ "${ var.external_lb_security }" ]
   subnets = [ "${ var.subnet_id }" ]
 
   tags {

@@ -23,8 +23,8 @@ module "iam" {
 }
 
 
-module "etcd" {
-  source                         = "./modules/etcd"
+module "master" {
+  source                         = "./modules/master"
   instance_profile_name          = "${ module.iam.instance_profile_name_master }"
 
   master_node_count              = "${ var.master_node_count }"

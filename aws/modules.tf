@@ -106,7 +106,7 @@ module "tls" {
 
   data_dir = "${ var.data_dir }"
 
-  tls_ca_cert_subject_common_name = "CA"
+  tls_ca_cert_subject_common_name = "kubernetes"
   tls_ca_cert_subject_organization = "Kubernetes"
   tls_ca_cert_subject_locality = "San Francisco"
   tls_ca_cert_subject_province = "California"
@@ -114,22 +114,60 @@ module "tls" {
   tls_ca_cert_validity_period_hours = 1000
   tls_ca_cert_early_renewal_hours = 100
 
-  tls_client_cert_subject_common_name = "k8s-admin"
+  tls_client_cert_subject_common_name = "kubecfg"
   tls_client_cert_validity_period_hours = 1000
   tls_client_cert_early_renewal_hours = 100
   tls_client_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local,*.*.compute.internal,*.ec2.internal"
   tls_client_cert_ip_addresses = "127.0.0.1"
 
-  tls_apiserver_cert_subject_common_name = "k8s-apiserver"
+  tls_apiserver_cert_subject_common_name = "kubernetes-master"
   tls_apiserver_cert_validity_period_hours = 1000
   tls_apiserver_cert_early_renewal_hours = 100
   tls_apiserver_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local,master.${ var.internal_tld },*.ap-southeast-2.elb.amazonaws.com"
   tls_apiserver_cert_ip_addresses = "127.0.0.1,10.0.0.1"
 
-  tls_worker_cert_subject_common_name = "k8s-worker"
+  tls_worker_cert_subject_common_name = "kubernetes-worker"
   tls_worker_cert_validity_period_hours = 1000
   tls_worker_cert_early_renewal_hours = 100
   tls_worker_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local,*.*.compute.internal,*.ec2.internal"
   tls_worker_cert_ip_addresses = "127.0.0.1"
 
 }
+
+module "master_templates" {
+  source = "../master_templates"
+
+  master_node_count = "${ var.master_node_count }"
+  name = "${ var.name }"
+  dns_suffix = "${ module.master.dns_suffix }"
+  hostname_suffix = "${ module.master.hostname_suffix }"
+
+  kubelet_artifact = "${ var.kubelet_artifact }"
+  cni_artifact = "${ var.cni_artifact }"
+  etcd_registry = "${ var.etcd_registry }"
+  etcd_tag = "${ var.etcd_tag }"
+  kube_apiserver_registry = "${ var.kube_apiserver_registry }"
+  kube_apiserver_tag = "${ var.kube_apiserver_tag }"
+  kube_controller_manager_registry = "${ var.kube_controller_manager_registry }"
+  kube_controller_manager_tag = "${ var.kube_controller_manager_tag }"
+  kube_scheduler_registry = "${ var.kube_scheduler_registry }"
+  kube_scheduler_tag = "${ var.kube_scheduler_tag }"
+  kube_proxy_registry = "${ var.kube_proxy_registry }"
+  kube_proxy_tag = "${ var.kube_proxy_tag }"
+
+  cloud_provider = "${ var.cloud_provider }"
+  cloud_config = "${ var.cloud_config }"
+  cluster_domain = "${ var.cluster_domain }"
+  pod_cidr = "${ var.pod_cidr }"
+  service_cidr = "${ var.service_cidr }"
+  non_masquerade_cidr = "${ var.non_masquerade_cidr }"
+  dns_service_ip = "${ var.dns_service_ip }"
+
+  ca = "${ module.tls.ca }"
+  ca_key = "${ module.tls.ca_key }"
+  apiserver = "${ module.tls.apiserver }"
+  apiserver_key = "${ module.tls.apiserver_key }"
+  cloud_config_file = ""
+
+}
+

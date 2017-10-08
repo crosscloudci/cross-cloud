@@ -1,6 +1,7 @@
 resource "aws_network_interface" "master" {
   count = "${ var.master_node_count }"
   subnet_id = "${ var.subnet_id }"
+  private_ips = [ "${ var.subnet_prefix }.${ count.index + 10 }" ]
   security_groups = [ "${ var.master_security }" ]
   source_dest_check = false
 }

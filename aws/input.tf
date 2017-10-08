@@ -9,6 +9,7 @@ variable "aws_key_name" { default = "aws" }
 variable "aws_availability_zone" { default = "ap-southeast-2a" }
 variable "vpc_cidr"        { default = "10.0.0.0/16" }
 variable "subnet_cidr"     { default = "10.0.240.0/24"}
+variable "subnet_prefix"     { default = "10.0.240"}
 variable "allow_ssh_cidr" { default = "0.0.0.0/0" }
 
 # VM Image and size

@@ -36,6 +36,7 @@ module "master" {
   internal_lb_security           = "${ module.security.internal_lb_id }"
   instance_type                  = "${ var.aws_master_vm_size }"
   region                         = "${ var.aws_region }"
+  subnet_prefix                  = "${ var.subnet_prefix }"
   subnet_id                      = "${ module.vpc.subnet_id }"
   vpc_id                         = "${ module.vpc.vpc_id }"
 }
@@ -90,16 +91,16 @@ module "bastion" {
 #   worker_name = "general"
 # }
 
-module "kubeconfig" {
-  source = "../kubeconfig"
+# module "kubeconfig" {
+#   source = "../kubeconfig"
 
-  data_dir = "${ var.data_dir }"
-  endpoint = "${ module.etcd.external_elb }"
-  name = "${ var.name }"
-  ca = "${ module.tls.ca}"
-  client = "${ module.tls.client }"
-  client_key = "${ module.tls.client_key }"
-}
+#   data_dir = "${ var.data_dir }"
+#   endpoint = "${ module.master.external_elb }"
+#   name = "${ var.name }"
+#   ca = "${ module.tls.ca}"
+#   client = "${ module.tls.client }"
+#   client_key = "${ module.tls.client_key }"
+# }
 
 module "tls" {
   source = "../tls"
@@ -139,8 +140,8 @@ module "master_templates" {
 
   master_node_count = "${ var.master_node_count }"
   name = "${ var.name }"
-  dns_suffix = "${ module.master.dns_suffix }"
-  hostname_suffix = "${ module.master.hostname_suffix }"
+  dns_suffix = "${ var.aws_region }.compute.internal"
+  hostname_suffix = "${ replace("${ var.subnet_prefix }", ".", "-") }"
 
   kubelet_artifact = "${ var.kubelet_artifact }"
   cni_artifact = "${ var.cni_artifact }"

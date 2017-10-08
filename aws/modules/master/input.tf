@@ -7,6 +7,7 @@ variable "key_name" {}
 variable "name" {}
 variable "region" {}
 variable "subnet_id" {}
+variable "subnet_prefix" {}
 variable "vpc_id" {}
 variable "instance_profile_name" {}
 variable "master_node_count" {}

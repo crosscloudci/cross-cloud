@@ -2,7 +2,8 @@ module "vpc" {
   source = "./modules/vpc"
   name = "${ var.name }"
 
-  azs = "${ var.aws_azs }"
+  aws_availability_zone = "${ var.aws_availability_zone }"
+  subnet_cidr = "${ var.subnet_cidr }"
   cidr = "${ var.vpc_cidr }"
 }
 
@@ -11,7 +12,7 @@ module "security" {
   name           = "${ var.name }"
 
   vpc_cidr       = "${ var.vpc_cidr }"
-  vpc_id         = "${ module.vpc.id }"
+  vpc_id         = "${ module.vpc.vpc_id }"
   allow_ssh_cidr = "${ var.allow_ssh_cidr }"
 }
 
@@ -22,41 +23,20 @@ module "iam" {
 }
 
 
-module "dns" {
-  source            = "./modules/dns"
-  name              = "${ var.name }"
-  master_node_count = "${ var.master_node_count }"
-  master_ips        = "${ module.etcd.master_ips }"
-  internal_tld      = "${ var.internal_tld }"
-  vpc_id            = "${ module.vpc.id }"
-}
-
 module "etcd" {
   source                         = "./modules/etcd"
-  depends_id                     = "${ module.dns.depends_id }"
   instance_profile_name          = "${ module.iam.instance_profile_name_master }"
 
   master_node_count              = "${ var.master_node_count }"
   name                           = "${ var.name }"
   ami_id                         = "${ var.aws_image_ami }"
   key_name                       = "${ var.aws_key_name }"
-  cluster_domain                 = "${ var.cluster_domain }"
-  kubelet_image_url              = "${ var.kubelet_image_url }"
-  kubelet_image_tag              = "${ var.kubelet_image_tag }"
-  dns_service_ip                 = "${ var.dns_service_ip }"
   etcd_security_group_id         = "${ module.security.etcd_id }"
   external_elb_security_group_id = "${ module.security.external_elb_id }"
   instance_type                  = "${ var.aws_master_vm_size }"
-  internal_tld                   = "${ var.internal_tld }"
-  pod_cidr                       = "${ var.pod_cidr }"
   region                         = "${ var.aws_region }"
-  service_cidr                   = "${ var.service_cidr }"
-  subnet_ids_private             = "${ module.vpc.subnet_ids_private }"
-  subnet_ids_public              = "${ module.vpc.subnet_ids_public }"
-  vpc_id                         = "${ module.vpc.id }"
-  ca                             = "${ module.tls.ca }"
-  apiserver                      = "${ module.tls.apiserver }"
-  apiserver_key                  = "${ module.tls.apiserver_key }"
+  subnet_id                      = "${ module.vpc.subnet_id }"
+  vpc_id                         = "${ module.vpc.vpc_id }"
 }
 
 
@@ -69,8 +49,8 @@ module "bastion" {
   key_name = "${ var.aws_key_name }"
   name = "${ var.name }"
   security_group_id = "${ module.security.bastion_id }"
-  subnet_ids = "${ module.vpc.subnet_ids_public }"
-  vpc_id = "${ module.vpc.id }"
+  subnet_id = "${ module.vpc.subnet_id }"
+  vpc_id = "${ module.vpc.vpc_id }"
 }
 
 # module "worker" {

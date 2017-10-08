@@ -4,5 +4,5 @@ variable "internal_tld" {}
 variable "key_name" {}
 variable "name" {}
 variable "security_group_id" {}
-variable "subnet_ids" {}
+variable "subnet_id" {}
 variable "vpc_id" {}

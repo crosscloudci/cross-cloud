@@ -1,11 +1,11 @@
-resource "aws_network_interface" "etcd" {
+resource "aws_network_interface" "master" {
   count = "${ var.master_node_count }"
-  subnet_id = "${ element( split(",", var.subnet_ids_private), 0 ) }"
+  subnet_id = "${ var.subnet_id }"
   security_groups = [ "${ var.etcd_security_group_id }" ]
   source_dest_check = false
 }
 
-resource "aws_instance" "etcd" {
+resource "aws_instance" "master" {
   count = "${ var.master_node_count }"
 
   ami = "${ var.ami_id }"
@@ -15,7 +15,7 @@ resource "aws_instance" "etcd" {
 
   network_interface {
     device_index = 0
-    network_interface_id = "${ element(aws_network_interface.etcd.*.id, count.index) }"
+    network_interface_id = "${ element(aws_network_interface.master.*.id, count.index) }"
   }
 
   root_block_device {
@@ -28,6 +28,5 @@ resource "aws_instance" "etcd" {
     Name = "etcd${ count.index + 1 }-${ var.name }"
   }
 
-  user_data = "${ element(data.template_file.cloud-config.*.rendered, count.index) }"
+  # user_data = "${ element(data.template_file.cloud-config.*.rendered, count.index) }"
 }
-

@@ -6,8 +6,9 @@ variable "data_dir" { default = "/cncf/data/aws" }
 # AWS Cloud Specific Settings
 variable "aws_region" { default = "ap-southeast-2" }
 variable "aws_key_name" { default = "aws" }
-variable "aws_azs" { default = "ap-southeast-2a,ap-southeast-2b,ap-southeast-2c" }
-variable "vpc_cidr" { default = "10.0.0.0/16" }
+variable "aws_availability_zone" { default = "ap-southeast-2a" }
+variable "vpc_cidr"        { default = "10.0.0.0/16" }
+variable "subnet_cidr"     { default = "10.0.240.0/24"}
 variable "allow_ssh_cidr" { default = "0.0.0.0/0" }
 
 # VM Image and size

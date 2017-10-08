@@ -21,14 +21,10 @@ resource "aws_elb" "external" {
   }
 
   security_groups = [ "${ var.external_elb_security_group_id }" ]
-  subnets = [ "${ split(",", var.subnet_ids_public) }" ]
+  subnets = [ "${ var.subnet_id }" ]
 
   tags {
-    builtWith = "terraform"
-    kz8s = "${ var.name }"
-    Name = "kz8s-apiserver"
-    role = "apiserver"
-    visibility = "public"
+    Name = "${ var.name }"
     KubernetesCluster = "${ var.name }"
   }
 }
@@ -37,5 +33,5 @@ resource "aws_elb_attachment" "master" {
   count = "${ var.master_node_count }"
 
   elb      = "${ aws_elb.external.id }"
-  instance = "${ element(aws_instance.etcd.*.id, count.index) }"
+  instance = "${ element(aws_instance.master.*.id, count.index) }"
 }

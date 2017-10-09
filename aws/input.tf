@@ -21,7 +21,7 @@ variable "aws_worker_vm_size" { default = "m3.medium" }
 variable "aws_bastion_vm_size" { default = "t2.nano" }
 
 # Kubernetes
-variable "cloud_provider" { default = "azure" }
+variable "cloud_provider" { default = "aws" }
 variable "cloud_config" { default = "" }
 variable "cluster_domain" { default = "cluster.local" }
 variable "pod_cidr" { default = "100.96.0.0/11" }

@@ -3,7 +3,8 @@ module "vpc" {
   name = "${ var.name }"
 
   aws_availability_zone = "${ var.aws_availability_zone }"
-  subnet_cidr = "${ var.subnet_cidr }"
+  subnet_cidr_public = "${ var.subnet_cidr_public }"
+  subnet_cidr_private = "${ var.subnet_cidr_private }"
   cidr = "${ var.vpc_cidr }"
 }
 
@@ -37,7 +38,8 @@ module "master" {
   instance_type                  = "${ var.aws_master_vm_size }"
   region                         = "${ var.aws_region }"
   subnet_prefix                  = "${ var.subnet_prefix }"
-  subnet_id                      = "${ module.vpc.subnet_id }"
+  subnet_public_id               = "${ module.vpc.subnet_public_id }"
+  subnet_private_id              = "${ module.vpc.subnet_private_id }"
   vpc_id                         = "${ module.vpc.vpc_id }"
   master_cloud_init = "${ module.master_templates.master_cloud_init }"
 }
@@ -52,7 +54,7 @@ module "bastion" {
   key_name = "${ var.aws_key_name }"
   name = "${ var.name }"
   security_group_id = "${ module.security.bastion_id }"
-  subnet_id = "${ module.vpc.subnet_id }"
+  subnet_public_id = "${ module.vpc.subnet_public_id }"
   vpc_id = "${ module.vpc.vpc_id }"
 }
 

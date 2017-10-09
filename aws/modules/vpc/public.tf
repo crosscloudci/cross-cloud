@@ -7,14 +7,14 @@ resource "aws_internet_gateway" "cncf" {
   }
 }
 
-resource "aws_subnet" "cncf" {
+resource "aws_subnet" "public" {
   availability_zone = "${ var.aws_availability_zone }"
-  cidr_block = "${ var.subnet_cidr }"
+  cidr_block = "${ var.subnet_cidr_public }"
   vpc_id = "${ aws_vpc.cncf.id }"
 
   tags {
     KubernetesCluster = "${ var.name }"
-    Name = "${ var.name }"
+    Name = "${ var.name }-public"
   }
 }
 
@@ -26,5 +26,5 @@ resource "aws_route" "cncf" {
 
 resource "aws_route_table_association" "cncf" {
   route_table_id = "${ aws_vpc.cncf.main_route_table_id }"
-  subnet_id = "${ aws_subnet.cncf.id }"
+  subnet_id = "${ aws_subnet.public.id }"
 }

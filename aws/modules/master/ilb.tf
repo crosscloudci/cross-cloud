@@ -23,7 +23,7 @@ resource "aws_elb" "internal" {
   }
 
   security_groups = [ "${ var.internal_lb_security }" ]
-  subnets = [ "${ var.subnet_id }" ]
+  subnets = [ "${ var.subnet_private_id }" ]
 
   tags {
     Name = "internal-${ var.name }"

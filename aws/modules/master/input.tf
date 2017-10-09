@@ -6,7 +6,8 @@ variable "instance_type" {}
 variable "key_name" {}
 variable "name" {}
 variable "region" {}
-variable "subnet_id" {}
+variable "subnet_public_id" {}
+variable "subnet_private_id" {}
 variable "subnet_prefix" {}
 variable "vpc_id" {}
 variable "instance_profile_name" {}

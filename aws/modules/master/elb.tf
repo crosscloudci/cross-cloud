@@ -21,7 +21,7 @@ resource "aws_elb" "external" {
   }
 
   security_groups = [ "${ var.external_lb_security }" ]
-  subnets = [ "${ var.subnet_id }" ]
+  subnets = [ "${ var.subnet_public_id }" ]
 
   tags {
     Name = "external-${ var.name }"

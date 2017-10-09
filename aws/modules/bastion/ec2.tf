@@ -7,7 +7,7 @@ resource "aws_instance" "bastion" {
   # TODO: force private_ip to prevent collision with etcd machines
 
   source_dest_check = false
-  subnet_id = "${ var.subnet_id }"
+  subnet_id = "${ var.subnet_public_id }"
 
   tags  {
     builtWith = "terraform"

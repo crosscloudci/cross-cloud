@@ -39,6 +39,7 @@ module "master" {
   subnet_prefix                  = "${ var.subnet_prefix }"
   subnet_id                      = "${ module.vpc.subnet_id }"
   vpc_id                         = "${ module.vpc.vpc_id }"
+  master_cloud_init = "${ module.master_templates.master_cloud_init }"
 }
 
 

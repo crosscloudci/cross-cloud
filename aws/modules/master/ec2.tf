@@ -1,7 +1,7 @@
 resource "aws_network_interface" "master" {
   count = "${ var.master_node_count }"
   subnet_id = "${ var.subnet_id }"
-  private_ips = [ "${ var.subnet_prefix }.${ count.index + 10 }" ]
+  private_ips = [ "${ var.subnet_prefix }.${ count.index + 10}" ]
   security_groups = [ "${ var.master_security }" ]
   source_dest_check = false
 }
@@ -29,5 +29,5 @@ resource "aws_instance" "master" {
     Name = "etcd${ count.index + 1 }-${ var.name }"
   }
 
-  # user_data = "${ element(data.template_file.cloud-config.*.rendered, count.index) }"
+  user_data = "${ element(split(",", var.master_cloud_init), count.index) }"
 }

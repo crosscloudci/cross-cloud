@@ -11,3 +11,4 @@ variable "subnet_prefix" {}
 variable "vpc_id" {}
 variable "instance_profile_name" {}
 variable "master_node_count" {}
+variable "master_cloud_init" {}

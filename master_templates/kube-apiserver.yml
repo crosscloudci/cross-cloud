@@ -20,7 +20,7 @@ spec:
       --secure-port=443 --service-cluster-ip-range=${ service_cidr } --storage-backend=etcd2
       --tls-cert-file=/etc/srv/kubernetes/pki/apiserver.crt --tls-private-key-file=/etc/srv/kubernetes/pki/apiserver.key
       --token-auth-file=/etc/srv/kubernetes/known_tokens.csv
-      --authorization-mode=RBAC,AlwaysAllow
+      --authorization-mode=AlwaysAllow
       --v=2 1>>/var/log/kube-apiserver.log
       2>&1
     image: ${ kube_apiserver_registry }:${ kube_apiserver_tag }

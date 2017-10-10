@@ -165,6 +165,7 @@ Current Phase: In Design/Planning
 - October 2017 TBD - CNCF CI Cross Cloud project demo to Continuous Delivery
 
 #### Past
+- [October 10th, 2017 - CI-WG Status Updates](https://docs.google.com/presentation/d/1kahPZZyk1S1fbvy0-ocaDvSzoJlSE_2JlE-sQHhDu1g/edit#slide=id.g242b36cf7c_0_10)
 - October 3rd, 2017 - CNCF: OpenStack project demo
 - September 27th, 2017 - CNCF: AWS project demo 
 - September 12th, 2017 - CNCF: Governing Board

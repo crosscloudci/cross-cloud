@@ -50,7 +50,6 @@ module "bastion" {
 
   ami_id = "${ var.aws_image_ami }"
   instance_type = "${ var.aws_bastion_vm_size }"
-  internal_tld = "${ var.internal_tld }"
   key_name = "${ var.aws_key_name }"
   name = "${ var.name }"
   security_group_id = "${ module.security.bastion_id }"
@@ -94,16 +93,16 @@ module "bastion" {
 #   worker_name = "general"
 # }
 
-# module "kubeconfig" {
-#   source = "../kubeconfig"
+module "kubeconfig" {
+  source = "../kubeconfig"
 
-#   data_dir = "${ var.data_dir }"
-#   endpoint = "${ module.master.external_elb }"
-#   name = "${ var.name }"
-#   ca = "${ module.tls.ca}"
-#   client = "${ module.tls.client }"
-#   client_key = "${ module.tls.client_key }"
-# }
+  data_dir = "${ var.data_dir }"
+  endpoint = "${ module.master.external_elb }"
+  name = "${ var.name }"
+  ca = "${ module.tls.ca}"
+  client = "${ module.tls.client }"
+  client_key = "${ module.tls.client_key }"
+}
 
 module "tls" {
   source = "../tls"
@@ -127,7 +126,7 @@ module "tls" {
   tls_apiserver_cert_subject_common_name = "kubernetes-master"
   tls_apiserver_cert_validity_period_hours = 1000
   tls_apiserver_cert_early_renewal_hours = 100
-  tls_apiserver_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local,master.${ var.internal_tld },*.ap-southeast-2.elb.amazonaws.com"
+  tls_apiserver_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local,*.ap-southeast-2.elb.amazonaws.com"
   tls_apiserver_cert_ip_addresses = "127.0.0.1,10.0.0.1"
 
   tls_worker_cert_subject_common_name = "kubernetes-worker"
@@ -144,7 +143,7 @@ module "master_templates" {
   master_node_count = "${ var.master_node_count }"
   name = "${ var.name }"
   dns_suffix = "${ var.aws_region }.compute.internal"
-  hostname_suffix = "ip-${ replace("${ var.subnet_prefix }", ".", "-") }"
+  hostname_suffix = "ip-${ replace("${ var.subnet_prefix }", ".", "-") }-"
 
   kubelet_artifact = "${ var.kubelet_artifact }"
   cni_artifact = "${ var.cni_artifact }"

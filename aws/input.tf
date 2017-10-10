@@ -1,6 +1,5 @@
 variable "name" { default = "aws" }
 
-variable "internal_tld" { default = "aws.cncf.demo" }
 variable "data_dir" { default = "/cncf/data/aws" }
 
 # AWS Cloud Specific Settings

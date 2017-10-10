@@ -16,7 +16,7 @@ resource "aws_instance" "bastion" {
     role = "bastion"
   }
 
-  user_data = "${ data.template_file.user-data.rendered }"
+  # user_data = "${ data.template_file.user-data.rendered }"
 
   vpc_security_group_ids = [
     "${ var.security_group_id }",
@@ -27,7 +27,6 @@ data "template_file" "user-data" {
   template = "${ file( "${ path.module }/user-data.yml" )}"
 
   vars {
-    internal_tld = "${ var.internal_tld }"
   }
 }
 

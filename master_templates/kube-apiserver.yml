@@ -52,9 +52,6 @@ spec:
     - mountPath: /etc/pki/ca-trust
       name: etcpkica-trust
       readOnly: true
-    - mountPath: /usr/share/ssl
-      name: usrsharessl
-      readOnly: true
     - mountPath: /var/ssl
       name: varssl
       readOnly: true
@@ -80,9 +77,6 @@ spec:
   - hostPath:
       path: /etc/pki/ca-trust
     name: etcpkica-trust
-  - hostPath:
-      path: /usr/share/ssl
-    name: usrsharessl
   - hostPath:
       path: /var/ssl
     name: varssl

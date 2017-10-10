@@ -29,6 +29,9 @@ spec:
     - mountPath: /var/lib/kube-scheduler
       name: varlibkubescheduler
       readOnly: true
+    - mountPath: /etc/srv/kubernetes
+      name: srvkube
+      readOnly: true
     - mountPath: /var/log
       name: logfile
   hostNetwork: true
@@ -36,6 +39,9 @@ spec:
   - hostPath:
       path: /var/lib/kube-scheduler
     name: varlibkubescheduler
+  - hostPath:
+      path: /etc/srv/kubernetes
+    name: srvkube
   - hostPath:
       path: /var/log
     name: logfile

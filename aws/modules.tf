@@ -144,7 +144,7 @@ module "master_templates" {
   master_node_count = "${ var.master_node_count }"
   name = "${ var.name }"
   dns_suffix = "${ var.aws_region }.compute.internal"
-  hostname_suffix = "${ replace("${ var.subnet_prefix }", ".", "-") }"
+  hostname_suffix = "ip-${ replace("${ var.subnet_prefix }", ".", "-") }"
 
   kubelet_artifact = "${ var.kubelet_artifact }"
   cni_artifact = "${ var.cni_artifact }"

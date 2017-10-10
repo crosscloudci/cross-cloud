@@ -57,41 +57,25 @@ module "bastion" {
   vpc_id = "${ module.vpc.vpc_id }"
 }
 
-# module "worker" {
-#   source = "./modules/worker"
-#   depends_id = "${ module.dns.depends_id }"
-#   instance_profile_name = "${ module.iam.instance_profile_name_worker }"
+module "worker" {
+  source = "./modules/worker"
+  instance_profile_name = "${ module.iam.instance_profile_name_worker }"
 
-#   ami_id = "${ var.aws_image_ami }"
-#   capacity = {
-#     desired = "${ var.worker_node_count}"
-#     max = "${ var.worker_node_max}"
-#     min = "${ var.worker_node_min}"
-#   }
-#   cluster_domain = "${ var.cluster_domain }"
-#   kubelet_image_url = "${ var.kubelet_image_url }"
-#   kubelet_image_tag = "${ var.kubelet_image_tag }"
-#   dns_service_ip = "${ var.dns_service_ip }"
-#   instance_type = "${ var.aws_worker_vm_size }"
-#   internal_tld = "${ var.internal_tld }"
-#   key_name = "${ var.aws_key_name }"
-#   name = "${ var.name }"
-#   region = "${ var.aws_region }"
-#   security_group_id = "${ module.security.worker_id }"
-#   subnet_ids = "${ module.vpc.subnet_ids_private }"
-#   ca = "${ module.tls.ca }"
-#   worker = "${ module.tls.worker }"
-#   worker_key = "${ module.tls.worker_key }"
-#   apiserver                      = "${ module.tls.apiserver }"
-#   apiserver_key                  = "${ module.tls.apiserver_key }"
+  ami_id = "${ var.aws_image_ami }"
+  capacity = {
+    desired = "${ var.worker_node_count }"
+    max = "${ var.worker_node_max}"
+    min = "${ var.worker_node_min}"
+  }
+  instance_type = "${ var.aws_worker_vm_size }"
+  key_name = "${ var.aws_key_name }"
+  name = "${ var.name }"
+  region = "${ var.aws_region }"
+  security_group_id = "${ module.security.worker_id }"
+  subnet_private_id = "${ module.vpc.subnet_private_id }"
+  worker_cloud_init = "${ module.worker_templates.worker_cloud_init }"
 
-#   volume_size = {
-#     ebs = 250
-#     root = 52
-#   }
-#   vpc_id = "${ module.vpc.id }"
-#   worker_name = "general"
-# }
+}
 
 module "kubeconfig" {
   source = "../kubeconfig"

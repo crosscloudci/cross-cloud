@@ -5,7 +5,7 @@ resource "aws_launch_configuration" "worker" {
   key_name = "${ var.key_name }"
 
   root_block_device {
-    volume_size = "${ var.volume_size["root"] }"
+    volume_size = 52
     volume_type = "gp2"
   }
 
@@ -18,7 +18,7 @@ resource "aws_launch_configuration" "worker" {
 }
 
 resource "aws_autoscaling_group" "worker" {
-  name = "worker-${ var.worker_name }-${ var.name }"
+  name = "worker-${ var.name }"
 
   desired_capacity = "${ var.capacity["desired"] }"
   health_check_grace_period = 60
@@ -27,7 +27,7 @@ resource "aws_autoscaling_group" "worker" {
   launch_configuration = "${ aws_launch_configuration.worker.name }"
   max_size = "${ var.capacity["max"] }"
   min_size = "${ var.capacity["min"] }"
-  vpc_zone_identifier = [ "${ var.subnet_id_private }" ]
+  vpc_zone_identifier = [ "${ var.subnet_private_id }" ]
 
   tag {
     key = "KubernetesCluster"
@@ -40,3 +40,5 @@ resource "aws_autoscaling_group" "worker" {
     value = "${ var.name }"
     propagate_at_launch = true
   }
+
+}

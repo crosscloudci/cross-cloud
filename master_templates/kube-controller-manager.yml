@@ -34,7 +34,7 @@ spec:
       requests:
         cpu: 100m
     volumeMounts:
-      - mountPath: /etc/ssl/certs
+    - mountPath: /etc/ssl/certs
       name: etcssl
       readOnly: true
     - mountPath: /etc/pki/tls

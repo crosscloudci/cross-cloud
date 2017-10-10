@@ -102,6 +102,7 @@ module "master_templates" {
   master_node_count = "${ var.master_node_count }"
   name = "${ var.name }"
   dns_suffix = "${ module.master.dns_suffix }"
+  hostname_suffix = "${ var.name }-master"
 
   kubelet_artifact = "${ var.kubelet_artifact }"
   cni_artifact = "${ var.cni_artifact }"

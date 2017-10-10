@@ -75,6 +75,11 @@ write-files:
     content: |
       ${ kubelet }
 
+  - path: /var/lib/kubelet/kubeconfig
+    encoding: "gzip+base64"
+    content: |
+      ${ kubelet_kubeconfig }
+
   - path: /etc/kubernetes/manifests/etcd.yml
     encoding: "gzip+base64"
     content: |
@@ -95,17 +100,32 @@ write-files:
     content: |
       ${ kube_controller_manager }
 
+  - path: /var/lib/kube-controller-manager/kubeconfig
+    encoding: "gzip+base64"
+    content: |
+      ${ kube_controller_manager_kubeconfig }
+
   - path: /etc/kubernetes/manifests/kube-scheduler.yml
     encoding: "gzip+base64"
     content: |
       ${ kube_scheduler }
 
+  - path: /var/lib/kube-scheduler/kubeconfig
+    encoding: "gzip+base64"
+    content: |
+      ${ kube_scheduler_kubeconfig }
 
   - path: /etc/kubernetes/manifests/kube-proxy.yml
     permissions: "0644"
     encoding: "gzip+base64"
     content: |
       ${ kube_proxy }
+
+  - path: /var/lib/kube-proxy/kubeconfig
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ proxy_kubeconfig }
 
   - path: /etc/srv/kubernetes/pki/ca-certificates.crt
     permissions: "0644"

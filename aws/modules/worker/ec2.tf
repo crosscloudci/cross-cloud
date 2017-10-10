@@ -13,7 +13,7 @@ resource "aws_launch_configuration" "worker" {
     "${ var.security_group_id }",
   ]
 
-  # user_data = "${ data.template_file.cloud-config.rendered }"
+  user_data = "${ base64gzip(element(split(",", var.worker_cloud_init), 1)) }"
 
 }
 

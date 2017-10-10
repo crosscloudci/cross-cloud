@@ -174,3 +174,29 @@ module "master_templates" {
 
 }
 
+module "worker_templates" {
+  source = "../worker_templates"
+
+  worker_node_count = "${ var.worker_node_count }"
+  name = "${ var.name }"
+  hostname_suffix = "$private_ipv4"
+
+  kubelet_artifact = "${ var.kubelet_artifact }"
+  cni_artifact = "${ var.cni_artifact }"
+  kube_proxy_registry = "${ var.kube_proxy_registry }"
+  kube_proxy_tag = "${ var.kube_proxy_tag }"
+
+  cloud_provider = "${ var.cloud_provider }"
+  cloud_config = "${ var.cloud_config }"
+  cluster_domain = "${ var.cluster_domain }"
+  pod_cidr = "${ var.pod_cidr }"
+  non_masquerade_cidr = "${ var.non_masquerade_cidr }"
+  dns_service_ip = "${ var.dns_service_ip }"
+  internal_lb_ip = "${ module.master.internal_elb }"
+
+  ca = "${ module.tls.ca }"
+  worker = "${ module.tls.worker }"
+  worker_key = "${ module.tls.worker_key }"
+  cloud_config_file = ""
+
+}

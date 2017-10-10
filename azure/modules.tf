@@ -138,6 +138,7 @@ module "worker_templates" {
 
   worker_node_count = "${ var.worker_node_count }"
   name = "${ var.name }"
+  hostname_suffix = "$private_ipv4"
 
   kubelet_artifact = "${ var.kubelet_artifact }"
   cni_artifact = "${ var.cni_artifact }"

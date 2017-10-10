@@ -158,11 +158,15 @@ Current Phase: In Design/Planning
 ### Meetings / Demos
 
 #### Upcoming
-- September, 2017 - CNCF: OpenStack project demo (TBD)
-- September 27th, 2017 - CNCF: AWS project demo 
-- October 12th, 2017 - CNCF: End User Committee Meeting
+- October 11th, 2017 - CNCF CI Cross Cloud project demo to ONAP 
+- October 12th, 2017 - CNCF CI Cross Cloud project demo at End User Committee Meeting
+- October 18th, 2017 - CNCF CI Cross Cloud project demo to Oracle Cloud
+- October 2017 TBD - CNCF CI Cross Cloud project demo to OPNfv
+- October 2017 TBD - CNCF CI Cross Cloud project demo to Continuous Delivery
 
 #### Past
+- October 3rd, 2017 - CNCF: OpenStack project demo
+- September 27th, 2017 - CNCF: AWS project demo 
 - September 12th, 2017 - CNCF: Governing Board
 - September 11th-14th 2017 [Open Source Summit North America](http://events.linuxfoundation.org/events/open-source-summit-north-america)
 - August 30th, 2017 CNCF/K8s Storage SIG Testing Group

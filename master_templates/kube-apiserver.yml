@@ -20,7 +20,7 @@ spec:
       --secure-port=443 --service-cluster-ip-range=${ service_cidr } --storage-backend=etcd2
       --tls-cert-file=/etc/srv/kubernetes/pki/apiserver.crt --tls-private-key-file=/etc/srv/kubernetes/pki/apiserver.key
       --token-auth-file=/etc/srv/kubernetes/known_tokens.csv
-      --authorization-mode=RBAC,AlwaysAllow
+      --authorization-mode=AlwaysAllow
       --v=2 1>>/var/log/kube-apiserver.log
       2>&1
     image: ${ kube_apiserver_registry }:${ kube_apiserver_tag }
@@ -43,7 +43,7 @@ spec:
       requests:
         cpu: 150m
     volumeMounts:
-    - mountPath: /etc/ssl
+    - mountPath: /etc/ssl/certs
       name: etcssl
       readOnly: true
     - mountPath: /etc/pki/tls
@@ -51,9 +51,6 @@ spec:
       readOnly: true
     - mountPath: /etc/pki/ca-trust
       name: etcpkica-trust
-      readOnly: true
-    - mountPath: /usr/share/ssl
-      name: usrsharessl
       readOnly: true
     - mountPath: /var/ssl
       name: varssl
@@ -72,7 +69,7 @@ spec:
   hostNetwork: true
   volumes:
   - hostPath:
-      path: /etc/ssl
+      path: /usr/share/ca-certificates
     name: etcssl
   - hostPath:
       path: /etc/pki/tls
@@ -80,9 +77,6 @@ spec:
   - hostPath:
       path: /etc/pki/ca-trust
     name: etcpkica-trust
-  - hostPath:
-      path: /usr/share/ssl
-    name: usrsharessl
   - hostPath:
       path: /var/ssl
     name: varssl

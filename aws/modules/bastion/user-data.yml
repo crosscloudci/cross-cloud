@@ -4,11 +4,3 @@
 coreos:
   update:
     reboot-strategy: etcd-lock
-
-  etcd2:
-    discovery-srv: ${ internal_tld }
-    proxy: on
-
-  units:
-    - name: etcd2.service
-      command: start

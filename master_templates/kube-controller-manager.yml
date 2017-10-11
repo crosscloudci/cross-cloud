@@ -34,7 +34,7 @@ spec:
       requests:
         cpu: 100m
     volumeMounts:
-    - mountPath: /etc/ssl
+    - mountPath: /etc/ssl/certs
       name: etcssl
       readOnly: true
     - mountPath: /etc/pki/tls
@@ -42,9 +42,6 @@ spec:
       readOnly: true
     - mountPath: /etc/pki/ca-trust
       name: etcpkica-trust
-      readOnly: true
-    - mountPath: /usr/share/ssl
-      name: usrsharessl
       readOnly: true
     - mountPath: /var/ssl
       name: varssl
@@ -63,7 +60,7 @@ spec:
   hostNetwork: true
   volumes:
   - hostPath:
-      path: /etc/ssl
+      path: /usr/share/ca-certificates
     name: etcssl
   - hostPath:
       path: /etc/pki/tls
@@ -71,9 +68,6 @@ spec:
   - hostPath:
       path: /etc/pki/ca-trust
     name: etcpkica-trust
-  - hostPath:
-      path: /usr/share/ssl
-    name: usrsharessl
   - hostPath:
       path: /var/ssl
     name: varssl

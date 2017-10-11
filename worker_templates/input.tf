@@ -1,5 +1,6 @@
 variable "worker_node_count" {}
 variable "name" {}
+variable "hostname_suffix" {}
 
 variable "kubelet_artifact" {}
 variable "cni_artifact" {}

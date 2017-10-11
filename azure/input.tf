@@ -21,12 +21,11 @@ variable "bastion_vm_size"   { default = "Standard_A2" }
 
 # Kubernetes
 variable "cloud_provider" { default = "azure" }
-variable "cloud_config" { default = "--cloud-config=/etc/srv/kubernetes/azure-config.json" }
+variable "cloud_config" { default = "--cloud-config=/etc/srv/kubernetes/cloud-config" }
 variable "cluster_domain" { default = "cluster.local" }
 variable "pod_cidr" { default = "100.96.0.0/11" }
 variable "service_cidr"   { default = "100.64.0.0/13" }
 variable "non_masquerade_cidr" { default = "100.64.0.0/10"}
-variable "k8s_service_ip" { default = "10.0.0.1" }
 variable "dns_service_ip" { default = "100.64.0.10" }
 variable "master_node_count" { default = "3" }
 variable "worker_node_count" { default = "3" }

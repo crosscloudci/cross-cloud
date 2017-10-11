@@ -1,34 +1,24 @@
 resource "aws_eip" "nat" { vpc = true }
 
 resource "aws_nat_gateway" "nat" {
-  depends_on = [
-    "aws_eip.nat",
-    "aws_internet_gateway.main",
-  ]
 
   allocation_id = "${ aws_eip.nat.id }"
   subnet_id = "${ aws_subnet.public.0.id }"
 }
 
 resource "aws_subnet" "private" {
-  count = "${ length( split(",", var.azs) ) }"
-
-  availability_zone = "${ element( split(",", var.azs), count.index ) }"
-  cidr_block = "${ cidrsubnet(var.cidr, 8, count.index + 10) }"
-  vpc_id = "${ aws_vpc.main.id }"
+  availability_zone = "${ var.aws_availability_zone }"
+  cidr_block = "${ var.subnet_cidr_private }"
+  vpc_id = "${ aws_vpc.cncf.id }"
 
   tags {
-    "kubernetes.io/role/internal-elb" = "${ var.name }"
-    builtWith = "terraform"
     KubernetesCluster = "${ var.name }"
-    kz8s = "${ var.name }"
-    Name = "kz8s-${ var.name }-private"
-    visibility = "private"
+    Name = "${ var.name }-private"
   }
 }
 
 resource "aws_route_table" "private" {
-  vpc_id = "${ aws_vpc.main.id }"
+  vpc_id = "${ aws_vpc.cncf.id }"
 
   route {
     cidr_block = "0.0.0.0/0"
@@ -36,17 +26,12 @@ resource "aws_route_table" "private" {
   }
 
   tags {
-    builtWith = "terraform"
     KubernetesCluster = "${ var.name }"
-    kz8s = "${ var.name }"
-    Name = "kz8s-${ var.name }"
-    visibility = "private"
+    Name = "${ var.name }"
   }
 }
 
 resource "aws_route_table_association" "private" {
-  count = "${ length(split(",", var.azs)) }"
-
   route_table_id = "${ aws_route_table.private.id }"
-  subnet_id = "${ element(aws_subnet.private.*.id, count.index) }"
+  subnet_id = "${ aws_subnet.private.id }"
 }

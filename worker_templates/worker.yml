@@ -112,7 +112,7 @@ write-files:
     content: |
       ${ worker_key }
 
-  - path: /etc/srv/kubernetes/azure-config.json
+  - path: /etc/srv/kubernetes/cloud-config
     permissions: "0644"
     encoding: "gzip+base64"
     content: |

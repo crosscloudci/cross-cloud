@@ -27,8 +27,8 @@ kubernetes-stable:
   stage: cncf-artifacts
   script:
     #- KUBERNETES_RELEASE_ENV=$(curl -s -L
-        "$BASE_URL/kubernetes/kubernetes/builds/artifacts/${K8S_BRANCH}/file/release.env?job=build"
-        |  sed -n 's/.*href="\([^"]*\).*/\1/p' | grep artifacts/raw | tail -1)
+    #    "$BASE_URL/kubernetes/kubernetes/builds/artifacts/${K8S_BRANCH}/file/release.env?job=build"
+    #    |  sed -n 's/.*href="\([^"]*\).*/\1/p' | grep artifacts/raw | tail -1)
     - mkdir -p data
     #- curl -s -o data/kubernetes.env -L ${BASE_URL}/$KUBERNETES_RELEASE_ENV
     #- cat data/kubernetes.env

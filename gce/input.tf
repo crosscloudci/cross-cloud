@@ -1,29 +1,21 @@
 variable "name" { default = "gce" }
-variable "internal_tld" { default = "cncf.demo" }
 variable "master_node_count" { default = "3" }
 variable "worker_node_count" { default = "3" }
-#variable "master_vm_size"   { default = "Standard_A2" }
-#variable "worker-vm-size"   { default = "Standard_A2" }
-#variable "bastion-vm-size"   { default = "Standard_A2" }
-# Set from https://quay.io/repository/coreos/hyperkube?tab=tags
-variable "kubelet_image_url" { default = "gcr.io/google-containers/hyperkube"}
-variable "kubelet_image_tag" { default = "v1.6.6"}
-#variable "image-publisher" { default = "CoreOS" }
-#variable "image-offer"     { default = "CoreOS" }
-#variable "image-sku"       { default = "Stable" }
-#variable "image-version"   { default = "1298.6.0" }
+
+variable "bastion_vm_size"   { default = "n1-standard-1" }
+variable "master_vm_size"    { default = "n1-standard-1" }
+variable "image_id"          { default = "coreos-stable-1298-7-0-v20170401"}
+
 variable "region"          { default = "us-central1" }
 variable "zone"            { default = "us-central1-a" }
 variable "project"         { default = "test-163823" }
-variable "cluster_domain" { default = "cluster.local" }
-# variable "admin_username" { default = "cncf"}
+
 variable "cidr" { default = "10.240.0.0/16" }
-variable "pod_cidr" { default = "10.2.0.0/16" }
-variable "service_cidr"   { default = "10.0.0.0/24" }
-variable "k8s_service_ip" { default = "10.0.0.1" }
-variable "dns_service_ip" { default = "10.0.0.10" }
+variable "pod_cidr" { default = "100.96.0.0/11" }
+variable "service_cidr"   { default = "100.64.0.0/13" }
+variable "dns_service_ip" { default = "100.64.0.10" }
 variable "internal_lb_ip" { default = "10.240.0.100"}
-# variable "allow-ssh-cidr" { default = "0.0.0.0/0" }
+
+variable "allow_ssh_cidr" { default = "0.0.0.0/0" }
+
 variable "data_dir" { default = "/cncf/data/gce" }
-# variable "name-servers-file" { default = "google_dns_zone"}
-variable "domain" { default = "cncf.ci" }

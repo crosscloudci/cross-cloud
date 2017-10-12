@@ -1,10 +1,6 @@
-# variable "cidr-allow-ssh" {}
-# variable "cidr-vpc" {}
 variable "name" {}
-# variable "vpc-id" {}
 variable "network" {}
+variable "cidr" {}
+variable "service_cidr" {}
+variable "allow_ssh_cidr" {}
 
-# output "bastion-id" { value = "${ aws_security_group.bastion.id }" }
-# output "etcd-id" { value = "${ aws_security_group.etcd.id }" }
-# output "external-elb-id" { value = "${ aws_security_group.external-elb.id }" }
-# output "worker-id" { value = "${ aws_security_group.worker.id }" }

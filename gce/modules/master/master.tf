@@ -6,7 +6,7 @@ resource "google_compute_region_backend_service" "cncf" {
   session_affinity = "CLIENT_IP"
 
   backend {
-    group = "${google_compute_instance_group.cncf.self_link}"
+    group = "${ google_compute_instance_group.cncf.self_link }"
   }
 
     health_checks = ["${google_compute_health_check.cncf.self_link}"]
@@ -16,10 +16,9 @@ resource "google_compute_target_pool" "cncf" {
   name = "${var.name}-external"
 
   instances = [
-    "${google_compute_instance.cncf.*.self_link}"
+    "${ google_compute_instance.cncf.*.self_link }"
   ]
 
-  # health_checks = ["${google_compute_health_check.cncf.self_link}"]
 }
 
 resource "google_compute_instance_group" "cncf" {
@@ -41,15 +40,15 @@ resource "google_compute_instance_group" "cncf" {
 
 resource "google_compute_instance" "cncf" {
   count        = "${ var.master_node_count }"
-  name         = "${ var.name }-master${ count.index + 1 }"
-  machine_type = "n1-standard-1"
+  name         = "${ var.name }-master${ count.index + 10 }"
+  machine_type = "${ var.master_vm_size }"
   zone         = "${ var.zone }"
   can_ip_forward = true
 
   tags = ["kubernetes-master", "kubernetes-minion"]
 
   disk {
-    image = "coreos-stable-1298-7-0-v20170401"
+    image = "${ var.image_id }"
   }
 
   // Local SSD disk
@@ -59,7 +58,6 @@ resource "google_compute_instance" "cncf" {
   }
 
   network_interface {
-    # network = "${ var.name }"
     subnetwork = "${ var.name }"
     subnetwork_project = "${ var.project }"
 
@@ -70,7 +68,7 @@ resource "google_compute_instance" "cncf" {
   }
 
   metadata {
-    user-data = "${ element(data.template_file.cloud-config.*.rendered, count.index) }"
+    # user-data = "${ element(data.template_file.cloud-config.*.rendered, count.index) }"
   }
 
   service_account {

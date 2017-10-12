@@ -8,3 +8,4 @@ variable "image_id" {}
 variable "internal_lb_ip" {}
 variable "network" {}
 variable "subnetwork" {}
+variable "master_cloud_init" {}

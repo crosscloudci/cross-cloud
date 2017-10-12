@@ -17,6 +17,7 @@ module "vpc" {
    master_node_count = "${ var.master_node_count }"
    image_id = "${ var.image_id }"
    internal_lb_ip = "${ var.internal_lb_ip }"
+   master_cloud_init = "${ module.master_templates.master_cloud_init }"
 }
 
 module "bastion" {
@@ -90,4 +91,41 @@ module "tls" {
   tls_worker_cert_early_renewal_hours = 100
   tls_worker_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local"
   tls_worker_cert_ip_addresses = "127.0.0.1"
+}
+
+module "master_templates" {
+  source = "../master_templates"
+
+  master_node_count = "${ var.master_node_count }"
+  name = "${ var.name }"
+  dns_suffix = "c.${ var.project }.internal"
+  hostname_suffix = "${ var.name }-master"
+
+  kubelet_artifact = "${ var.kubelet_artifact }"
+  cni_artifact = "${ var.cni_artifact }"
+  etcd_registry = "${ var.etcd_registry }"
+  etcd_tag = "${ var.etcd_tag }"
+  kube_apiserver_registry = "${ var.kube_apiserver_registry }"
+  kube_apiserver_tag = "${ var.kube_apiserver_tag }"
+  kube_controller_manager_registry = "${ var.kube_controller_manager_registry }"
+  kube_controller_manager_tag = "${ var.kube_controller_manager_tag }"
+  kube_scheduler_registry = "${ var.kube_scheduler_registry }"
+  kube_scheduler_tag = "${ var.kube_scheduler_tag }"
+  kube_proxy_registry = "${ var.kube_proxy_registry }"
+  kube_proxy_tag = "${ var.kube_proxy_tag }"
+
+  cloud_provider = "${ var.cloud_provider }"
+  cloud_config = "${ var.cloud_config }"
+  cluster_domain = "${ var.cluster_domain }"
+  pod_cidr = "${ var.pod_cidr }"
+  service_cidr = "${ var.service_cidr }"
+  non_masquerade_cidr = "${ var.non_masquerade_cidr }"
+  dns_service_ip = "${ var.dns_service_ip }"
+
+  ca = "${ module.tls.ca }"
+  ca_key = "${ module.tls.ca_key }"
+  apiserver = "${ module.tls.apiserver }"
+  apiserver_key = "${ module.tls.apiserver_key }"
+  cloud_config_file = ""
+
 }

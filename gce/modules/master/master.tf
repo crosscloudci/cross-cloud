@@ -59,7 +59,7 @@ resource "google_compute_instance" "cncf" {
   }
 
   metadata {
-    # user-data = "${ element(data.template_file.cloud-config.*.rendered, count.index) }"
+    user-data = "${ element(split(",", var.master_cloud_init), count.index) }"
   }
 
   service_account {

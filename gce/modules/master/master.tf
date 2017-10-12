@@ -47,24 +47,15 @@ resource "google_compute_instance" "cncf" {
 
   tags = ["kubernetes-master", "kubernetes-minion"]
 
-  disk {
+  boot_disk {
+    initialize_params {
     image = "${ var.image_id }"
-  }
-
-  // Local SSD disk
-  disk {
-    type    = "local-ssd"
-    scratch = true
+    }
   }
 
   network_interface {
     subnetwork = "${ var.name }"
     subnetwork_project = "${ var.project }"
-
-    access_config {
-      // FIX ME Don't assign Public IP
-      // Ephemeral IP
-    }
   }
 
   metadata {

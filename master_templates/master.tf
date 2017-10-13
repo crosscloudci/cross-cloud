@@ -146,7 +146,7 @@ data "template_file" "kube_controller_manager" {
     kube_controller_manager_registry = "${ var.kube_controller_manager_registry }"
     kube_controller_manager_tag = "${ var.kube_controller_manager_tag }"
     pod_cidr = "${ var.pod_cidr }"
-    cluster_domain = "${ var.cluster_domain }"
+    cluster_name = "${ var.cluster_name }"
     cloud_provider = "${ var.cloud_provider }"
     cloud_config = "${ var.cloud_config }"
   }

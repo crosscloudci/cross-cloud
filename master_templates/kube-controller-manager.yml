@@ -14,7 +14,7 @@ spec:
     - /usr/local/bin/kube-controller-manager --allocate-node-cidrs=true --attach-detach-reconcile-sync-period=1m0s
       --cloud-provider=${ cloud_provider } ${ cloud_config }
       --cluster-cidr=${ pod_cidr }
-      --cluster-name=${ cluster_domain }
+      --cluster-name=${ cluster_name }
       --configure-cloud-routes=true --leader-elect=true --root-ca-file=/etc/srv/kubernetes/pki/ca-certificates.crt
       --service-account-private-key-file=/etc/srv/kubernetes/pki/apiserver.key --use-service-account-credentials=true
       --v=2 --kubeconfig=/var/lib/kube-controller-manager/kubeconfig

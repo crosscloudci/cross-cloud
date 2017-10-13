@@ -19,6 +19,7 @@ variable "kube_proxy_tag" {}
 variable "cloud_provider" {}
 variable "cloud_config" {}
 variable "cluster_domain" {}
+variable "cluster_name" {}
 variable "pod_cidr" {}
 variable "service_cidr" {}
 variable "non_masquerade_cidr" {}

@@ -29,16 +29,15 @@ module "bastion" {
   project = "${ var.project }"
 }
 
-# module "worker" {
-#   source = "./modules/worker"
-#   name = "${ var.name }"
-#   region = "${ var.region }"
-#   zone = "${ var.zone }"
-#   project = "${ var.project }"
-#   worker_node_count = "${ var.worker_node_count }"
-#   internal_lb_ip = "${ var.internal_lb_ip }"
-#   # security-group-id = "${ module.security.worker-id }"
-# }
+module "worker" {
+  source = "./modules/worker"
+  name = "${ var.name }"
+  zone = "${ var.zone }"
+  project = "${ var.project }"
+  worker_node_count = "${ var.worker_node_count }"
+  worker_vm_size = "${ var.worker_vm_size }"
+  image_id = "${ var.image_id }"
+}
 
 module "security" {
   source = "./modules/security"

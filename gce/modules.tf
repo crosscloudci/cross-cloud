@@ -50,16 +50,16 @@ module "security" {
   allow_ssh_cidr = "${ var.allow_ssh_cidr }"
 }
 
-# module "kubeconfig" {
-#   source = "../kubeconfig"
+module "kubeconfig" {
+  source = "../kubeconfig"
 
-#   data_dir = "${ var.data_dir }"
-#   endpoint = "${ module.etcd.external_lb }"
-#   name = "${ var.name }"
-#   ca = "${ module.tls.ca }"
-#   client = "${ module.tls.client }"
-#   client_key = "${ module.tls.client_key }"
-# }
+  data_dir = "${ var.data_dir }"
+  endpoint = "${ module.master.external_lb }"
+  name = "${ var.name }"
+  ca = "${ module.tls.ca }"
+  client = "${ module.tls.client }"
+  client_key = "${ module.tls.client_key }"
+}
 
 module "tls" {
   source = "../tls"
@@ -84,7 +84,7 @@ module "tls" {
   tls_apiserver_cert_validity_period_hours = 1000
   tls_apiserver_cert_early_renewal_hours = 100
   tls_apiserver_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local"
-  tls_apiserver_cert_ip_addresses = "127.0.0.1,10.0.0.1,${ module.master.external_lb },${ var.internal_lb_ip }"
+  tls_apiserver_cert_ip_addresses = "127.0.0.1,100.64.0.1,${ var.dns_service_ip },${ module.master.external_lb },${ var.internal_lb_ip }"
 
   tls_worker_cert_subject_common_name = "kubernetes-worker"
   tls_worker_cert_validity_period_hours = 1000
@@ -126,6 +126,33 @@ module "master_templates" {
   ca_key = "${ module.tls.ca_key }"
   apiserver = "${ module.tls.apiserver }"
   apiserver_key = "${ module.tls.apiserver_key }"
+  cloud_config_file = ""
+
+}
+
+module "worker_templates" {
+  source = "../worker_templates"
+
+  worker_node_count = "${ var.worker_node_count }"
+  name = "${ var.name }"
+  hostname_suffix = "$private_ipv4"
+
+  kubelet_artifact = "${ var.kubelet_artifact }"
+  cni_artifact = "${ var.cni_artifact }"
+  kube_proxy_registry = "${ var.kube_proxy_registry }"
+  kube_proxy_tag = "${ var.kube_proxy_tag }"
+
+  cloud_provider = "${ var.cloud_provider }"
+  cloud_config = "${ var.cloud_config }"
+  cluster_domain = "${ var.cluster_domain }"
+  pod_cidr = "${ var.pod_cidr }"
+  non_masquerade_cidr = "${ var.non_masquerade_cidr }"
+  dns_service_ip = "${ var.dns_service_ip }"
+  internal_lb_ip = "${ var.internal_lb_ip }"
+
+  ca = "${ module.tls.ca }"
+  worker = "${ module.tls.worker }"
+  worker_key = "${ module.tls.worker_key }"
   cloud_config_file = ""
 
 }

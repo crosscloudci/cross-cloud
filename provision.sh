@@ -127,19 +127,27 @@ elif [ "$1" = "azure-destroy" ] ; then
             fi
 
 # Begin OpenStack
-elif [ "$1" = "openstack-deploy" ] ; then
+elif [[ "$1" = "openstack-deploy" || "$1" = "openstack-destroy" ]] ; then
     cd ${DIR}/openstack
+
+    # initialize based on the config type
     if [ "$3" = "s3" ] ; then
-        echo "TODO Implement openstack-deploy s3 config backend"
+        cp ../s3-backend.tf .
+        terraform init \
+            -backend-config 'bucket=aws65972563' \
+            -backend-config "key=openstack-${TF_VAR_name}" \
+            -backend-config 'region=ap-southeast-2'
     elif [ "$3" = "file" ] ; then
-        echo "TODO Implement openstack-deploy file config backend"
+        cp ../file-backend.tf .
+        terraform init -backend-config "path=/cncf/data/${TF_VAR_NAME}/terraform.tfstate"
     fi
-elif [ "$1" = "openstack-destroy" ] ; then
-    cd ${DIR}/openstack
-    if [ "$3" = "s3" ] ; then
-        echo "TODO Implement openstack-destroy s3 config backend"
-    elif [ "$3" = "file"] ; then
-        echo "TODO Implement openstack-destroy file config backend"
+
+    # deploy/destroy implementations
+    if [ "$1" = "openstack-deploy" ] ; then
+        terraform taint -module=kubeconfig null_resource.kubeconfig || true
+        time terraform apply ${DIR}/openstack
+    elif [ "$1" = "openstack-destroy" ] ; then
+        time terraform destroy -force ${DIR}/openstack || true
     fi
 # End OpenStack
 

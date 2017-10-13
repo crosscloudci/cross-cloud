@@ -37,6 +37,7 @@ module "worker" {
   worker_node_count = "${ var.worker_node_count }"
   worker_vm_size = "${ var.worker_vm_size }"
   image_id = "${ var.image_id }"
+  worker_cloud_init = "${ module.worker_templates.worker_cloud_init }"
 }
 
 module "security" {

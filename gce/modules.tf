@@ -129,6 +129,10 @@ module "master_templates" {
   apiserver_key = "${ module.tls.apiserver_key }"
   cloud_config_file = ""
 
+  dns = ""
+  corefile = ""
+  systemd = ""
+
 }
 
 module "worker_templates" {

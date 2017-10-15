@@ -18,6 +18,7 @@ variable "allow_ssh_cidr" { default = "0.0.0.0/0" }
 
 variable "data_dir" { default = "/cncf/data/gce" }
 
+
 # Kubernetes
 variable "cloud_provider" { default = "gce" }
 variable "cloud_config" { default = "" }

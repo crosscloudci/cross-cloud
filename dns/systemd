@@ -1,0 +1,12 @@
+- name: dns.service
+  command: start
+  content: |
+    [Unit]
+    Description=Create DNS Records
+    After=kubelet.service
+    Requires=kubelet.service
+    [Service]
+    Type=oneshot
+    RemainAfterExit=yes
+    ExecPre=/usr/bin/curl -XPUT http://127.0.0.1:4001/v2/keys/skydns/local/cluster/api/internal/$private_ipv4 -d value='{"host":"$private_ipv4", "group": "g1"}'
+    ExecStart=/usr/bin/curl -XPUT http://127.0.0.1:4001/v2/keys/skydns/local/cluster/api/external/$public_ipv4 -d value='{"host":"$public_ipv4", "group": "g1"}'

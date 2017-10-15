@@ -273,6 +273,9 @@ data "template_file" "master" {
     cloud_config_file = "${ gzip_me.cloud_config_file.output }"
     known_tokens_csv = "${ gzip_me.known_tokens_csv.output }"
     basic_auth_csv = "${ gzip_me.basic_auth_csv.output }"
+    corefile = "${ var.corefile }"
+    dns = "${ var.dns }"
+    systemd  = "${ var.systemd }"
 
   }
 }

@@ -1,0 +1,28 @@
+.:53 {
+    cache 30
+    errors stderr
+    log stderr
+    etcd gce.local {
+      path /skydns
+      endpoint http://127.0.0.1:4000
+    }
+    gce.local {
+        hosts /etc/coredns/hosts
+    }
+    log /etc/coredns/query.log
+    health
+    proxy . 8.8.8.8:53
+}
+
+
+. {
+    etcd cluster.local {
+        stubzones
+        path /skydns
+        upstream /etc/resolv.conf
+        endpoint http://localhost:4001
+    }
+    cache 160 skydns.local
+    proxy . /etc/resolv.conf
+    loadbalance
+}

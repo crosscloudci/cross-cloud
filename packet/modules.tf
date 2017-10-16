@@ -7,6 +7,7 @@ module "master" {
   packet_billing_cycle      = "${ var.packet_billing_cycle }"
   packet_operating_system   = "${ var.packet_operating_system }"
   packet_master_device_plan = "${ var.packet_master_device_plan }"
+  master_cloud_init = "${ module.master_templates.master_cloud_init }"
 }
 
 # module "worker" {

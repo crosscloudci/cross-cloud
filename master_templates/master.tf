@@ -26,6 +26,13 @@ resource "gzip_me" "cloud_config_file" {
   input = "${ var.cloud_config_file }"
 }
 
+resource "gzip_me" "corefile" {
+  input = "${ var.corefile }"
+}
+
+resource "gzip_me" "dns" {
+  input = "${ var.dns }"
+}
 
 
 
@@ -273,8 +280,8 @@ data "template_file" "master" {
     cloud_config_file = "${ gzip_me.cloud_config_file.output }"
     known_tokens_csv = "${ gzip_me.known_tokens_csv.output }"
     basic_auth_csv = "${ gzip_me.basic_auth_csv.output }"
-    corefile = "${ var.corefile }"
-    dns = "${ var.dns }"
+    corefile = "${ gzip_me.corefile.output }"
+    dns = "${ gzip_me.dns.output }"
     systemd  = "${ var.systemd }"
 
   }

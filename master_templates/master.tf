@@ -44,7 +44,7 @@ data "template_file" "kubelet" {
     cloud_config = "${ var.cloud_config }"
     dns_service_ip = "${ var.dns_service_ip }"
     cluster_domain = "${ var.cluster_domain }"
-    fqdn = "${ var.hostname_suffix }${ count.index + 10 }"
+    fqdn = "${ var.hostname_suffix }${ count.index + 1 }"
     non_masquerade_cidr = "${ var.non_masquerade_cidr }"
 
   }
@@ -84,7 +84,7 @@ data "template_file" "etcd" {
     etcd_registry = "${ var.etcd_registry }"
     etcd_tag = "${ var.etcd_tag }"
     etcd_discovery = "${ etcdiscovery_token.etcd.id }"
-    fqdn = "${ var.hostname_suffix }${ count.index + 10 }.${ var.dns_suffix }"
+    fqdn = "${ var.hostname_suffix }${ count.index + 1 }.${ var.dns_suffix }"
 
   }
 }
@@ -124,7 +124,7 @@ data "template_file" "kube_apiserver" {
   vars {
     kube_apiserver_registry = "${ var.kube_apiserver_registry }"
     kube_apiserver_tag = "${ var.kube_apiserver_tag }"
-    fqdn = "${ var.hostname_suffix }${ count.index + 10 }.${ var.dns_suffix }"
+    fqdn = "${ var.hostname_suffix }${ count.index + 1 }.${ var.dns_suffix }"
     service_cidr = "${ var.service_cidr }"
     master_node_count = "${ var.master_node_count }"
     cloud_provider = "${ var.cloud_provider }"
@@ -217,7 +217,7 @@ data "template_file" "kube-proxy" {
   template = "${ file( "${ path.module }/kube-proxy.yml" )}"
 
   vars {
-    fqdn = "${ var.name }-master${ count.index + 10 }"
+    fqdn = "${ var.name }-master${ count.index + 1 }"
     pod_cidr = "${ var.pod_cidr }"
     kube_proxy_registry = "${ var.kube_proxy_registry }"
     kube_proxy_tag = "${ var.kube_proxy_tag }"

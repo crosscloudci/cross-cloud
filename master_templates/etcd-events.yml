@@ -11,20 +11,12 @@ spec:
   - command:
     - /bin/sh
     - -c
-    - /usr/local/bin/etcd 1>>/var/log/etcd-events.log 2>&1
+    - . /etc/srv/kubernetes/etcd-events.env && /usr/local/bin/etcd 1>>/var/log/etcd-events.log 2>&1
     env:
     - name: ETCD_NAME
       value: events-${ fqdn }
     - name: ETCD_DATA_DIR
       value: /var/etcd/data-events
-    - name: ETCD_LISTEN_PEER_URLS
-      value: http://$COREOS_PRIVATE_IPV4:2381
-    - name: ETCD_LISTEN_CLIENT_URLS
-      value: http://$COREOS_PRIVATE_IPV4:4002,http://127.0.0.1:4002
-    - name: ETCD_ADVERTISE_CLIENT_URLS
-      value: http://$COREOS_PRIVATE_IPV4:4002
-    - name: ETCD_INITIAL_ADVERTISE_PEER_URLS
-      value: http://$COREOS_PRIVATE_IPV4:2381
     - name: ETCD_DISCOVERY
       value: ${ etcd_events_discovery }
     image: ${ etcd_registry }:${ etcd_tag }
@@ -51,6 +43,8 @@ spec:
       name: varetcdata
     - mountPath: /var/log
       name: varlogetcd
+    - mountPath: /etc/srv/kubernetes
+      name: cloudvars
   hostNetwork: true
   volumes:
   - hostPath:
@@ -59,4 +53,7 @@ spec:
   - hostPath:
       path: /var/log
     name: varlogetcd
+  - hostPath:
+      path: /etc/srv/kubernetes
+    name: cloudvars
 status: {}

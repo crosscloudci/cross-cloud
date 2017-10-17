@@ -182,15 +182,17 @@ write-files:
     encoding: "gzip+base64"
     content: |
       ${ basic_auth_csv }
-
-  - path: /etc/srv/kubernetes/basic_auth.csv
-    permissions: "0644"
-    encoding: "gzip+base64"
+      
+  - path: /etc/srv/kubernetes/etcd.env
     content: |
-      ${ basic_auth_csv }
+      export ETCD_LISTEN_PEER_URLS=http://$private_ipv4:2380
+      export ETCD_LISTEN_CLIENT_URLS=http://$private_ipv4:4001,http://127.0.0.1:4001
+      export ETCD_ADVERTISE_CLIENT_URLS=http://$private_ipv4:4001
+      export ETCD_INITIAL_ADVERTISE_PEER_URLS=http://$private_ipv4:2380
 
-
-  
-
-
-
+  - path: /etc/srv/kubernetes/etcd-events.env
+    content: |
+      export ETCD_LISTEN_PEER_URLS=http://$private_ipv4:2381
+      export ETCD_LISTEN_CLIENT_URLS=http://$private_ipv4:4002,http://127.0.0.1:4002
+      export ETCD_ADVERTISE_CLIENT_URLS=http://$private_ipv4:4002
+      export ETCD_INITIAL_ADVERTISE_PEER_URLS=http://$private_ipv4:2381

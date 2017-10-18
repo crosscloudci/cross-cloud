@@ -471,48 +471,48 @@ gke_prom_e2e:
   variables:
     CLOUD: gke
 
-bluemix_k8s_deploy:
-  <<: *k8s_deploy_template
-  variables:
-    CLOUD: bluemix
-  environment:
-    name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
-    url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
-    on_stop: bluemix_k8s_destroy
+#bluemix_k8s_deploy:
+#  <<: *k8s_deploy_template
+#  variables:
+#    CLOUD: bluemix
+#  environment:
+#    name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
+#    url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
+#    on_stop: bluemix_k8s_destroy
 
-bluemix_k8s_e2e:
-  <<: *k8s_e2e_template
-  variables:
-    CLOUD: bluemix
+#bluemix_k8s_e2e:
+#  <<: *k8s_e2e_template
+#  variables:
+#    CLOUD: bluemix
 
-bluemix_k8s_destroy:
-  <<: *k8s_cloud_destroy_template
-  variables:
-    CLOUD: bluemix
+#bluemix_k8s_destroy:
+#  <<: *k8s_cloud_destroy_template
+#  variables:
+#    CLOUD: bluemix
 
-bluemix_coredns_deploy:
-  <<: *coredns_deploy_template
-  variables:
-    CLOUD: bluemix
-  dependencies:
-    - bluemix_k8s_deploy
+#bluemix_coredns_deploy:
+#  <<: *coredns_deploy_template
+#  variables:
+#    CLOUD: bluemix
+#  dependencies:
+#    - bluemix_k8s_deploy
 
-bluemix_coredns_e2e:
-  <<: *coredns_e2e_template
-  variables:
-    CLOUD: bluemix
+#bluemix_coredns_e2e:
+#  <<: *coredns_e2e_template
+#  variables:
+#    CLOUD: bluemix
 
-bluemix_prom_deploy:
-  <<: *prometheus_deploy_template
-  variables:
-    CLOUD: bluemix
-  dependencies:
-    - bluemix_k8s_deploy
+#bluemix_prom_deploy:
+#  <<: *prometheus_deploy_template
+#  variables:
+#    CLOUD: bluemix
+#  dependencies:
+#    - bluemix_k8s_deploy
 
-bluemix_prom_e2e:
-  <<: *prometheus_e2e_template
-  variables:
-    CLOUD: bluemix
+#bluemix_prom_e2e:
+#  <<: *prometheus_e2e_template
+#  variables:
+#    CLOUD: bluemix
 
 .azure_k8s_deploy:
   <<: *k8s_deploy_template

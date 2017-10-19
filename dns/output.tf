@@ -1,5 +1,4 @@
-output "corefile" { value = "${ gzip_me.corefile.output }" }
+output "corefile" { value = "${ data.template_file.corefile.rendered }" }
 
-output "dns" { value = "${ gzip_me.dns.output }" }
+output "dns" { value = "${ data.template_file.dns.rendered }" }
 
-output "systemd" { value = "${ data.template_file.systemd.rendered }" }

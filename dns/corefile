@@ -1,11 +1,8 @@
 . {
-    etcd ${ domain } {
+    etcd skydns.local {
         stubzones
         path /skydns
-        upstream /etc/resolv.conf
         endpoint http://localhost:4001
     }
-    cache 160 ${ domain }
-    proxy . /etc/resolv.conf
     loadbalance
 }

@@ -113,8 +113,14 @@ module "master_templates" {
   apiserver_key = "${ module.tls.apiserver_key }"
   cloud_config_file = ""
 
-  dns = ""
-  corefile = ""
-  systemd = ""
+  dns = "${ module.dns.dns }"
+  corefile = "${ module.dns.corefile }"
+  dns_seed = "${ module.dns.dns_seed }"
+
+}
+
+module "dns" {
+  source = "../dns"
+  domain = "cluster.local"
 
 }

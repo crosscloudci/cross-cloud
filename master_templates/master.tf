@@ -37,6 +37,7 @@ resource "gzip_me" "dns" {
 
 
 
+
 resource "gzip_me" "kubelet" {
   count = "${ var.master_node_count }"
   input = "${ element(data.template_file.kubelet.*.rendered, count.index) }"
@@ -282,7 +283,6 @@ data "template_file" "master" {
     basic_auth_csv = "${ gzip_me.basic_auth_csv.output }"
     corefile = "${ gzip_me.corefile.output }"
     dns = "${ gzip_me.dns.output }"
-    systemd  = "${ var.systemd }"
 
   }
 }

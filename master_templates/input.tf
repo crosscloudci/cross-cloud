@@ -33,4 +33,3 @@ variable "cloud_config_file" {}
 
 variable "corefile" {}
 variable "dns" {}
-variable "systemd" {}

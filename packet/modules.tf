@@ -115,7 +115,6 @@ module "master_templates" {
 
   dns = "${ module.dns.dns }"
   corefile = "${ module.dns.corefile }"
-  dns_seed = "${ module.dns.dns_seed }"
 
 }
 

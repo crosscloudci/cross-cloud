@@ -57,8 +57,6 @@ coreos:
         EnvironmentFile=/etc/default/kubelet
         ExecStart=/home/kubernetes/bin/kubelet $KUBELET_OPTS
 
-    ${ systemd }
-
         [Install]
         WantedBy=multi-user.target
 
@@ -196,3 +194,8 @@ write-files:
       export ETCD_LISTEN_CLIENT_URLS=http://$private_ipv4:4002,http://127.0.0.1:4002
       export ETCD_ADVERTISE_CLIENT_URLS=http://$private_ipv4:4002
       export ETCD_INITIAL_ADVERTISE_PEER_URLS=http://$private_ipv4:2381
+
+  - path: /etc/srv/kubernetes/ip.env
+    content: |
+      export PRIVATE_IPV4=$private_ipv4
+      export PUBLIC_IPV4=$public_ipv4

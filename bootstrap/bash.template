@@ -1,0 +1,2 @@
+curl -XPUT http://127.0.0.1:4001/v2/keys/skydns/local/skydns/internal/PRIVATE_IPV4 -d value='{"host":"PRIVATE_IPV4", "group": "g1"}'
+curl -XPUT http://127.0.0.1:4001/v2/keys/skydns/local/skydns/internal/PUBLIC_IPV4 -d value='{"host":"PUBLIC_IPV4", "group": "g1"}'

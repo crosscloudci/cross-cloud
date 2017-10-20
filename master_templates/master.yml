@@ -4,6 +4,9 @@
 coreos:
 
   units:
+    - name: systemd-resolved.service
+      command: restart
+    
     - name: docker.service
       command: start
       drop-ins:
@@ -199,3 +202,10 @@ write-files:
     content: |
       export PRIVATE_IPV4=$private_ipv4
       export PUBLIC_IPV4=$public_ipv4
+      
+  - path: /etc/systemd/resolved.conf.d/dns.conf
+    permissions: 0644
+    owner: root
+    content: |
+      [Resolve]
+      DNS=127.0.0.1

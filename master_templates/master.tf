@@ -26,13 +26,18 @@ resource "gzip_me" "cloud_config_file" {
   input = "${ var.cloud_config_file }"
 }
 
+resource "gzip_me" "dns_master" {
+  input = "${ var.dns_master }"
+}
+
+resource "gzip_me" "dns_conf" {
+  input = "${ var.dns_conf }"
+}
+
 resource "gzip_me" "corefile" {
   input = "${ var.corefile }"
 }
 
-resource "gzip_me" "dns" {
-  input = "${ var.dns }"
-}
 
 
 
@@ -260,7 +265,6 @@ data "template_file" "master" {
   template = "${ file( "${ path.module }/master.yml" )}"
 
   vars {
-    etcd_discovery = "${ etcdiscovery_token.etcd.id }"
     kubelet_artifact = "${ var.kubelet_artifact }"
     cni_artifact = "${ var.cni_artifact }"
     kubelet = "${ element(gzip_me.kubelet.*.output, count.index) }"
@@ -281,8 +285,9 @@ data "template_file" "master" {
     cloud_config_file = "${ gzip_me.cloud_config_file.output }"
     known_tokens_csv = "${ gzip_me.known_tokens_csv.output }"
     basic_auth_csv = "${ gzip_me.basic_auth_csv.output }"
+    dns_master = "${ gzip_me.dns_master.output }"
+    dns_conf = "${ gzip_me.dns_conf.output }"
     corefile = "${ gzip_me.corefile.output }"
-    dns = "${ gzip_me.dns.output }"
 
   }
 }

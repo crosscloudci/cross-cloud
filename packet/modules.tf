@@ -10,39 +10,18 @@ module "master" {
   master_cloud_init = "${ module.master_templates.master_cloud_init }"
 }
 
-# module "worker" {
-#   source                    = "./modules/worker"
-#   name                      = "${ var.name }"
-#   worker_node_count         = "${ var.worker_node_count }"
-#   packet_project_id         = "${ var.packet_project_id }"
-#   packet_facility           = "${ var.packet_facility }"
-#   packet_billing_cycle      = "${ var.packet_billing_cycle }"
-#   packet_operating_system   = "${ var.packet_operating_system }"
-#   packet_worker_device_plan = "${ var.packet_worker_device_plan }"
-#   kubelet_image_url         = "${ var.kubelet_image_url }"
-#   kubelet_image_tag         = "${ var.kubelet_image_tag }"
-#   dns_service_ip            = "${ var.dns_service_ip }"
-#   cluster_domain            = "${ var.cluster_domain }"
-#   internal_tld              = "${ var.name }.${ var.domain }"
-#   pod_cidr                  = "${ var.pod_cidr }"
-#   service_cidr              = "${ var.service_cidr }"
-#   ca = "${ module.tls.ca }"
-#   worker = "${ module.tls.worker }"
-#   worker_key = "${ module.tls.worker_key }"
-#   etcd_discovery            = "${ module.etcd.etcd_discovery }"
-#   data_dir                  = "${ var.data_dir }"
-# }
+module "worker" {
+  source                    = "./modules/worker"
+  name                      = "${ var.name }"
+  worker_node_count         = "${ var.worker_node_count }"
+  packet_facility           = "${ var.packet_facility }"
+  packet_project_id         = "${ var.packet_project_id }"
+  packet_billing_cycle      = "${ var.packet_billing_cycle }"
+  packet_operating_system   = "${ var.packet_operating_system }"
+  packet_worker_device_plan = "${ var.packet_worker_device_plan }"
+  worker_cloud_init = "${ module.worker_templates.worker_cloud_init }"
+}
 
-# module "kubeconfig" {
-#   source = "../kubeconfig"
-#   data_dir = "${ var.data_dir }"
-#   endpoint = "endpoint.${ var.name }.${ var.domain }"
-#   name = "${ var.name }"
-#   ca = "${ module.tls.ca}"
-#   client = "${ module.tls.client }"
-#   client_key = "${ module.tls.client_key }"
-
-# }
 
 module "tls" {
   source = "../tls"
@@ -66,7 +45,7 @@ module "tls" {
   tls_apiserver_cert_subject_common_name = "kubernetes-master"
   tls_apiserver_cert_validity_period_hours = 1000
   tls_apiserver_cert_early_renewal_hours = 100
-  tls_apiserver_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local"
+  tls_apiserver_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local,external.skydns.local"
   tls_apiserver_cert_ip_addresses = "127.0.0.1,10.0.0.1"
 
   tls_worker_cert_subject_common_name = "kubernetes-worker"
@@ -114,13 +93,61 @@ module "master_templates" {
   apiserver_key = "${ module.tls.apiserver_key }"
   cloud_config_file = ""
 
-  dns = "${ module.dns.dns }"
+  dns_master = "${ module.dns.dns_master }"
+  dns_conf = "${ module.dns.dns_conf }"
   corefile = "${ module.dns.corefile }"
+
+}
+
+module "worker_templates" {
+  source = "../worker_templates"
+
+  worker_node_count = "${ var.worker_node_count }"
+  name = "${ var.name }"
+  hostname_suffix = "$private_ipv4"
+
+  kubelet_artifact = "${ var.kubelet_artifact }"
+  cni_artifact = "${ var.cni_artifact }"
+  kube_proxy_registry = "${ var.kube_proxy_registry }"
+  kube_proxy_tag = "${ var.kube_proxy_tag }"
+
+  cloud_provider = "${ var.cloud_provider }"
+  cloud_config = "${ var.cloud_config }"
+  cluster_domain = "${ var.cluster_domain }"
+  pod_cidr = "${ var.pod_cidr }"
+  non_masquerade_cidr = "${ var.non_masquerade_cidr }"
+  dns_service_ip = "${ var.dns_service_ip }"
+  internal_lb_ip = ""
+
+  ca = "${ module.tls.ca }"
+  worker = "${ module.tls.worker }"
+  worker_key = "${ module.tls.worker_key }"
+  cloud_config_file = ""
+
+  dns_worker = "${ module.dns.dns_worker }"
+  dns_conf = "${ module.dns.dns_conf }"
+  corefile = "${ module.dns.corefile }"
+  dns_etcd = "${ module.dns.dns_etcd }"
 
 }
 
 module "dns" {
   source = "../dns"
   domain = "cluster.local"
+
+  etcd_registry = "${ var.etcd_registry }"
+  etcd_tag = "${ var.etcd_tag }"
+  etcd_discovery = "${ module.master_templates.etcd_discovery }"
+
+}
+
+module "kubeconfig" {
+  source = "../kubeconfig"
+  data_dir = "${ var.data_dir }"
+  endpoint = "external.skydns.local"
+  name = "${ var.name }"
+  ca = "${ module.tls.ca}"
+  client = "${ module.tls.client }"
+  client_key = "${ module.tls.client_key }"
 
 }

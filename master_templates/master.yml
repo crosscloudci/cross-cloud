@@ -130,18 +130,6 @@ write-files:
     content: |
       ${ proxy_kubeconfig }
 
-  - path: /etc/kubernetes/manifests/dns.yml
-    permissions: "0644"
-    encoding: "gzip+base64"
-    content: |
-      ${ dns }
-
-  - path: /var/dns/Corefile
-    permissions: "0644"
-    encoding: "gzip+base64"
-    content: |
-      ${ corefile }
-
   - path: /etc/srv/kubernetes/pki/ca-certificates.crt
     permissions: "0644"
     encoding: "gzip+base64"
@@ -205,7 +193,19 @@ write-files:
       
   - path: /etc/systemd/resolved.conf.d/dns.conf
     permissions: 0644
+    encoding: "gzip+base64"
     owner: root
     content: |
-      [Resolve]
-      DNS=127.0.0.1
+      ${ dns_conf }
+
+  - path: /etc/kubernetes/manifests/dns.yml
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ dns_master }
+
+  - path: /var/dns/Corefile
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ corefile }

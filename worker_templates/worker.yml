@@ -4,6 +4,9 @@
 coreos:
 
   units:
+    - name: systemd-resolved.service
+      command: restart
+      
     - name: docker.service
       command: start
       drop-ins:
@@ -11,7 +14,6 @@ coreos:
           content: |
             [Service]
             EnvironmentFile=/etc/default/docker
-            # ExecStartPre=/usr/bin/ip link add name cbr0 type bridge
 
     - name: bins.service
       command: start
@@ -76,6 +78,12 @@ write-files:
     content: |
       ${ kubelet }
 
+  - path: /var/lib/kubelet/kubeconfig
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ kubelet_kubeconfig }
+
   - path: /etc/kubernetes/manifests/kube-proxy.yml
     permissions: "0644"
     encoding: "gzip+base64"
@@ -88,12 +96,7 @@ write-files:
     content: |
       ${ proxy_kubeconfig }
 
-  - path: /var/lib/kubelet/kubeconfig
-    permissions: "0644"
-    encoding: "gzip+base64"
-    content: |
-      ${ kubelet_kubeconfig }
-
+ 
   - path: /etc/kubernetes/pki/ca-certificates.crt
     permissions: "0644"
     encoding: "gzip+base64"
@@ -117,3 +120,30 @@ write-files:
     encoding: "gzip+base64"
     content: |
       ${ cloud_config_file }
+
+  - path: /etc/systemd/resolved.conf.d/dns.conf
+    permissions: 0644
+    encoding: "gzip+base64"
+    owner: root
+    content: |
+      ${ dns_conf }
+
+  - path: /etc/kubernetes/manifests/dns.yml
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ dns_worker }
+
+  - path: /var/dns/Corefile
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ corefile }
+
+  - path: /etc/kubernetes/manifests/etcd-proxy.yml
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ dns_etcd }
+
+

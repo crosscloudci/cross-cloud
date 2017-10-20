@@ -84,6 +84,7 @@ module "master_templates" {
   name = "${ var.name }"
   dns_suffix = ""
   hostname_suffix = "${ var.name }-master"
+  etcd_endpoint = "${ var.etcd_endpoint }"
 
   kubelet_artifact = "${ var.kubelet_artifact }"
   cni_artifact = "${ var.cni_artifact }"

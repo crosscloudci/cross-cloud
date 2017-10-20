@@ -132,7 +132,7 @@ data "template_file" "kube_apiserver" {
   vars {
     kube_apiserver_registry = "${ var.kube_apiserver_registry }"
     kube_apiserver_tag = "${ var.kube_apiserver_tag }"
-    fqdn = "${ var.hostname_suffix }${ count.index + 1 }.${ var.dns_suffix }"
+    etcd_endpoint = "${ var.etcd_endpoint }"
     service_cidr = "${ var.service_cidr }"
     master_node_count = "${ var.master_node_count }"
     cloud_provider = "${ var.cloud_provider }"

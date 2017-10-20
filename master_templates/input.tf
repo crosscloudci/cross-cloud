@@ -2,6 +2,7 @@ variable "master_node_count" {}
 variable "name" {}
 variable "dns_suffix" {}
 variable "hostname_suffix" {}
+variable "etcd_endpoint" {}
 
 variable "kubelet_artifact" {}
 variable "cni_artifact" {}

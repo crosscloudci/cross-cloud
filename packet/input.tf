@@ -21,6 +21,7 @@ variable "packet_operating_system" { default = "coreos_stable" }
 
 
 # Kubernetes
+variable "etcd_endpoint" {default = "internal.skydns.local"}
 variable "cloud_provider" { default = "" }
 variable "cloud_config" { default = "" }
 variable "cluster_domain" { default = "cluster.local" }

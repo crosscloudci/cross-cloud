@@ -18,7 +18,7 @@ spec:
     - name: ETCD_DISCOVERY
       value: ${ etcd_discovery }
     - name: ETCD_PROXY
-      value: on
+      value: "on"
     image: ${ etcd_registry }:${ etcd_tag }
     livenessProbe:
       httpGet:
@@ -27,10 +27,10 @@ spec:
         port: 4001
       initialDelaySeconds: 15
       timeoutSeconds: 15
-    name: etcd-container
+    name: etcd-proxy
     ports:
-    - containerPort: 2380
-      hostPort: 2380
+    - containerPort: 2379
+      hostPort: 2379
       name: serverport
     - containerPort: 4001
       hostPort: 4001

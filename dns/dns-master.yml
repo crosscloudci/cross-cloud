@@ -22,7 +22,7 @@ spec:
   - command:
     - /bin/sh
     - -c
-    - sleep 20 && /coredns -conf /etc/coredns/Corefile
+    - /coredns -conf /etc/coredns/Corefile
     image: coredns/coredns:011
     livenessProbe:
       httpGet:

@@ -29,5 +29,5 @@ resource "aws_instance" "master" {
     Name = "etcd${ count.index + 1 }-${ var.name }"
   }
 
-  user_data = "${ base64gzip(element(split(",", var.master_cloud_init), count.index)) }"
+  user_data = "${ base64gzip(element(split(";", var.master_cloud_init), count.index)) }"
 }

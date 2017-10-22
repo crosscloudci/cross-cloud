@@ -20,6 +20,8 @@ coreos:
       content: |
         [Unit]
         Description=Download Binaries
+        After=network-online.target
+        Requires=network-online.target
         [Service]
         Type=oneshot
         RemainAfterExit=yes

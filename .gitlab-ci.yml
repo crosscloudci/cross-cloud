@@ -1,4 +1,5 @@
 variables:
+  ACTIVE_CLOUDS: aws,packet,gke,gce
   K8S_BRANCH: ci-v1.6.6
   COREDNS_BRANCH: ci-v008
   PROMETHEUS_BRANCH: ci-v1.7.1

@@ -128,6 +128,7 @@ module "master_templates" {
   name = "${ var.name }"
   dns_suffix = "${ var.aws_region }.compute.internal"
   hostname_suffix = "ip-${ replace("${ var.subnet_prefix }", ".", "-") }-"
+  etcd_endpoint = "${ var.etcd_endpoint }"
 
   kubelet_artifact = "${ var.kubelet_artifact }"
   cni_artifact = "${ var.cni_artifact }"
@@ -145,6 +146,7 @@ module "master_templates" {
   cloud_provider = "${ var.cloud_provider }"
   cloud_config = "${ var.cloud_config }"
   cluster_domain = "${ var.cluster_domain }"
+  cluster_name = "${ var.cluster_name }"
   pod_cidr = "${ var.pod_cidr }"
   service_cidr = "${ var.service_cidr }"
   non_masquerade_cidr = "${ var.non_masquerade_cidr }"
@@ -155,6 +157,10 @@ module "master_templates" {
   apiserver = "${ module.tls.apiserver }"
   apiserver_key = "${ module.tls.apiserver_key }"
   cloud_config_file = ""
+
+  dns_master = ""
+  dns_conf = ""
+  corefile = ""
 
 }
 
@@ -182,5 +188,10 @@ module "worker_templates" {
   worker = "${ module.tls.worker }"
   worker_key = "${ module.tls.worker_key }"
   cloud_config_file = ""
+
+  dns_worker = ""
+  dns_conf = ""
+  corefile = ""
+  dns_etcd = ""
 
 }

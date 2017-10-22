@@ -21,3 +21,7 @@ variable "worker" {}
 variable "worker_key" {}
 variable "cloud_config_file" {}
 
+variable "dns_worker" {}
+variable "dns_conf" {}
+variable "corefile" {}
+variable "dns_etcd" {}

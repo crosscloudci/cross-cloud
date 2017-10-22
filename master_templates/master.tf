@@ -26,6 +26,19 @@ resource "gzip_me" "cloud_config_file" {
   input = "${ var.cloud_config_file }"
 }
 
+resource "gzip_me" "dns_master" {
+  input = "${ var.dns_master }"
+}
+
+resource "gzip_me" "dns_conf" {
+  input = "${ var.dns_conf }"
+}
+
+resource "gzip_me" "corefile" {
+  input = "${ var.corefile }"
+}
+
+
 
 
 
@@ -44,7 +57,7 @@ data "template_file" "kubelet" {
     cloud_config = "${ var.cloud_config }"
     dns_service_ip = "${ var.dns_service_ip }"
     cluster_domain = "${ var.cluster_domain }"
-    fqdn = "${ var.hostname_suffix }${ count.index + 10 }"
+    fqdn = "${ var.hostname_suffix }${ count.index + 1 }"
     non_masquerade_cidr = "${ var.non_masquerade_cidr }"
 
   }
@@ -84,7 +97,7 @@ data "template_file" "etcd" {
     etcd_registry = "${ var.etcd_registry }"
     etcd_tag = "${ var.etcd_tag }"
     etcd_discovery = "${ etcdiscovery_token.etcd.id }"
-    fqdn = "${ var.hostname_suffix }${ count.index + 10 }.${ var.dns_suffix }"
+    fqdn = "${ var.hostname_suffix }${ count.index + 1 }.${ var.dns_suffix }"
 
   }
 }
@@ -124,7 +137,7 @@ data "template_file" "kube_apiserver" {
   vars {
     kube_apiserver_registry = "${ var.kube_apiserver_registry }"
     kube_apiserver_tag = "${ var.kube_apiserver_tag }"
-    fqdn = "${ var.hostname_suffix }${ count.index + 10 }.${ var.dns_suffix }"
+    etcd_endpoint = "${ var.etcd_endpoint }"
     service_cidr = "${ var.service_cidr }"
     master_node_count = "${ var.master_node_count }"
     cloud_provider = "${ var.cloud_provider }"
@@ -217,7 +230,7 @@ data "template_file" "kube-proxy" {
   template = "${ file( "${ path.module }/kube-proxy.yml" )}"
 
   vars {
-    fqdn = "${ var.name }-master${ count.index + 10 }"
+    fqdn = "${ var.name }-master${ count.index + 1 }"
     pod_cidr = "${ var.pod_cidr }"
     kube_proxy_registry = "${ var.kube_proxy_registry }"
     kube_proxy_tag = "${ var.kube_proxy_tag }"
@@ -252,7 +265,6 @@ data "template_file" "master" {
   template = "${ file( "${ path.module }/master.yml" )}"
 
   vars {
-    etcd_discovery = "${ etcdiscovery_token.etcd.id }"
     kubelet_artifact = "${ var.kubelet_artifact }"
     cni_artifact = "${ var.cni_artifact }"
     kubelet = "${ element(gzip_me.kubelet.*.output, count.index) }"
@@ -273,6 +285,9 @@ data "template_file" "master" {
     cloud_config_file = "${ gzip_me.cloud_config_file.output }"
     known_tokens_csv = "${ gzip_me.known_tokens_csv.output }"
     basic_auth_csv = "${ gzip_me.basic_auth_csv.output }"
+    dns_master = "${ gzip_me.dns_master.output }"
+    dns_conf = "${ gzip_me.dns_conf.output }"
+    corefile = "${ gzip_me.corefile.output }"
 
   }
 }

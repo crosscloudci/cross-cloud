@@ -2,6 +2,7 @@ variable "master_node_count" {}
 variable "name" {}
 variable "dns_suffix" {}
 variable "hostname_suffix" {}
+variable "etcd_endpoint" {}
 
 variable "kubelet_artifact" {}
 variable "cni_artifact" {}
@@ -30,3 +31,7 @@ variable "ca_key" {}
 variable "apiserver" {}
 variable "apiserver_key" {}
 variable "cloud_config_file" {}
+
+variable "dns_master" {}
+variable "dns_conf" {}
+variable "corefile" {}

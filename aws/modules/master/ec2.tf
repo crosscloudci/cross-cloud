@@ -21,5 +21,5 @@ resource "aws_instance" "master" {
     Name = "${ var.name }-master${ count.index + 1 }"
   }
 
-  user_data = "${ base64gzip(element(split(";", var.master_cloud_init), count.index)) }"
+  user_data = "${ base64gzip(element(split("`", var.master_cloud_init), count.index)) }"
 }

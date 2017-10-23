@@ -25,6 +25,7 @@ coreos:
         [Service]
         Type=oneshot
         RemainAfterExit=yes
+        ExecStartPre=/usr/bin/bash -c "while true; do ping -c1 www.google.com > /dev/null && break; done"
         ExecStartPre=/usr/bin/mkdir --parents /home/kubernetes/bin
         ExecStartPre=/usr/bin/mkdir --parents /opt/cni/bin
         ExecStartPre=/usr/bin/mkdir --parents /etc/cni/net.d
@@ -176,6 +177,7 @@ write-files:
       
   - path: /etc/srv/kubernetes/etcd.env
     content: |
+      export ETCD_NAME=$private_ipv4
       export ETCD_LISTEN_PEER_URLS=http://$private_ipv4:2380
       export ETCD_LISTEN_CLIENT_URLS=http://$private_ipv4:4001,http://127.0.0.1:4001
       export ETCD_ADVERTISE_CLIENT_URLS=http://$private_ipv4:4001
@@ -183,6 +185,7 @@ write-files:
 
   - path: /etc/srv/kubernetes/etcd-events.env
     content: |
+      export ETCD_NAME=$private_ipv4
       export ETCD_LISTEN_PEER_URLS=http://$private_ipv4:2381
       export ETCD_LISTEN_CLIENT_URLS=http://$private_ipv4:4002,http://127.0.0.1:4002
       export ETCD_ADVERTISE_CLIENT_URLS=http://$private_ipv4:4002

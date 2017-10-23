@@ -98,8 +98,7 @@ module "master_templates" {
 
   master_node_count = "${ var.master_node_count }"
   name = "${ var.name }"
-  dns_suffix = "c.${ var.project }.internal"
-  hostname_suffix = "${ var.name }-master"
+  etcd_endpoint = "${ var.etcd_endpoint }"
 
   kubelet_artifact = "${ var.kubelet_artifact }"
   cni_artifact = "${ var.cni_artifact }"
@@ -129,9 +128,9 @@ module "master_templates" {
   apiserver_key = "${ module.tls.apiserver_key }"
   cloud_config_file = ""
 
-  dns = ""
+  dns_master = ""
+  dns_conf = ""
   corefile = ""
-  systemd = ""
 
 }
 
@@ -140,7 +139,6 @@ module "worker_templates" {
 
   worker_node_count = "${ var.worker_node_count }"
   name = "${ var.name }"
-  hostname_suffix = "$private_ipv4"
 
   kubelet_artifact = "${ var.kubelet_artifact }"
   cni_artifact = "${ var.cni_artifact }"
@@ -159,5 +157,10 @@ module "worker_templates" {
   worker = "${ module.tls.worker }"
   worker_key = "${ module.tls.worker_key }"
   cloud_config_file = ""
+
+  dns_worker = ""
+  dns_conf = ""
+  corefile = ""
+  dns_etcd = ""
 
 }

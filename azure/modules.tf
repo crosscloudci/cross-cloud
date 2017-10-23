@@ -160,6 +160,7 @@ module "worker_templates" {
   worker = "${ module.tls.worker }"
   worker_key = "${ module.tls.worker_key }"
   cloud_config_file = "${ data.template_file.cloud_config_file.rendered }"
+
   dns_worker = ""
   dns_conf = ""
   corefile = ""

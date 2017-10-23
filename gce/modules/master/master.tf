@@ -40,7 +40,7 @@ resource "google_compute_instance_group" "cncf" {
 
 resource "google_compute_instance" "cncf" {
   count        = "${ var.master_node_count }"
-  name         = "${ var.name }-master${ count.index + 10 }"
+  name         = "${ var.name }-master${ count.index + 1 }"
   machine_type = "${ var.master_vm_size }"
   zone         = "${ var.zone }"
   can_ip_forward = true
@@ -62,7 +62,7 @@ resource "google_compute_instance" "cncf" {
   }
 
   metadata {
-    user-data = "${ element(split(",", var.master_cloud_init), count.index) }"
+    user-data = "${ element(split("`", var.master_cloud_init), count.index) }"
   }
 
   service_account {

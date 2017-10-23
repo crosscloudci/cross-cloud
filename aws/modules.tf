@@ -37,7 +37,6 @@ module "master" {
   internal_lb_security           = "${ module.security.internal_lb_id }"
   instance_type                  = "${ var.aws_master_vm_size }"
   region                         = "${ var.aws_region }"
-  subnet_prefix                  = "${ var.subnet_prefix }"
   subnet_public_id               = "${ module.vpc.subnet_public_id }"
   subnet_private_id              = "${ module.vpc.subnet_private_id }"
   vpc_id                         = "${ module.vpc.vpc_id }"
@@ -126,8 +125,8 @@ module "master_templates" {
 
   master_node_count = "${ var.master_node_count }"
   name = "${ var.name }"
-  dns_suffix = "${ var.aws_region }.compute.internal"
-  hostname_suffix = "ip-${ replace("${ var.subnet_prefix }", ".", "-") }-"
+  # dns_suffix = "${ var.aws_region }.compute.internal"
+  # hostname_suffix = "ip-${ replace("${ var.subnet_prefix }", ".", "-") }-"
   etcd_endpoint = "${ var.etcd_endpoint }"
 
   kubelet_artifact = "${ var.kubelet_artifact }"
@@ -169,7 +168,6 @@ module "worker_templates" {
 
   worker_node_count = "${ var.worker_node_count }"
   name = "${ var.name }"
-  hostname_suffix = "$private_ipv4"
 
   kubelet_artifact = "${ var.kubelet_artifact }"
   cni_artifact = "${ var.cni_artifact }"

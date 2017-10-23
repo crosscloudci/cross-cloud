@@ -13,8 +13,6 @@ spec:
     - -c
     - . /etc/srv/kubernetes/etcd.env && /usr/local/bin/etcd 1>>/var/log/etcd.log 2>&1
     env:
-    - name: ETCD_NAME
-      value: ${ fqdn }
     - name: ETCD_DATA_DIR
       value: /var/etcd/data
     - name: ETCD_DISCOVERY

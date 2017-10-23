@@ -13,8 +13,6 @@ spec:
     - -c
     - . /etc/srv/kubernetes/etcd-events.env && /usr/local/bin/etcd 1>>/var/log/etcd-events.log 2>&1
     env:
-    - name: ETCD_NAME
-      value: events-${ fqdn }
     - name: ETCD_DATA_DIR
       value: /var/etcd/data-events
     - name: ETCD_DISCOVERY

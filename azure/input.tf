@@ -20,9 +20,11 @@ variable "worker_vm_size"   { default = "Standard_A2" }
 variable "bastion_vm_size"   { default = "Standard_A2" }
 
 # Kubernetes
+variable "etcd_endpoint" {default = "127.0.0.1"}
 variable "cloud_provider" { default = "azure" }
 variable "cloud_config" { default = "--cloud-config=/etc/srv/kubernetes/cloud-config" }
 variable "cluster_domain" { default = "cluster.local" }
+variable "cluster_name" { default = "kubernetes" }
 variable "pod_cidr" { default = "100.96.0.0/11" }
 variable "service_cidr"   { default = "100.64.0.0/13" }
 variable "non_masquerade_cidr" { default = "100.64.0.0/10"}

@@ -25,7 +25,9 @@ resource "azurerm_storage_account" "cncf" {
   name                = "${ random_id.cncf.dec }"
   resource_group_name = "${ var.name }"
   location            = "${ var.location }"
-  account_type        = "Standard_LRS"
+  account_tier             = "Standard"
+  account_replication_type = "GRS"
+
 }
 
 resource "azurerm_storage_container" "cncf" {

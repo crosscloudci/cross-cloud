@@ -1,3 +1,12 @@
+resource "azurerm_public_ip" "worker" {
+  count = "${ var.worker_node_count }"
+  name  = "${ var.name }-worker${ count.index + 1 }"
+  location = "${ var.location }"
+  resource_group_name = "${ var.name }"
+  public_ip_address_allocation = "static"
+  domain_name_label = "${ var.name }-worker${ count.index + 1 }"
+}
+
 resource "azurerm_network_interface" "cncf" {
   count               = "${ var.worker_node_count }"
   name                = "worker-interface${ count.index + 1 }"
@@ -9,6 +18,7 @@ resource "azurerm_network_interface" "cncf" {
     name                          = "worker-nic${ count.index + 1 }"
     subnet_id                     = "${ var.subnet_id }"
     private_ip_address_allocation = "dynamic"
+    public_ip_address_id          = "${ element(azurerm_public_ip.worker.*.id, count.index) }"
   }
 }
 

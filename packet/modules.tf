@@ -61,8 +61,6 @@ module "master_templates" {
 
   master_node_count = "${ var.master_node_count }"
   name = "${ var.name }"
-  dns_suffix = ""
-  hostname_suffix = "${ var.name }-master"
   etcd_endpoint = "${ var.etcd_endpoint }"
 
   kubelet_artifact = "${ var.kubelet_artifact }"
@@ -104,7 +102,6 @@ module "worker_templates" {
 
   worker_node_count = "${ var.worker_node_count }"
   name = "${ var.name }"
-  hostname_suffix = "$private_ipv4"
 
   kubelet_artifact = "${ var.kubelet_artifact }"
   cni_artifact = "${ var.cni_artifact }"

@@ -20,6 +20,7 @@ variable "data_dir" { default = "/cncf/data/gce" }
 
 
 # Kubernetes
+variable "etcd_endpoint" {default = "127.0.0.1"}
 variable "cloud_provider" { default = "gce" }
 variable "cloud_config" { default = "" }
 variable "cluster_domain" { default = "cluster.local" }

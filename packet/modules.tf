@@ -57,12 +57,10 @@ module "tls" {
 
 
 module "master_templates" {
-  source = "../master_templates"
+  source = "../master_templates-v1.7.2"
 
   master_node_count = "${ var.master_node_count }"
   name = "${ var.name }"
-  dns_suffix = ""
-  hostname_suffix = "${ var.name }-master"
   etcd_endpoint = "${ var.etcd_endpoint }"
 
   kubelet_artifact = "${ var.kubelet_artifact }"
@@ -100,11 +98,10 @@ module "master_templates" {
 }
 
 module "worker_templates" {
-  source = "../worker_templates"
+  source = "../worker_templates-v1.7.2"
 
   worker_node_count = "${ var.worker_node_count }"
   name = "${ var.name }"
-  hostname_suffix = "$private_ipv4"
 
   kubelet_artifact = "${ var.kubelet_artifact }"
   cni_artifact = "${ var.cni_artifact }"

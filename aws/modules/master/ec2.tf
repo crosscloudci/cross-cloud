@@ -1,11 +1,3 @@
-resource "aws_network_interface" "master" {
-  count = "${ var.master_node_count }"
-  subnet_id = "${ var.subnet_private_id }"
-  private_ips = [ "${ var.subnet_prefix }.${ count.index + 10 }" ]
-  security_groups = [ "${ var.master_security }" ]
-  source_dest_check = false
-}
-
 resource "aws_instance" "master" {
   count = "${ var.master_node_count }"
 
@@ -14,10 +6,10 @@ resource "aws_instance" "master" {
   instance_type = "${ var.instance_type }"
   key_name = "${ var.key_name }"
 
-  network_interface {
-    device_index = 0
-    network_interface_id = "${ element(aws_network_interface.master.*.id, count.index) }"
-  }
+  source_dest_check = false
+  associate_public_ip_address = false
+  subnet_id = "${ var.subnet_private_id }"
+  vpc_security_group_ids = [ "${ var.master_security }" ]
 
   root_block_device {
     volume_size = 124
@@ -26,8 +18,8 @@ resource "aws_instance" "master" {
 
   tags {
     KubernetesCluster = "${ var.name }" # used by kubelet's aws provider to determine cluster
-    Name = "etcd${ count.index + 1 }-${ var.name }"
+    Name = "${ var.name }-master${ count.index + 1 }"
   }
 
-  user_data = "${ base64gzip(element(split(",", var.master_cloud_init), count.index)) }"
+  user_data = "${ base64gzip(element(split("`", var.master_cloud_init), count.index)) }"
 }

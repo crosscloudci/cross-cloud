@@ -9,20 +9,21 @@ variable "aws_availability_zone" { default = "ap-southeast-2a" }
 variable "vpc_cidr"        { default = "10.0.0.0/16" }
 variable "subnet_cidr_private"     { default = "10.0.240.0/24"}
 variable "subnet_cidr_public"     { default = "10.0.241.0/24"}
-variable "subnet_prefix"     { default = "10.0.240"}
 variable "allow_ssh_cidr" { default = "0.0.0.0/0" }
 
 # VM Image and size
 variable "admin_username" { default = "core" }
 variable "aws_image_ami" { default = "ami-266d8b44"} # channel/stable type/hvm
 variable "aws_master_vm_size" { default = "m3.medium" }
-variable "aws_worker_vm_size" { default = "m3.medium" }
+variable "aws_worker_vm_size" { default = "t2.nano" }
 variable "aws_bastion_vm_size" { default = "t2.nano" }
 
 # Kubernetes
+variable "etcd_endpoint" {default = "127.0.0.1"}
 variable "cloud_provider" { default = "aws" }
 variable "cloud_config" { default = "" }
 variable "cluster_domain" { default = "cluster.local" }
+variable "cluster_name" { default = "kubernetes" }
 variable "pod_cidr" { default = "100.96.0.0/11" }
 variable "service_cidr"   { default = "100.64.0.0/13" }
 variable "non_masquerade_cidr" { default = "100.64.0.0/10"}

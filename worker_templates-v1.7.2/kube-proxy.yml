@@ -31,9 +31,6 @@ spec:
     - mountPath: /var/lib/kube-proxy/kubeconfig
       name: kubeconfig
       readOnly: true
-    - mountPath: /etc/srv/kubernetes
-      name: srvkube
-      readOnly: true
     - mountPath: /etc/ssl/certs
       name: ssl-certs-hosts
       readOnly: true
@@ -45,9 +42,6 @@ spec:
   - hostPath:
       path: /var/lib/kube-proxy/kubeconfig
     name: kubeconfig
-  - hostPath:
-      path: /etc/srv/kubernetes
-    name: srvkube
   - hostPath:
       path: /usr/share/ca-certificates
     name: ssl-certs-hosts

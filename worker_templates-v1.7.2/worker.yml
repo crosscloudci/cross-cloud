@@ -6,7 +6,7 @@ coreos:
   units:
     - name: systemd-resolved.service
       command: restart
-    
+      
     - name: docker.service
       command: start
       drop-ins:
@@ -20,18 +20,15 @@ coreos:
       content: |
         [Unit]
         Description=Download Binaries
-        After=network-online.target
-        Requires=network-online.target
         [Service]
         Type=oneshot
         RemainAfterExit=yes
-        ExecStartPre=/usr/bin/bash -c "while true; do ping -c1 www.google.com > /dev/null && break; done"
-        ExecStartPre=/usr/bin/mkdir --parents /home/kubernetes/bin
         ExecStartPre=/usr/bin/mkdir --parents /opt/cni/bin
         ExecStartPre=/usr/bin/mkdir --parents /etc/cni/net.d
-        ExecStartPre=/usr/bin/curl --retry-max-time 120 -L -o /home/kubernetes/bin/kubelet ${ kubelet_artifact }
-        ExecStartPre=/usr/bin/curl --retry-max-time 120 -L -o /home/kubernetes/bin/cni.tar ${ cni_artifact }
-        ExecStartPre=/usr/bin/tar -xvf /home/kubernetes/bin/cni.tar -C /opt/cni/bin/
+        ExecStartPre=/usr/bin/mkdir --parents /home/kubernetes/bin
+        ExecStartPre=/usr/bin/curl -L -o /home/kubernetes/bin/kubelet ${ kubelet_artifact }
+        ExecStartPre=/usr/bin/curl -L -o /tmp/cni.tar ${ cni_artifact }
+        ExecStartPre=/usr/bin/tar -xvf /tmp/cni.tar -C /opt/cni/bin/
         ExecStart=/usr/bin/chmod +x /home/kubernetes/bin/kubelet
 
     - name: socat.service
@@ -69,7 +66,6 @@ coreos:
   update:
     reboot-strategy: etcd-lock
 
-
 write-files:
 
   - path: /etc/default/docker
@@ -77,49 +73,16 @@ write-files:
       DOCKER_OPTS="--ip-masq=false --iptables=false --log-driver=json-file --log-level=warn --log-opt=max-file=5 --log-opt=max-size=10m --storage-driver=overlay"
 
   - path: /etc/default/kubelet
+    permissions: "0644"
     encoding: "gzip+base64"
     content: |
       ${ kubelet }
 
   - path: /var/lib/kubelet/kubeconfig
+    permissions: "0644"
     encoding: "gzip+base64"
     content: |
       ${ kubelet_kubeconfig }
-
-  - path: /etc/kubernetes/manifests/etcd.yml
-    encoding: "gzip+base64"
-    content: |
-      ${ etcd }
-
-  - path: /etc/kubernetes/manifests/etcd-events.yml
-    encoding: "gzip+base64"
-    content: |
-      ${ etcd_events }
-
-  - path: /etc/kubernetes/manifests/kube-apiserver.yml
-    encoding: "gzip+base64"
-    content: |
-      ${ kube_apiserver }
-
-  - path: /etc/kubernetes/manifests/kube-controller-manager.yml
-    encoding: "gzip+base64"
-    content: |
-      ${ kube_controller_manager }
-
-  - path: /var/lib/kube-controller-manager/kubeconfig
-    encoding: "gzip+base64"
-    content: |
-      ${ kube_controller_manager_kubeconfig }
-
-  - path: /etc/kubernetes/manifests/kube-scheduler.yml
-    encoding: "gzip+base64"
-    content: |
-      ${ kube_scheduler }
-
-  - path: /var/lib/kube-scheduler/kubeconfig
-    encoding: "gzip+base64"
-    content: |
-      ${ kube_scheduler_kubeconfig }
 
   - path: /etc/kubernetes/manifests/kube-proxy.yml
     permissions: "0644"
@@ -133,29 +96,24 @@ write-files:
     content: |
       ${ proxy_kubeconfig }
 
-  - path: /etc/srv/kubernetes/pki/ca-certificates.crt
+ 
+  - path: /etc/kubernetes/pki/ca-certificates.crt
     permissions: "0644"
     encoding: "gzip+base64"
     content: |
       ${ ca }
-
-  - path: /etc/srv/kubernetes/pki/ca-certificates.key
+      
+  - path: /etc/kubernetes/pki/kubelet.crt
     permissions: "0644"
     encoding: "gzip+base64"
     content: |
-      ${ ca_key }
-
-  - path: /etc/srv/kubernetes/pki/apiserver.crt
+      ${ worker }
+      
+  - path: /etc/kubernetes/pki/kubelet.key
     permissions: "0644"
     encoding: "gzip+base64"
     content: |
-      ${ apiserver }
-
-  - path: /etc/srv/kubernetes/pki/apiserver.key
-    permissions: "0644"
-    encoding: "gzip+base64"
-    content: |
-      ${ apiserver_key }
+      ${ worker_key }
 
   - path: /etc/srv/kubernetes/cloud-config
     permissions: "0644"
@@ -163,39 +121,6 @@ write-files:
     content: |
       ${ cloud_config_file }
 
-  - path: /etc/srv/kubernetes/known_tokens.csv
-    permissions: "0644"
-    encoding: "gzip+base64"
-    content: |
-      ${ known_tokens_csv }
-
-  - path: /etc/srv/kubernetes/basic_auth.csv
-    permissions: "0644"
-    encoding: "gzip+base64"
-    content: |
-      ${ basic_auth_csv }
-      
-  - path: /etc/srv/kubernetes/etcd.env
-    content: |
-      export ETCD_NAME=$private_ipv4
-      export ETCD_LISTEN_PEER_URLS=http://$private_ipv4:2380
-      export ETCD_LISTEN_CLIENT_URLS=http://$private_ipv4:4001,http://127.0.0.1:4001
-      export ETCD_ADVERTISE_CLIENT_URLS=http://$private_ipv4:4001
-      export ETCD_INITIAL_ADVERTISE_PEER_URLS=http://$private_ipv4:2380
-
-  - path: /etc/srv/kubernetes/etcd-events.env
-    content: |
-      export ETCD_NAME=$private_ipv4
-      export ETCD_LISTEN_PEER_URLS=http://$private_ipv4:2381
-      export ETCD_LISTEN_CLIENT_URLS=http://$private_ipv4:4002,http://127.0.0.1:4002
-      export ETCD_ADVERTISE_CLIENT_URLS=http://$private_ipv4:4002
-      export ETCD_INITIAL_ADVERTISE_PEER_URLS=http://$private_ipv4:2381
-
-  - path: /etc/srv/kubernetes/ip.env
-    content: |
-      export PRIVATE_IPV4=$private_ipv4
-      export PUBLIC_IPV4=$public_ipv4
-      
   - path: /etc/systemd/resolved.conf.d/dns.conf
     permissions: 0644
     encoding: "gzip+base64"
@@ -207,10 +132,18 @@ write-files:
     permissions: "0644"
     encoding: "gzip+base64"
     content: |
-      ${ dns_master }
+      ${ dns_worker }
 
   - path: /var/dns/Corefile
     permissions: "0644"
     encoding: "gzip+base64"
     content: |
       ${ corefile }
+
+  - path: /etc/kubernetes/manifests/etcd-proxy.yml
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ dns_etcd }
+
+

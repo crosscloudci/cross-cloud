@@ -37,6 +37,9 @@ spec:
       requests:
         cpu: 100m
     volumeMounts:
+    - mountPath: /etc/ssl/certs
+      name: etcssl
+      readOnly: true
     - mountPath: /var/etcd/data-events
       name: varetcdata
     - mountPath: /var/log
@@ -45,6 +48,9 @@ spec:
       name: cloudvars
   hostNetwork: true
   volumes:
+  - hostPath:
+      path: /usr/share/ca-certificates
+    name: etcssl
   - hostPath:
       path: /var/etcd/data-events
     name: varetcdata

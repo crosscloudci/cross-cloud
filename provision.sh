@@ -11,6 +11,7 @@ RED='\033[0;31m'
 NC='\033[0m' # No Color
 
 export TF_VAR_name="$2"
+export TF_VAR_project="$GOOGLE_PROJECT" # otherwise not picked up currently, is it best to do a general var for all clouds?
 export TF_VAR_internal_tld=${TF_VAR_name}.cncf.demo
 export TF_VAR_data_dir=$(pwd)/data/${TF_VAR_name}
 export TF_VAR_aws_key_name=${TF_VAR_name}
@@ -28,6 +29,8 @@ mkdir -p $TF_VAR_data_dir
 if [ "$1" = "aws-deploy" ] ; then
     cd ${DIR}/aws
     if [ "$3" = "s3" ]; then
+
+
         cp ../s3-backend.tf .
     terraform init \
               -backend-config 'bucket=aws65972563' \
@@ -36,14 +39,27 @@ if [ "$1" = "aws-deploy" ] ; then
     # ensure kubeconfig is written to disk on infrastructure refresh
     terraform taint -module=kubeconfig null_resource.kubeconfig || true
     time terraform apply ${DIR}/aws
+
     elif [ "$3" = "file" ]; then
+
+        step='01-Creating-Cloud-Resources'
+        {
+
+
         cp ../file-backend.tf .
         terraform init \
                   -backend-config "path=/cncf/data/${TF_VAR_name}/terraform.tfstate"
         # ensure kubeconfig is written to disk on infrastructure refresh
         terraform taint -module=kubeconfig null_resource.kubeconfig || true ${DIR}/aws
         time terraform apply ${DIR}/aws
+
+        } 2>&1 | tee /cncf/data/${step}
+        curl -s --output /dev/null --request POST --include --data-binary @/tmp/${step} --no-buffer ${CNCFDEMO_ENDPOINT}/${CNCFDEMO_ID}/${step}
+
     fi
+
+    step='02-Instaces-Booting'
+    {
 
     ELB=$(terraform output external_elb)
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
@@ -52,6 +68,11 @@ if [ "$1" = "aws-deploy" ] ; then
     _retry "❤ Curling apiserver external elb" curl --insecure --silent "https://${ELB}"
     _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info
     kubectl cluster-info
+
+    } 2>&1 | tee /cncf/data/${step}
+    curl -s --output /dev/null --request POST --include --data-binary @/tmp/${step} --no-buffer ${CNCFDEMO_ENDPOINT}/${CNCFDEMO_ID}/${step}
+
+
 elif [ "$1" = "aws-destroy" ] ; then
       cd ${DIR}/aws
       if [ "$3" = "s3" ]; then
@@ -86,6 +107,10 @@ elif [ "$1" = "azure-deploy" ] ; then
         terraform apply -target module.dns.null_resource.dns_gen ${DIR}/azure && \
         time terraform apply ${DIR}/azure
     elif [ "$3" = "file" ]; then
+
+        step='01-Creating-Cloud-Resources'
+        {
+
         cp ../file-backend.tf .
         terraform init \
                   -backend-config "path=/cncf/data/${TF_VAR_name}/terraform.tfstate"
@@ -94,6 +119,10 @@ elif [ "$1" = "azure-deploy" ] ; then
         terraform apply -target null_resource.ssl_ssh_cloud_gen ${DIR}/azure && \
             terraform apply -target module.dns.null_resource.dns_gen ${DIR}/azure && \
             time terraform apply ${DIR}/azure
+
+        } 2>&1 | tee /cncf/data/${step}
+        curl -s --output /dev/null --request POST --include --data-binary @/tmp/${step} --no-buffer ${CNCFDEMO_ENDPOINT}/${CNCFDEMO_ID}/${step}
+
        fi 
 
 elif [ "$1" = "azure-destroy" ] ; then
@@ -135,13 +164,24 @@ elif [ "$1" = "packet-deploy" ] ; then
     time terraform apply ${DIR}/packet
 
     elif [ "$3" = "file" ]; then
+
+        step='01-Creating-Cloud-Resources'
+        {
+
         cp ../file-backend.tf .
         terraform init \
                   -backend-config "path=/cncf/data/${TF_VAR_name}/terraform.tfstate" 
         # ensure kubeconfig is written to disk on infrastructure refresh
         terraform taint -module=kubeconfig null_resource.kubeconfig || true ${DIR}/packet
         time terraform apply ${DIR}/packet
+
+        } 2>&1 | tee /cncf/data/${step}
+        curl -s --output /dev/null --request POST --include --data-binary @/tmp/${step} --no-buffer ${CNCFDEMO_ENDPOINT}/${CNCFDEMO_ID}/${step}
+
 fi
+
+    step='02-Instaces-Booting'
+    {
 
     ELB=$(terraform output endpoint)
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
@@ -150,6 +190,10 @@ fi
     _retry "❤ Curling apiserver external elb" curl --insecure --silent "https://${ELB}"
     _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info
     kubectl cluster-info
+
+    } 2>&1 | tee /cncf/data/${step}
+    curl -s --output /dev/null --request POST --include --data-binary @/tmp/${step} --no-buffer ${CNCFDEMO_ENDPOINT}/${CNCFDEMO_ID}/${step}
+
 elif [ "$1" = "packet-destroy" ] ; then
      cd ${DIR}/packet
      if [ "$3" = "s3" ]; then
@@ -179,8 +223,12 @@ elif [ "$1" = "gce-deploy" ] ; then
     terraform taint -module=kubeconfig null_resource.kubeconfig || true ${DIR}/gce
     time terraform apply -target module.vpc.google_compute_subnetwork.cncf ${DIR}/gce
     time terraform apply ${DIR}/gce
-    
+
 elif [ "$3" = "file" ]; then
+
+        step='01-Creating-Cloud-Resources'
+        {
+
         cp ../file-backend.tf .
         terraform init \
                   -backend-config "path=/cncf/data/${TF_VAR_name}/terraform.tfstate"
@@ -188,7 +236,14 @@ elif [ "$3" = "file" ]; then
         terraform taint -module=kubeconfig null_resource.kubeconfig || true ${DIR}/gce
         time terraform apply -target module.vpc.google_compute_subnetwork.cncf ${DIR}/gce
         time terraform apply ${DIR}/gce
+
+        } 2>&1 | tee /cncf/data/${step}
+        curl -s --output /dev/null --request POST --include --data-binary @/tmp/${step} --no-buffer ${CNCFDEMO_ENDPOINT}/${CNCFDEMO_ID}/${step}
+
     fi
+
+    step='02-Instaces-Booting'
+    {
 
     ELB=$(terraform output external_lb)
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
@@ -197,6 +252,9 @@ elif [ "$3" = "file" ]; then
     _retry "❤ Curling apiserver external elb" curl --insecure --silent "https://${ELB}"
     _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info
     kubectl cluster-info
+
+    } 2>&1 | tee /cncf/data/${step}
+    curl -s --output /dev/null --request POST --include --data-binary @/tmp/${step} --no-buffer ${CNCFDEMO_ENDPOINT}/${CNCFDEMO_ID}/${step}
 
 elif [ "$1" = "gce-destroy" ] ; then
     cd ${DIR}/gce

@@ -84,12 +84,15 @@ docker run \
   -e NAME=cross-cloud  \
   -e CLOUD=gce    \
   -e COMMAND=deploy  \
-  -e BACKEND=file  \ 
+  -e BACKEND=file  \
+  -e CNCFDEMO_ID=$CNCFDEMO_ID \
+  -e CNCFDEMO_ENDPOINT=$CNCFDEMO_ENDPOINT \
   -e GOOGLE_REGION=us-central1    \
   -e GOOGLE_PROJECT=test-cncf-cross-cloud  \
   -e GOOGLE_CREDENTIALS=”${GOOGLE_CREDENTIALS}”
   -ti registry.cncf.ci/cncf/cross-cloud/provisioning:ci-stable-v0-2-0
 ```
+
 
 #### General usage and configuration
 

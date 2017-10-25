@@ -84,8 +84,16 @@ COPY tls/ /cncf/tls/
 COPY provision.sh /cncf/
 COPY s3-backend.tf /cncf
 COPY file-backend.tf /cncf
+
+COPY master_templates-v1.7.2 /cncf
+COPY master_templates-v1.8.1 /cncf
+COPY master_templates-v1.9.0-alpha.1 /cncf
+
+COPY worker_templates-v1.7.2 /cncf
+COPY worker_templates-v1.8.1 /cncf
+COPY worker_templates-v1.9.0-alpha.1 /cncf
+
 RUN chmod +x /cncf/provision.sh
-#ENTRYPOINT ["/cncf/provision.sh"]
 WORKDIR /cncf/
-#CMD ["/cncf/provision.sh"]
+
 CMD ["bash", "-c", "/cncf/provision.sh ${CLOUD}-${COMMAND} ${NAME} ${BACKEND}"]

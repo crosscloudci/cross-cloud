@@ -10,17 +10,59 @@ set -e
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 
+# Setup Enviroment Using $NAME
 export TF_VAR_name="$2"
-export TF_VAR_internal_tld=${TF_VAR_name}.cncf.demo
 export TF_VAR_data_dir=$(pwd)/data/${TF_VAR_name}
 export TF_VAR_aws_key_name=${TF_VAR_name}
 export TF_VAR_packet_api_key=${PACKET_AUTH_TOKEN}
-if [ ! -e $KUBERNETES_IMAGE ] ; then
-  export TF_VAR_kubelet_image_url=$KUBERNETES_IMAGE
+
+# Configure Artifacts
+if [ ! -e $KUBELET_ARTIFACT ] ; then
+    export TF_VAR_kubelet_artifact=$KUBELET_ARTIFACT
 fi
-if [ ! -e $KUBERNETES_TAG ] ; then
-  export TF_VAR_kubelet_image_tag=$KUBERNETES_TAG
+
+if [ ! -e $CNI_ARTIFACT ] ; then
+    export TF_VAR_cni_artifact=$CNI_ARTIFACT
 fi
+
+
+if [ ! -e $ETCD_IMAGE ] ; then
+  export TF_VAR_etcd_image=$ETCD_IMAGE
+fi
+
+if [ ! -e $ETCD_TAG ] ; then
+  export TF_VAR_etcd_tag=$ETCD_TAG
+fi
+
+
+if [ ! -e $KUBE_APISERVER_IMAGE ] ; then
+    export TF_VAR_kube_apiserver_image=$KUBE_APISERVER_IMAGE
+fi
+
+if [ ! -e $KUBE_APISERVER_TAG ] ; then
+    export TF_VAR_kube_apiserver_tag=$KUBE_APISERVER_TAG
+fi
+
+
+if [ ! -e $KUBE_CONTROLLER_MANAGER_IMAGE ] ; then
+    export TF_VAR_kube_controller_manager_image=$KUBE_CONTROLLER_MANAGER_IMAGE
+fi
+
+if [ ! -e $KUBE_CONTROLLER_MANAGER_TAG ] ; then
+    export TF_VAR_kube_controller_manager_tag=$KUBE_CONTROLLER_MANAGER_TAG
+fi
+
+
+if [ ! -e $KUBE_SCHEDULER_IMAGE ] ; then
+    export TF_VAR_kube_scheduler_image=$KUBE_SCHEDULER_IMAGE
+fi
+
+if [ ! -e $KUBE_SCHEDULER_TAG ] ; then
+    export TF_VAR_kube_scheduler_tag=$KUBE_SCHEDULER_TAG
+fi
+
+
+
 # tfstate, sslcerts, and ssh keys are currently stored in TF_VAR_data_dir
 mkdir -p $TF_VAR_data_dir
 

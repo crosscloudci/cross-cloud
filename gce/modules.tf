@@ -10,7 +10,6 @@ module "vpc" {
    name = "${ var.name }"
    region = "${ var.region }"
    zone = "${ var.zone }"
-   project = "${ var.project }"
    network = "${ module.vpc.network }"
    subnetwork = "${ module.vpc.subnetwork }"
    master_vm_size = "${ var.master_vm_size }"
@@ -26,14 +25,12 @@ module "bastion" {
   bastion_vm_size = "${ var.bastion_vm_size }"
   zone = "${ var.zone }"
   image_id = "${ var.image_id }"
-  project = "${ var.project }"
 }
 
 module "worker" {
   source = "./modules/worker"
   name = "${ var.name }"
   zone = "${ var.zone }"
-  project = "${ var.project }"
   worker_node_count = "${ var.worker_node_count }"
   worker_vm_size = "${ var.worker_vm_size }"
   image_id = "${ var.image_id }"

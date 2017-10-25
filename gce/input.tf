@@ -9,7 +9,6 @@ variable "image_id"          { default = "coreos-stable-1298-7-0-v20170401"}
 
 variable "region"          { default = "us-central1" }
 variable "zone"            { default = "us-central1-a" }
-variable "project"         { default = "test-163823" }
 
 variable "cidr" { default = "10.240.0.0/16" }
 variable "internal_lb_ip" { default = "10.240.0.100"}

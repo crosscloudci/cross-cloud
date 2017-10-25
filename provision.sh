@@ -87,11 +87,8 @@ if [ "$1" = "aws-deploy" ] ; then
         time terraform apply ${DIR}/aws
     fi
 
-    ELB=$(terraform output external_elb)
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
     echo "❤ Polling for cluster life - this could take a minute or more"
-    _retry "❤ Waiting for DNS to resolve for ${ELB}" ping -c1 "${ELB}"
-    _retry "❤ Curling apiserver external elb" curl --insecure --silent "https://${ELB}"
     _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info
     kubectl cluster-info
 elif [ "$1" = "aws-destroy" ] ; then
@@ -124,19 +121,26 @@ elif [ "$1" = "azure-deploy" ] ; then
               -backend-config "region=${AWS_DEFAULT_REGION}"
     # ensure kubeconfig is written to disk on infrastructure refresh
     terraform taint -module=kubeconfig null_resource.kubeconfig || true
-    terraform apply -target null_resource.ssl_ssh_cloud_gen ${DIR}/azure && \
-        terraform apply -target module.dns.null_resource.dns_gen ${DIR}/azure && \
+    terraform apply -target null_resource.ssh_gen ${DIR}/azure && \
+        terraform apply -target azurerm_resource_group.cncf ${DIR}/azure && \
         time terraform apply ${DIR}/azure
+
     elif [ "$3" = "file" ]; then
         cp ../file-backend.tf .
         terraform init \
                   -backend-config "path=/cncf/data/${TF_VAR_name}/terraform.tfstate"
         # ensure kubeconfig is written to disk on infrastructure refresh
         terraform taint -module=kubeconfig null_resource.kubeconfig || true
-        terraform apply -target null_resource.ssl_ssh_cloud_gen ${DIR}/azure && \
-            terraform apply -target module.dns.null_resource.dns_gen ${DIR}/azure && \
+        terraform apply -target null_resource.ssh_gen ${DIR}/azure && \
+            terraform apply -target azurerm_resource_group.cncf ${DIR}/azure && \
             time terraform apply ${DIR}/azure
        fi 
+
+    export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
+    echo "❤ Polling for cluster life - this could take a minute or more"
+    _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info
+    kubectl cluster-info
+
 
 elif [ "$1" = "azure-destroy" ] ; then
     cd ${DIR}/azure
@@ -146,22 +150,14 @@ elif [ "$1" = "azure-destroy" ] ; then
               -backend-config "bucket=${AWS_BUCKET}" \
               -backend-config "key=azure-${TF_VAR_name}" \
               -backend-config "region=${AWS_DEFAULT_REGION}"
-    terraform destroy -force -target null_resource.ssl_ssh_cloud_gen ${DIR}/azure && \
-    terraform destroy -force -target module.dns.null_resource.dns_gen ${DIR}/azure && \
-    terraform apply -target null_resource.ssl_ssh_cloud_gen ${DIR}/azure && \
-    terraform apply -target module.dns.null_resource.dns_gen ${DIR}/azure && \
     time terraform destroy -force ${DIR}/azure || true
-    
+
     elif [ "$3" = "file" ]; then
         cp ../file-backend.tf .
         terraform init \
                   -backend-config "path=/cncf/data/${TF_VAR_name}/terraform.tfstate"
-        terraform destroy -force -target null_resource.ssl_ssh_cloud_gen ${DIR}/azure && \
-        terraform destroy -force -target module.dns.null_resource.dns_gen ${DIR}/azure && \
-        terraform apply -target null_resource.ssl_ssh_cloud_gen ${DIR}/azure && \
-        terraform apply -target module.dns.null_resource.dns_gen ${DIR}/azure && \
     time terraform destroy -force ${DIR}/azure || true
-            fi
+    fi
 
 elif [ "$1" = "packet-deploy" ] ; then
     cd ${DIR}/packet
@@ -173,7 +169,6 @@ elif [ "$1" = "packet-deploy" ] ; then
               -backend-config "region=${AWS_DEFAULT_REGION}"
     # ensure kubeconfig is written to disk on infrastructure refresh
     terraform taint -module=kubeconfig null_resource.kubeconfig || true ${DIR}/packet
-    terraform taint null_resource.set_dns || true ${DIR}/packet
     time terraform apply ${DIR}/packet
 
     elif [ "$3" = "file" ]; then
@@ -185,13 +180,11 @@ elif [ "$1" = "packet-deploy" ] ; then
         time terraform apply ${DIR}/packet
 fi
 
-    ELB=$(terraform output endpoint)
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
     echo "❤ Polling for cluster life - this could take a minute or more"
-    _retry "❤ Waiting for DNS to resolve for ${ELB}" ping -c1 "${ELB}"
-    _retry "❤ Curling apiserver external elb" curl --insecure --silent "https://${ELB}"
     _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info
     kubectl cluster-info
+
 elif [ "$1" = "packet-destroy" ] ; then
      cd ${DIR}/packet
      if [ "$3" = "s3" ]; then
@@ -221,7 +214,7 @@ elif [ "$1" = "gce-deploy" ] ; then
     terraform taint -module=kubeconfig null_resource.kubeconfig || true ${DIR}/gce
     time terraform apply -target module.vpc.google_compute_subnetwork.cncf ${DIR}/gce
     time terraform apply ${DIR}/gce
-    
+
 elif [ "$3" = "file" ]; then
         cp ../file-backend.tf .
         terraform init \
@@ -232,11 +225,8 @@ elif [ "$3" = "file" ]; then
         time terraform apply ${DIR}/gce
     fi
 
-    ELB=$(terraform output external_lb)
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
     echo "❤ Polling for cluster life - this could take a minute or more"
-    _retry "❤ Waiting for DNS to resolve for ${ELB}" ping -c1 "${ELB}"
-    _retry "❤ Curling apiserver external elb" curl --insecure --silent "https://${ELB}"
     _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info
     kubectl cluster-info
 
@@ -280,13 +270,11 @@ elif [ "$3" = "file" ]; then
     time terraform apply ${DIR}/gke
 fi
 
-    ELB=$(terraform output endpoint)
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
     echo "❤ Polling for cluster life - this could take a minute or more"
-    _retry "❤ Waiting for DNS to resolve for ${ELB}" ping -c1 "${ELB}"
-    _retry "❤ Curling apiserver external elb" curl --insecure --silent "https://${ELB}"
     _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info
     kubectl cluster-info
+
 elif [ "$1" = "gke-destroy" ] ; then
 cd ${DIR}/gke
 if [ "$3" = "s3" ]; then
@@ -336,6 +324,7 @@ fi
     echo "❤ Polling for cluster life - this could take a minute or more"
     _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info
     kubectl cluster-info
+
 elif [ "$1" = "bluemix-destroy" ] ; then
 cd ${DIR}/gke
 if [ "$3" = "s3" ]; then
@@ -353,4 +342,3 @@ elif [ "$3" = "file" ]; then
 time terraform destroy -force ${DIR}/bluemix
 fi
 fi
-

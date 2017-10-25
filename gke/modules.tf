@@ -10,7 +10,6 @@ module "cluster" {
   name = "${ var.name }"
   region = "${ var.region }"
   zone = "${ var.zone }"
-  project = "${ var.project}"
   node_count = "${ var.node_count }"
   network = "${ var.name }"
   subnetwork = "${ var.name }"

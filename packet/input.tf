@@ -35,16 +35,16 @@ variable "dns_service_ip" { default = "100.64.0.10" }
 # Deployment Artifact Versions
 # Hyperkube
 # Set from https://quay.io/repository/coreos/hyperkube
-variable "kubelet_artifact" { default = "https://storage.googleapis.com/kubernetes-release/release/v1.7.2/bin/linux/amd64/kubelet" }
+variable "kubelet_artifact" { default = "https://storage.googleapis.com/kubernetes-release/release/v1.8.1/bin/linux/amd64/kubelet" }
 variable "cni_artifact" { default = "https://github.com/containernetworking/cni/releases/download/v0.5.2/cni-amd64-v0.5.2.tgz" }
 
-variable "etcd_registry" { default = "registry.cncf.ci/etcd/etcd-docker"}
-variable "etcd_tag" { default = "master.38cc76af.26448"}
+variable "etcd_registry" { default = "gcr.io/google_containers/etcd"}
+variable "etcd_tag" { default = "2.2.1"}
 variable "kube_apiserver_registry" { default = "gcr.io/google_containers/kube-apiserver"}
-variable "kube_apiserver_tag" { default = "v1.7.2"}
+variable "kube_apiserver_tag" { default = "v1.8.1"}
 variable "kube_controller_manager_registry" { default = "gcr.io/google_containers/kube-controller-manager"}
-variable "kube_controller_manager_tag" { default = "v1.7.2"}
+variable "kube_controller_manager_tag" { default = "v1.8.1"}
 variable "kube_scheduler_registry" { default = "gcr.io/google_containers/kube-scheduler"}
-variable "kube_scheduler_tag" { default = "v1.7.2"}
+variable "kube_scheduler_tag" { default = "v1.8.1"}
 variable "kube_proxy_registry" { default = "gcr.io/google_containers/kube-proxy"}
-variable "kube_proxy_tag" { default = "v1.7.2"}
+variable "kube_proxy_tag" { default = "v1.8.1"}

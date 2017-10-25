@@ -72,9 +72,9 @@ if [ "$1" = "aws-deploy" ] ; then
     if [ "$3" = "s3" ]; then
         cp ../s3-backend.tf .
     terraform init \
-              -backend-config 'bucket=aws65972563' \
+              -backend-config "bucket=${AWS_BUCKET}" \
               -backend-config "key=aws-${TF_VAR_name}" \
-              -backend-config 'region=ap-southeast-2'
+              -backend-config "region=${AWS_DEFAULT_REGION}"
     # ensure kubeconfig is written to disk on infrastructure refresh
     terraform taint -module=kubeconfig null_resource.kubeconfig || true
     time terraform apply ${DIR}/aws
@@ -99,9 +99,9 @@ elif [ "$1" = "aws-destroy" ] ; then
       if [ "$3" = "s3" ]; then
           cp ../s3-backend.tf .
           terraform init \
-                    -backend-config 'bucket=aws65972563' \
+                    -backend-config "bucket=${AWS_BUCKET}" \
                     -backend-config "key=aws-${TF_VAR_name}" \
-                    -backend-config 'region=ap-southeast-2'
+                    -backend-config "region=${AWS_DEFAULT_REGION}"
     time terraform destroy -force ${DIR}/aws
       elif [ "$3" = "file" ]; then
           cp ../file-backend.tf .
@@ -119,9 +119,9 @@ elif [ "$1" = "azure-deploy" ] ; then
     if [ "$3" = "s3" ]; then
         cp ../s3-backend.tf .
     terraform init \
-              -backend-config 'bucket=aws65972563' \
-              -backend-config "key=${TF_VAR_name}" \
-              -backend-config 'region=ap-southeast-2'
+              -backend-config "bucket=${AWS_BUCKET}" \
+              -backend-config "key=azure-${TF_VAR_name}" \
+              -backend-config "region=${AWS_DEFAULT_REGION}"
     # ensure kubeconfig is written to disk on infrastructure refresh
     terraform taint -module=kubeconfig null_resource.kubeconfig || true
     terraform apply -target null_resource.ssl_ssh_cloud_gen ${DIR}/azure && \
@@ -143,9 +143,9 @@ elif [ "$1" = "azure-destroy" ] ; then
     if [ "$3" = "s3" ]; then
         cp ../s3-backend.tf .
     terraform init \
-              -backend-config 'bucket=aws65972563' \
-              -backend-config "key=${TF_VAR_name}" \
-              -backend-config 'region=ap-southeast-2'
+              -backend-config "bucket=${AWS_BUCKET}" \
+              -backend-config "key=azure-${TF_VAR_name}" \
+              -backend-config "region=${AWS_DEFAULT_REGION}"
     terraform destroy -force -target null_resource.ssl_ssh_cloud_gen ${DIR}/azure && \
     terraform destroy -force -target module.dns.null_resource.dns_gen ${DIR}/azure && \
     terraform apply -target null_resource.ssl_ssh_cloud_gen ${DIR}/azure && \
@@ -168,9 +168,9 @@ elif [ "$1" = "packet-deploy" ] ; then
     if [ "$3" = "s3" ]; then
         cp ../s3-backend.tf .
     terraform init \
-              -backend-config 'bucket=aws65972563' \
+              -backend-config "bucket=${AWS_BUCKET}" \
               -backend-config "key=packet-${TF_VAR_name}" \
-              -backend-config 'region=ap-southeast-2'
+              -backend-config "region=${AWS_DEFAULT_REGION}"
     # ensure kubeconfig is written to disk on infrastructure refresh
     terraform taint -module=kubeconfig null_resource.kubeconfig || true ${DIR}/packet
     terraform taint null_resource.set_dns || true ${DIR}/packet
@@ -197,9 +197,9 @@ elif [ "$1" = "packet-destroy" ] ; then
      if [ "$3" = "s3" ]; then
          cp ../s3-backend.tf .
     terraform init \
-              -backend-config 'bucket=aws65972563' \
+              -backend-config "bucket=${AWS_BUCKET}" \
               -backend-config "key=packet-${TF_VAR_name}" \
-              -backend-config 'region=ap-southeast-2'
+              -backend-config "region=${AWS_DEFAULT_REGION}"
     time terraform destroy -force ${DIR}/packet
 
 elif [ "$3" = "file" ]; then
@@ -214,9 +214,9 @@ elif [ "$1" = "gce-deploy" ] ; then
     if [ "$3" = "s3" ]; then
         cp ../s3-backend.tf .
     terraform init \
-              -backend-config 'bucket=aws65972563' \
+              -backend-config "bucket=${AWS_BUCKET}" \
               -backend-config "key=gce-${TF_VAR_name}" \
-              -backend-config 'region=ap-southeast-2'
+              -backend-config "region=${AWS_DEFAULT_REGION}"
     # ensure kubeconfig is written to disk on infrastructure refresh
     terraform taint -module=kubeconfig null_resource.kubeconfig || true ${DIR}/gce
     time terraform apply -target module.vpc.google_compute_subnetwork.cncf ${DIR}/gce
@@ -245,9 +245,9 @@ elif [ "$1" = "gce-destroy" ] ; then
     if [ "$3" = "s3" ]; then
         cp ../s3-backend.tf .
     terraform init \
-              -backend-config 'bucket=aws65972563' \
+              -backend-config "bucket=${AWS_BUCKET}" \
               -backend-config "key=gce-${TF_VAR_name}" \
-              -backend-config 'region=ap-southeast-2'
+              -backend-config "region=${AWS_DEFAULT_REGION}"
     time terraform destroy -force ${DIR}/gce || true # Allow to Fail and clean up network on next step
     time terraform destroy -force -target module.vpc.google_compute_subnetwork.cncf ${DIR}/gce
 elif [ "$3" = "file" ]; then
@@ -263,9 +263,9 @@ cd ${DIR}/gke
 if [ "$3" = "s3" ]; then
     cp ../s3-backend.tf .
     terraform init \
-              -backend-config 'bucket=aws65972563' \
+              -backend-config "bucket=${AWS_BUCKET}" \
               -backend-config "key=gke-${TF_VAR_name}" \
-              -backend-config 'region=ap-southeast-2'
+              -backend-config "region=${AWS_DEFAULT_REGION}"
     # ensure kubeconfig is written to disk on infrastructure refresh
     terraform taint -module=kubeconfig null_resource.kubeconfig || true          
     time terraform apply -target module.vpc ${DIR}/gke && \
@@ -292,9 +292,9 @@ cd ${DIR}/gke
 if [ "$3" = "s3" ]; then
     cp ../s3-backend.tf .
     terraform init \
-              -backend-config 'bucket=aws65972563' \
+              -backend-config "bucket=${AWS_BUCKET}" \
               -backend-config "key=gke-${TF_VAR_name}" \
-              -backend-config 'region=ap-southeast-2'
+              -backend-config "region=${AWS_DEFAULT_REGION}"
 
     time terraform destroy -force -target module.cluster.google_container_cluster.cncf ${DIR}/gke || true 
     echo "sleep" && sleep 10 && \
@@ -317,9 +317,9 @@ cd ${DIR}/bluemix
 if [ "$3" = "s3" ]; then
     cp ../s3-backend.tf .
     terraform init \
-              -backend-config 'bucket=aws65972563' \
+              -backend-config "bucket=${AWS_BUCKET}" \
               -backend-config "key=bluemix-${TF_VAR_name}" \
-              -backend-config 'region=ap-southeast-2'
+              -backend-config "region=${AWS_DEFAULT_REGION}"
     # ensure kubeconfig is written to disk on infrastructure refresh
     terraform taint null_resource.kubeconfig || true
     time terraform apply ${DIR}/bluemix
@@ -341,10 +341,9 @@ cd ${DIR}/gke
 if [ "$3" = "s3" ]; then
     cp ../s3-backend.tf .
     terraform init \
-              -backend-config 'bucket=aws65972563' \
+              -backend-config "bucket=${AWS_BUCKET}" \
               -backend-config "key=bluemix-${TF_VAR_name}" \
-              -backend-config 'region=ap-southeast-2'
-
+              -backend-config "region=${AWS_DEFAULT_REGION}"
     time terraform destroy -force ${DIR}/bluemix 
 
 elif [ "$3" = "file" ]; then

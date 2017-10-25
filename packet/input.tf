@@ -40,11 +40,11 @@ variable "cni_artifact" { default = "https://github.com/containernetworking/cni/
 
 variable "etcd_registry" { default = "gcr.io/google_containers/etcd"}
 variable "etcd_tag" { default = "2.2.1"}
-variable "kube_apiserver_registry" { default = "gcr.io/google_containers/kube-apiserver"}
+variable "kube_apiserver_image" { default = "gcr.io/google_containers/kube-apiserver"}
 variable "kube_apiserver_tag" { default = "v1.8.1"}
-variable "kube_controller_manager_registry" { default = "gcr.io/google_containers/kube-controller-manager"}
+variable "kube_controller_manager_image" { default = "gcr.io/google_containers/kube-controller-manager"}
 variable "kube_controller_manager_tag" { default = "v1.8.1"}
-variable "kube_scheduler_registry" { default = "gcr.io/google_containers/kube-scheduler"}
+variable "kube_scheduler_image" { default = "gcr.io/google_containers/kube-scheduler"}
 variable "kube_scheduler_tag" { default = "v1.8.1"}
-variable "kube_proxy_registry" { default = "gcr.io/google_containers/kube-proxy"}
+variable "kube_proxy_image" { default = "gcr.io/google_containers/kube-proxy"}
 variable "kube_proxy_tag" { default = "v1.8.1"}

@@ -3,7 +3,7 @@ variable "name" {}
 
 variable "kubelet_artifact" {}
 variable "cni_artifact" {}
-variable "kube_proxy_registry" {}
+variable "kube_proxy_image" {}
 variable "kube_proxy_tag" {}
 
 

@@ -21,21 +21,89 @@ before_script:
   - for envfile in data/*env ; do source $envfile ; echo ----- $envfile ---- ; cat $envfile ; done
 
 # Fetch Artifacts based on Branch Passed by Trigger
-kubernetes-stable:
-  image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
-  stage: cncf-artifacts
+kuernetes-build-branch:
+  image: buildpack-deps:stretch
+  stage: coredns-build-branch
   script:
-    - KUBERNETES_RELEASE_ENV=$(curl -s -L
-        "$BASE_URL/kubernetes/kubernetes/builds/artifacts/${K8S_BRANCH}/file/release.env?job=build"
-        |  sed -n 's/.*href="\([^"]*\).*/\1/p' | grep artifacts/raw | tail -1)
-    - mkdir -p data
-    - curl -s -o data/kubernetes.env -L ${BASE_URL}/$KUBERNETES_RELEASE_ENV
-    - cat data/kubernetes.env
+    - apt update && apt -y install jq
+    - echo "$KUBERNETES_BRANCH"
+    - >
+      if [ -z "${KUBERNETES_BRANCH}" ]; then
+        exit 0 #Should Show Skipped on Gitlab CI FIXME
+      else
+        echo "Checking for Latest Build"
+        curl -s -L -o data/kubernetes.url "${BASE_URL}/kubernetes/kubernetes/builds/artifacts/${KUBERNETES_BRANCH}/file/release.env?job=container"
+        if cat data/kubernetes.url | sed -n 's/.*href="\([^"]*\).*/\1/p' | grep artifacts/raw ; then
+        KUBERNETES_RELEASE_ENV=$(cat data/kubernetes.url | sed -n 's/.*href="\([^"]*\).*/\1/p' | grep artifacts/raw | tail -1)
+        curl -o data/kubernetes.env -L ${BASE_URL}/$COREDNS_RELEASE_ENV
+        cat data/kubernetes.env
+        else
+          PROJECT_PIPELINE=$(curl -X POST -F token=$KUBERNETES_CI_JOB_TOKEN -F ref=${KUBERNETES_BRANCH} -F "variables[BUILD_TRIGGER]=yes" https://gitlab.cncf.ci/api/v4/projects/14/trigger/pipeline | jq '.id')
+          echo 'Wait for Build "FIX ME / HACK"'
+          until [ "$JOB_STATUS" == '"success"' ]; do JOB_STATUS="$(curl -s --header "PRIVATE-TOKEN:${TOKEN}" "https://gitlab.cncf.ci/api/v4/projects/14/pipelines/${PROJECT_PIPELINE}/jobs?scope=success" | jq '.[] | select(.name=="container") | .status')" ; sleep 0.5 ; done ; echo 'Build Compleate'
+          PROJECT_JOB=$(curl --header "PRIVATE-TOKEN:${TOKEN}" "https://gitlab.cncf.ci/api/v4/projects/14/pipelines/${PROJECT_PIPELINE}/jobs?scope=success" | jq '.[] | select(.name=="container") | .id') 
+          curl -s -o data/kubernetes.env -L "$BASE_URL/kubernetes/kubernetes/-/jobs/${PROJECT_JOB}/artifacts/raw/release.env"
+          cat data/kubernetes.env
+        fi
+      fi
   artifacts:
-    when: always
-    expire_in: 4 weeks
+    name: "${CI_JOB_NAME}_${CI_COMMIT_REF_NAME}"
+    untracked: true
+    expire_in: 5 weeks
     paths:
-      - ./data/
+      - ./data
+
+# Fetch Artifacts based on Commit Passed by Trigger
+kubernetes-build-commit:
+  image: buildpack-deps:stretch
+  stage: coredns-build-commit
+  script:
+    - apt update && apt -y install jq
+    - echo "$KUBERNETES_COMMIT"
+    - >
+      if [ -z "${KUBERNETES_COMMIT}" ]; then
+        exit 0 #Should Show Skipped on Gitlab CI FIXME
+      else
+        echo "Checking for Container Artifact on Commit"
+
+        echo "Fetch Full SHA" 
+        SHA=$(curl --header "PRIVATE-TOKEN: ${TOKEN}" "https://gitlab.cncf.ci/api/v4/projects/14/repository/commits/${KUBERNETES_COMMIT}" | jq --raw-output '.id')
+        echo ${SHA}
+
+        echo "Fetch Most Recent Job ID's on Commit"
+        # COMPILE_JOB=$(curl --header "PRIVATE-TOKEN: ${TOKEN}" "https://gitlab.cncf.ci/api/v4/projects/14/repository/commits/${SHA}/statuses" | jq '.[] | select(.name=="compile")' | jq -s 'sort_by(.created_at)' | jq '.[0] | .id')
+        # echo ${COMPILE_JOB}
+        
+        CONTAINER_JOB=$(curl --header "PRIVATE-TOKEN: ${TOKEN}" "https://gitlab.cncf.ci/api/v4/projects/14/repository/commits/${SHA}/statuses" | jq '.[] | select(.name=="container")' | jq -s 'sort_by(.created_at)' | jq '.[0] | .id')
+
+        echo "Fetch Artifact"
+        curl -s -o data/kubernetes.env -L "$BASE_URL/kubernetes/kubernetes/-/jobs/${CONTAINER_JOB}/artifacts/raw/release.env"
+
+        echo "Verify Artifact"
+        if source ./data/kubernetes.env && env | grep KUBERNETES; then
+        cat data/kubernetes.env
+        else
+          echo "Trigger Jobs for missing Artifacts"
+          
+          # PROJECT_COMPILE_JOB=$(curl -X POST --header "PRIVATE-TOKEN: ${TOKEN}" "https://gitlab.cncf.ci/api/v4/projects/14/jobs/${COMPILE_JOB}/retry" | jq '.id')
+          # echo $PROJECT_COMPILE_JOB
+          # echo 'Wait for Build "FIX ME / HACK"'
+          # until [ "$COMPILE_JOB_STATUS" == '"success"' ]; do COMPILE_JOB_STATUS="$(curl -s --header "PRIVATE-TOKEN:${TOKEN}" "https://gitlab.cncf.ci/api/v4/projects/14/jobs/${PROJECT_COMPILE_JOB}" | jq -s '.[] | .status')" ; sleep 0.5 ; done ; echo 'Build Compleate'
+          
+          PROJECT_CONTAINER_JOB=$(curl -X POST --header "PRIVATE-TOKEN: ${TOKEN}" "https://gitlab.cncf.ci/api/v4/projects/14/jobs/${CONTAINER_JOB}/retry" | jq '.id')
+          until [ "$CONTAINER_JOB_STATUS" == '"success"' ]; do CONTAINER_JOB_STATUS="$(curl -s --header "PRIVATE-TOKEN:${TOKEN}" "https://gitlab.cncf.ci/api/v4/projects/14/jobs/${PROJECT_CONTAINER_JOB}" | jq -s '.[] | .status')" ; sleep 0.5 ; done ; echo 'Container Build Compleate'
+          
+          curl -s -o data/kubernetes.env -L "$BASE_URL/kubernetes/kubernetes/-/jobs/${PROJECT_CONTAINER_JOB}/artifacts/raw/release.env"
+          cat data/kubernetes.env
+        fi
+      fi
+  artifacts:
+    name: "${CI_JOB_NAME}_${CI_COMMIT_REF_NAME}"
+    untracked: true
+    expire_in: 5 weeks
+    paths:
+      - ./data
+
 
 cross-cloud-stable:
   stage: cncf-artifacts

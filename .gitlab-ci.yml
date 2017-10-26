@@ -23,7 +23,7 @@ before_script:
 # Fetch Artifacts based on Branch Passed by Trigger
 kuernetes-build-branch:
   image: buildpack-deps:stretch
-  stage: coredns-build-branch
+  stage: cncf-artifacts
   script:
     - apt update && apt -y install jq
     - echo "$KUBERNETES_BRANCH"
@@ -56,7 +56,7 @@ kuernetes-build-branch:
 # Fetch Artifacts based on Commit Passed by Trigger
 kubernetes-build-commit:
   image: buildpack-deps:stretch
-  stage: coredns-build-commit
+  stage: cncf-artifacts
   script:
     - apt update && apt -y install jq
     - echo "$KUBERNETES_COMMIT"

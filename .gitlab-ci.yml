@@ -21,7 +21,7 @@ before_script:
   - for envfile in data/*env ; do source $envfile ; echo ----- $envfile ---- ; cat $envfile ; done
 
 # Fetch Artifacts based on Branch Passed by Trigger
-kuernetes-build-branch:
+kubernetes-build-branch:
   image: buildpack-deps:stretch
   stage: cncf-artifacts
   script:

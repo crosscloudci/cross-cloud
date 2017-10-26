@@ -232,55 +232,43 @@ gke_k8s_destroy:
     action: stop
 
 
-# Bluemix Deploy ######################################3
+# Bluemix Deploy ######################################
+
+#Bluemix Deploy VARs
 bluemix_k8s_deploy:
   <<: *k8s_deploy_template
   variables:
-    CLOUD: bluemix
+    CLOUD: ${BLUEMIX_CLOUD}
   environment:
-    name: ${CLOUD}-${CI_COMMIT_REF_SLUG}
+    name: ${BLUEMIX_CLOUD}-${CI_COMMIT_REF_SLUG}
     url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
     on_stop: bluemix_k8s_destroy
 
+#Bluemix E2E VARs
 bluemix_k8s_e2e:
   <<: *k8s_e2e_template
   variables:
     CLOUD: bluemix
+  environment:
+    name: ${BLUEMIX_CLOUD}-${CI_COMMIT_REF_SLUG}
+    url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
 
+# Bluemix Destroy VARs
 bluemix_k8s_destroy:
   <<: *k8s_cloud_destroy_template
   variables:
-    CLOUD: bluemix
+    CLOUD: ${BLUEMIX_CLOUD}
+  environment:
+    name: ${BLUEMIX_CLOUD}-${CI_COMMIT_REF_SLUG}
+    url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
+    action: stop
+    
 
-bluemix_coredns_deploy:
-  <<: *coredns_deploy_template
-  variables:
-    CLOUD: bluemix
-  dependencies:
-    - bluemix_k8s_deploy
-
-bluemix_coredns_e2e:
-  <<: *coredns_e2e_template
-  variables:
-    CLOUD: bluemix
-
-bluemix_prom_deploy:
-  <<: *prometheus_deploy_template
-  variables:
-    CLOUD: bluemix
-  dependencies:
-    - bluemix_k8s_deploy
-
-bluemix_prom_e2e:
-  <<: *prometheus_e2e_template
-  variables:
-    CLOUD: bluemix
-
-#################################
+# Azure Deploy #################################
 
 # Azure Deploy VARs
 
-.azure_k8s_deploy:
+azure_k8s_deploy:
   <<: *k8s_deploy_template
   variables:
     CLOUD: ${AZURE_CLOUD}
@@ -290,7 +278,7 @@ bluemix_prom_e2e:
     on_stop: azure_k8s_destroy
 
 # Azure E2E VARs
-.azure_k8s_e2e:
+azure_k8s_e2e:
   <<: *k8s_e2e_template
   variables:
     CLOUD: ${AZURE_CLOUD}
@@ -300,7 +288,7 @@ bluemix_prom_e2e:
 
  
 # Azure Destroy VARs
-.azure_k8s_destroy:
+azure_k8s_destroy:
   <<: *k8s_cloud_destroy_template
   variables:
     CLOUD: ${AZURE_CLOUD}
@@ -308,4 +296,3 @@ bluemix_prom_e2e:
     name: ${AZURE_CLOUD}-${CI_COMMIT_REF_SLUG}
     url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
     action: stop
-

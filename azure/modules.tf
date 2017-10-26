@@ -105,7 +105,7 @@ module "master_templates" {
 
   kubelet_artifact = "${ var.kubelet_artifact }"
   cni_artifact = "${ var.cni_artifact }"
-  etcd_registry = "${ var.etcd_registry }"
+  etcd_image = "${ var.etcd_image }"
   etcd_tag = "${ var.etcd_tag }"
   kube_apiserver_image = "${ var.kube_apiserver_image }"
   kube_apiserver_tag = "${ var.kube_apiserver_tag }"

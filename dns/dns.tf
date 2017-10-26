@@ -21,7 +21,7 @@ data "template_file" "dns_conf" {
 data "template_file" "etcd_proxy" {
   template = "${ file( "${ path.module }/etcd-proxy.yml" )}"
   vars {
-    etcd_registry = "${ var.etcd_registry }"
+    etcd_image = "${ var.etcd_image }"
     etcd_tag = "${ var.etcd_tag }"
     etcd_discovery = "${ var.etcd_discovery }"
 

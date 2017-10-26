@@ -10,7 +10,6 @@ module "vpc" {
    name = "${ var.name }"
    region = "${ var.region }"
    zone = "${ var.zone }"
-   project = "${ var.project }"
    network = "${ module.vpc.network }"
    subnetwork = "${ module.vpc.subnetwork }"
    master_vm_size = "${ var.master_vm_size }"
@@ -26,14 +25,12 @@ module "bastion" {
   bastion_vm_size = "${ var.bastion_vm_size }"
   zone = "${ var.zone }"
   image_id = "${ var.image_id }"
-  project = "${ var.project }"
 }
 
 module "worker" {
   source = "./modules/worker"
   name = "${ var.name }"
   zone = "${ var.zone }"
-  project = "${ var.project }"
   worker_node_count = "${ var.worker_node_count }"
   worker_vm_size = "${ var.worker_vm_size }"
   image_id = "${ var.image_id }"
@@ -102,15 +99,15 @@ module "master_templates" {
 
   kubelet_artifact = "${ var.kubelet_artifact }"
   cni_artifact = "${ var.cni_artifact }"
-  etcd_registry = "${ var.etcd_registry }"
+  etcd_image = "${ var.etcd_image }"
   etcd_tag = "${ var.etcd_tag }"
-  kube_apiserver_registry = "${ var.kube_apiserver_registry }"
+  kube_apiserver_image = "${ var.kube_apiserver_image }"
   kube_apiserver_tag = "${ var.kube_apiserver_tag }"
-  kube_controller_manager_registry = "${ var.kube_controller_manager_registry }"
+  kube_controller_manager_image = "${ var.kube_controller_manager_image }"
   kube_controller_manager_tag = "${ var.kube_controller_manager_tag }"
-  kube_scheduler_registry = "${ var.kube_scheduler_registry }"
+  kube_scheduler_image = "${ var.kube_scheduler_image }"
   kube_scheduler_tag = "${ var.kube_scheduler_tag }"
-  kube_proxy_registry = "${ var.kube_proxy_registry }"
+  kube_proxy_image = "${ var.kube_proxy_image }"
   kube_proxy_tag = "${ var.kube_proxy_tag }"
 
   cloud_provider = "${ var.cloud_provider }"
@@ -142,7 +139,7 @@ module "worker_templates" {
 
   kubelet_artifact = "${ var.kubelet_artifact }"
   cni_artifact = "${ var.cni_artifact }"
-  kube_proxy_registry = "${ var.kube_proxy_registry }"
+  kube_proxy_image = "${ var.kube_proxy_image }"
   kube_proxy_tag = "${ var.kube_proxy_tag }"
 
   cloud_provider = "${ var.cloud_provider }"

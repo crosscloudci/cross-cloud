@@ -17,7 +17,7 @@ spec:
       value: /var/etcd/data-events
     - name: ETCD_DISCOVERY
       value: ${ etcd_events_discovery }
-    image: ${ etcd_registry }:${ etcd_tag }
+    image: ${ etcd_image }:${ etcd_tag }
     livenessProbe:
       httpGet:
         host: 127.0.0.1

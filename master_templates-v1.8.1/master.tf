@@ -94,10 +94,9 @@ data "template_file" "etcd" {
   count = "${ var.master_node_count }"
   template = "${ file( "${ path.module }/etcd.yml" )}"
   vars {
-    etcd_registry = "${ var.etcd_registry }"
+    etcd_image = "${ var.etcd_image }"
     etcd_tag = "${ var.etcd_tag }"
     etcd_discovery = "${ etcdiscovery_token.etcd.id }"
-    # fqdn = "${ var.hostname_suffix }${ count.index + 1 }.${ var.dns_suffix }"
 
   }
 }
@@ -115,10 +114,9 @@ data "template_file" "etcd_events" {
   count = "${ var.master_node_count }"
   template = "${ file( "${ path.module }/etcd-events.yml" )}"
   vars {
-    etcd_registry = "${ var.etcd_registry }"
+    etcd_image = "${ var.etcd_image }"
     etcd_tag = "${ var.etcd_tag }"
     etcd_events_discovery = "${ etcdiscovery_token.etcd_events.id }"
-    # fqdn = "${ var.hostname_suffix }${ count.index + 10 }.${ var.dns_suffix }"
   }
 }
 
@@ -135,7 +133,7 @@ data "template_file" "kube_apiserver" {
   count = "${ var.master_node_count }"
   template = "${ file( "${ path.module }/kube-apiserver.yml" )}"
   vars {
-    kube_apiserver_registry = "${ var.kube_apiserver_registry }"
+    kube_apiserver_image = "${ var.kube_apiserver_image }"
     kube_apiserver_tag = "${ var.kube_apiserver_tag }"
     etcd_endpoint = "${ var.etcd_endpoint }"
     service_cidr = "${ var.service_cidr }"
@@ -156,7 +154,7 @@ resource "gzip_me" "kube_controller_manager" {
 data "template_file" "kube_controller_manager" {
   template = "${ file( "${ path.module }/kube-controller-manager.yml" )}"
   vars {
-    kube_controller_manager_registry = "${ var.kube_controller_manager_registry }"
+    kube_controller_manager_image = "${ var.kube_controller_manager_image }"
     kube_controller_manager_tag = "${ var.kube_controller_manager_tag }"
     pod_cidr = "${ var.pod_cidr }"
     cluster_name = "${ var.cluster_name }"
@@ -193,7 +191,7 @@ resource "gzip_me" "kube_scheduler" {
 data "template_file" "kube_scheduler" {
   template = "${ file( "${ path.module }/kube-scheduler.yml" )}"
   vars {
-    kube_scheduler_registry = "${ var.kube_scheduler_registry }"
+    kube_scheduler_image = "${ var.kube_scheduler_image }"
     kube_scheduler_tag = "${ var.kube_scheduler_tag }"
   }
 }
@@ -230,9 +228,8 @@ data "template_file" "kube-proxy" {
   template = "${ file( "${ path.module }/kube-proxy.yml" )}"
 
   vars {
-    # fqdn = "${ var.name }-master${ count.index + 1 }"
     pod_cidr = "${ var.pod_cidr }"
-    kube_proxy_registry = "${ var.kube_proxy_registry }"
+    kube_proxy_image = "${ var.kube_proxy_image }"
     kube_proxy_tag = "${ var.kube_proxy_tag }"
   }
 }

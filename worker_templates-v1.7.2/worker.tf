@@ -107,7 +107,7 @@ data "template_file" "kube-proxy" {
     master_node = "${ var.internal_lb_ip }"
     # fqdn = "${ var.hostname_suffix }"
     pod_cidr = "${ var.pod_cidr }"
-    kube_proxy_registry = "${ var.kube_proxy_registry }"
+    kube_proxy_image = "${ var.kube_proxy_image }"
     kube_proxy_tag = "${ var.kube_proxy_tag }"
 
   }

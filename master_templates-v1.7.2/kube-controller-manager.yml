@@ -21,7 +21,7 @@ spec:
       --cluster-signing-cert-file=/etc/srv/kubernetes/pki/ca-certificates.crt
       --cluster-signing-key-file=/etc/srv/kubernetes/pki/ca-certificates.key 1>>/var/log/kube-controller-manager.log
       2>&1
-    image: ${ kube_controller_manager_registry }:${ kube_controller_manager_tag }
+    image: ${ kube_controller_manager_image }:${ kube_controller_manager_tag }
     livenessProbe:
       httpGet:
         host: 127.0.0.1

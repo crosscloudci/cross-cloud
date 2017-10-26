@@ -1,7 +1,6 @@
 resource "google_container_cluster" "cncf" {
   name               = "${ var.name }"
   zone               = "${ var.zone }"
-  project            = "${ var.project }"
   initial_node_count = "${ var.node_count }"
 
   additional_zones   = [

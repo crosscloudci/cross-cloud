@@ -14,7 +14,6 @@ resource "google_compute_instance" "cncf" {
 
   network_interface {
     subnetwork = "${ var.name }"
-    subnetwork_project = "${ var.project }"
 
     access_config {
     }

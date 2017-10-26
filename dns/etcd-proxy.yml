@@ -19,7 +19,7 @@ spec:
       value: ${ etcd_discovery }
     - name: ETCD_PROXY
       value: "on"
-    image: ${ etcd_registry }:${ etcd_tag }
+    image: ${ etcd_image }:${ etcd_tag }
     livenessProbe:
       httpGet:
         host: 127.0.0.1

@@ -4,15 +4,15 @@ variable "etcd_endpoint" {}
 
 variable "kubelet_artifact" {}
 variable "cni_artifact" {}
-variable "etcd_registry" {}
+variable "etcd_image" {}
 variable "etcd_tag"  {}
-variable "kube_apiserver_registry" {}
+variable "kube_apiserver_image" {}
 variable "kube_apiserver_tag" {}
-variable "kube_controller_manager_registry" {}
+variable "kube_controller_manager_image" {}
 variable "kube_controller_manager_tag" {}
-variable "kube_scheduler_registry" {}
+variable "kube_scheduler_image" {}
 variable "kube_scheduler_tag" {}
-variable "kube_proxy_registry" {}
+variable "kube_proxy_image" {}
 variable "kube_proxy_tag" {}
 
 variable "cloud_provider" {}

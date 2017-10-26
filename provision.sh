@@ -240,12 +240,14 @@ elif [ "$1" = "gce-destroy" ] ; then
               -backend-config "region=${AWS_DEFAULT_REGION}"
     time terraform destroy -force ${DIR}/gce || true # Allow to Fail and clean up network on next step
     time terraform destroy -force -target module.vpc.google_compute_subnetwork.cncf ${DIR}/gce
+    time terraform destroy -force -target module.vpc.google_compute_network.cncf ${DIR}/gce
 elif [ "$3" = "file" ]; then
         cp ../file-backend.tf .
         terraform init \
                   -backend-config "path=/cncf/data/${TF_VAR_name}/terraform.tfstate"
         time terraform destroy -force ${DIR}/gce || true # Allow to Fail and clean up network on next step
         time terraform destroy -force -target module.vpc.google_compute_subnetwork.cncf ${DIR}/gce
+        time terraform destroy -force -target module.vpc.google_compute_network.cncf ${DIR}/gce
 fi
 
 elif [ "$1" = "gke-deploy" ] ; then

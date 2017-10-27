@@ -15,7 +15,6 @@ stages:
   - cncf-e2e
 
 before_script:
-  - cat data/kubernetes.env
   - export BASE_URL=${BASE_URL:-$(echo $CI_PROJECT_URL |  cut -d'/' -f1-3)}
   - export KUBECONFIG=$(pwd)/data/${CI_ENVIRONMENT_SLUG}/kubeconfig
   - mkdir -p ./data ; touch ./data/empty.env

@@ -16,7 +16,7 @@ stages:
 
 before_script:
   - export BASE_URL=${BASE_URL:-$(echo $CI_PROJECT_URL |  cut -d'/' -f1-3)}
-  - export KUBECONFIG=$(pwd)/data/${CI_ENVIRONMENT_SLUG}/kubeconfig
+  - export KUBECONFIG=$(pwd)/data/${CI_ENVIRONMENT_NAME}/kubeconfig
   - mkdir -p ./data ; touch ./data/empty.env
   - for envfile in data/*env ; do source $envfile ; echo ----- $envfile ---- ; cat $envfile ; done
 
@@ -131,11 +131,7 @@ cross-cloud-socat:
     url: MUST BE SET
     on_stop: MUST BE SET
   script:
-    - echo "${CI_COMMIT_REF_SLUG}"
-    - echo "${CI_COMMIT_REF_NAME}"
-    - echo "${CI_ENVIRONMENT_SLUG}"
-    - echo "${CI_ENVIRONMENT_NAME}"
-    - /cncf/provision.sh ${CLOUD}-deploy ${CI_ENVIRONMENT_SLUG} s3
+    - /cncf/provision.sh ${CLOUD}-deploy ${CI_ENVIRONMENT_NAME} s3
     - helm init 
     # - helm init ; until [ ! -e $(
     #     kubectl get pods --namespace=kube-system -l app=helm -l name=tiller

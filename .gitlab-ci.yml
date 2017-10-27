@@ -134,6 +134,7 @@ cross-cloud-socat:
     - echo "${CI_COMMIT_REF_SLUG}"
     - echo "${CI_COMMIT_REF_NAME}"
     - echo "${CI_ENVIRONMENT_SLUG}"
+    - echo "${CI_ENVIRONMENT_NAME}"
     - /cncf/provision.sh ${CLOUD}-deploy ${CI_ENVIRONMENT_SLUG} s3
     - helm init 
     # - helm init ; until [ ! -e $(

@@ -71,8 +71,8 @@ kubernetes-build-commit:
         echo ${SHA}
 
         echo "Fetch Most Recent Job ID's on Commit"
-        # COMPILE_JOB=$(curl --header "PRIVATE-TOKEN: ${TOKEN}" "https://gitlab.cncf.ci/api/v4/projects/14/repository/commits/${SHA}/statuses" | jq '.[] | select(.name=="compile")' | jq -s 'sort_by(.created_at)' | jq '.[0] | .id')
-        # echo ${COMPILE_JOB}
+        COMPILE_JOB=$(curl --header "PRIVATE-TOKEN: ${TOKEN}" "https://gitlab.cncf.ci/api/v4/projects/14/repository/commits/${SHA}/statuses" | jq '.[] | select(.name=="compile")' | jq -s 'sort_by(.created_at)' | jq '.[0] | .id')
+        echo ${COMPILE_JOB}
         
         CONTAINER_JOB=$(curl --header "PRIVATE-TOKEN: ${TOKEN}" "https://gitlab.cncf.ci/api/v4/projects/14/repository/commits/${SHA}/statuses" | jq '.[] | select(.name=="container")' | jq -s 'sort_by(.created_at)' | jq '.[0] | .id')
 
@@ -85,10 +85,10 @@ kubernetes-build-commit:
         else
           echo "Trigger Jobs for missing Artifacts"
           
-          # PROJECT_COMPILE_JOB=$(curl -X POST --header "PRIVATE-TOKEN: ${TOKEN}" "https://gitlab.cncf.ci/api/v4/projects/14/jobs/${COMPILE_JOB}/retry" | jq '.id')
-          # echo $PROJECT_COMPILE_JOB
-          # echo 'Wait for Build "FIX ME / HACK"'
-          # until [ "$COMPILE_JOB_STATUS" == '"success"' ]; do COMPILE_JOB_STATUS="$(curl -s --header "PRIVATE-TOKEN:${TOKEN}" "https://gitlab.cncf.ci/api/v4/projects/14/jobs/${PROJECT_COMPILE_JOB}" | jq -s '.[] | .status')" ; sleep 0.5 ; done ; echo 'Build Compleate'
+          PROJECT_COMPILE_JOB=$(curl -X POST --header "PRIVATE-TOKEN: ${TOKEN}" "https://gitlab.cncf.ci/api/v4/projects/14/jobs/${COMPILE_JOB}/retry" | jq '.id')
+          echo $PROJECT_COMPILE_JOB
+          echo 'Wait for Build "FIX ME / HACK"'
+          until [ "$COMPILE_JOB_STATUS" == '"success"' ]; do COMPILE_JOB_STATUS="$(curl -s --header "PRIVATE-TOKEN:${TOKEN}" "https://gitlab.cncf.ci/api/v4/projects/14/jobs/${PROJECT_COMPILE_JOB}" | jq -s '.[] | .status')" ; sleep 0.5 ; done ; echo 'Build Compleate'
           
           PROJECT_CONTAINER_JOB=$(curl -X POST --header "PRIVATE-TOKEN: ${TOKEN}" "https://gitlab.cncf.ci/api/v4/projects/14/jobs/${CONTAINER_JOB}/retry" | jq '.id')
           until [ "$CONTAINER_JOB_STATUS" == '"success"' ]; do CONTAINER_JOB_STATUS="$(curl -s --header "PRIVATE-TOKEN:${TOKEN}" "https://gitlab.cncf.ci/api/v4/projects/14/jobs/${PROJECT_CONTAINER_JOB}" | jq -s '.[] | .status')" ; sleep 0.5 ; done ; echo 'Container Build Compleate'

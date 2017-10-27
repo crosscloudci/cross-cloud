@@ -1,5 +1,5 @@
 resource "aws_elb" "internal" {
-  name = "${ var.name }"
+  name = "i${ var.name }"
 
   cross_zone_load_balancing = false
 

@@ -1,5 +1,5 @@
 resource "aws_elb" "external" {
-  name = "${ var.name }"
+  name = "e${ var.name }"
 
   cross_zone_load_balancing = false
 

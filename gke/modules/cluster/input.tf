@@ -1,7 +1,6 @@
 variable "name" {}
 variable "region" {}
 variable "zone" {}
-variable "project" {}
 variable "node_count" {}
 variable "network" {}
 variable "subnetwork" {}

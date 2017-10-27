@@ -24,24 +24,19 @@ EOF
 
 }
 
-resource "null_resource" "set_dns" {
+# resource "null_resource" "set_dns" {
 
-  provisioner "local-exec" {
-    command = <<EOF
-    echo "${ module.etcd.first_master_ip } endpoint.${ var.name }.${ var.domain }" >> /etc/hosts
-    EOF
-  }
+#   provisioner "local-exec" {
+#     command = <<EOF
+#     echo "${ module.etcd.first_master_ip } endpoint.${ var.name }.${ var.domain }" >> /etc/hosts
+#     EOF
+#   }
 
-  provisioner "local-exec" {
-    when = "destroy"
-    on_failure = "continue"
-    command = <<EOF
-    echo FIX ME
-EOF
-  }
-}
-
-resource "null_resource" "dummy_dependency" {
-  depends_on = [ "null_resource.set_dns" ]
-}
-
+#   provisioner "local-exec" {
+#     when = "destroy"
+#     on_failure = "continue"
+#     command = <<EOF
+#     echo FIX ME
+# EOF
+#   }
+# }

@@ -7,7 +7,7 @@ resource "google_compute_firewall" "allow-internal-lb" {
     ports    = ["8080", "443"]
   }
 
-  source_ranges = ["10.240.0.0/16"]
+  source_ranges = ["${ var.cidr }"]
   target_tags = ["int-lb"]
 }
 
@@ -20,7 +20,7 @@ resource "google_compute_firewall" "allow-health-check" {
     ports = ["8080", "443"]
   }
 
-  source_ranges = ["130.211.0.0/22","35.191.0.0/16","10.240.0.0/16"]
+  source_ranges = ["130.211.0.0/22","35.191.0.0/16","${ var.cidr }"]
 }
 
 resource "google_compute_firewall" "allow-ssh-bastion" {
@@ -32,7 +32,7 @@ resource "google_compute_firewall" "allow-ssh-bastion" {
     ports = ["22"]
   }
 
-  source_ranges = ["0.0.0.0/0"]
+  source_ranges = ["${ var.allow_ssh_cidr }"]
   target_tags = ["bastion"]
 }
 
@@ -52,7 +52,7 @@ resource "google_compute_firewall" "kubernetes-default-internal-master" {
     protocol = "icmp"
   }
 
-  source_ranges = ["10.0.0.0/8"]
+  source_ranges = ["${ var.service_cidr }"]
   target_tags = ["kubernetes-master"]
 }
 
@@ -72,7 +72,7 @@ resource "google_compute_firewall" "kubernetes-default-internal-node" {
     protocol = "icmp"
   }
 
-  source_ranges = ["10.0.0.0/8"]
+  source_ranges = ["${ var.service_cidr }"]
   target_tags = ["kubernetes-minion"]
 }
 
@@ -131,6 +131,6 @@ resource "google_compute_firewall" "kubernetes-minion-all" {
     protocol = "sctp"
   }
 
-  source_ranges = ["10.244.0.0/14"]
+  source_ranges = ["${ var.cidr }"]
   target_tags = ["kubernetes-minion"]
 }

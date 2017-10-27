@@ -1,4 +1,4 @@
-resource "openstack_compute_instance" "cncf" {
+resource "openstack_compute_instance_v2" "cncf" {
   count           = "${ var.master_count }"
   name            = "${ var.name }-master-${ count.index + 10 }"
   image_name      = "${ var.master_image_name }"

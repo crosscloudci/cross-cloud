@@ -131,6 +131,9 @@ cross-cloud-socat:
     url: MUST BE SET
     on_stop: MUST BE SET
   script:
+    - echo "${CI_COMMIT_REF_SLUG}"
+    - echo "${CI_COMMIT_REF_NAME}"
+    - echo "${CI_ENVIRONMENT_SLUG}"
     - /cncf/provision.sh ${CLOUD}-deploy ${CI_ENVIRONMENT_SLUG} s3
     - helm init 
     # - helm init ; until [ ! -e $(

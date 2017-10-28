@@ -171,7 +171,7 @@ cross-cloud-socat:
     url: MUST BE SET
     action: MUST BE SET
   script:
-    - /cncf/provision.sh ${CLOUD}-destroy ${CI_ENVIRONMENT_SLUG} s3
+    - /cncf/provision.sh ${CLOUD}-destroy ${CI_ENVIRONMENT_NAME} s3
 
 # AWS Deploy VARs
 aws_k8s_deploy:

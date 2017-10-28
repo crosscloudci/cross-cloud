@@ -1,5 +1,7 @@
 module "network" {
   source = "./modules/network"
+
+  public_network = "${ var.public_network }"
 }
 
 module "master" {

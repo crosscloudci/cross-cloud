@@ -11,3 +11,6 @@ variable "master_count"       { default = "3" }
 variable "node_flavor_name" { default = "v1-standard-1" }
 variable "node_image_name"  { default = "CoreOS 1298.6.0 (MoreOS) [2017-03-15]" }
 variable "node_count"       { default = "3" }
+
+# Network resources
+variable "public_network" { default = "6d6357ac-0f70-4afa-8bd7-c274cc4ea235" }

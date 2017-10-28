@@ -78,7 +78,7 @@ COPY azure/ /cncf/azure/
 COPY bluemix/ /cncf/bluemix/
 COPY gce/ /cncf/gce/
 COPY gke/ /cncf/gke/
-COPY openstack/ /cncf/openstack/
+#COPY openstack/ /cncf/openstack/
 COPY packet/ /cncf/packet/
 
 COPY bootstrap/ /cncf/bootstrap/
@@ -99,6 +99,8 @@ COPY master_templates-v1.9.0-alpha.1 /cncf/
 COPY worker_templates-v1.7.2 /cncf/
 COPY worker_templates-v1.8.1 /cncf/
 COPY worker_templates-v1.9.0-alpha.1 /cncf/
+
+COPY openstack/ /cncf/openstack/
 
 RUN chmod +x /cncf/provision.sh
 WORKDIR /cncf/

@@ -6,6 +6,6 @@ resource "openstack_compute_instance_v2" "cncf" {
   security_groups = [ "default" ]
 
   network {
-    name = "public"
+    uuid = "${ var.private_network_id }"
   }
 }

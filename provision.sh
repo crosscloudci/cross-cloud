@@ -168,8 +168,9 @@ elif [ "$1" = "packet-deploy" ] ; then
               -backend-config "bucket=${AWS_BUCKET}" \
               -backend-config "key=packet-${TF_VAR_name}" \
               -backend-config "region=${AWS_DEFAULT_REGION}"
-    # ensure kubeconfig is written to disk on infrastructure refresh
+    # ensure kubeconfig & resolv.conf is written to disk on infrastructure refresh
     terraform taint -module=kubeconfig null_resource.kubeconfig || true ${DIR}/packet
+    terraform taint null_resource.resolve_conf || true ${DIR}/packet
     time terraform apply ${DIR}/packet
 
     elif [ "$3" = "file" ]; then

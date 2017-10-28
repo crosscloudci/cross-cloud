@@ -4,8 +4,8 @@ resource "openstack_networking_network_v2" "cncf" {
 }
 
 resource "openstack_networking_subnet_v2" "cncf" {
-  network_id = "${openstack_networking_network_v2.cncf.id}"
-  cidr       = "192.168.11.0/24"
+  network_id = "${ openstack_networking_network_v2.cncf.id }"
+  cidr       = "${ var.private_network_cidr }"
 }
 
 resource "openstack_networking_router_v2" "cncf" {
@@ -16,4 +16,10 @@ resource "openstack_networking_router_v2" "cncf" {
 resource "openstack_networking_router_interface_v2" "cncf" {
   router_id = "${ openstack_networking_router_v2.cncf.id }"
   subnet_id = "${ openstack_networking_subnet_v2.cncf.id }"
+}
+
+resource "openstack_lb_loadbalancer_v2" "cncf" {
+  name          = "private_lb"
+  vip_subnet_id = "${ openstack_networking_subnet_v2.cncf.id }"
+  vip_address   = "${ var.private_lb_ip }"
 }

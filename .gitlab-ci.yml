@@ -1,13 +1,3 @@
-variables:
-  K8S_BRANCH: ci-v1.6.6
-  COREDNS_BRANCH: ci-v008
-  PROMETHEUS_BRANCH: ci-v1.7.1
-  NODE_EXPORTER_BRANCH: ci-v0.14.0
-  ALERT_MANAGER_BRANCH: ci-v0.7.1
-  CNI_BRANCH: ci-v0.5.2
-  FLUENTD_BRANCH: ci-v0.14.17
-  CONTAINERD_BRANCH: ci-v0.2.8
-
 stages:
   - cncf-artifacts
   - cross-cloud
@@ -131,8 +121,13 @@ cross-cloud-socat:
     url: MUST BE SET
     on_stop: MUST BE SET
   script:
-    - /cncf/provision.sh ${CLOUD}-deploy ${CI_ENVIRONMENT_NAME} s3
-    - helm init 
+    - >
+      if [ -z "${CLOUD}" ]; then
+        exit 0 #Should Show Skipped on Gitlab CI FIXME
+      else
+        /cncf/provision.sh ${CLOUD}-deploy ${CI_ENVIRONMENT_NAME} s3
+        helm init
+      fi
     # - helm init ; until [ ! -e $(
     #     kubectl get pods --namespace=kube-system -l app=helm -l name=tiller
     #     -o jsonpath='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}'

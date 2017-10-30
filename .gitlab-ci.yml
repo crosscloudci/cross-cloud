@@ -123,7 +123,7 @@ cross-cloud-socat:
   script:
     - >
       if [ -z "${CLOUD}" ]; then
-        exit 0 #Should Show Skipped on Gitlab CI FIXME
+        exit 1 #Should Show Skipped on Gitlab CI FIXME
       else
         /cncf/provision.sh ${CLOUD}-deploy ${CI_ENVIRONMENT_NAME} s3
         helm init

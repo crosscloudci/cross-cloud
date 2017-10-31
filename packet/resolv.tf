@@ -13,7 +13,7 @@ resource "null_resource" "resolv_conf_kubeconfig" {
 
   provisioner "local-exec" {
     command = <<EOF
-echo -e "#nameserver ${ module.master.nameserver } >> "${ var.data_dir }/kubeconfig"
+echo -e "#nameserver ${ module.master.nameserver }" >> "${ var.data_dir }/kubeconfig"
 EOF
   }
 

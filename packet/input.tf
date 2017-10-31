@@ -8,7 +8,7 @@ variable "packet_facility" { default = "sjc1" }
 variable "packet_billing_cycle" { default = "hourly" }
 variable "packet_operating_system" { default = "coreos_stable" }
 variable "packet_master_device_plan" { default = "baremetal_0" }
-variable "packet_worker_device_plan" { default = "baremetal_0" }
+variable "packet_worker_device_plan" { default = "baremetal_1" }
 
 variable "domain" { default = "cncf.ci" }
 variable "data_dir" { default = "/cncf/data/packet" }
@@ -22,8 +22,8 @@ variable "pod_cidr" { default = "10.2.0.0/16" }
 variable "service_cidr"   { default = "10.0.0.0/24" }
 variable "k8s_service_ip" { default = "10.0.0.1" }
 variable "dns_service_ip" { default = "10.0.0.11" }
-variable "master_node_count" { default = "3" }
-variable "worker_node_count" { default = "3" }
+variable "master_node_count" { default = "1" }
+variable "worker_node_count" { default = "1" }
 # Autoscaling not supported by Kuberenetes on Azure yet
 # variable "worker_node_min" { default = "3" }
 # variable "worker_node_max" { default = "5" }

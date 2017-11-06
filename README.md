@@ -1,24 +1,24 @@
-# Cross Cloud Continuous Integration
+# Cross-cloud Continuous Integration
 
-### Why Cross-Cloud CI?
+### Why Cross-cloud CI?
 
 Our CI Working Group has been tasked with demonstrating best practices for integrating, testing, and deploying projects within the CNCF ecosystem across multiple cloud providers.
 
 Help ensure the CNCF projects deploy and run sucessfully on each supported cloud providers.
 
-### What is cross-cloud?
+### What is Cross-cloud?
 
-A project to continually validate the interoperability of each CNCF project, for every commit on stable and HEAD, for all supported cloud providers with the results published to the cross-cloud public dashboard. The cross-cloud project is composed of the following components:
+A project to continually validate the interoperability of each CNCF project, for every commit on stable and HEAD, for all supported cloud providers with the results published to the Cross-cloud public dashboard. The Cross-cloud project is composed of the following components:
 - Cross-project CI - Project app and e2e test container builder / Project to Cross-cloud CI integration point
-  * Builds and registers containerized apps as well as their related e2e tests for deployment. Triggers the cross-cloud CI pipeline.  
+  * Builds and registers containerized apps as well as their related e2e tests for deployment. Triggers the Cross-cloud CI pipeline.  
 - Cross-cloud CI - Multi-cloud container deployer / Multi-cloud project test runner
-  * Triggers the creation of k8s clusters on cloud providers, deploys containerized apps, and runs upstream project tests supplying results to the cross-cloud dashboard.
+  * Triggers the creation of K8s clusters on cloud providers, deploys containerized apps, and runs upstream project tests supplying results to the Cross-cloud dashboard.
 - Multi-cloud provisioner - Cloud end-point provisioner for Kubernetes
   * Supplies conformance validated Kubernetes end-points for each cloud provider with cloud specific features enabled
 - Cross-cloud CI Dashboard - 
   * Provides a high-level view of the interoperability status of CNCF projects for each supported cloud provider.
 
-### How to Use Cross-Cloud 
+### How to Use Cross-cloud 
 
 You have to have a working [Docker environment](https://www.docker.com/get-docker)
 
@@ -93,7 +93,7 @@ docker run \
 
 #### General usage and configuration
 
-Minimum required Configuration to use Cross-Cloud to Deploy a Kubernetes Cluster on Cloud X.
+Minimum required configuration to use Cross-cloud to deploy a Kubernetes cluster on Cloud X.
 ```bash
 docker run \
   -v /tmp/data:/cncf/data \
@@ -158,12 +158,14 @@ Current Phase: In Design/Planning
 ### Meetings / Demos
 
 #### Upcoming
-- November 1st, 2017 - CNCF CI Cross Cloud project demo to Nic Jackson, Terraform
-- November 2nd, 2017 - CNCF CI Cross Cloud project demo to Jez Humble, Continuous Delivery
+- November 8th, 2017 - CNCF CI Cross Cloud project demo to TensorFlow
 - November 9th, 2017 - CNCF CI Cross Cloud project demo at End User Committee Meeting
 - November 2017 TBD - CNCF CI Cross Cloud project demo to OPNfv
+- [December 6th-8th, 2017 - KubeCon + CloudNativeCon North America 2017](https://www.cncf.io/event/cloudnativecon-north-america-2017/)
 
 #### Past
+- [November 2nd, 2017 - CNCF CI Cross Cloud project demo to Jez Humble, Continuous Delivery](https://docs.google.com/presentation/d/1dhJgeBLYEzXoVvpxX7ls75o-GdsVwhpUY08O8UAiUUc/edit?usp=sharing)
+- [November 1st, 2017 - CNCF CI Cross Cloud project demo to Nic Jackson, Terraform[(https://docs.google.com/presentation/d/1Y1E1y5SHTW56CDT4hyAFZAtPftOeezqCZrhLGCjY94A/edit?usp=sharing)
 - [October 24th, 2017 - CI-WG Status Updates](https://docs.google.com/a/vulk.coop/presentation/d/10x7ssMrYN5A_XBxN8NBQ2Zoy2akbT2NqO7mn6hJLnSk/edit?usp=sharing)
 - October 18th, 2017 - CNCF CI Cross Cloud project demo to Oracle Cloud
 - [October 11th, 2017 - CNCF CI Cross Cloud project demo to ONAP](https://docs.google.com/presentation/d/1EclOrNbeF7gqlIR3hfjKAAVvdl68NDcWEGQho1MpS-E/edit#slide=id.g24450b0d21_0_222)

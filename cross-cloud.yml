@@ -1,16 +1,25 @@
 ---
-- active_clouds: "aws,packet,gke,gce"
+clouds:
+  aws: true
+  azure: false
+  bluemix: false
+  gke: true
+  gce: true
+  packet: true
 
-- active_projects:
-  coredns: 
-    logo_url: "https://raw.githubusercontent.com/cncf/artwork/master/coredns/Icon/CoreDNS_Colour_Icon.png"
-    name: coredns
-    project_url: "https://github.com/coredns/coredns"
+projects:
   kubernetes: 
+    active: true
     logo_url: "https://raw.githubusercontent.com/cncf/artwork/master/kubernetes/logo.png"
     name: Kubernetes
     project_url: "https://github.com/kubernetes/kubernetes"
   prometheus: 
+    active: true
     logo_url: "https://raw.githubusercontent.com/cncf/artwork/master/prometheus/prometheus_grey_transparent.png"
     name: prometheus
     project_url: "https://github.com/prometheus/prometheus"
+  coredns: 
+    active: true
+    logo_url: "https://raw.githubusercontent.com/cncf/artwork/master/coredns/Icon/CoreDNS_Colour_Icon.png"
+    name: coredns
+    project_url: "https://github.com/coredns/coredns"

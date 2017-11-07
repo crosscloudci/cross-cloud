@@ -1,5 +1,9 @@
 variables:
   ACTIVE_CLOUDS: aws,packet,gke,gce
+  ACTIVE_PROJECTS_1: kubernetes,https://github.com/kubernetes/kubernetes,https://raw.githubusercontent.com/cncf/artwork/master/kubernetes/logo.png
+  ACTIVE_PROJECTS_2: prometheus,https://github.com/prometheus/prometheus,https://raw.githubusercontent.com/cncf/artwork/master/prometheus/prometheus_grey_transparent.png
+  ACTIVE_PROJECTS_3: coredns,https://github.com/coredns/coredns,https://raw.githubusercontent.com/cncf/artwork/master/coredns/Icon/CoreDNS_Colour_Icon.png
+  
   #ACTIVE_PROJECTS:
   #- kubernetes
   #  name: "Kubernetes"

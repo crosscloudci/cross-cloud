@@ -1,6 +1,7 @@
-- active_clouds: "aws,packet,gke,gce"
-
-- active_projects:
+- 
+  active_clouds: "aws,packet,gke,gce"
+- 
+  active_projects: ~
   coredns: 
     logo_url: "https://raw.githubusercontent.com/cncf/artwork/master/coredns/Icon/CoreDNS_Colour_Icon.png"
     name: coredns
@@ -13,6 +14,7 @@
     logo_url: "https://raw.githubusercontent.com/cncf/artwork/master/prometheus/prometheus_grey_transparent.png"
     name: prometheus
     project_url: "https://github.com/prometheus/prometheus"
+
 
 variables:
   K8S_BRANCH: ci-v1.6.6

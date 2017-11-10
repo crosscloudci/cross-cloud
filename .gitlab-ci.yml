@@ -160,7 +160,7 @@ cross-cloud-socat:
   variables:
     CLOUD: MUST BE SET
   script:
-    - /cncf/provision.sh ${CLOUD}-destroy ${CLOUD-${CI_COMMIT_REF_SLUG} s3
+    - /cncf/provision.sh ${CLOUD}-destroy ${CLOUD}-${CI_COMMIT_REF_SLUG} s3
 
 # Cloud Deploy VARs
 Kubernetes-Deploy:

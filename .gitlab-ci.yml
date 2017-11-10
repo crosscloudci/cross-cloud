@@ -163,7 +163,7 @@ cross-cloud-socat:
     - /cncf/provision.sh ${CLOUD}-destroy ${CLOUD-${CI_COMMIT_REF_SLUG} s3
 
 # Cloud Deploy VARs
-Kubernetes_deploy:
+Kubernetes-Deploy:
   <<: *kubernetes_deploy_template
   variables:
     CLOUD: "${CLOUD}"

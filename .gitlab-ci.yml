@@ -204,6 +204,19 @@ Socat:
   script:
     - /cncf/provision.sh ${CLOUD}-destroy ${CLOUD}-${CI_COMMIT_REF_SLUG} s3
 
+# Build-Source VARs
+Build-Source:
+  <<: *build_source
+
+# Build-Branch VARs
+Build-Branch:
+  <<: *build_branch
+
+# Build-Branch VARs
+Build-Commit:
+  <<: *build_commit
+
+    
 # Cloud Deploy VARs
 Kubernetes-Deploy:
   <<: *kubernetes_deploy_template

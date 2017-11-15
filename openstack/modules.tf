@@ -6,6 +6,12 @@ module "network" {
   private_lb_ip        = "${ var.private_lb_ip }"
 }
 
+module "bastion" {
+  source = "./modules/bastion"
+  public_network = "${ var.public_network }"
+  private_network_id = "${ module.network.private_network_id }"
+}
+
 module "master" {
   source = "./modules/master"
 

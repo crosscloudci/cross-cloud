@@ -1,4 +1,9 @@
 #!/bin/bash
+# Usage
+#
+# provision.sh <provider>-<command> <name> <config-backend>
+#
+set -x
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 _retry() {
     [ -z "${2}" ] && return 1
@@ -158,6 +163,23 @@ elif [ "$1" = "azure-destroy" ] ; then
                   -backend-config "path=/cncf/data/${TF_VAR_name}/terraform.tfstate"
     time terraform destroy -force ${DIR}/azure || true
     fi
+
+# Begin OpenStack
+elif [ "$1" = "openstack-deploy" ] ; then
+    cd ${DIR}/openstack
+    if [ "$3" = "s3" ] ; then
+        echo "TODO Implement openstack-deploy s3 config backend"
+    elif [ "$3" = "file" ] ; then
+        echo "TODO Implement openstack-deploy file config backend"
+    fi
+elif [ "$1" = "openstack-destroy" ] ; then
+    cd ${DIR}/openstack
+    if [ "$3" = "s3" ] ; then
+        echo "TODO Implement openstack-destroy s3 config backend"
+    elif [ "$3" = "file"] ; then
+        echo "TODO Implement openstack-destroy file config backend"
+    fi
+# End OpenStack
 
 elif [ "$1" = "packet-deploy" ] ; then
     cd ${DIR}/packet

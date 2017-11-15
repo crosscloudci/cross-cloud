@@ -78,11 +78,13 @@ COPY azure/ /cncf/azure/
 COPY bluemix/ /cncf/bluemix/
 COPY gce/ /cncf/gce/
 COPY gke/ /cncf/gke/
+COPY openstack/ /cncf/openstack/
 COPY packet/ /cncf/packet/
 
 COPY bootstrap/ /cncf/bootstrap/
 COPY dns/ /cncf/dns/
 
+#COPY cross-cloud/ /cncf/cross-cloud/
 COPY kubeconfig/ /cncf/kubeconfig/
 COPY socat/ /cncf/socat/
 COPY tls/ /cncf/tls/

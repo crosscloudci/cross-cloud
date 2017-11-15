@@ -10,21 +10,21 @@ clouds:
 projects:
   kubernetes: 
     active: true
-    logo_url: "https://raw.githubusercontent.com/cncf/artwork/master/kubernetes/logo.png"
+    logo_url: "https://raw.githubusercontent.com/cncf/artwork/1d4e7cf3b60af40e008b2e2413f7a2d1ff784b52/kubernetes/icon/color/kubernetes-icon-noborder-color.png"
     display_name: Kubernetes
     sub_title: Orchestration
     gitlab_name: Kubernetes
     project_url: "https://github.com/kubernetes/kubernetes"
   prometheus: 
     active: true
-    logo_url: "https://raw.githubusercontent.com/cncf/artwork/master/prometheus/prometheus_grey_transparent.png"
+    logo_url: "https://raw.githubusercontent.com/cncf/artwork/1d4e7cf3b60af40e008b2e2413f7a2d1ff784b52/prometheus/icon/color/prometheus-icon-color.png"
     display_name: Prometheus
     sub_title: Monitoring
     gitlab_name: prometheus
     project_url: "https://github.com/prometheus/prometheus"
   coredns: 
     active: true
-    logo_url: "https://raw.githubusercontent.com/cncf/artwork/master/coredns/Icon/CoreDNS_Colour_Icon.png"
+    logo_url: "https://raw.githubusercontent.com/cncf/artwork/1d4e7cf3b60af40e008b2e2413f7a2d1ff784b52/coredns/icon/color/core-dns-icon-color.png"
     display_name: CoreDNS
     sub_title: Service Discovery
     gitlab_name: coredns

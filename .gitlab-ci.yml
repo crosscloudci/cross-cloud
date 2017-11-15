@@ -80,17 +80,18 @@ Socat:
           PROJECT_PIPELINE=$(curl -X POST -F token=$PROJECT_TOKEN -F ref=$BRANCH -F "variables[BUILD_TRIGGER]=yes" https://gitlab.cncf.ci/api/v4/projects/$PROJECT_ID/trigger/pipeline | jq '.id')
 
           echo 'Wait for Build "FIX ME / HACK"'
-          until [ "$JOB_STATUS" == '"success"' ]; do JOB_STATUS="$(curl -s --header "PRIVATE-TOKEN:${TOKEN}" "https://gitlab.cncf.ci/api/v4/projects/$PROJECT_ID/pipelines/${PROJECT_PIPELINE}/jobs?scope=success" | jq '.[] | select(.name=="container") | .status')" 
-            sleep 0.5
-            if [ $"JOB_STATUS" == '"failed"' ]; then
-                exit 1
-            elif [ $"JOB_STATUS" == '"canceled"' ]; then
-                exit 1
-            else
-                continue
-            fi
-        done
-        echo 'Build Compleate'
+          until [ "$JOB_STATUS" == '"success"' ]; do
+              JOB_STATUS="$(curl -s --header "PRIVATE-TOKEN:${TOKEN}" "https://gitlab.cncf.ci/api/v4/projects/$PROJECT_ID/pipelines/${PROJECT_PIPELINE}/jobs?scope=success" | jq '.[] | select(.name=="container") | .status')" 
+              sleep 0.5
+              if [ $"JOB_STATUS" == '"failed"' ]; then
+                  exit 1
+              elif [ $"JOB_STATUS" == '"canceled"' ]; then
+                  exit 1
+              else
+                  continue
+              fi
+          done
+          echo 'Build Compleate'
 
           PROJECT_JOB=$(curl --header "PRIVATE-TOKEN:${TOKEN}" "https://gitlab.cncf.ci/api/v4/projects/$PROJECT_ID/pipelines/${PROJECT_PIPELINE}/jobs?scope=success" | jq '.[] | select(.name=="container") | .id') 
           curl -s -o data/"$PROJECT".env -L "$BASE_URL/${ORG}/${PROJECT}/-/jobs/${PROJECT_JOB}/artifacts/raw/release.env"
@@ -144,7 +145,8 @@ Socat:
           PROJECT_COMPILE_JOB=$(curl -X POST --header "PRIVATE-TOKEN: ${TOKEN}" "https://gitlab.cncf.ci/api/v4/projects/${PROJECT_ID}/jobs/${COMPILE_JOB}/retry" | jq '.id')
           echo $PROJECT_COMPILE_JOB
           echo 'Wait for Build "FIX ME / HACK"'
-          until [ "$COMPILE_JOB_STATUS" == '"success"' ]; do COMPILE_JOB_STATUS="$(curl -s --header "PRIVATE-TOKEN:${TOKEN}" "https://gitlab.cncf.ci/api/v4/projects/${PROJECT_ID}/jobs/${PROJECT_COMPILE_JOB}" | jq -s '.[] | .status')" 
+          until [ "$COMPILE_JOB_STATUS" == '"success"' ]; do
+              COMPILE_JOB_STATUS="$(curl -s --header "PRIVATE-TOKEN:${TOKEN}" "https://gitlab.cncf.ci/api/v4/projects/${PROJECT_ID}/jobs/${PROJECT_COMPILE_JOB}" | jq -s '.[] | .status')" 
               sleep 0.5
               if [ $"COMPILE_JOB_STATUS" == '"failed"' ]; then
                   exit 1
@@ -159,17 +161,18 @@ Socat:
           
           PROJECT_CONTAINER_JOB=$(curl -X POST --header "PRIVATE-TOKEN: ${TOKEN}" "https://gitlab.cncf.ci/api/v4/projects/${PROJECT_ID}/jobs/${CONTAINER_JOB}/retry" | jq '.id')
           echo 'Wait for Build "FIX ME / HACK"'
-          until [ "$CONTAINER_JOB_STATUS" == '"success"' ]; do CONTAINER_JOB_STATUS="$(curl -s --header "PRIVATE-TOKEN:${TOKEN}" "https://gitlab.cncf.ci/api/v4/projects/${PROJECT_ID}/jobs/${PROJECT_CONTAINER_JOB}" | jq -s '.[] | .status')" 
-            sleep 0.5
-            if [ $"PROJECT_CONTAINER_JOB" == '"failed"' ]; then
-                exit 1
-            elif [ $"PROJECT_CONTAINER_JOB" == '"canceled"' ]; then
-                exit 1
-            else
-                continue
-            fi
-        done
-        echo 'Container Build Compleate'
+          until [ "$CONTAINER_JOB_STATUS" == '"success"' ]; do
+              CONTAINER_JOB_STATUS="$(curl -s --header "PRIVATE-TOKEN:${TOKEN}" "https://gitlab.cncf.ci/api/v4/projects/${PROJECT_ID}/jobs/${PROJECT_CONTAINER_JOB}" | jq -s '.[] | .status')"
+              sleep 0.5
+              if [ $"PROJECT_CONTAINER_JOB" == '"failed"' ]; then
+                  exit 1
+              elif [ $"PROJECT_CONTAINER_JOB" == '"canceled"' ]; then
+                  exit 1
+              else
+                  continue
+              fi
+          done
+          echo 'Container Build Compleate'
 
           
           curl -s -o data/${PROJECT}.env -L "$BASE_URL/${ORG}/${PROJECT}/-/jobs/${PROJECT_CONTAINER_JOB}/artifacts/raw/release.env"

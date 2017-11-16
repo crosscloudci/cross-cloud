@@ -21,6 +21,8 @@ module "master" {
   master_count = "${ var.master_count }"
 
   private_network_id = "${ module.network.private_network_id }"
+
+  master_cloud_init = "${ module.master_templates.master_cloud_init }"
 }
 
 module "master_templates" {

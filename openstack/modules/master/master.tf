@@ -4,7 +4,8 @@ resource "openstack_compute_instance_v2" "cncf" {
   image_name      = "${ var.master_image_name }"
   flavor_name     = "${ var.master_flavor_name }"
   security_groups = [ "default" ]
-  key_pair = "K8s"
+  key_pair        = "K8s"
+  user_data       = "${ element(split("`", var.master_cloud_init), count.index) }"
 
   network {
     uuid = "${ var.private_network_id }"

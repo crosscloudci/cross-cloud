@@ -6,6 +6,7 @@ resource "openstack_networking_network_v2" "cncf" {
 resource "openstack_networking_subnet_v2" "cncf" {
   network_id = "${ openstack_networking_network_v2.cncf.id }"
   cidr       = "${ var.private_network_cidr }"
+  dns_nameservers  = [ "8.8.8.8" ]
 }
 
 resource "openstack_networking_router_v2" "cncf" {

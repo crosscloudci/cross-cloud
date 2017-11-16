@@ -3,10 +3,6 @@ provider "gzip" {
   compressionlevel = "BestCompression"
 }
 
-resource "random_id" "cncf" {
-  byte_length = 8
-}
-
 # The OpenStack Provider must be configured through
 # environment variables.
 #

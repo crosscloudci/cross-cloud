@@ -1,3 +1,3 @@
-variable "public_network" {}
-variable "private_network_cidr" {}
-variable "private_lb_ip" {}
+variable "external_network_id" {}
+variable "internal_network_cidr" {}
+variable "internal_lb_ip" {}

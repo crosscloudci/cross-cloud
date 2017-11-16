@@ -1,27 +1,34 @@
-# General settings
+# General cluster settings
 variable "name" { default = "openstack" }
 variable "data_dir" { default = "/cncf/data/openstack" }
 
 # TLS settings
 variable "cloud_location" { default = "vexxhost.com" }
 
-# Compute resources
-variable "master_flavor_name" { default = "v1-standard-1" }
-variable "master_image_name"  { default = "CoreOS 1298.6.0 (MoreOS) [2017-03-15]" }
-variable "master_count"       { default = "3" }
+# Bastion Configuration
+variable "bastion_flavor_name" { default = "v1-standard-1" }
+variable "bastion_image_name" { default = "CoreOS 1298.6.0 (MoreOS) [2017-03-15]" }
+variable "bastion_floating_ip_pool" { default = "public" }
 
-variable "node_flavor_name" { default = "v1-standard-1" }
-variable "node_image_name"  { default = "CoreOS 1298.6.0 (MoreOS) [2017-03-15]" }
-variable "node_count"       { default = "3" }
+# Master Configuration
+variable "master_flavor_name" { default = "v1-standard-1" }
+variable "master_image_name" { default = "CoreOS 1298.6.0 (MoreOS) [2017-03-15]" }
+variable "master_node_count" { default = "3" }
+
+# Worker Configuration
+variable "worker_flavor_name" { default = "v1-standard-1" }
+variable "worker_image_name"  { default = "CoreOS 1298.6.0 (MoreOS) [2017-03-15]" }
+variable "worker_node_count" { default = "3" }
 
 # Network resources
-variable "public_network"       { default = "6d6357ac-0f70-4afa-8bd7-c274cc4ea235" }
-variable "private_network_cidr" { default = "192.168.11.0/24" }
-variable "private_lb_ip"        { default = "192.168.11.250" }
+variable "external_network_id" { default = "6d6357ac-0f70-4afa-8bd7-c274cc4ea235" }
+variable "internal_network_cidr" { default = "10.240.0.0/16" }
+variable "internal_lb_ip" { default = "10.240.0.101" }
 
 # Kubernetes configuration
 variable "etcd_endpoint" {default = "127.0.0.1"}
 variable "cloud_provider" { default = "openstack" }
+#   I'm not so sure about this one
 variable "cloud_config" { default = "--cloud-config=/etc/srv/kubernetes/cloud-config" }
 variable "cluster_domain" { default = "cluster.local" }
 variable "cluster_name" { default = "kubernetes" }

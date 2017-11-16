@@ -1,12 +1,8 @@
-# Enable the GZIP Provider
-provider "gzip" {
-  compressionlevel = "BestCompression"
-}
-
 # The OpenStack Provider must be configured through
 # environment variables.
 #
 # One preferred set is:
+#
 # OS_AUTH_URL
 # OS_REGION_NAME
 # OS_USER_DOMAIN_NAME
@@ -15,4 +11,9 @@ provider "gzip" {
 # OS_PASSWORD
 
 provider "openstack" {
+}
+
+# Enable the GZIP Provider
+provider "gzip" {
+  compressionlevel = "BestCompression"
 }

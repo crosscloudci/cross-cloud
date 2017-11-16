@@ -10,7 +10,7 @@ resource "openstack_compute_instance_v2" "bastion" {
   key_pair = "K8s"
 
   network {
-    uuid = "${ var.private_network_id }"
+    uuid = "${ var.internal_network_id }"
   }
 }
 

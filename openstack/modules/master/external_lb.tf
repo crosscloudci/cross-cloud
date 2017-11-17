@@ -1,0 +1,7 @@
+resource "openstack_lb_member_v2" "external_https" {
+  count = "${ var.master_node_count }"
+  pool_id = "${ var.external_lb_https_pool_id }"
+  address = "${ element(openstack_compute_instance_v2.master.*.network.0.fixed_ip_v4, count.index) }"
+  subnet_id = "${ var.external_lb_subnet_id }"
+  protocol_port = 443
+}

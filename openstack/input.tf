@@ -2,6 +2,14 @@
 variable "name" { default = "openstack" }
 variable "data_dir" { default = "/cncf/data/openstack" }
 
+# OpenStack Auth Settings
+variable "os_auth_url" {}
+variable "os_region_name" {}
+variable "os_user_domain_name" {}
+variable "os_username" {}
+variable "os_project_name" {}
+variable "os_password" {}
+
 # TLS settings
 variable "cloud_location" { default = "vexxhost.com" }
 
@@ -18,12 +26,13 @@ variable "master_node_count" { default = "3" }
 # Worker Configuration
 variable "worker_flavor_name" { default = "v1-standard-1" }
 variable "worker_image_name"  { default = "CoreOS 1298.6.0 (MoreOS) [2017-03-15]" }
-variable "worker_node_count" { default = "3" }
+variable "worker_node_count" { default = "1" }
 
 # Network resources
 variable "external_network_id" { default = "6d6357ac-0f70-4afa-8bd7-c274cc4ea235" }
+variable "external_lb_subnet_id" { default = "4083e5c2-41ef-4838-8844-d2d300d2fb06" }
 variable "internal_network_cidr" { default = "10.240.0.0/16" }
-variable "internal_lb_ip" { default = "10.240.0.101" }
+variable "internal_lb_ip" { default = "10.240.0.102" }
 
 # Kubernetes configuration
 variable "etcd_endpoint" {default = "127.0.0.1"}

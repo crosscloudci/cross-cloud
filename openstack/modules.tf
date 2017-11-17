@@ -66,7 +66,7 @@ module "master_templates" {
   ca_key = "${ module.tls.ca_key }"
   apiserver = "${ module.tls.apiserver }"
   apiserver_key = "${ module.tls.apiserver_key }"
-  cloud_config_file = ""
+  cloud_config_file = "${ data.template_file.cloud_conf.rendered }"
 
   dns_master = ""
   dns_conf = ""
@@ -104,7 +104,7 @@ module "worker_templates" {
   ca = "${ module.tls.ca }"
   worker = "${ module.tls.worker }"
   worker_key = "${ module.tls.worker_key }"
-  cloud_config_file = ""
+  cloud_config_file = "${ data.template_file.cloud_conf.rendered }"
 
   dns_worker = ""
   dns_conf = ""

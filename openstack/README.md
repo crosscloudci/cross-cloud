@@ -38,6 +38,9 @@ You could assign them to Terraform variables like this:
 * `TF_VAR_os_project_name=$OS_PROJECT_NAME`
 * `TF_VAR_os_password=$OS_PASSWORD`
 
+To log in remotely, your will need to have a keypair in your
+cloud named `K8s`.
+
 The required configuration variables are:
 
 * `os_auth_url`

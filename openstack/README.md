@@ -63,7 +63,6 @@ want to set if you're using a different cloud include:
 * `worker_image_name`
 * `worker_node_count`
 * `external_network_id`
-* `external_lb_subnet_id`
 
 
 ### Deploying

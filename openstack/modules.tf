@@ -9,9 +9,8 @@ module "master" {
   internal_network_subnet_id = "${ module.network.internal_network_subnet_id }"
   internal_lb_http_pool_id = "${ module.network.internal_lb_http_pool_id }"
   internal_lb_https_pool_id = "${ module.network.internal_lb_https_pool_id }"
-  external_lb_https_pool_id = "${ module.network.external_lb_https_pool_id }"
-  external_lb_subnet_id = "${ var.external_lb_subnet_id }"
   master_cloud_init = "${ module.master_templates.master_cloud_init }"
+  security_group_name = "${ module.network.cross_cloud_security_group_name }"
 }
 
 module "network" {
@@ -20,7 +19,7 @@ module "network" {
   external_network_id = "${ var.external_network_id }"
   internal_network_cidr = "${ var.internal_network_cidr }"
   internal_lb_ip = "${ var.internal_lb_ip }"
-  external_lb_subnet_id = "${ var.external_lb_subnet_id }"
+  floating_ip_pool = "${ var.bastion_floating_ip_pool }"
 }
 
 module "bastion" {
@@ -80,6 +79,7 @@ module "worker" {
   worker_image_name = "${ var.worker_image_name }"
   worker_node_count = "${ var.worker_node_count }"
   internal_network_id = "${ module.network.internal_network_id }"
+  security_group_name = "${ module.network.cross_cloud_security_group_name }"
 }
 
 module "worker_templates" {

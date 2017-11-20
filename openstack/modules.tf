@@ -146,3 +146,14 @@ module "tls" {
   tls_worker_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local"
   tls_worker_cert_ip_addresses = "127.0.0.1"
 }
+
+module "kubeconfig" {
+  source = "../kubeconfig"
+
+  data_dir = "${ var.data_dir }"
+  endpoint = "${ module.network.external_lb_fip }"
+  name = "${ var.name }"
+  ca = "${ module.tls.ca }"
+  client = "${ module.tls.client }"
+  client_key = "${ module.tls.client_key }"
+}

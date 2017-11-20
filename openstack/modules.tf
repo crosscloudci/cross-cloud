@@ -7,7 +7,6 @@ module "master" {
   master_node_count = "${ var.master_node_count }"
   internal_network_id = "${ module.network.internal_network_id }"
   internal_network_subnet_id = "${ module.network.internal_network_subnet_id }"
-  internal_lb_http_pool_id = "${ module.network.internal_lb_http_pool_id }"
   internal_lb_https_pool_id = "${ module.network.internal_lb_https_pool_id }"
   master_cloud_init = "${ module.master_templates.master_cloud_init }"
   security_group_name = "${ module.network.cross_cloud_security_group_name }"
@@ -74,12 +73,14 @@ module "master_templates" {
 
 module "worker" {
   source = "./modules/worker"
+
   name = "${ var.name }"
   worker_flavor_name = "${ var.worker_flavor_name }"
   worker_image_name = "${ var.worker_image_name }"
   worker_node_count = "${ var.worker_node_count }"
   internal_network_id = "${ module.network.internal_network_id }"
   security_group_name = "${ module.network.cross_cloud_security_group_name }"
+  worker_cloud_init = "${ module.worker_templates.worker_cloud_init }"
 }
 
 module "worker_templates" {
@@ -137,7 +138,7 @@ module "tls" {
   tls_apiserver_cert_early_renewal_hours = 100
 # TODO determine proper cert settings here
   tls_apiserver_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local,*.${ var.cloud_location }"
-  tls_apiserver_cert_ip_addresses = "127.0.0.1,10.0.0.1,100.64.0.1,${ var.internal_lb_ip }"
+  tls_apiserver_cert_ip_addresses = "127.0.0.1,10.0.0.1,100.64.0.1,${ var.internal_lb_ip },${ module.network.external_lb_fip }"
 
   tls_worker_cert_subject_common_name = "kubernetes-worker"
   tls_worker_cert_validity_period_hours = 1000

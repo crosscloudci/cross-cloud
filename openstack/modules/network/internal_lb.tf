@@ -5,22 +5,10 @@ resource "openstack_lb_loadbalancer_v2" "internal_lb" {
   security_group_ids = [ "${ openstack_networking_secgroup_v2.cncf.id }" ]
 }
 
-resource "openstack_lb_listener_v2" "internal_http" {
-  protocol = "HTTP"
-  protocol_port = 8080
-  loadbalancer_id = "${ openstack_lb_loadbalancer_v2.internal_lb.id }"
-}
-
 resource "openstack_lb_listener_v2" "internal_https" {
   protocol = "HTTPS"
   protocol_port = 443
   loadbalancer_id = "${ openstack_lb_loadbalancer_v2.internal_lb.id }"
-}
-
-resource "openstack_lb_pool_v2" "internal_http" {
-  protocol = "HTTP"
-  lb_method = "ROUND_ROBIN"
-  listener_id = "${ openstack_lb_listener_v2.internal_http.id }"
 }
 
 resource "openstack_lb_pool_v2" "internal_https" {

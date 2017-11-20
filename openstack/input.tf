@@ -26,7 +26,7 @@ variable "master_node_count" { default = "3" }
 # Worker Configuration
 variable "worker_flavor_name" { default = "v1-standard-1" }
 variable "worker_image_name"  { default = "CoreOS 1298.6.0 (MoreOS) [2017-03-15]" }
-variable "worker_node_count" { default = "1" }
+variable "worker_node_count" { default = "3" }
 
 # Network resources
 variable "external_network_id" { default = "6d6357ac-0f70-4afa-8bd7-c274cc4ea235" }

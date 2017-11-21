@@ -41,6 +41,10 @@ You could assign them to Terraform variables like this:
 To log in remotely, your will need to have a keypair in your
 cloud named `K8s`.
 
+The project assumes the existence of the latest (as of the last
+update of this README) CoreOS release. The image version and
+name used in this project is: "CoreOS 1520.8.0"
+
 The required configuration variables are:
 
 * `os_auth_url`
@@ -84,6 +88,20 @@ docker run \
   -e NAME=cross-cloud \
   -e BACKEND=file \
   -ti provisioning
+```
+
+### Connecting with `kubectl`
+
+The deployment script will drop a `kubeconfig` file into
+`/tmp/data/cross-cloud`. As root, make a copy of it into
+a local location, change the ownership to your local user,
+and export the `KUBECONFIG` environment variable. For example:
+
+```
+sudo cp /tmp/data/cross-cloud/kubeconfig ~/.
+sudo chown $(whoami):$(whoami) ~/kubeconfig
+export KUBECONFIG=~/kubeconfig
+kubectl get nodes
 ```
 
 ### Destroying

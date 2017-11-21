@@ -13,19 +13,22 @@ variable "os_password" {}
 # TLS settings
 variable "cloud_location" { default = "vexxhost.com" }
 
+variable "coreos_image_name" { default = "CoreOS 1520.8.0" }
+#variable "coreos_image_name" { default = "CoreOS 1298.6.0 (MoreOS) [2017-03-15]" }
+
 # Bastion Configuration
 variable "bastion_flavor_name" { default = "v1-standard-1" }
-variable "bastion_image_name" { default = "CoreOS 1298.6.0 (MoreOS) [2017-03-15]" }
+variable "bastion_image_name" { default = "CoreOS 1520.8.0" }
 variable "bastion_floating_ip_pool" { default = "public" }
 
 # Master Configuration
 variable "master_flavor_name" { default = "v1-standard-1" }
-variable "master_image_name" { default = "CoreOS 1298.6.0 (MoreOS) [2017-03-15]" }
+variable "master_image_name" { default = "CoreOS 1520.8.0" }
 variable "master_node_count" { default = "3" }
 
 # Worker Configuration
 variable "worker_flavor_name" { default = "v1-standard-1" }
-variable "worker_image_name"  { default = "CoreOS 1298.6.0 (MoreOS) [2017-03-15]" }
+variable "worker_image_name"  { default = "CoreOS 1520.8.0" }
 variable "worker_node_count" { default = "3" }
 
 # Network resources

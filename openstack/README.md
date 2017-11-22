@@ -38,6 +38,13 @@ You could assign them to Terraform variables like this:
 * `TF_VAR_os_project_name=$OS_PROJECT_NAME`
 * `TF_VAR_os_password=$OS_PASSWORD`
 
+Optionally, you can tell Terraform to use Octavia instead of
+the LbaaSv2 service in Neutron by setting the environment variable
+`TF_VAR_use_octavia=true`. It's strongly recommended to use Octavia,
+as using the default Neutron proxy interface can introduce some race
+conditions that will make it impossible to destroy your load balance
+resources.
+
 To log in remotely, your will need to have a keypair in your
 cloud named `K8s`.
 

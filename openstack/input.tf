@@ -35,12 +35,12 @@ variable "worker_node_count" { default = "3" }
 variable "external_network_id" { default = "6d6357ac-0f70-4afa-8bd7-c274cc4ea235" }
 variable "external_lb_subnet_id" { default = "4083e5c2-41ef-4838-8844-d2d300d2fb06" }
 variable "internal_network_cidr" { default = "10.240.0.0/16" }
-variable "internal_lb_ip" { default = "10.240.0.102" }
+variable "internal_lb_ip" { default = "10.240.0.103" }
+variable "use_octavia" { default = false }
 
 # Kubernetes configuration
 variable "etcd_endpoint" {default = "127.0.0.1"}
 variable "cloud_provider" { default = "openstack" }
-#   I'm not so sure about this one
 variable "cloud_config" { default = "--cloud-config=/etc/srv/kubernetes/cloud-config" }
 variable "cluster_domain" { default = "cluster.local" }
 variable "cluster_name" { default = "kubernetes" }

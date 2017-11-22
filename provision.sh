@@ -124,6 +124,8 @@ elif [ "$1" = "azure-deploy" ] ; then
     terraform taint -module=kubeconfig null_resource.kubeconfig || true
     terraform apply -target null_resource.ssh_gen ${DIR}/azure && \
         terraform apply -target azurerm_resource_group.cncf ${DIR}/azure && \
+        terraform apply -target module.network.azurerm_virtual_network.cncf ${DIR}/azure || true && \
+        terraform apply -target module.network.azurerm_subnet.cncf ${DIR}/azure || true && \
         time terraform apply ${DIR}/azure
 
     elif [ "$3" = "file" ]; then
@@ -133,6 +135,8 @@ elif [ "$1" = "azure-deploy" ] ; then
         # ensure kubeconfig is written to disk on infrastructure refresh
         terraform taint -module=kubeconfig null_resource.kubeconfig || true
         terraform apply -target null_resource.ssh_gen ${DIR}/azure && \
+            terraform apply -target module.network.azurerm_virtual_network.cncf ${DIR}/azure || true && \
+            terraform apply -target module.network.azurerm_subnet.cncf ${DIR}/azure || true && \
             terraform apply -target azurerm_resource_group.cncf ${DIR}/azure && \
             time terraform apply ${DIR}/azure
        fi 

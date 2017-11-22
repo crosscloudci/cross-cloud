@@ -18,7 +18,7 @@ provider "openstack" {
   tenant_name = "${ var.os_project_name }"
   password = "${ var.os_password }"
 
-  use_octavia = "${ var.use_octavia }"
+#  use_octavia = "${ var.use_octavia }"
 }
 
 # Enable the GZIP Provider

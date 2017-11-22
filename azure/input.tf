@@ -30,7 +30,7 @@ variable "service_cidr"   { default = "100.64.0.0/13" }
 variable "non_masquerade_cidr" { default = "100.64.0.0/10"}
 variable "dns_service_ip" { default = "100.64.0.10" }
 variable "master_node_count" { default = "3" }
-variable "worker_node_count" { default = "3" }
+variable "worker_node_count" { default = "1" }
 # Autoscaling not supported by Kuberenetes on Azure yet
 # variable "worker_node_min" { default = "3" }
 # variable "worker_node_max" { default = "5" }

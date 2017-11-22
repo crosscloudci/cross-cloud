@@ -122,6 +122,7 @@ elif [ "$1" = "azure-deploy" ] ; then
               -backend-config "region=${AWS_DEFAULT_REGION}"
     # ensure kubeconfig is written to disk on infrastructure refresh
     terraform taint -module=kubeconfig null_resource.kubeconfig || true
+    terraform taint null_resource.ssh_gen || true
     terraform apply -target null_resource.ssh_gen ${DIR}/azure && \
         terraform apply -target azurerm_resource_group.cncf ${DIR}/azure && \
         terraform apply -target module.network.azurerm_virtual_network.cncf ${DIR}/azure || true && \
@@ -134,6 +135,7 @@ elif [ "$1" = "azure-deploy" ] ; then
                   -backend-config "path=/cncf/data/${TF_VAR_name}/terraform.tfstate"
         # ensure kubeconfig is written to disk on infrastructure refresh
         terraform taint -module=kubeconfig null_resource.kubeconfig || true
+        terraform taint null_resource.ssh_gen || true
         terraform apply -target null_resource.ssh_gen ${DIR}/azure && \
             terraform apply -target module.network.azurerm_virtual_network.cncf ${DIR}/azure || true && \
             terraform apply -target module.network.azurerm_subnet.cncf ${DIR}/azure || true && \

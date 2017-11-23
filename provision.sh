@@ -157,12 +157,14 @@ elif [ "$1" = "azure-destroy" ] ; then
               -backend-config "bucket=${AWS_BUCKET}" \
               -backend-config "key=azure-${TF_VAR_name}" \
               -backend-config "region=${AWS_DEFAULT_REGION}"
+    terraform apply -target null_resource.ssh_gen ${DIR}/azure && \
     time terraform destroy -force ${DIR}/azure || true
 
     elif [ "$3" = "file" ]; then
         cp ../file-backend.tf .
         terraform init \
                   -backend-config "path=/cncf/data/${TF_VAR_name}/terraform.tfstate"
+    terraform apply -target null_resource.ssh_gen ${DIR}/azure && \
     time terraform destroy -force ${DIR}/azure || true
     fi
 

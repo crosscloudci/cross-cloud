@@ -196,7 +196,7 @@ Socat:
   variables:
     CLOUD: MUST BE SET
   script:
-    - /cncf/provision.sh ${CLOUD}-deploy ${CLOUD}-${CI_COMMIT_REF_SLUG} s3
+    - /cncf/provision.sh ${CLOUD}-deploy ${CLOUD}-${DEPLOYMENT_SHA} s3
     - helm init
     # - >
     #   if [ -z "${CLOUD}" ]; then
@@ -239,7 +239,7 @@ Socat:
   variables:
     CLOUD: MUST BE SET
   script:
-    - /cncf/provision.sh ${CLOUD}-destroy ${CLOUD}-${CI_COMMIT_REF_SLUG} s3
+    - /cncf/provision.sh ${CLOUD}-destroy ${CLOUD}-${DEPLOYMENT_SHA} s3
 
 # Build-Source VARs
 Build-Source:

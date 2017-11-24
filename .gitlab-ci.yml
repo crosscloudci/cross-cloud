@@ -41,7 +41,8 @@ Socat:
       elif [ "${DISABLE_SOURCE}" == "yes" ]; then
         exit 1 #Should Show Skipped on Gitlab CI FIXME
       else
-        PROJECT_JOB=$(curl --header "PRIVATE-TOKEN:${TOKEN}" "$BASE_URL/v4/projects/$PROJECT_ID/pipelines/${SOURCE}/jobs?scope=success" | jq '.[] | select(.name=="container") | .id') 
+        echo "$BASE_URL"
+        echo "PROJECT_JOB=$(curl --header "PRIVATE-TOKEN:${TOKEN}" "$BASE_URL/v4/projects/$PROJECT_ID/pipelines/${SOURCE}/jobs?scope=success" | jq '.[] | select(.name=="container") | .id')"
         curl -s -o data/"$PROJECT".env -L "${BASE_URL}/${ORG}/${PROJECT}/-/jobs/${PROJECT_JOB}/artifacts/raw/release.env"
         cat data/"$PROJECT".env
       fi

@@ -197,21 +197,7 @@ Socat:
     CLOUD: MUST BE SET
   script:
     - /cncf/provision.sh ${CLOUD}-deploy ${CLOUD}-${DEPLOYMENT_SHA} s3
-    - helm init
-    # - >
-    #   if [ -z "${CLOUD}" ]; then
-    #     exit 1 #Should Show Skipped on Gitlab CI FIXME
-    #   else
-    #     /cncf/provision.sh ${CLOUD}-deploy ${CI_ENVIRONMENT_NAME} s3
-    #     helm init
-    #   fi
-    # - helm init ; until [ ! -e $(
-    #     kubectl get pods --namespace=kube-system -l app=helm -l name=tiller
-    #     -o jsonpath='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}'
-    #     | grep "Ready=True") ] ;
-    #     do echo 'tiller not up yet' ;
-    #     sleep 2 ;
-    #     done
+    - helm init; kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
   artifacts:
     when: always
     expire_in: 4 weeks

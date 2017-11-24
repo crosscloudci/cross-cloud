@@ -197,8 +197,6 @@ Socat:
     CLOUD: MUST BE SET
   script:
     - /cncf/provision.sh ${CLOUD}-deploy ${CLOUD}-${DEPLOYMENT_SHA} s3
-    - kubectl get pods
-    - kubectl get svc
     - helm init; kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
   artifacts:
     when: always

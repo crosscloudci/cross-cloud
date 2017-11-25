@@ -27,7 +27,6 @@ Socat:
 .build_source: &build_source
   image: buildpack-deps:stretch
   stage: Artifacts
-  allow_failure: true
   variables:
     # SOURCE
     # ORG: MUST BE SET
@@ -37,9 +36,9 @@ Socat:
     - apt update && apt -y install jq
     - >
       if [ -z "${SOURCE}" ]; then
-        exit 1 #Should Show Skipped on Gitlab CI FIXME
+        exit 0 #Should Show Skipped on Gitlab CI FIXME
       elif [ "${DISABLE_SOURCE}" == "yes" ]; then
-        exit 1 #Should Show Skipped on Gitlab CI FIXME
+        exit 0 #Should Show Skipped on Gitlab CI FIXME
       else
         PROJECT_JOB=$(curl --header "PRIVATE-TOKEN:${TOKEN}" "${BASE_URL}/api/v4/projects/$PROJECT_ID/pipelines/${SOURCE}/jobs?scope=success" | jq '.[] | select(.name=="container") | .id')
         curl -s -o data/"$PROJECT".env -L "${BASE_URL}/${ORG}/${PROJECT}/-/jobs/${PROJECT_JOB}/artifacts/raw/release.env"
@@ -56,7 +55,6 @@ Socat:
 .build_branch: &build_branch
   image: buildpack-deps:stretch
   stage: Artifacts
-  allow_failure: true
   variables:
     # BRANCH: MUST BE SET
     # ORG: MUST BE SET
@@ -67,7 +65,7 @@ Socat:
     - apt update && apt -y install jq
     - >
       if [ -z "${BRANCH}" ]; then
-        exit 1 #Should Show Skipped on Gitlab CI FIXME
+        exit 0 #Should Show Skipped on Gitlab CI FIXME
       else
         echo "Checking for Latest Build"
         curl -s -L -o data/${PROJECT}.url "${BASE_URL}/${ORG}/${PROJECT}/builds/artifacts/${BRANCH}/file/release.env?job=container"
@@ -108,7 +106,6 @@ Socat:
 .build_commit: &build_commit
   image: buildpack-deps:stretch
   stage: Artifacts
-  allow_failure: true
   variables:
     # COMMIT: MUST BE SET
     # ORG: MUST BE SET
@@ -119,7 +116,7 @@ Socat:
     - echo "$COMMIT"
     - >
       if [ -z "${COMMIT}" ]; then
-        exit 1 #Should Show Skipped on Gitlab CI FIXME
+        exit 0 #Should Show Skipped on Gitlab CI FIXME
       else
         echo "Checking for Container Artifact on Commit"
 

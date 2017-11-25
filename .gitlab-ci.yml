@@ -8,7 +8,7 @@ before_script:
   - export BASE_URL=${BASE_URL:-$(echo $CI_PROJECT_URL |  cut -d'/' -f1-3)}
   - mkdir -p ./data ; touch ./data/empty.env
   - for envfile in data/*env ; do source $envfile ; echo ----- $envfile ---- ; cat $envfile ; done
-  - export KUBECONFIG=$(pwd)/data/${CLOUD}-${DEPLOYMENT_SHA}/kubeconfig
+  - export KUBECONFIG=$(pwd)/data/${CLOUD}/kubeconfig
 
 Cross-Cloud:
   stage: Build

@@ -190,7 +190,6 @@ Socat:
 
 # Deploy Template used for Each Cloud
 .kubernetes_deploy_template: &kubernetes_deploy_template
-  allow_failure: true
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
   stage: Cross-Cloud
   variables:
@@ -218,7 +217,6 @@ Socat:
 
 # Per Cloud Destroy Template only run when DESTROY_VAR is Set
 .kubernetes_cloud_destroy_template: &kubernetes_cloud_destroy_template
-  allow_failure: true
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
   stage: Cross-Cloud
   when: manual

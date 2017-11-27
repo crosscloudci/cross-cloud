@@ -81,9 +81,9 @@ Socat:
           until [ "$JOB_STATUS" == '"success"' ]; do
               JOB_STATUS="$(curl -s --header "PRIVATE-TOKEN:${TOKEN}" "${BASE_URL}/api/v4/projects/$PROJECT_ID/pipelines/${PROJECT_PIPELINE}/jobs?scope=success" | jq '.[] | select(.name=="container") | .status')" 
               sleep 0.5
-              if [ $"JOB_STATUS" == '"failed"' ]; then
+              if [ "$JOB_STATUS" == '"failed"' ]; then
                   exit 1
-              elif [ $"JOB_STATUS" == '"canceled"' ]; then
+              elif [ "$JOB_STATUS" == '"canceled"' ]; then
                   exit 1
               else
                   continue
@@ -145,9 +145,9 @@ Socat:
           until [ "$COMPILE_JOB_STATUS" == '"success"' ]; do
               COMPILE_JOB_STATUS="$(curl -s --header "PRIVATE-TOKEN:${TOKEN}" "${BASE_URL}/api/v4/projects/${PROJECT_ID}/jobs/${PROJECT_COMPILE_JOB}" | jq -s '.[] | .status')" 
               sleep 0.5
-              if [ $"COMPILE_JOB_STATUS" == '"failed"' ]; then
+              if [ "$COMPILE_JOB_STATUS" == '"failed"' ]; then
                   exit 1
-              elif [ $"COMPILE_JOB_STATUS" == '"canceled"' ]; then
+              elif [ "$COMPILE_JOB_STATUS" == '"canceled"' ]; then
                   exit 1
               else
                   continue
@@ -161,9 +161,9 @@ Socat:
           until [ "$CONTAINER_JOB_STATUS" == '"success"' ]; do
               CONTAINER_JOB_STATUS="$(curl -s --header "PRIVATE-TOKEN:${TOKEN}" "${BASE_URL}/api/v4/projects/${PROJECT_ID}/jobs/${PROJECT_CONTAINER_JOB}" | jq -s '.[] | .status')"
               sleep 0.5
-              if [ $"PROJECT_CONTAINER_JOB" == '"failed"' ]; then
+              if [ "$PROJECT_CONTAINER_JOB" == '"failed"' ]; then
                   exit 1
-              elif [ $"PROJECT_CONTAINER_JOB" == '"canceled"' ]; then
+              elif [ "$PROJECT_CONTAINER_JOB" == '"canceled"' ]; then
                   exit 1
               else
                   continue

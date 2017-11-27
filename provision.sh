@@ -93,6 +93,9 @@ if [ "$1" = "aws-deploy" ] ; then
     _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info
     kubectl cluster-info
     _retry "❤ Installing Helm" helm init
+    kubectl get pods --namespace=kube-system
+    kubectl get deployments --namespace=kube-system
+    kubectl get deployments 
     kubectl rollout status -w deployment/tiller-deploy
 elif [ "$1" = "aws-destroy" ] ; then
       cd ${DIR}/aws

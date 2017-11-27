@@ -90,7 +90,7 @@ if [ "$1" = "aws-deploy" ] ; then
 
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
     echo "❤ Polling for cluster life - this could take a minute or more"
-    _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info
+    _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info ; sleep 5
     kubectl cluster-info
 elif [ "$1" = "aws-destroy" ] ; then
       cd ${DIR}/aws
@@ -145,7 +145,7 @@ elif [ "$1" = "azure-deploy" ] ; then
 
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
     echo "❤ Polling for cluster life - this could take a minute or more"
-    _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info
+    _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info ; sleep 5
     kubectl cluster-info
 
 
@@ -192,7 +192,7 @@ fi
 
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
     echo "❤ Polling for cluster life - this could take a minute or more"
-    _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info
+    _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info ; sleep 5
     kubectl cluster-info
 
 elif [ "$1" = "packet-destroy" ] ; then
@@ -237,7 +237,7 @@ elif [ "$3" = "file" ]; then
 
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
     echo "❤ Polling for cluster life - this could take a minute or more"
-    _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info
+    _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info ; sleep 5
     kubectl cluster-info
 
 elif [ "$1" = "gce-destroy" ] ; then
@@ -284,7 +284,7 @@ fi
 
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
     echo "❤ Polling for cluster life - this could take a minute or more"
-    _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info
+    _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info ; sleep 5
     kubectl cluster-info
 
 elif [ "$1" = "gke-destroy" ] ; then
@@ -334,7 +334,7 @@ fi
 
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
     echo "❤ Polling for cluster life - this could take a minute or more"
-    _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info
+    _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info ; sleep 5
     kubectl cluster-info
 
 elif [ "$1" = "bluemix-destroy" ] ; then

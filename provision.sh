@@ -90,8 +90,10 @@ if [ "$1" = "aws-deploy" ] ; then
 
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
     echo "❤ Polling for cluster life - this could take a minute or more"
-    _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info ; sleep 5
+    _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info
     kubectl cluster-info
+    _retry "❤ Installing Helm" helm init
+    kubectl rollout status -w deployment/tiller-deploy
 elif [ "$1" = "aws-destroy" ] ; then
       cd ${DIR}/aws
       if [ "$3" = "s3" ]; then
@@ -145,8 +147,10 @@ elif [ "$1" = "azure-deploy" ] ; then
 
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
     echo "❤ Polling for cluster life - this could take a minute or more"
-    _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info ; sleep 5
+    _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info
     kubectl cluster-info
+    _retry "❤ Installing Helm" helm init
+    kubectl rollout status -w deployment/tiller-deploy
 
 
 elif [ "$1" = "azure-destroy" ] ; then
@@ -193,8 +197,10 @@ fi
 
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
     echo "❤ Polling for cluster life - this could take a minute or more"
-    _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info ; sleep 5
+    _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info
     kubectl cluster-info
+    _retry "❤ Installing Helm" helm init
+    kubectl rollout status -w deployment/tiller-deploy
 
 elif [ "$1" = "packet-destroy" ] ; then
      cd ${DIR}/packet
@@ -238,8 +244,10 @@ elif [ "$3" = "file" ]; then
 
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
     echo "❤ Polling for cluster life - this could take a minute or more"
-    _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info ; sleep 5
+    _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info
     kubectl cluster-info
+    _retry "❤ Installing Helm" helm init
+    kubectl rollout status -w deployment/tiller-deploy
 
 elif [ "$1" = "gce-destroy" ] ; then
     cd ${DIR}/gce
@@ -285,8 +293,10 @@ fi
 
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
     echo "❤ Polling for cluster life - this could take a minute or more"
-    _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info ; sleep 5
+    _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info 
     kubectl cluster-info
+    _retry "❤ Installing Helm" helm init
+    kubectl rollout status -w deployment/tiller-deploy
 
 elif [ "$1" = "gke-destroy" ] ; then
 cd ${DIR}/gke
@@ -335,8 +345,10 @@ fi
 
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
     echo "❤ Polling for cluster life - this could take a minute or more"
-    _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info ; sleep 5
+    _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info
     kubectl cluster-info
+    _retry "❤ Installing Helm" helm init
+    kubectl rollout status -w deployment/tiller-deploy
 
 elif [ "$1" = "bluemix-destroy" ] ; then
 cd ${DIR}/gke

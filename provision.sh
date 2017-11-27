@@ -157,6 +157,7 @@ elif [ "$1" = "azure-destroy" ] ; then
               -backend-config "bucket=${AWS_BUCKET}" \
               -backend-config "key=azure-${TF_VAR_name}" \
               -backend-config "region=${AWS_DEFAULT_REGION}"
+    terraform taint null_resource.ssh_gen || true
     terraform apply -target null_resource.ssh_gen ${DIR}/azure && \
     time terraform destroy -force ${DIR}/azure || true
 

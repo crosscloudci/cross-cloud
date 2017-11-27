@@ -93,10 +93,7 @@ if [ "$1" = "aws-deploy" ] ; then
     _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info
     kubectl cluster-info
     _retry "❤ Installing Helm" helm init
-    kubectl get pods --namespace=kube-system
-    kubectl get deployments --namespace=kube-system
-    kubectl get deployments 
-    kubectl rollout status -w deployment/tiller-deploy
+    kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
 elif [ "$1" = "aws-destroy" ] ; then
       cd ${DIR}/aws
       if [ "$3" = "s3" ]; then
@@ -153,7 +150,7 @@ elif [ "$1" = "azure-deploy" ] ; then
     _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info
     kubectl cluster-info
     _retry "❤ Installing Helm" helm init
-    kubectl rollout status -w deployment/tiller-deploy
+    kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
 
 
 elif [ "$1" = "azure-destroy" ] ; then
@@ -203,7 +200,7 @@ fi
     _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info
     kubectl cluster-info
     _retry "❤ Installing Helm" helm init
-    kubectl rollout status -w deployment/tiller-deploy
+    kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
 
 elif [ "$1" = "packet-destroy" ] ; then
      cd ${DIR}/packet
@@ -250,7 +247,7 @@ elif [ "$3" = "file" ]; then
     _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info
     kubectl cluster-info
     _retry "❤ Installing Helm" helm init
-    kubectl rollout status -w deployment/tiller-deploy
+    kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
 
 elif [ "$1" = "gce-destroy" ] ; then
     cd ${DIR}/gce
@@ -299,7 +296,7 @@ fi
     _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info 
     kubectl cluster-info
     _retry "❤ Installing Helm" helm init
-    kubectl rollout status -w deployment/tiller-deploy
+    kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
 
 elif [ "$1" = "gke-destroy" ] ; then
 cd ${DIR}/gke
@@ -351,7 +348,7 @@ fi
     _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info
     kubectl cluster-info
     _retry "❤ Installing Helm" helm init
-    kubectl rollout status -w deployment/tiller-deploy
+    kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
 
 elif [ "$1" = "bluemix-destroy" ] ; then
 cd ${DIR}/gke

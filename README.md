@@ -158,11 +158,11 @@ Current Phase: In Design/Planning
 ### Meetings / Demos
 
 #### Upcoming
-- November 28th, 2017 - CI-WG Status Updates
 - [December 6th-8th, 2017 - KubeCon + CloudNativeCon North America 2017](https://www.cncf.io/event/cloudnativecon-north-america-2017/)
 - December 12th, 2017 - CI-WG Status Updates
 
 #### Past
+- November 28th, 2017 - [CI-WG Status Updates](https://docs.google.com/presentation/d/1JAXkf6kKgo6E7mhKPgZXbRWIsh-yE6TkgEXPBhttpH4/edit?usp=sharing)
 - [November 16th, 2017 - CNCF CI Cross Cloud project demo to OPNfv](https://docs.google.com/presentation/d/1_gfoyOWMWnt5YS1KuYSbKh-hHPYdgtQ4-lI3dPtaLSY/edit#slide=id.g27c85eba33_0_182)
 - November 9th, 2017 - CNCF CI Cross Cloud project demo at End User Committee Meeting
 - [November 8th, 2017 - CNCF CI Cross Cloud project demo to TensorFlow](https://docs.google.com/presentation/d/1AoJxg3PC84tAdKXNJ9t5PUUkBYTZjP9CQe197qokGZs/edit#slide=id.g24450b0d21_0_222)

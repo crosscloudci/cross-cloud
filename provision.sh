@@ -93,6 +93,7 @@ if [ "$1" = "aws-deploy" ] ; then
     _retry "❤ Trying to connect to cluster with kubectl" kubectl get cs
     kubectl get cs
     _retry "❤ Installing Helm" helm init
+    _retry "Wait for Tiller Deployment to be available" kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
     kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
 elif [ "$1" = "aws-destroy" ] ; then
       cd ${DIR}/aws
@@ -146,8 +147,8 @@ elif [ "$1" = "azure-deploy" ] ; then
     _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info
     kubectl cluster-info
     _retry "❤ Installing Helm" helm init
+    _retry "Wait for Tiller Deployment to be available" kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
     kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
-
 
 elif [ "$1" = "azure-destroy" ] ; then
     cd ${DIR}/azure
@@ -193,6 +194,7 @@ fi
     _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info
     kubectl cluster-info
     _retry "❤ Installing Helm" helm init
+    _retry "Wait for Tiller Deployment to be available" kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
     kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
 
 elif [ "$1" = "packet-destroy" ] ; then
@@ -240,6 +242,7 @@ elif [ "$3" = "file" ]; then
     _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info
     kubectl cluster-info
     _retry "❤ Installing Helm" helm init
+    _retry "Wait for Tiller Deployment to be available" kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
     kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
 
 elif [ "$1" = "gce-destroy" ] ; then
@@ -289,6 +292,7 @@ fi
     _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info 
     kubectl cluster-info
     _retry "❤ Installing Helm" helm init
+    _retry "Wait for Tiller Deployment to be available" kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
     kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
 
 elif [ "$1" = "gke-destroy" ] ; then

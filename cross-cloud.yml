@@ -1,11 +1,44 @@
 ---
+gitlab_pipeline:
+  cross-project:
+    timeout: 7200
+    status_jobs:
+      - "e2e"
+      - "App-Deploy"
+  cross-cloud:
+    timeout: 7200
+    status_jobs:
+      - "Kubernetes-Provisioning"
+  project:
+    status_jobs:
+      - "container"
+      - "compile"
+
 clouds:
-  aws: true
-  azure: false
-  bluemix: false
-  gke: true
-  gce: true
-  packet: true
+  aws: 
+    active: true
+    display_name: AWS 
+    order: 1
+  azure: 
+    active: false
+    display_name: Azure
+    order: 2
+  bluemix: 
+    active: false
+    display_name: Bluemix
+    order: 3
+  gce: 
+    active: true
+    display_name: GCE 
+    order: 4
+  gke: 
+    active: true
+    display_name: GKE 
+    order: 5
+  packet: 
+    active: true
+    display_name: Packet
+    order: 6
 
 projects:
   kubernetes: 
@@ -15,6 +48,9 @@ projects:
     sub_title: Orchestration
     gitlab_name: Kubernetes
     project_url: "https://github.com/kubernetes/kubernetes"
+    repository_url: "https://github.com/kubernetes/kubernetes"
+    timeout: 7200
+    order: 1
   prometheus: 
     active: true
     logo_url: "https://raw.githubusercontent.com/cncf/artwork/1d4e7cf3b60af40e008b2e2413f7a2d1ff784b52/prometheus/icon/color/prometheus-icon-color.png"
@@ -22,6 +58,9 @@ projects:
     sub_title: Monitoring
     gitlab_name: prometheus
     project_url: "https://github.com/prometheus/prometheus"
+    repository_url: "https://github.com/prometheus/prometheus"
+    timeout: 900 
+    order: 2
   coredns: 
     active: true
     logo_url: "https://raw.githubusercontent.com/cncf/artwork/1d4e7cf3b60af40e008b2e2413f7a2d1ff784b52/coredns/icon/color/core-dns-icon-color.png"
@@ -29,3 +68,20 @@ projects:
     sub_title: Service Discovery
     gitlab_name: coredns
     project_url: "https://github.com/coredns/coredns"
+    repository_url: "https://github.com/coredns/coredns"
+    timeout: 900 
+    order: 3
+
+clouds_old:
+  AWS: true
+  Azure: false
+  Bluemix: false
+  GKE: true
+  GCE: true
+  Packet: true
+  aws: false
+  azure: false
+  bluemix: false
+  gke: false
+  gce: false
+  packet: false

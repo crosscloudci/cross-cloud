@@ -20,20 +20,24 @@ clouds:
     display_name: AWS 
     order: 1
   azure: 
-    active: false
+    active: true
     display_name: Azure
     order: 2
   bluemix: 
-    active: false
+    active: true
     display_name: Bluemix
     order: 3
   gce: 
     active: true
-    display_name: GCE 
+    display_name: Google 
     order: 4
   gke: 
-    active: true
+    active: false
     display_name: GKE 
+    order: 99
+  openstack: 
+    active: true
+    display_name: OpenStack
     order: 5
   packet: 
     active: true
@@ -71,6 +75,27 @@ projects:
     repository_url: "https://github.com/coredns/coredns"
     timeout: 900 
     order: 3
+  fluentd: 
+    active: true
+    logo_url: "https://raw.githubusercontent.com/cncf/artwork/ecd3c5f373637be246312deb8e3012ee89ed58c1/fluentd/icon/color/fluentd-icon-color.png"
+    display_name: fluentd
+    sub_title: Logging
+    gitlab_name: fluentd
+    project_url: "https://github.com/fluent/fluentd"
+    repository_url: "https://github.com/fluent/fluentd"
+    timeout: 900
+    order: 4
+  linkerd: 
+    active: true
+    logo_url: "https://raw.githubusercontent.com/cncf/artwork/de03cb1655da4bdb82a7a753f398452d24f1b83a/linkerd/icon/color/linkerd-icon-color.png"
+    display_name: linkerd
+    sub_title: Service Mesh
+    gitlab_name: linkerd
+    project_url: "https://github.com/linkerd/linkerd"
+    repository_url: "https://github.com/linkerd/linkerd"
+    timeout: 900
+    order: 5
+
 
 clouds_old:
   AWS: true

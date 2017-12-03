@@ -12,6 +12,7 @@ before_script:
   - source /opt/local/etc/rvmrc ; source /opt/local/etc/profile.d/rvm.sh ; gem install bundle ; pushd /dashboard ; bundle install ; source .env ; PIPELINE_RELEASE_TYPE=head ./bin/update_dashboard ; popd 
 
 Cross-Cloud:
+  image: registry.cncf.ci/cncf/cross-cloud:docker 
   stage: Build
   script:
     - docker login -u "gitlab-ci-token" -p "$CI_JOB_TOKEN" $CI_REGISTRY
@@ -20,6 +21,7 @@ Cross-Cloud:
 
 Socat:
   stage: Build
+  image: registry.cncf.ci/cncf/cross-cloud:docker 
   script:
     - docker login -u "gitlab-ci-token" -p "$CI_JOB_TOKEN" $CI_REGISTRY
     - docker build --pull -t "$CI_REGISTRY_IMAGE/socat:$CI_COMMIT_REF_SLUG" ./socat/

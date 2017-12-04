@@ -54,6 +54,8 @@ projects:
     project_url: "https://github.com/kubernetes/kubernetes"
     repository_url: "https://github.com/kubernetes/kubernetes"
     timeout: 7200
+    stable_ref: "v1.8.1"
+    head_ref: "master"
     order: 1
   prometheus: 
     active: true
@@ -64,6 +66,8 @@ projects:
     project_url: "https://github.com/prometheus/prometheus"
     repository_url: "https://github.com/prometheus/prometheus"
     timeout: 900 
+    stable_ref: "v2.0.0"
+    head_ref: "master"
     order: 2
   coredns: 
     active: true
@@ -74,6 +78,8 @@ projects:
     project_url: "https://github.com/coredns/coredns"
     repository_url: "https://github.com/coredns/coredns"
     timeout: 900 
+    stable_ref: "v1.0.0"
+    head_ref: "master"
     order: 3
   fluentd: 
     active: true
@@ -84,6 +90,8 @@ projects:
     project_url: "https://github.com/fluent/fluentd"
     repository_url: "https://github.com/fluent/fluentd"
     timeout: 900
+    stable_ref: "v0.14.25"
+    head_ref: "master"
     order: 4
   linkerd: 
     active: true
@@ -94,6 +102,8 @@ projects:
     project_url: "https://github.com/linkerd/linkerd"
     repository_url: "https://github.com/linkerd/linkerd"
     timeout: 900
+    stable_ref: "1.3.3"
+    head_ref: "master"
     order: 5
 
 

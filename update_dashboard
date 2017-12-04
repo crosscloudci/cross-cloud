@@ -1,0 +1,70 @@
+#!/bin/bash
+
+echo "Running update_dashboard for job ${CI_JOB_NAME}"
+
+# Set this is DEFAULT_DASHBOARD_API_HOST_PORT in environment
+
+if [ "$CI_COMMIT_REF_NAME" = "$DASHBOARD_HEAD_REF_NAME" ] ; then
+  export PIPELINE_RELEASE_TYPE="head" # or "head"
+elif [ "$CI_COMMIT_REF_NAME" = "$DASHBOARD_STABLE_REF_NAME" ] ; then
+  export PIPELINE_RELEASE_TYPE="stable" # or "head"
+else
+  export PIPELINE_RELEASE_TYPE="unknown" # or "head"
+fi
+
+if [ -n "$DASHBOARD_API_HOST_PORT" ] ; then
+  echo "Using Dashboard API from env DASHBOARD_API_HOST_PORT"
+elif [ "$GITLAB_USER_EMAIL" == "$LUCINA_EMAIL" ]; then
+  if [ -n "$LUCINA_DASHBOARD_API_HOST_PORT" ] ; then
+    DASHBOARD_API_HOST_PORT="$LUCINA_DASHBOARD_API_HOST_PORT"
+    #echo "Using Lucina's dashboard with API server $DASHBOARD_API_HOST_PORT"
+  fi
+elif [ "$GITLAB_USER_EMAIL" == "$WAVELL_WATSON" ]; then
+  if [ -n "$WATSON_DASHBOARD_API_HOST_PORT" ] ; then
+    DASHBOARD_API_HOST_PORT="$WATSON_DASHBOARD_API_HOST_PORT"
+    #echo "Using Watson's dashboard with API server $DASHBOARD_API_HOST_PORT"
+  fi
+elif [ "$GITLAB_USER_EMAIL" == "$JOSH_EMAIL" ]; then
+  if [ -n "$JOSH_DASHBOARD_API_HOST_PORT" ] ; then
+    DASHBOARD_API_HOST_PORT="$JOSH_DASHBOARD_API_HOST_PORT"
+    #echo "Using Josh's dashboard running on $DASHBOARD_API_HOST_PORT"
+  fi
+elif [ "$GITLAB_USER_EMAIL" == "$TAYLOR_EMAIL" ]; then
+  if [ -n "$TAYLOR_DASHBOARD_API_HOST_PORT" ] ; then
+    DASHBOARD_API_HOST_PORT="$TAYLOR_DASHBOARD_API_HOST_PORT"
+    #echo "Using Taylor's dashboard running on $DASHBOARD_API_HOST_PORT"
+  fi
+elif [ "$GITLAB_USER_EMAIL" == "$DENVER_EMAIL" ]; then
+  if [ -n "$DENVER_DASHBOARD_API_HOST_PORT" ] ; then
+    DASHBOARD_API_HOST_PORT="$DENVER_DASHBOARD_API_HOST_PORT"
+    #echo "Using Denver's dashboard running on $DASHBOARD_API_HOST_PORT"
+  fi
+fi
+ 
+if [ -z "$DASHBOARD_API_HOST_PORT" ] ; then
+  DASHBOARD_API_HOST_PORT=$DEFAULT_DASHBOARD_API_HOST_PORT
+fi
+
+DASHBOARD_API_URL="http://${DASHBOARD_API_HOST_PORT}/api/source_key_project_monitor"
+
+
+JSON_DATA=$(cat <<-EOD
+{
+  "source_key_project_monitor":
+    {
+      "source_project_id":"$CI_PROJECT_ID",
+      "source_pipeline_id":"$CI_PIPELINE_ID",
+      "pipeline_release_type":"$PIPELINE_RELEASE_TYPE",
+      "source_pipeline_job_id":"$CI_JOB_ID"
+    }
+}
+EOD
+)
+
+#if [ ! "$PIPELINE_RELEASE_TYPE" = "unknown" ] ; then
+#  set -x
+curl -qL -H "Content-Type: application/json"   -X POST -d "$JSON_DATA" $DASHBOARD_API_URL
+#  set +x
+#fi
+
+true

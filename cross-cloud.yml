@@ -8,7 +8,7 @@ gitlab_pipeline:
   cross-cloud:
     timeout: 7200
     status_jobs:
-      - "Kubernetes-Provisioning"
+      - "Provisioning"
   project:
     status_jobs:
       - "container"

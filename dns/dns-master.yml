@@ -6,18 +6,17 @@ metadata:
     k8s-app: dns-server
   name: dns-server
   namespace: kube-system
-  annotations:
-    pod.beta.kubernetes.io/init-containers: '[
-        {
-            "name": "seed-dns",
-            "image": "docker.io/iidlx/bootstrap",
-            "command": [
-              "/bin/sh", "-c", "/seed/entrypoint.sh"
-            ],
-            "volumeMounts":[{"name":"cloudvars","mountPath":"/etc/srv/kubernetes"}]
-          }
-        ]'
 spec:
+  initContainers:
+  - command:
+    - /bin/sh
+    - -c
+    - /seed/entrypoint.sh
+    image: docker.io/iidlx/bootstrap
+    name: seed-dns
+    volumeMounts:
+    - name: cloudvars
+      mountPath: /etc/srv/kubernetes
   containers:
   - command:
     - /bin/sh

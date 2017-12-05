@@ -240,7 +240,7 @@ Build-Commit:
 
     
 # Cloud Deploy VARs
-Kubernetes-Deploy:
+Provisioning:
   <<: *kubernetes_deploy_template
   variables:
     CLOUD: "${CLOUD}"

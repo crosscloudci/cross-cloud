@@ -7,16 +7,6 @@ metadata:
   name: dns-server
   namespace: kube-system
 spec:
-  initContainers:
-  - command:
-    - /bin/sh
-    - -c
-    - /seed/entrypoint.sh
-    image: docker.io/iidlx/bootstrap
-    name: seed-dns
-    volumeMounts:
-    - name: cloudvars
-      mountPath: /etc/srv/kubernetes
   containers:
   - command:
     - /bin/sh
@@ -43,6 +33,16 @@ spec:
       mountPath: /etc/coredns
     - mountPath: /etc/srv/kubernetes
       name: cloudvars
+  initContainers:
+  - command:
+    - /bin/sh
+    - -c
+    - /seed/entrypoint.sh
+    image: docker.io/iidlx/bootstrap
+    name: seed-dns
+    volumeMounts:
+    - name: cloudvars
+      mountPath: /etc/srv/kubernetes
   hostNetwork: true
   volumes:
   - hostPath:

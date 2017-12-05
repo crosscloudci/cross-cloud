@@ -39,12 +39,18 @@ spec:
       requests:
         cpu: 200m
     volumeMounts:
+    - mountPath: /etc/ssl/certs
+      name: etcssl
+      readOnly: true
     - mountPath: /var/etcd/data
       name: varetcdata
     - mountPath: /var/log
       name: varlogetcd
   hostNetwork: true
   volumes:
+  - hostPath:
+      path: /usr/share/ca-certificates
+    name: etcssl
   - hostPath:
       path: /var/etcd/data
     name: varetcdata

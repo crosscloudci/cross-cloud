@@ -10,6 +10,9 @@ variable "os_username" {}
 variable "os_project_name" {}
 variable "os_password" {}
 
+# OpenStack fixtures
+variable keypair_name { default = "K8s" }
+
 # TLS settings
 variable "cloud_location" { default = "vexxhost.com" }
 
@@ -36,7 +39,7 @@ variable "external_network_id" { default = "6d6357ac-0f70-4afa-8bd7-c274cc4ea235
 variable "external_lb_subnet_id" { default = "4083e5c2-41ef-4838-8844-d2d300d2fb06" }
 variable "internal_network_cidr" { default = "10.240.0.0/16" }
 variable "internal_lb_ip" { default = "10.240.0.103" }
-variable "use_octavia" { default = "false" }
+variable "use_octavia" { default = "true" }
 
 # Kubernetes configuration
 variable "etcd_endpoint" {default = "127.0.0.1"}

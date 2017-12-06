@@ -10,6 +10,7 @@ module "master" {
   internal_lb_https_pool_id = "${ module.network.internal_lb_https_pool_id }"
   master_cloud_init = "${ module.master_templates.master_cloud_init }"
   security_group_name = "${ module.network.cross_cloud_security_group_name }"
+  keypair_name = "${ var.keypair_name }"
 }
 
 module "network" {
@@ -81,6 +82,7 @@ module "worker" {
   internal_network_id = "${ module.network.internal_network_id }"
   security_group_name = "${ module.network.cross_cloud_security_group_name }"
   worker_cloud_init = "${ module.worker_templates.worker_cloud_init }"
+  keypair_name = "${ var.keypair_name }"
 }
 
 module "worker_templates" {

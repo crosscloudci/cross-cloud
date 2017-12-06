@@ -1,6 +1,6 @@
 #!/bin/bash
 docker run \
-  -v /tmp/data:/cncf/data \
+  -v $(pwd)/data:/cncf/data \
   -e TF_VAR_os_auth_url=$OS_AUTH_URL \
   -e TF_VAR_os_region_name=$OS_REGION_NAME \
   -e TF_VAR_os_user_domain_name=$OS_USER_DOMAIN_NAME \

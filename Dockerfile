@@ -78,6 +78,7 @@ COPY azure/ /cncf/azure/
 COPY bluemix/ /cncf/bluemix/
 COPY gce/ /cncf/gce/
 COPY gke/ /cncf/gke/
+COPY openstack/ /cncf/openstack/
 COPY packet/ /cncf/packet/
 
 COPY bootstrap/ /cncf/bootstrap/

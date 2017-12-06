@@ -54,7 +54,7 @@ projects:
     gitlab_name: Kubernetes
     project_url: "https://github.com/kubernetes/kubernetes"
     repository_url: "https://github.com/kubernetes/kubernetes"
-    timeout: 7200
+    timeout: 420
     stable_ref: "v1.8.1"
     head_ref: "master"
     app_layer: false

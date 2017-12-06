@@ -3,7 +3,6 @@
 #
 # provision.sh <provider>-<command> <name> <config-backend>
 #
-set -x
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 _retry() {
     [ -z "${2}" ] && return 1

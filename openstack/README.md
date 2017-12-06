@@ -39,11 +39,11 @@ Then assign them to Terraform variables like this:
 * `TF_VAR_os_password=$OS_PASSWORD`
 
 Optionally, you can tell Terraform to not use Octavia in favor of
-the LbaaSv2 service in Neutron by setting the environment variable
+the Neutron LbaaSv2 service by setting the environment variable
 `TF_VAR_use_octavia=false`. It's strongly recommended to use Octavia,
 as using the default Neutron proxy interface can introduce some race
-conditions that will make it impossible to destroy your load balancer
-resources.
+conditions that will make it difficult to destroy a number of network
+resources created by Terraform.
 
 To log in remotely, your will need to have a keypair fixture in your
 cloud. The default name is `K8s`, but you may set it with the

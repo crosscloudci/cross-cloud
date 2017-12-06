@@ -7,22 +7,22 @@ module "network" {
   location = "${ var.location }"
  }
 
- module "bastion" {
-   source = "./modules/bastion"
-   name = "${ var.name }"
-   location = "${ var.location }"
-   bastion_vm_size = "${ var.bastion_vm_size }"
-   image_publisher = "${ var.image_publisher }"
-   image_offer = "${ var.image_offer }"
-   image_sku = "${ var.image_sku }"
-   image_version = "${ var.image_version }"
-   admin_username = "${ var.admin_username }"
-   subnet_id = "${ module.network.subnet_id }"
-   storage_primary_endpoint = "${ azurerm_storage_account.cncf.primary_blob_endpoint }"
-   storage_container = "${ azurerm_storage_container.cncf.name }"
-   availability_id = "${ azurerm_availability_set.cncf.id }"
-   data_dir = "${ var.data_dir }"
-}
+#  module "bastion" {
+#    source = "./modules/bastion"
+#    name = "${ var.name }"
+#    location = "${ var.location }"
+#    bastion_vm_size = "${ var.bastion_vm_size }"
+#    image_publisher = "${ var.image_publisher }"
+#    image_offer = "${ var.image_offer }"
+#    image_sku = "${ var.image_sku }"
+#    image_version = "${ var.image_version }"
+#    admin_username = "${ var.admin_username }"
+#    subnet_id = "${ module.network.subnet_id }"
+#    storage_primary_endpoint = "${ azurerm_storage_account.cncf.primary_blob_endpoint }"
+#    storage_container = "${ azurerm_storage_container.cncf.name }"
+#    availability_id = "${ azurerm_availability_set.cncf.id }"
+#    data_dir = "${ var.data_dir }"
+# }
 
 module "master" {
   source = "./modules/master"

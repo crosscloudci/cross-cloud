@@ -4,7 +4,7 @@ variable "data_dir" { default = "/cncf/data/packet" }
 
 
 variable "master_node_count" { default = "3" }
-variable "worker_node_count" { default = "3" }
+variable "worker_node_count" { default = "1" }
 
 # Set with env TF_VAR_packet_project_id
 variable "packet_project_id" {} # required for now

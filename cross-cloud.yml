@@ -25,7 +25,7 @@ clouds:
     display_name: Azure
     order: 2
   bluemix: 
-    active: true
+    active: false
     display_name: Bluemix
     order: 3
   gce: 
@@ -87,7 +87,7 @@ projects:
     app_layer: true
   fluentd: 
     order: 4
-    active: true
+    active: false
     logo_url: "https://raw.githubusercontent.com/cncf/artwork/ecd3c5f373637be246312deb8e3012ee89ed58c1/fluentd/icon/color/fluentd-icon-color.png"
     display_name: fluentd
     sub_title: Logging

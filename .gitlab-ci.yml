@@ -3,7 +3,7 @@ stages:
   - Artifacts
   - Cross-Cloud
   - End-To-End
-  - Update-Dashboard
+  # - Update-Dashboard
 
 before_script:
   - export BASE_URL=${BASE_URL:-$(echo $CI_PROJECT_URL |  cut -d'/' -f1-3)}
@@ -261,8 +261,8 @@ Kubernetes_destroy:
   variables:
     CLOUD: "${CLOUD}"
 
-Dashboard:
-  image: registry.cncf.ci/cncf/cross-cloud:docker 
-  stage: Update-Dashboard
-  script:
-    - echo 'true'
+# Dashboard:
+#   image: registry.cncf.ci/cncf/cross-cloud:docker 
+#   stage: Update-Dashboard
+#   script:
+#     - echo 'true'

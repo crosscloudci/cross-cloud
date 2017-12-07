@@ -22,7 +22,6 @@ A project to continually validate the interoperability of each CNCF project, for
 
 You have to have a working [Docker environment](https://www.docker.com/get-docker)
 
-
 ##### Quick start for AWS
 
 **Pre-reqs:**
@@ -54,7 +53,6 @@ docker run \
   -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION    \
   -ti registry.cncf.ci/cncf/cross-cloud/provisioning:ci-stable-v0-2-0
 ```
-
 
 ##### Quick start for GCE
  
@@ -91,6 +89,28 @@ docker run \
   -ti registry.cncf.ci/cncf/cross-cloud/provisioning:ci-stable-v0-2-0
 ```
 
+##### Quick start for OpenStack
+
+You will need a full set of credentials for an OpenStack cloud, including
+authentication endpoint.
+
+**Run the following to provision an OpenStack cluster:**
+``` bash
+docker run \
+  -v $(pwd)/data:/cncf/data \
+  -e NAME=cross-cloud \
+  -e CLOUD=openstack \
+  -e COMMAND=deploy \
+  -e BACKEND=file \
+  -e TF_VAR_os_auth_url=$OS_AUTH_URL \
+  -e TF_VAR_os_region_name=$OS_REGION_NAME \
+  -e TF_VAR_os_user_domain_name=$OS_USER_DOMAIN_NAME \
+  -e TF_VAR_os_username=$OS_USERNAME \
+  -e TF_VAR_os_project_name=$OS_PROJECT_NAME \
+  -e TF_VAR_os_password=$OS_PASSWORD \
+  -ti registry.cncf.ci/cncf/cross-cloud/provisioning:ci-stable-v0-2-0
+```
+
 #### General usage and configuration
 
 Minimum required configuration to use Cross-cloud to deploy a Kubernetes cluster on Cloud X.
@@ -98,7 +118,7 @@ Minimum required configuration to use Cross-cloud to deploy a Kubernetes cluster
 docker run \
   -v /tmp/data:/cncf/data \
   -e NAME=cross-cloud
-  -e CLOUD=<aws|gke|gce|packet>    \
+  -e CLOUD=<aws|gke|gce|openstack|packet>    \
   -e COMMAND=<deploy|destory> \
   -e BACKEND=<file|s3>  \ 
   <CLOUD_SPECIFIC_OPTIONS>
@@ -107,7 +127,7 @@ docker run \
 ```
 
 #### Common Options
-* -e CLOUD=<aws|gke|gce|packet> # Choose the cloud provider.  Then add the appropriate cloud specific options below.
+* -e CLOUD=<aws|gke|gce|openstack|packet> # Choose the cloud provider.  Then add the appropriate cloud specific options below.
 * -e COMMAND=<deploy|destory>
 * -e BACKEND=<file|s3>   # File will store the Terraform State file to Disk / S3 will store the Terraform Statefile to a AWS s3 Bucket
   
@@ -128,6 +148,14 @@ GCE/GKE:
  * -e GOOGLE_CREDENTIALS=secret
  * -e GOOGLE_REGION=us-central1
  * -e GOOGLE_PROJECT=test-163823
+
+OpenStack:
+ * -e TF_VAR_os_auth_url=$OS_AUTH_URL
+ * -e TF_VAR_os_region_name=$OS_REGION_NAME
+ * -e TF_VAR_os_user_domain_name=$OS_USER_DOMAIN_NAME
+ * -e TF_VAR_os_username=$OS_USERNAME
+ * -e TF_VAR_os_project_name=$OS_PROJECT_NAME
+ * -e TF_VAR_os_password=$OS_PASSWORD
 
 #### Kubernetes Cluster Options
 Custom Configuration options for the Kubernetes Cluster:

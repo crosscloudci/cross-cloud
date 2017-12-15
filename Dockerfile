@@ -1,4 +1,4 @@
-FROM registry.cncf.ci/cncf/cross-cloud:go
+FROM crosscloudci/debian-go:latest
 MAINTAINER "Denver Williams <denver@debian.nz>"
 ENV KUBECTL_VERSION=v1.8.1
 ENV HELM_VERSION=v2.7.2

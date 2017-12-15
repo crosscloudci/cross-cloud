@@ -1,5 +1,5 @@
 resource "aws_elb" "internal" {
-  name = "k8-api2-${replace(var.name, "/(.{0,25})(.*)/", "$1")}"
+  name = "i${ var.name }"
 
   cross_zone_load_balancing = false
 

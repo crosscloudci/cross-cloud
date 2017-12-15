@@ -29,5 +29,5 @@ module "kubeconfig" {
   client_key = "${base64decode(module.cluster.client_key)}"
   endpoint = "${ module.cluster.endpoint }"
   data_dir = "${ var.data_dir }"
-  name = "gke_${ var.project }_${ var.zone }-a_${ var.name }"
+  name = "gke_${ var.google_project }_${ var.zone }-a_${ var.name }"
 }

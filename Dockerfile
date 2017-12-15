@@ -1,11 +1,7 @@
-FROM golang:alpine
-MAINTAINER "Denver Williams <denver@ii.coop>"
-ENV KUBECTL_VERSION=v1.6.6
-ENV HELM_VERSION=v2.4.1
-ENV GCLOUD_VERSION=150.0.0
-ENV AWSCLI_VERSION=1.11.75
-ENV AZURECLI_VERSION=2.0.2
-ENV PACKETCLI_VERSION=1.33
+FROM crosscloudci/debian-go:latest
+MAINTAINER "Denver Williams <denver@debian.nz>"
+ENV KUBECTL_VERSION=v1.8.1
+ENV HELM_VERSION=v2.7.2
 #PIN to Commit on Master
 ENV TERRAFORM_VERSION=0.10.6
 # ENV TERRAFORM_VERSION=master
@@ -15,24 +11,9 @@ ENV ARC=amd64
 
 
 # Install AWS / AZURE CLI Deps
-RUN apk update
-RUN apk add --update git bash util-linux wget tar curl build-base jq \
-  py-pip groff less openssh bind-tools python python-dev libffi-dev openssl-dev
-
-# no way to pin this packet-cli at the moment
-RUN go get -u github.com/ebsarr/packet
-RUN pip install packet-python==${PACKETCLI_VERSION} argh tabulate
-RUN pip install azure-cli==${AZURECLI_VERSION}
-RUN pip install awscli==${AWSCLI_VERSION}
-
-RUN apk --purge -v del py-pip && \
-	rm /var/cache/apk/*
-
-# Install Google Cloud SDK
-RUN wget https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-${GCLOUD_VERSION}-linux-x86.tar.gz && \
-tar xvfz google-cloud-sdk-${GCLOUD_VERSION}-linux-x86.tar.gz && \
-./google-cloud-sdk/install.sh -q
-
+RUN apt update
+RUN apt install -y unzip git bash util-linux wget tar curl awscli python-pip jq \
+  groff-base less libffi-dev
 
 #Install Kubectl
 RUN wget -O /usr/local/bin/kubectl https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_VERSION}/bin/linux/$ARC/kubectl && \
@@ -103,4 +84,4 @@ COPY worker_templates-v1.9.0-alpha.1/ /cncf/worker_templates-v1.9.0-alpha.1/
 RUN chmod +x /cncf/provision.sh
 WORKDIR /cncf/
 
-CMD ["bash", "-c", "/cncf/provision.sh ${CLOUD}-${COMMAND} ${NAME} ${BACKEND}"]
+CMD ["bash", "-c", "/cncf/provision.sh ${CLOUD}-${COMMAND} ${NAME} ${BACKEND} ${DATA}"]

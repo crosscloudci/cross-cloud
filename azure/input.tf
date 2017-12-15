@@ -15,8 +15,8 @@ variable "image_publisher" { default = "CoreOS" }
 variable "image_offer"     { default = "CoreOS" }
 variable "image_sku"       { default = "Stable" }
 variable "image_version"   { default = "1465.8.0" }
-variable "master_vm_size"   { default = "Standard_A2" }
-variable "worker_vm_size"   { default = "Standard_A2" }
+variable "master_vm_size"   { default = "Standard_A1" }
+variable "worker_vm_size"   { default = "Standard_A1" }
 variable "bastion_vm_size"   { default = "Standard_A2" }
 
 # Kubernetes
@@ -30,7 +30,7 @@ variable "service_cidr"   { default = "100.64.0.0/13" }
 variable "non_masquerade_cidr" { default = "100.64.0.0/10"}
 variable "dns_service_ip" { default = "100.64.0.10" }
 variable "master_node_count" { default = "3" }
-variable "worker_node_count" { default = "3" }
+variable "worker_node_count" { default = "1" }
 # Autoscaling not supported by Kuberenetes on Azure yet
 # variable "worker_node_min" { default = "3" }
 # variable "worker_node_max" { default = "5" }

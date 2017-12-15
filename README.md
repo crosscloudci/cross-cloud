@@ -1,27 +1,26 @@
-# Cross Cloud Continuous Integration
+# Cross-cloud Continuous Integration
 
-### Why Cross-Cloud CI?
+### Why Cross-cloud CI?
 
 Our CI Working Group has been tasked with demonstrating best practices for integrating, testing, and deploying projects within the CNCF ecosystem across multiple cloud providers.
 
 Help ensure the CNCF projects deploy and run sucessfully on each supported cloud providers.
 
-### What is cross-cloud?
+### What is Cross-cloud?
 
-A project to continually validate the interoperability of each CNCF project, for every commit on stable and HEAD, for all supported cloud providers with the results published to the cross-cloud public dashboard. The cross-cloud project is composed of the following components:
+A project to continually validate the interoperability of each CNCF project, for every commit on stable and HEAD, for all supported cloud providers with the results published to the Cross-cloud public dashboard. The Cross-cloud project is composed of the following components:
 - Cross-project CI - Project app and e2e test container builder / Project to Cross-cloud CI integration point
-  * Builds and registers containerized apps as well as their related e2e tests for deployment. Triggers the cross-cloud CI pipeline.  
+  * Builds and registers containerized apps as well as their related e2e tests for deployment. Triggers the Cross-cloud CI pipeline.  
 - Cross-cloud CI - Multi-cloud container deployer / Multi-cloud project test runner
-  * Triggers the creation of k8s clusters on cloud providers, deploys containerized apps, and runs upstream project tests supplying results to the cross-cloud dashboard.
+  * Triggers the creation of K8s clusters on cloud providers, deploys containerized apps, and runs upstream project tests supplying results to the Cross-cloud dashboard.
 - Multi-cloud provisioner - Cloud end-point provisioner for Kubernetes
   * Supplies conformance validated Kubernetes end-points for each cloud provider with cloud specific features enabled
 - Cross-cloud CI Dashboard - 
   * Provides a high-level view of the interoperability status of CNCF projects for each supported cloud provider.
 
-### How to Use Cross-Cloud 
+### How to Use Cross-cloud 
 
 You have to have a working [Docker environment](https://www.docker.com/get-docker)
-
 
 ##### Quick start for AWS
 
@@ -54,7 +53,6 @@ docker run \
   -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION    \
   -ti registry.cncf.ci/cncf/cross-cloud/provisioning:ci-stable-v0-2-0
 ```
-
 
 ##### Quick start for GCE
  
@@ -91,14 +89,36 @@ docker run \
   -ti registry.cncf.ci/cncf/cross-cloud/provisioning:ci-stable-v0-2-0
 ```
 
+##### Quick start for OpenStack
+
+You will need a full set of credentials for an OpenStack cloud, including
+authentication endpoint.
+
+**Run the following to provision an OpenStack cluster:**
+``` bash
+docker run \
+  -v $(pwd)/data:/cncf/data \
+  -e NAME=cross-cloud \
+  -e CLOUD=openstack \
+  -e COMMAND=deploy \
+  -e BACKEND=file \
+  -e TF_VAR_os_auth_url=$OS_AUTH_URL \
+  -e TF_VAR_os_region_name=$OS_REGION_NAME \
+  -e TF_VAR_os_user_domain_name=$OS_USER_DOMAIN_NAME \
+  -e TF_VAR_os_username=$OS_USERNAME \
+  -e TF_VAR_os_project_name=$OS_PROJECT_NAME \
+  -e TF_VAR_os_password=$OS_PASSWORD \
+  -ti registry.cncf.ci/cncf/cross-cloud/provisioning:ci-stable-v0-2-0
+```
+
 #### General usage and configuration
 
-Minimum required Configuration to use Cross-Cloud to Deploy a Kubernetes Cluster on Cloud X.
+Minimum required configuration to use Cross-cloud to deploy a Kubernetes cluster on Cloud X.
 ```bash
 docker run \
   -v /tmp/data:/cncf/data \
   -e NAME=cross-cloud
-  -e CLOUD=<aws|gke|gce|packet>    \
+  -e CLOUD=<aws|gke|gce|openstack|packet>    \
   -e COMMAND=<deploy|destory> \
   -e BACKEND=<file|s3>  \ 
   <CLOUD_SPECIFIC_OPTIONS>
@@ -107,7 +127,7 @@ docker run \
 ```
 
 #### Common Options
-* -e CLOUD=<aws|gke|gce|packet> # Choose the cloud provider.  Then add the appropriate cloud specific options below.
+* -e CLOUD=<aws|gke|gce|openstack|packet> # Choose the cloud provider.  Then add the appropriate cloud specific options below.
 * -e COMMAND=<deploy|destory>
 * -e BACKEND=<file|s3>   # File will store the Terraform State file to Disk / S3 will store the Terraform Statefile to a AWS s3 Bucket
   
@@ -128,6 +148,14 @@ GCE/GKE:
  * -e GOOGLE_CREDENTIALS=secret
  * -e GOOGLE_REGION=us-central1
  * -e GOOGLE_PROJECT=test-163823
+
+OpenStack:
+ * -e TF_VAR_os_auth_url=$OS_AUTH_URL
+ * -e TF_VAR_os_region_name=$OS_REGION_NAME
+ * -e TF_VAR_os_user_domain_name=$OS_USER_DOMAIN_NAME
+ * -e TF_VAR_os_username=$OS_USERNAME
+ * -e TF_VAR_os_project_name=$OS_PROJECT_NAME
+ * -e TF_VAR_os_password=$OS_PASSWORD
 
 #### Kubernetes Cluster Options
 Custom Configuration options for the Kubernetes Cluster:
@@ -158,12 +186,24 @@ Current Phase: In Design/Planning
 ### Meetings / Demos
 
 #### Upcoming
-- November 1st, 2017 - CNCF CI Cross Cloud project demo to Nic Jackson, Terraform
-- November 2nd, 2017 - CNCF CI Cross Cloud project demo to Jez Humble, Continuous Delivery
-- November 9th, 2017 - CNCF CI Cross Cloud project demo at End User Committee Meeting
-- November 2017 TBD - CNCF CI Cross Cloud project demo to OPNfv
+- December 26th, 2017 - CI-WG Status Update on 4th Tuesday at 8am Pacific: Meeting canceled due to the holidays
+- January 3rd, 2018 - Cross Cloud project demo with Camille Fournier
+- January 9th, 2018 - CI-WG Status Update on 2nd Tuesday at 8am Pacific
+- January 23rd, 2018 - CI-WG Status Update on 4th Tuesday at 8am Pacific
+- January, 2018 - Intro call with Packet+Arm team, TBD
+
+
+
 
 #### Past
+- [December 12th, 2017 - CI-WG Status Updates](https://docs.google.com/presentation/d/16a-oKZcl4CKwMtcvU6mWDOzIcb7oNTXW5wNppN8-M0s/edit?usp=sharing)
+- [December 6th-8th, 2017 - KubeCon + CloudNativeCon North America 2017](https://www.cncf.io/event/cloudnativecon-north-america-2017/)
+- [November 28th, 2017 - CI-WG Status Updates](https://docs.google.com/presentation/d/1JAXkf6kKgo6E7mhKPgZXbRWIsh-yE6TkgEXPBhttpH4/edit?usp=sharing)
+- [November 16th, 2017 - CNCF CI Cross Cloud project demo to OPNfv](https://docs.google.com/presentation/d/1_gfoyOWMWnt5YS1KuYSbKh-hHPYdgtQ4-lI3dPtaLSY/edit#slide=id.g27c85eba33_0_182)
+- November 9th, 2017 - CNCF CI Cross Cloud project demo at End User Committee Meeting
+- [November 8th, 2017 - CNCF CI Cross Cloud project demo to TensorFlow](https://docs.google.com/presentation/d/1AoJxg3PC84tAdKXNJ9t5PUUkBYTZjP9CQe197qokGZs/edit#slide=id.g24450b0d21_0_222)
+- [November 2nd, 2017 - CNCF CI Cross Cloud project demo to Jez Humble, Continuous Delivery](https://docs.google.com/presentation/d/1dhJgeBLYEzXoVvpxX7ls75o-GdsVwhpUY08O8UAiUUc/edit?usp=sharing)
+- [November 1st, 2017 - CNCF CI Cross Cloud project demo to Nic Jackson, Terraform](https://docs.google.com/presentation/d/1Y1E1y5SHTW56CDT4hyAFZAtPftOeezqCZrhLGCjY94A/edit?usp=sharing)
 - [October 24th, 2017 - CI-WG Status Updates](https://docs.google.com/a/vulk.coop/presentation/d/10x7ssMrYN5A_XBxN8NBQ2Zoy2akbT2NqO7mn6hJLnSk/edit?usp=sharing)
 - October 18th, 2017 - CNCF CI Cross Cloud project demo to Oracle Cloud
 - [October 11th, 2017 - CNCF CI Cross Cloud project demo to ONAP](https://docs.google.com/presentation/d/1EclOrNbeF7gqlIR3hfjKAAVvdl68NDcWEGQho1MpS-E/edit#slide=id.g24450b0d21_0_222)

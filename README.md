@@ -186,10 +186,18 @@ Current Phase: In Design/Planning
 ### Meetings / Demos
 
 #### Upcoming
-- [December 6th-8th, 2017 - KubeCon + CloudNativeCon North America 2017](https://www.cncf.io/event/cloudnativecon-north-america-2017/)
-- December 12th, 2017 - CI-WG Status Updates
+- December 26th, 2017 - CI-WG Status Update on 4th Tuesday at 8am Pacific: Meeting canceled due to the holidays
+- January 3rd, 2018 - Cross Cloud project demo with Camille Fournier
+- January 9th, 2018 - CI-WG Status Update on 2nd Tuesday at 8am Pacific
+- January 23rd, 2018 - CI-WG Status Update on 4th Tuesday at 8am Pacific
+- January, 2018 - Intro call with Packet+Arm team, TBD
+
+
+
 
 #### Past
+- [December 12th, 2017 - CI-WG Status Updates](https://docs.google.com/presentation/d/16a-oKZcl4CKwMtcvU6mWDOzIcb7oNTXW5wNppN8-M0s/edit?usp=sharing)
+- [December 6th-8th, 2017 - KubeCon + CloudNativeCon North America 2017](https://www.cncf.io/event/cloudnativecon-north-america-2017/)
 - [November 28th, 2017 - CI-WG Status Updates](https://docs.google.com/presentation/d/1JAXkf6kKgo6E7mhKPgZXbRWIsh-yE6TkgEXPBhttpH4/edit?usp=sharing)
 - [November 16th, 2017 - CNCF CI Cross Cloud project demo to OPNfv](https://docs.google.com/presentation/d/1_gfoyOWMWnt5YS1KuYSbKh-hHPYdgtQ4-lI3dPtaLSY/edit#slide=id.g27c85eba33_0_182)
 - November 9th, 2017 - CNCF CI Cross Cloud project demo at End User Committee Meeting

@@ -4,19 +4,19 @@ variable "data_dir" { default = "/cncf/data/packet" }
 
 
 variable "master_node_count" { default = "3" }
-variable "worker_node_count" { default = "3" }
+variable "worker_node_count" { default = "1" }
 
 # Set with env TF_VAR_packet_project_id
 variable "packet_project_id" {} # required for now
 variable "packet_api_key" {}
 # https://www.packet.net/locations/
-variable "packet_facility" { default = "ewr1" }
+variable "packet_facility" { default = "ams1" }
 variable "packet_billing_cycle" { default = "hourly" }
 
 
 # VM Image and size
-variable "packet_master_device_plan" { default = "baremetal_0" }
-variable "packet_worker_device_plan" { default = "baremetal_0" }
+variable "packet_master_device_plan" { default = "baremetal_1" }
+variable "packet_worker_device_plan" { default = "baremetal_1" }
 variable "packet_operating_system" { default = "coreos_stable" }
 
 

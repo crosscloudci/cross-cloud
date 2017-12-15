@@ -15,7 +15,7 @@ variable "allow_ssh_cidr" { default = "0.0.0.0/0" }
 variable "admin_username" { default = "core" }
 variable "aws_image_ami" { default = "ami-266d8b44"} # channel/stable type/hvm
 variable "aws_master_vm_size" { default = "m3.medium" }
-variable "aws_worker_vm_size" { default = "t2.nano" }
+variable "aws_worker_vm_size" { default = "m3.medium" }
 variable "aws_bastion_vm_size" { default = "t2.nano" }
 
 # Kubernetes

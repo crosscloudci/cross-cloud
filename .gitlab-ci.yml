@@ -10,16 +10,14 @@ before_script:
   - mkdir -p ./data ; touch ./data/empty.env
   - for envfile in data/*env ; do source $envfile ; echo ----- $envfile ---- ; cat $envfile ; done
   - export KUBECONFIG=$(pwd)/data/${CLOUD}/kubeconfig
-  - source /opt/local/etc/rvmrc ; source /opt/local/etc/profile.d/rvm.sh ; gem install bundle ; cp -a /opt/local/dashboard /dashboard ; pushd /dashboard ; bundle install ; source /opt/local/.env ; PIPELINE_RELEASE_TYPE=head ./bin/update_dashboard ; popd
-  #./bin/update_dashboard ; popd 
-
-after_script:
-  - export BASE_URL=${BASE_URL:-$(echo $CI_PROJECT_URL |  cut -d'/' -f1-3)}
-  - mkdir -p ./data ; touch ./data/empty.env
-  - for envfile in data/*env ; do source $envfile ; echo ----- $envfile ---- ; cat $envfile ; done
-  - export KUBECONFIG=$(pwd)/data/${CLOUD}/kubeconfig
-  - source /opt/local/etc/rvmrc ; source /opt/local/etc/profile.d/rvm.sh ; gem install bundle ; cp -a /opt/local/dashboard /dashboard ; pushd /dashboard ; bundle install ; source /opt/local/.env ; PIPELINE_RELEASE_TYPE=head ./bin/update_dashboard ; popd
-
+  - >
+    if [ "$BASE_URL" == "https://gitlab.dev.cncf.ci" ]; then
+      export CROSS_CLOUD_YML="https://raw.githubusercontent.com/CrossCloudCI/cncf-configuration/master/cross-cloud.yml"
+    else
+      echo "Environment doesn't match"
+      exit 0
+    fi
+  - source /opt/local/etc/rvmrc ; source /opt/local/etc/profile.d/rvm.sh ; cp -a /opt/local/dashboard /dashboard ; pushd /dashboard ; source /opt/local/.env ; ./bin/update_dashboard ; popd
 
 Cross-Cloud:
   image: registry.cncf.ci/cncf/cross-cloud:docker 

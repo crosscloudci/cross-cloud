@@ -11,11 +11,10 @@ before_script:
   - for envfile in data/*env ; do source $envfile ; echo ----- $envfile ---- ; cat $envfile ; done
   - export KUBECONFIG=$(pwd)/data/${CLOUD}/kubeconfig
   - >
-    if [ "$BASE_URL" == "https://gitlab.dev.cncf.ci" ]; then
-      export CROSS_CLOUD_YML="https://raw.githubusercontent.com/CrossCloudCI/cncf-configuration/master/cross-cloud.yml"
+    if [ -z "$CROSS_CLOUD_YML" ]; then
+      export CROSS_CLOUD_YML="https://raw.githubusercontent.com/CrossCloudCI/cncf-configuration/$CI_COMMIT_REF_NAME/cross-cloud.yml"
     else
-      echo "Environment doesn't match"
-      exit 0
+      export CROSS_CLOUD_YML="$CROSS_CLOUD_YML"
     fi
   - source /opt/local/etc/rvmrc ; source /opt/local/etc/profile.d/rvm.sh ; cp -a /opt/local/dashboard /dashboard ; pushd /dashboard ; source /opt/local/.env ; ./bin/update_dashboard ; popd
 

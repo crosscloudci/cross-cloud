@@ -268,8 +268,7 @@ Kubernetes_destroy:
     CLOUD: "${CLOUD}"
 
 Dashboard:
-  image: registry.cncf.ci/cncf/cross-cloud:docker 
+  image: crosscloudci/debian-docker 
   stage: Update-Dashboard
   script:
     - echo 'true'
-    - sleep 320

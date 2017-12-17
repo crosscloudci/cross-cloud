@@ -12,7 +12,7 @@ before_script:
   - export KUBECONFIG=$(pwd)/data/${CLOUD}/kubeconfig
   - >
     if [ -z "$CROSS_CLOUD_YML" ]; then
-      export CROSS_CLOUD_YML="https://raw.githubusercontent.com/CrossCloudCI/cncf-configuration/$CI_COMMIT_REF_NAME/cross-cloud.yml"
+      export CROSS_CLOUD_YML="https://raw.githubusercontent.com/CrossCloudCI/cncf-configuration/production/cross-cloud.yml"
     else
       export CROSS_CLOUD_YML="$CROSS_CLOUD_YML"
     fi

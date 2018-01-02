@@ -19,11 +19,11 @@ before_script:
   - >
     if [ "$BASE_URL" == "https://gitlab.cncf.ci" ]; then
       export ENVIRONMENT="prod"
-    elif [ "$BASE_URL" == "https://gitlab.staging.cncf.ci"]; then
+    elif [ "$BASE_URL" == "https://gitlab.staging.cncf.ci" ]; then
       export ENVIRONMENT="stage"
-    elif [ "$BASE_URL" == "https://gitlab.dev.cncf.ci"]; then
+    elif [ "$BASE_URL" == "https://gitlab.dev.cncf.ci" ]; then
       export ENVIRONMENT="dev"
-    elif [ "$BASE_URL" == "https://gitlab.cidev.cncf.ci"]; then
+    elif [ "$BASE_URL" == "https://gitlab.cidev.cncf.ci" ]; then
       export ENVIRONMENT="cidev"
     else
       echo "Environment unknown"

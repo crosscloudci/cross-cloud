@@ -66,8 +66,16 @@ if [ ! -e $KUBE_SCHEDULER_TAG ] ; then
     export TF_VAR_kube_scheduler_tag=$KUBE_SCHEDULER_TAG
 fi
 
+if [ ! -e $KUBE_PROXY_IMAGE ] ; then
+    export TF_VAR_kube_proxy_image=$KUBE_PROXY_IMAGE
+fi
+
+if [ ! -e $KUBE_PROXY_TAG ] ; then
+    export TF_VAR_kube_proxy_tag=$KUBE_PROXY_TAG
+fi
 
 
+ 
 # tfstate, sslcerts, and ssh keys are currently stored in TF_VAR_data_dir
 mkdir -p $TF_VAR_data_dir
 

@@ -16,7 +16,7 @@ NC='\033[0m' # No Color
 
 # Setup Enviroment Using $NAME
 export TF_VAR_name="$2"
-export TF_VAR_data_dir=$(pwd)/data/"$4"
+export TF_VAR_data_dir=$(pwd)/data/${TF_VAR_name}
 export TF_VAR_aws_key_name=${TF_VAR_name}
 export TF_VAR_packet_api_key=${PACKET_AUTH_TOKEN}
 export TF_VAR_google_project=${GOOGLE_PROJECT}

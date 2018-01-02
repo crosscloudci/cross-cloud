@@ -121,7 +121,7 @@ module "tls" {
 }
 
 module "master_templates" {
-  source = "../master_templates-v1.8.1"
+  source = "../master_templates-v1.9.0"
 
   master_node_count = "${ var.master_node_count }"
   name = "${ var.name }"
@@ -162,7 +162,7 @@ module "master_templates" {
 }
 
 module "worker_templates" {
-  source = "../worker_templates-v1.8.1"
+  source = "../worker_templates-v1.9.0"
 
   worker_node_count = "${ var.worker_node_count }"
   name = "${ var.name }"

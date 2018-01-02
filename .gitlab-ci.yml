@@ -11,16 +11,15 @@ before_script:
   - for envfile in data/*env ; do source $envfile ; echo ----- $envfile ---- ; cat $envfile ; done
   - export KUBECONFIG=$(pwd)/data/${CLOUD}/kubeconfig
   - >
-    if [ "$BASE_URL" == "https://gitlab.dev.cncf.ci" ]; then
-      export CROSS_CLOUD_YML="https://raw.githubusercontent.com/CrossCloudCI/cncf-configuration/master/cross-cloud.yml"
+    if [ -z "$CROSS_CLOUD_YML" ]; then
+      export CROSS_CLOUD_YML="https://raw.githubusercontent.com/CrossCloudCI/cncf-configuration/production/cross-cloud.yml"
     else
-      echo "Environment doesn't match"
-      exit 0
+      export CROSS_CLOUD_YML="$CROSS_CLOUD_YML"
     fi
   - source /opt/local/etc/rvmrc ; source /opt/local/etc/profile.d/rvm.sh ; cp -a /opt/local/dashboard /dashboard ; pushd /dashboard ; source /opt/local/.env ; ./bin/update_dashboard ; popd
 
 Cross-Cloud:
-  image: registry.cncf.ci/cncf/cross-cloud:docker 
+  image: crosscloudci/debian-docker 
   stage: Build
   script:
     - docker login -u "gitlab-ci-token" -p "$CI_JOB_TOKEN" $CI_REGISTRY
@@ -29,7 +28,7 @@ Cross-Cloud:
 
 Socat:
   stage: Build
-  image: registry.cncf.ci/cncf/cross-cloud:docker 
+  image: crosscloudci/debian-docker
   script:
     - docker login -u "gitlab-ci-token" -p "$CI_JOB_TOKEN" $CI_REGISTRY
     - docker build --pull -t "$CI_REGISTRY_IMAGE/socat:$CI_COMMIT_REF_SLUG" ./socat/
@@ -51,9 +50,9 @@ Socat:
       elif [ "${DISABLE_SOURCE}" == "yes" ]; then
         exit 0 #Should Show Skipped on Gitlab CI FIXME
       else
-        PROJECT_JOB=$(curl --header "PRIVATE-TOKEN:${TOKEN}" "${BASE_URL}/api/v4/projects/$PROJECT_ID/pipelines/${SOURCE}/jobs?scope=success" | jq '.[] | select(.name=="container") | .id')
-        curl -s -o data/"$PROJECT".env -L "${BASE_URL}/${ORG}/${PROJECT}/-/jobs/${PROJECT_JOB}/artifacts/raw/release.env"
-        cat data/"$PROJECT".env
+        PROJECT_JOB=$(curl --header "PRIVATE-TOKEN:${TOKEN}" "${BASE_URL}/api/v4/projects/14/pipelines/${SOURCE}/jobs?scope=success" | jq '.[] | select(.name=="container") | .id')
+        curl -s -o data/kubernetes.env -L "${BASE_URL}/kubernetes/kubernetes/-/jobs/${PROJECT_JOB}/artifacts/raw/release.env"
+        cat data/kubernetes.env
       fi
 
   artifacts:
@@ -62,139 +61,6 @@ Socat:
     expire_in: 5 weeks
     paths:
       - ./data
-
-.build_branch: &build_branch
-  image: buildpack-deps:stretch
-  stage: Artifacts
-  variables:
-    # BRANCH: MUST BE SET
-    # ORG: MUST BE SET
-    # PROJECT: MUST BE SET
-    # PROJECT_TOKEN: MUST BE SET
-    # PROJECT_ID: MUST BE SET
-  script:
-    - apt update && apt -y install jq
-    - >
-      if [ -z "${BRANCH}" ]; then
-        exit 0 #Should Show Skipped on Gitlab CI FIXME
-      else
-        echo "Checking for Latest Build"
-        curl -s -L -o data/${PROJECT}.url "${BASE_URL}/${ORG}/${PROJECT}/builds/artifacts/${BRANCH}/file/release.env?job=container"
-        if cat data/"$PROJECT".url | sed -n 's/.*href="\([^"]*\).*/\1/p' | grep artifacts/raw ; then
-        RELEASE_ENV=$(cat data/${PROJECT}.url | sed -n 's/.*href="\([^"]*\).*/\1/p' | grep artifacts/raw | tail -1)
-        curl -o data/${PROJECT}.env -L ${BASE_URL}/$RELEASE_ENV
-        cat data/${PROJECT}.env
-        else
-          # PROJECT_PIPELINE=$(curl -X POST -F token=$CI_JOB_TOKEN -F ref=$BRANCH https://gitlab.cncf.ci/api/v4/projects/$PROJECT_ID/trigger/pipeline | jq '.id')
-          PROJECT_PIPELINE=$(curl -X POST -F token=$PROJECT_TOKEN -F ref=$BRANCH -F "variables[BUILD_TRIGGER]=yes" "$BASE_URL"/api/v4/projects/$PROJECT_ID/trigger/pipeline | jq '.id')
-
-          echo 'Wait for Build "FIX ME / HACK"'
-          until [ "$JOB_STATUS" == '"success"' ]; do
-              JOB_STATUS="$(curl -s --header "PRIVATE-TOKEN:${TOKEN}" "${BASE_URL}/api/v4/projects/$PROJECT_ID/pipelines/${PROJECT_PIPELINE}/jobs?scope=success" | jq '.[] | select(.name=="container") | .status')" 
-              sleep 0.5
-              if [ "$JOB_STATUS" == '"failed"' ]; then
-                  exit 1
-              elif [ "$JOB_STATUS" == '"canceled"' ]; then
-                  exit 1
-              else
-                  continue
-              fi
-          done
-          echo 'Build Compleate'
-
-          PROJECT_JOB=$(curl --header "PRIVATE-TOKEN:${TOKEN}" "${BASE_URL}/api/v4/projects/$PROJECT_ID/pipelines/${PROJECT_PIPELINE}/jobs?scope=success" | jq '.[] | select(.name=="container") | .id') 
-          curl -s -o data/"$PROJECT".env -L "${BASE_URL}/${ORG}/${PROJECT}/-/jobs/${PROJECT_JOB}/artifacts/raw/release.env"
-          cat data/"$PROJECT".env
-        fi
-      fi
-  artifacts:
-    name: "${CI_JOB_NAME}_${CI_COMMIT_REF_NAME}"
-    untracked: true
-    expire_in: 5 weeks
-    paths:
-      - ./data
-
-.build_commit: &build_commit
-  image: buildpack-deps:stretch
-  stage: Artifacts
-  variables:
-    # COMMIT: MUST BE SET
-    # ORG: MUST BE SET
-    # PROJECT: MUST BE SET
-    # PROJECT_ID: MUST BE SET
-  script:
-    - apt update && apt -y install jq
-    - echo "$COMMIT"
-    - >
-      if [ -z "${COMMIT}" ]; then
-        exit 0 #Should Show Skipped on Gitlab CI FIXME
-      else
-        echo "Checking for Container Artifact on Commit"
-
-        echo "Fetch Full SHA" 
-        SHA=$(curl --header "PRIVATE-TOKEN: ${TOKEN}" "${BASE_URL}/api/v4/projects/9/repository/commits/${COMMIT}" | jq --raw-output '.id')
-        echo ${SHA}
-
-        echo "Fetch Most Recent Job ID's on Commit"
-        COMPILE_JOB=$(curl --header "PRIVATE-TOKEN: ${TOKEN}" "${BASE_URL}/api/v4/projects/${PROJECT_ID}/repository/commits/${SHA}/statuses" | jq '.[] | select(.name=="compile")' | jq -s 'sort_by(.created_at)' | jq '.[0] | .id')
-        echo ${COMPILE_JOB}
-        
-        CONTAINER_JOB=$(curl --header "PRIVATE-TOKEN: ${TOKEN}" "${BASE_URL}/api/v4/projects/${PROJECT_ID}/repository/commits/${SHA}/statuses" | jq '.[] | select(.name=="container")' | jq -s 'sort_by(.created_at)' | jq '.[0] | .id')
-
-        echo "Fetch Artifact"
-        curl -s -o data/${PROJECT}.env -L "$BASE_URL/${ORG}/${PROJECT}/-/jobs/${CONTAINER_JOB}/artifacts/raw/release.env"
-
-        echo "Verify Artifact"
-        if source ./data/${PROJECT}.env && env | grep ${PROJECT}; then
-        cat data/${PROJECT}.env
-        else
-          echo "Trigger Jobs for missing Artifacts"
-          
-          PROJECT_COMPILE_JOB=$(curl -X POST --header "PRIVATE-TOKEN: ${TOKEN}" "${BASE_URL}/api/v4/projects/${PROJECT_ID}/jobs/${COMPILE_JOB}/retry" | jq '.id')
-          echo $PROJECT_COMPILE_JOB
-          echo 'Wait for Build "FIX ME / HACK"'
-          until [ "$COMPILE_JOB_STATUS" == '"success"' ]; do
-              COMPILE_JOB_STATUS="$(curl -s --header "PRIVATE-TOKEN:${TOKEN}" "${BASE_URL}/api/v4/projects/${PROJECT_ID}/jobs/${PROJECT_COMPILE_JOB}" | jq -s '.[] | .status')" 
-              sleep 0.5
-              if [ "$COMPILE_JOB_STATUS" == '"failed"' ]; then
-                  exit 1
-              elif [ "$COMPILE_JOB_STATUS" == '"canceled"' ]; then
-                  exit 1
-              else
-                  continue
-              fi
-          done
-          echo 'Build Compleate'
-          
-          
-          PROJECT_CONTAINER_JOB=$(curl -X POST --header "PRIVATE-TOKEN: ${TOKEN}" "${BASE_URL}/api/v4/projects/${PROJECT_ID}/jobs/${CONTAINER_JOB}/retry" | jq '.id')
-          echo 'Wait for Build "FIX ME / HACK"'
-          until [ "$CONTAINER_JOB_STATUS" == '"success"' ]; do
-              CONTAINER_JOB_STATUS="$(curl -s --header "PRIVATE-TOKEN:${TOKEN}" "${BASE_URL}/api/v4/projects/${PROJECT_ID}/jobs/${PROJECT_CONTAINER_JOB}" | jq -s '.[] | .status')"
-              sleep 0.5
-              if [ "$PROJECT_CONTAINER_JOB" == '"failed"' ]; then
-                  exit 1
-              elif [ "$PROJECT_CONTAINER_JOB" == '"canceled"' ]; then
-                  exit 1
-              else
-                  continue
-              fi
-          done
-          echo 'Container Build Compleate'
-
-          
-          curl -s -o data/${PROJECT}.env -L "${BASE_URL}/${ORG}/${PROJECT}/-/jobs/${PROJECT_CONTAINER_JOB}/artifacts/raw/release.env"
-          cat data/${PROJECT}.env
-        fi
-      fi
-
-  artifacts:
-    name: "${CI_JOB_NAME}_${CI_COMMIT_REF_NAME}"
-    untracked: true
-    expire_in: 5 weeks
-    paths:
-      - ./data
-
 
 # Deploy Template used for Each Cloud
 .kubernetes_deploy_template: &kubernetes_deploy_template
@@ -237,15 +103,6 @@ Socat:
 Build-Source:
   <<: *build_source
 
-# Build-Branch VARs
-Build-Branch:
-  <<: *build_branch
-
-# Build-Branch VARs
-Build-Commit:
-  <<: *build_commit
-
-    
 # Cloud Deploy VARs
 Provisioning:
   <<: *kubernetes_deploy_template
@@ -268,8 +125,7 @@ Kubernetes_destroy:
     CLOUD: "${CLOUD}"
 
 Dashboard:
-  image: registry.cncf.ci/cncf/cross-cloud:docker 
+  image: crosscloudci/debian-docker 
   stage: Update-Dashboard
   script:
     - echo 'true'
-    - sleep 320

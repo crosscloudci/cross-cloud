@@ -69,7 +69,7 @@ Socat:
   variables:
     CLOUD: MUST BE SET
   script:
-    - /cncf/provision.sh ${CLOUD}-deploy ${CLOUD}-${DEPLOYMENT_SHA} s3 ${CLOUD}
+    - /cncf/provision.sh ${CLOUD}-deploy ${CLOUD}-${DEPLOYMENT_SHA} s3 
     - helm init; kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
   artifacts:
     when: always
@@ -97,7 +97,7 @@ Socat:
   variables:
     CLOUD: MUST BE SET
   script:
-    - /cncf/provision.sh ${CLOUD}-destroy ${CLOUD}-${DEPLOYMENT_SHA} s3 ${CLOUD}
+    - /cncf/provision.sh ${CLOUD}-destroy ${CLOUD}-${DEPLOYMENT_SHA} s3 
 
 # Build-Source VARs
 Build-Source:

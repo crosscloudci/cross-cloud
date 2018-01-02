@@ -86,4 +86,4 @@ COPY worker_templates-v1.9.0/ /cncf/worker_templates-v1.9.0/
 RUN chmod +x /cncf/provision.sh
 WORKDIR /cncf/
 
-CMD ["bash", "-c", "/cncf/provision.sh ${CLOUD}-${COMMAND} ${NAME} ${BACKEND}"]
+CMD ["bash", "-c", "/cncf/provision.sh ${CLOUD}-${COMMAND} ${NAME} ${BACKEND} ${DATA_FOLDER}"]

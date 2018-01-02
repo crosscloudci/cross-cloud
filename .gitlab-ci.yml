@@ -1,366 +1,144 @@
-variables:
-  K8S_BRANCH: ci-v1.6.6
-  COREDNS_BRANCH: ci-v008
-  PROMETHEUS_BRANCH: ci-v1.7.1
-  NODE_EXPORTER_BRANCH: ci-v0.14.0
-  ALERT_MANAGER_BRANCH: ci-v0.7.1
-  CNI_BRANCH: ci-v0.5.2
-  FLUENTD_BRANCH: ci-v0.14.17
-  CONTAINERD_BRANCH: ci-v0.2.8
-
 stages:
-  - cncf-artifacts
-  - cross-cloud
-  - cross-project
-  - cncf-e2e
+  - Build
+  - Artifacts
+  - Cross-Cloud
+  - End-To-End
+  - Update-Dashboard
 
 before_script:
   - export BASE_URL=${BASE_URL:-$(echo $CI_PROJECT_URL |  cut -d'/' -f1-3)}
-  - export KUBECONFIG=$(pwd)/data/${CI_ENVIRONMENT_SLUG}/kubeconfig
   - mkdir -p ./data ; touch ./data/empty.env
   - for envfile in data/*env ; do source $envfile ; echo ----- $envfile ---- ; cat $envfile ; done
+  - export KUBECONFIG=$(pwd)/data/${CLOUD}/kubeconfig
+  - >
+    if [ -z "$CROSS_CLOUD_YML" ]; then
+      export CROSS_CLOUD_YML="https://raw.githubusercontent.com/CrossCloudCI/cncf-configuration/production/cross-cloud.yml"
+    else
+      export CROSS_CLOUD_YML="$CROSS_CLOUD_YML"
+    fi
+  - >
+    if [ "$BASE_URL" == "https://gitlab.cncf.ci" ]; then
+      export ENVIRONMENT="prod"
+    elif [ "$BASE_URL" == "https://gitlab.staging.cncf.ci" ]; then
+      export ENVIRONMENT="stage"
+    elif [ "$BASE_URL" == "https://gitlab.dev.cncf.ci" ]; then
+      export ENVIRONMENT="dev"
+    elif [ "$BASE_URL" == "https://gitlab.cidev.cncf.ci" ]; then
+      export ENVIRONMENT="cidev"
+    else
+      echo "Environment unknown"
+      exit 1
+    fi
+  - source /opt/local/etc/rvmrc ; source /opt/local/etc/profile.d/rvm.sh ; cp -a /opt/local/dashboard /dashboard ; pushd /dashboard ; source /opt/local/.env ; ./bin/update_dashboard ; popd
 
-# Fetch Artifacts based on Branch Passed by Trigger
-kubernetes-build-branch:
-  image: buildpack-deps:stretch
-  stage: cncf-artifacts
-  script:
-    - apt update && apt -y install jq
-    - echo "$KUBERNETES_BRANCH"
-    - >
-      if [ -z "${KUBERNETES_BRANCH}" ]; then
-        exit 0 #Should Show Skipped on Gitlab CI FIXME
-      else
-        echo "Checking for Latest Build"
-        curl -s -L -o data/kubernetes.url "${BASE_URL}/kubernetes/kubernetes/builds/artifacts/${KUBERNETES_BRANCH}/file/release.env?job=container"
-        if cat data/kubernetes.url | sed -n 's/.*href="\([^"]*\).*/\1/p' | grep artifacts/raw ; then
-        KUBERNETES_RELEASE_ENV=$(cat data/kubernetes.url | sed -n 's/.*href="\([^"]*\).*/\1/p' | grep artifacts/raw | tail -1)
-        curl -o data/kubernetes.env -L ${BASE_URL}/$COREDNS_RELEASE_ENV
-        cat data/kubernetes.env
-        else
-          PROJECT_PIPELINE=$(curl -X POST -F token=$KUBERNETES_CI_JOB_TOKEN -F ref=${KUBERNETES_BRANCH} -F "variables[BUILD_TRIGGER]=yes" https://gitlab.cncf.ci/api/v4/projects/14/trigger/pipeline | jq '.id')
-          echo 'Wait for Build "FIX ME / HACK"'
-          until [ "$JOB_STATUS" == '"success"' ]; do JOB_STATUS="$(curl -s --header "PRIVATE-TOKEN:${TOKEN}" "https://gitlab.cncf.ci/api/v4/projects/14/pipelines/${PROJECT_PIPELINE}/jobs?scope=success" | jq '.[] | select(.name=="container") | .status')" ; sleep 0.5 ; done ; echo 'Build Compleate'
-          PROJECT_JOB=$(curl --header "PRIVATE-TOKEN:${TOKEN}" "https://gitlab.cncf.ci/api/v4/projects/14/pipelines/${PROJECT_PIPELINE}/jobs?scope=success" | jq '.[] | select(.name=="container") | .id') 
-          curl -s -o data/kubernetes.env -L "$BASE_URL/kubernetes/kubernetes/-/jobs/${PROJECT_JOB}/artifacts/raw/release.env"
-          cat data/kubernetes.env
-        fi
-      fi
-  artifacts:
-    name: "${CI_JOB_NAME}_${CI_COMMIT_REF_NAME}"
-    untracked: true
-    expire_in: 5 weeks
-    paths:
-      - ./data
-
-# Fetch Artifacts based on Commit Passed by Trigger
-kubernetes-build-commit:
-  image: buildpack-deps:stretch
-  stage: cncf-artifacts
-  script:
-    - apt update && apt -y install jq
-    - echo "$KUBERNETES_COMMIT"
-    - >
-      if [ -z "${KUBERNETES_COMMIT}" ]; then
-        exit 0 #Should Show Skipped on Gitlab CI FIXME
-      else
-        echo "Checking for Container Artifact on Commit"
-
-        echo "Fetch Full SHA" 
-        SHA=$(curl --header "PRIVATE-TOKEN: ${TOKEN}" "https://gitlab.cncf.ci/api/v4/projects/14/repository/commits/${KUBERNETES_COMMIT}" | jq --raw-output '.id')
-        echo ${SHA}
-
-        echo "Fetch Most Recent Job ID's on Commit"
-        # COMPILE_JOB=$(curl --header "PRIVATE-TOKEN: ${TOKEN}" "https://gitlab.cncf.ci/api/v4/projects/14/repository/commits/${SHA}/statuses" | jq '.[] | select(.name=="compile")' | jq -s 'sort_by(.created_at)' | jq '.[0] | .id')
-        # echo ${COMPILE_JOB}
-        
-        CONTAINER_JOB=$(curl --header "PRIVATE-TOKEN: ${TOKEN}" "https://gitlab.cncf.ci/api/v4/projects/14/repository/commits/${SHA}/statuses" | jq '.[] | select(.name=="container")' | jq -s 'sort_by(.created_at)' | jq '.[0] | .id')
-
-        echo "Fetch Artifact"
-        curl -s -o data/kubernetes.env -L "$BASE_URL/kubernetes/kubernetes/-/jobs/${CONTAINER_JOB}/artifacts/raw/release.env"
-
-        echo "Verify Artifact"
-        if source ./data/kubernetes.env && env | grep KUBERNETES; then
-        cat data/kubernetes.env
-        else
-          echo "Trigger Jobs for missing Artifacts"
-          
-          # PROJECT_COMPILE_JOB=$(curl -X POST --header "PRIVATE-TOKEN: ${TOKEN}" "https://gitlab.cncf.ci/api/v4/projects/14/jobs/${COMPILE_JOB}/retry" | jq '.id')
-          # echo $PROJECT_COMPILE_JOB
-          # echo 'Wait for Build "FIX ME / HACK"'
-          # until [ "$COMPILE_JOB_STATUS" == '"success"' ]; do COMPILE_JOB_STATUS="$(curl -s --header "PRIVATE-TOKEN:${TOKEN}" "https://gitlab.cncf.ci/api/v4/projects/14/jobs/${PROJECT_COMPILE_JOB}" | jq -s '.[] | .status')" ; sleep 0.5 ; done ; echo 'Build Compleate'
-          
-          PROJECT_CONTAINER_JOB=$(curl -X POST --header "PRIVATE-TOKEN: ${TOKEN}" "https://gitlab.cncf.ci/api/v4/projects/14/jobs/${CONTAINER_JOB}/retry" | jq '.id')
-          until [ "$CONTAINER_JOB_STATUS" == '"success"' ]; do CONTAINER_JOB_STATUS="$(curl -s --header "PRIVATE-TOKEN:${TOKEN}" "https://gitlab.cncf.ci/api/v4/projects/14/jobs/${PROJECT_CONTAINER_JOB}" | jq -s '.[] | .status')" ; sleep 0.5 ; done ; echo 'Container Build Compleate'
-          
-          curl -s -o data/kubernetes.env -L "$BASE_URL/kubernetes/kubernetes/-/jobs/${PROJECT_CONTAINER_JOB}/artifacts/raw/release.env"
-          cat data/kubernetes.env
-        fi
-      fi
-  artifacts:
-    name: "${CI_JOB_NAME}_${CI_COMMIT_REF_NAME}"
-    untracked: true
-    expire_in: 5 weeks
-    paths:
-      - ./data
-
-
-cross-cloud-stable:
-  stage: cncf-artifacts
+Cross-Cloud:
+  image: crosscloudci/debian-docker 
+  stage: Build
   script:
     - docker login -u "gitlab-ci-token" -p "$CI_JOB_TOKEN" $CI_REGISTRY
     - docker build --pull -t "$CI_REGISTRY_IMAGE/provisioning:$CI_COMMIT_REF_SLUG" .
     - docker push "$CI_REGISTRY_IMAGE/provisioning:$CI_COMMIT_REF_SLUG"
 
-cross-cloud-socat:
-  stage: cncf-artifacts
+Socat:
+  stage: Build
+  image: crosscloudci/debian-docker
   script:
     - docker login -u "gitlab-ci-token" -p "$CI_JOB_TOKEN" $CI_REGISTRY
     - docker build --pull -t "$CI_REGISTRY_IMAGE/socat:$CI_COMMIT_REF_SLUG" ./socat/
     - docker push "$CI_REGISTRY_IMAGE/socat:$CI_COMMIT_REF_SLUG"
 
+.build_source: &build_source
+  image: buildpack-deps:stretch
+  stage: Artifacts
+  variables:
+    # SOURCE
+    # ORG: MUST BE SET
+    # PROJECT: MUST BE SET
+    # PROJECT_ID: MUST BE SET
+  script:
+    - apt update && apt -y install jq
+    - >
+      if [ -z "${SOURCE}" ]; then
+        exit 0 #Should Show Skipped on Gitlab CI FIXME
+      elif [ "${DISABLE_SOURCE}" == "yes" ]; then
+        exit 0 #Should Show Skipped on Gitlab CI FIXME
+      else
+        PROJECT_JOB=$(curl --header "PRIVATE-TOKEN:${TOKEN}" "${BASE_URL}/api/v4/projects/14/pipelines/${SOURCE}/jobs?scope=success" | jq '.[] | select(.name=="container") | .id')
+        curl -s -o data/kubernetes.env -L "${BASE_URL}/kubernetes/kubernetes/-/jobs/${PROJECT_JOB}/artifacts/raw/release.env"
+        cat data/kubernetes.env
+      fi
+
+  artifacts:
+    name: "${CI_JOB_NAME}_${CI_COMMIT_REF_NAME}"
+    untracked: true
+    expire_in: 5 weeks
+    paths:
+      - ./data
+
 # Deploy Template used for Each Cloud
-.k8s_deploy_template: &k8s_deploy_template
-  allow_failure: true
+.kubernetes_deploy_template: &kubernetes_deploy_template
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
-  stage: cross-cloud
+  stage: Cross-Cloud
   variables:
     CLOUD: MUST BE SET
-  environment:
-    name: MUST BE SET
-    url: MUST BE SET
-    on_stop: MUST BE SET
   script:
-    - /cncf/provision.sh ${CLOUD}-deploy ${CI_ENVIRONMENT_SLUG} s3
-    - helm init 
-    # - helm init ; until [ ! -e $(
-    #     kubectl get pods --namespace=kube-system -l app=helm -l name=tiller
-    #     -o jsonpath='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}'
-    #     | grep "Ready=True") ] ;
-    #     do echo 'tiller not up yet' ;
-    #     sleep 2 ;
-    #     done
+    - /cncf/provision.sh ${CLOUD}-deploy ${CLOUD}-${DEPLOYMENT_SHA}-${ENVIRONMENT} s3 ${CLOUD}
+    - helm init; kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
   artifacts:
     when: always
     expire_in: 4 weeks
     paths:
       - ./data/
 
-# E2E Template used for Per Cloud e2e Tests
-.k8s_e2e_template: &k8s_e2e_template
-  image: ${CI_REGISTRY}/kubernetes/kubernetes/kubernetes-e2e:ci-v1-6-3.job.4793
-  stage: cncf-e2e
-  variables:
-    CLOUD: MUST BE SET
-  environment:
-    name: MUST BE SET
-    url: MUST BE SET
-  script:
-    - /kubernetes/e2e/run-conformance.sh
+# # E2E Template used for Per Cloud e2e Tests
+# .k8s_e2e_template: &k8s_e2e_template
+#   image: ${CI_REGISTRY}/kubernetes/kubernetes/kubernetes-e2e:ci-v1-6-3.job.4793
+#   stage: cncf-e2e
+#   variables:
+#     CLOUD: MUST BE SET
+#   environment:
+#     name: MUST BE SET
+#     url: MUST BE SET
+#   script:
+#     - /kubernetes/e2e/run-conformance.sh
 
 # Per Cloud Destroy Template only run when DESTROY_VAR is Set
-.k8s_cloud_destroy_template: &k8s_cloud_destroy_template
-  allow_failure: true
+.kubernetes_cloud_destroy_template: &kubernetes_cloud_destroy_template
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
-  stage: cross-cloud
+  stage: Cross-Cloud
   when: manual
   variables:
     CLOUD: MUST BE SET
-  environment:
-    name: MUST BE SET
-    url: MUST BE SET
-    action: MUST BE SET
   script:
-    - /cncf/provision.sh ${CLOUD}-destroy ${CI_ENVIRONMENT_SLUG} s3
+    - /cncf/provision.sh ${CLOUD}-destroy ${CLOUD}-${DEPLOYMENT_SHA}-${ENVIRONMENT} s3 ${CLOUD} 
 
-# AWS Deploy VARs
-aws_k8s_deploy:
-  <<: *k8s_deploy_template
-  variables:
-    CLOUD: ${AWS_CLOUD}
-  environment:
-    name: ${AWS_CLOUD}-${CI_COMMIT_REF_SLUG}
-    url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
-    on_stop: aws_k8s_destroy
+# Build-Source VARs
+Build-Source:
+  <<: *build_source
 
-# AWS E2E VARs
-aws_k8s_e2e:
-  <<: *k8s_e2e_template
+# Cloud Deploy VARs
+Provisioning:
+  <<: *kubernetes_deploy_template
   variables:
-    CLOUD: ${AWS_CLOUD}
-  environment:
-    name: ${AWS_CLOUD}-${CI_COMMIT_REF_SLUG}
-    url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
+    CLOUD: "${CLOUD}"
+
+# # AWS E2E VARs
+# aws_k8s_e2e:
+#   <<: *k8s_e2e_template
+#   variables:
+#     CLOUD: ${AWS_CLOUD}
+#   environment:
+#     name: ${AWS_CLOUD}-${CI_COMMIT_REF_SLUG}
+#     url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
 
 # AWS Destroy VARs 
-aws_k8s_destroy:
-  <<: *k8s_cloud_destroy_template
+Kubernetes_destroy:
+  <<: *kubernetes_cloud_destroy_template
   variables:
-    CLOUD: ${AWS_CLOUD}
-  environment:
-    name: ${AWS_CLOUD}-${CI_COMMIT_REF_SLUG}
-    url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
-    action: stop
- 
+    CLOUD: "${CLOUD}"
 
-#####################################
- 
-# Packet Deploy VARs
-packet_k8s_deploy:
-  <<: *k8s_deploy_template
-  variables:
-    CLOUD: ${PACKET_CLOUD}
-  environment:
-    name: ${PACKET_CLOUD}-${CI_COMMIT_REF_SLUG}
-    url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
-    on_stop: packet_k8s_destroy
-
-# Packet E2E VARs
-packet_k8s_e2e:
-  <<: *k8s_e2e_template
-  variables:
-    CLOUD: ${PACKET_CLOUD}
-  environment:
-    name: ${PACKET_CLOUD}-${CI_COMMIT_REF_SLUG}
-    url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
-
-# Packet Destroy VARs
-packet_k8s_destroy:
-  <<: *k8s_cloud_destroy_template
-  variables:
-    CLOUD: ${PACKET_CLOUD}
-  environment:
-    name: ${PACKET_CLOUD}-${CI_COMMIT_REF_SLUG}
-    url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
-    action: stop
- 
-
-#####################################
-
-# GCE Deploy VARs
-gce_k8s_deploy:
-  <<: *k8s_deploy_template
-  variables:
-    CLOUD: ${GCE_CLOUD}
-  environment:
-    name: ${GCE_CLOUD}-${CI_COMMIT_REF_SLUG}
-    url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
-    on_stop: gce_k8s_destroy
-
-# GCE E2E VARs
-gce_k8s_e2e:
-  <<: *k8s_e2e_template
-  variables:
-    CLOUD: ${GCE_CLOUD}
-  environment:
-    name: ${GCE_CLOUD}-${CI_COMMIT_REF_SLUG}
-    url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
-
-# GCE Destroy VARs
-gce_k8s_destroy:
-  <<: *k8s_cloud_destroy_template
-  variables:
-    CLOUD: ${GCE_CLOUD}
-  environment:
-    name: ${GCE_CLOUD}-${CI_COMMIT_REF_SLUG}
-    url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
-    action: stop
- 
-
-#################################
-
-# GKE Deploy VARs
-gke_k8s_deploy:
-  <<: *k8s_deploy_template
-  variables:
-    CLOUD: ${GKE_CLOUD}
-  environment:
-    name: ${GKE_CLOUD}-${CI_COMMIT_REF_SLUG}
-    url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
-    on_stop: gke_k8s_destroy
-
-# GKE E2E VARs
-gke_k8s_e2e:
-  <<: *k8s_e2e_template
-  variables:
-    CLOUD: ${GKE_CLOUD}
-  environment:
-    name: ${GKE_CLOUD}-${CI_COMMIT_REF_SLUG}
-    url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
-
-
-# GKE Destroy VARs
-gke_k8s_destroy:
-  <<: *k8s_cloud_destroy_template
-  variables:
-    CLOUD: ${GKE_CLOUD}
-  environment:
-    name: ${GKE_CLOUD}-${CI_COMMIT_REF_SLUG}
-    url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
-    action: stop
-
-
-# Bluemix Deploy ######################################
-
-#Bluemix Deploy VARs
-bluemix_k8s_deploy:
-  <<: *k8s_deploy_template
-  variables:
-    CLOUD: ${BLUEMIX_CLOUD}
-  environment:
-    name: ${BLUEMIX_CLOUD}-${CI_COMMIT_REF_SLUG}
-    url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
-    on_stop: bluemix_k8s_destroy
-
-#Bluemix E2E VARs
-bluemix_k8s_e2e:
-  <<: *k8s_e2e_template
-  variables:
-    CLOUD: bluemix
-  environment:
-    name: ${BLUEMIX_CLOUD}-${CI_COMMIT_REF_SLUG}
-    url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
-
-# Bluemix Destroy VARs
-bluemix_k8s_destroy:
-  <<: *k8s_cloud_destroy_template
-  variables:
-    CLOUD: ${BLUEMIX_CLOUD}
-  environment:
-    name: ${BLUEMIX_CLOUD}-${CI_COMMIT_REF_SLUG}
-    url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
-    action: stop
-    
-
-# Azure Deploy #################################
-
-# Azure Deploy VARs
-
-azure_k8s_deploy:
-  <<: *k8s_deploy_template
-  variables:
-    CLOUD: ${AZURE_CLOUD}
-  environment:
-    name: ${AZURE_CLOUD}-${CI_COMMIT_REF_SLUG}
-    url: https://$CI_ENVIRONMENT_SLUG.cncf.ci/
-    on_stop: azure_k8s_destroy
-
-# Azure E2E VARs
-azure_k8s_e2e:
-  <<: *k8s_e2e_template
-  variables:
-    CLOUD: ${AZURE_CLOUD}
-  environment:
-    name: ${AZURE_CLOUD}-${CI_COMMIT_REF_SLUG}
-    url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
-
- 
-# Azure Destroy VARs
-azure_k8s_destroy:
-  <<: *k8s_cloud_destroy_template
-  variables:
-    CLOUD: ${AZURE_CLOUD}
-  environment:
-    name: ${AZURE_CLOUD}-${CI_COMMIT_REF_SLUG}
-    url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
-    action: stop
+Dashboard:
+  image: crosscloudci/debian-docker 
+  stage: Update-Dashboard
+  script:
+    - echo 'true'

@@ -186,16 +186,22 @@ Current Phase: In Design/Planning
 ### Meetings / Demos
 
 #### Upcoming
-- December 26th, 2017 - CI-WG Status Update on 4th Tuesday at 8am Pacific: Meeting canceled due to the holidays
-- January 3rd, 2018 - Cross Cloud project demo with Camille Fournier
-- January 9th, 2018 - CI-WG Status Update on 2nd Tuesday at 8am Pacific
+- January 17th, 2018 - Cross Cloud project demo with Camille Fournier
+ on 2nd Tuesday at 8am Pacific
 - January 23rd, 2018 - CI-WG Status Update on 4th Tuesday at 8am Pacific
 - January, 2018 - Intro call with Packet+Arm team, TBD
+- February 13th, 2018 - CI-WG Status Update on 2nd Tuesday at 8am Pacific
+- February 27th, 2018 - CI-WG Status Update on 4th Tuesday at 8am Pacific
+- March 24th-25th, 2018 - [Cross Community Infra and CICD F2F/Workshop in Los Angeles](https://public.etherpad-mozilla.org/p/cross-community-infra-cicd)
+- March 26th-29th, 2018 - [ONS North America 2018 in Los Angeles](https://events.linuxfoundation.org/events/open-networking-summit-north-america-2018/)
+- May 2nd-4th, 2018 - [KubeCon CloudNativeCon Europe in Copenhagen, Denmark](https://www.google.com/url?q=https%3A%2F%2Fevents.linuxfoundation.org%2Fevents%2Fkubecon-cloudnativecon-europe-2018%2F&sa=D&ust=1515523215433000&usg=AFQjCNHskvq8WRzkzRNuh9A8rGjCJcvoyg)
 
 
 
 
 #### Past
+- [January 9th, 2018 - CI-WG Status Update](https://docs.google.com/presentation/d/1DXs0DNCnPcpM8Bou6K1A3E9G89CmW8cwZJincwgewuM/edit#slide=id.g242b36cf7c_0_151)
+- December 26th, 2017 - CI-WG Status Update on 4th Tuesday at 8am Pacific: Meeting canceled due to the holidays
 - [December 12th, 2017 - CI-WG Status Updates](https://docs.google.com/presentation/d/16a-oKZcl4CKwMtcvU6mWDOzIcb7oNTXW5wNppN8-M0s/edit?usp=sharing)
 - [December 6th-8th, 2017 - KubeCon + CloudNativeCon North America 2017](https://www.cncf.io/event/cloudnativecon-north-america-2017/)
 - [November 28th, 2017 - CI-WG Status Updates](https://docs.google.com/presentation/d/1JAXkf6kKgo6E7mhKPgZXbRWIsh-yE6TkgEXPBhttpH4/edit?usp=sharing)

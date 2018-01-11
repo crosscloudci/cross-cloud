@@ -1,5 +1,5 @@
 resource "google_compute_firewall" "allow-internal-lb" {
-  name    = "${ name }-internal-lb"
+  name    = "${ var.name }-internal-lb"
   network = "${ var.name }"
 
   allow {
@@ -12,7 +12,7 @@ resource "google_compute_firewall" "allow-internal-lb" {
 }
 
 resource "google_compute_firewall" "allow-health-check" {
-  name    = "${ name }-health-check"
+  name    = "${ var.name }-health-check"
   network = "${ var.name }"
 
   allow {

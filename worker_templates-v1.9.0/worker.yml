@@ -97,19 +97,19 @@ write-files:
       ${ proxy_kubeconfig }
 
  
-  - path: /etc/kubernetes/pki/ca-certificates.crt
+  - path: /etc/srv/kubernetes/pki/ca-certificates.crt
     permissions: "0644"
     encoding: "gzip+base64"
     content: |
       ${ ca }
       
-  - path: /etc/kubernetes/pki/kubelet.crt
+  - path: /etc/srv/kubernetes/pki/kubelet.crt
     permissions: "0644"
     encoding: "gzip+base64"
     content: |
       ${ worker }
       
-  - path: /etc/kubernetes/pki/kubelet.key
+  - path: /etc/srv/kubernetes/pki/kubelet.key
     permissions: "0644"
     encoding: "gzip+base64"
     content: |

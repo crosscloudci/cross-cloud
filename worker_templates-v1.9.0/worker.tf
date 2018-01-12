@@ -64,10 +64,10 @@ data "template_file" "kubelet_kubeconfig" {
   template = "${ file( "${ path.module }/kubeconfig" )}"
 
   vars {
-    cluster = "certificate-authority-data: ${ base64encode(var.ca) } \n    server: https://${ var.internal_lb_ip }"
+    cluster = "certificate-authority: /etc/srv/kubernetes/pki/ca-certificates.crt \n    server: https://${ var.internal_lb_ip }"
     user = "kubelet"
     name = "service-account-context"
-    user_authentication = "client-certificate-data: ${ base64encode(var.worker) } \n    client-key-data: ${ base64encode(var.worker_key) }"
+    user_authentication = "client-certificate: /etc/srv/kubernetes/pki/kubelet.crt \n    client-key: /etc/srv/kubernetes/pki/kubelet.key"
   }
 }
 
@@ -83,10 +83,10 @@ data "template_file" "proxy_kubeconfig" {
   template = "${ file( "${ path.module }/kubeconfig" )}"
 
   vars {
-    cluster = "certificate-authority-data: ${ base64encode(var.ca) } \n    server: https://${ var.internal_lb_ip }"
+    cluster = "certificate-authority: /etc/srv/kubernetes/pki/ca-certificates.crt \n    server: https://${ var.internal_lb_ip }"
     user = "kube-proxy"
     name = "service-account-context"
-    user_authentication = "client-certificate-data: ${ base64encode(var.worker) } \n    client-key-data: ${ base64encode(var.worker_key) }"
+    user_authentication = "client-certificate: /etc/srv/kubernetes/pki/kubelet.crt \n    client-key: /etc/srv/kubernetes/pki/kubelet.key"
   }
 }
 

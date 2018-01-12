@@ -10,11 +10,6 @@ ENV TERRAFORM_VERSION=0.10.6
 ENV ARC=amd64
 
 
-# Install AWS / AZURE CLI Deps
-RUN apt update
-RUN apt install -y unzip git bash util-linux wget tar curl awscli python-pip jq \
-  groff-base less libffi-dev
-
 #Install Kubectl
 RUN wget -O /usr/local/bin/kubectl https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_VERSION}/bin/linux/$ARC/kubectl && \
 chmod +x /usr/local/bin/kubectl
@@ -53,6 +48,8 @@ RUN go get -u github.com/jakexks/terraform-provider-gzip && \
   echo } >> ~/.terraformrc
 
 #Add Terraform Modules
+
+COPY validate-cluster/ /cncf/validate-cluster/
 
 COPY aws/ /cncf/aws/
 COPY azure/ /cncf/azure/

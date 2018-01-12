@@ -60,10 +60,11 @@ module "worker" {
   source = "./modules/worker"
   instance_profile_name = "${ module.iam.instance_profile_name_worker }"
 
+  worker_node_count = "${ var.worker_node_count }"
+  name = "${ var.name }"
   ami_id = "${ var.aws_image_ami }"
   instance_type = "${ var.aws_worker_vm_size }"
   aws_key_name = "${ var.aws_key_name }"
-  name = "${ var.name }"
   region = "${ var.aws_region }"
   security_group_id = "${ module.security.worker_id }"
   subnet_private_id = "${ module.vpc.subnet_private_id }"

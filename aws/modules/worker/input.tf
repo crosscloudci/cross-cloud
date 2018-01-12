@@ -7,3 +7,7 @@ variable "region" {}
 variable "security_group_id" {}
 variable "subnet_private_id" {}
 variable "worker_cloud_init" {}
+variable "worker_node_count" {}
+
+
+

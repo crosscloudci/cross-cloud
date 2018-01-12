@@ -61,11 +61,6 @@ module "worker" {
   instance_profile_name = "${ module.iam.instance_profile_name_worker }"
 
   ami_id = "${ var.aws_image_ami }"
-  capacity = {
-    desired = "${ var.worker_node_count }"
-    max = "${ var.worker_node_max}"
-    min = "${ var.worker_node_min}"
-  }
   instance_type = "${ var.aws_worker_vm_size }"
   aws_key_name = "${ var.aws_key_name }"
   name = "${ var.name }"

@@ -1,11 +1,4 @@
 variable "ami_id" {}
-variable "capacity" {
-  default = {
-    desired = 5
-    max = 5
-    min = 3
-  }
-}
 variable "instance_profile_name" {}
 variable "instance_type" {}
 variable "aws_key_name" {}

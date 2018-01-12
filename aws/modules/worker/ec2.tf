@@ -2,7 +2,7 @@ resource "aws_launch_configuration" "worker" {
   iam_instance_profile = "${ var.instance_profile_name }"
   image_id = "${ var.ami_id }"
   instance_type = "${ var.instance_type }"
-  key_name = "${ var.key_name }"
+  key_name = "${ var.aws_key_name }"
 
   root_block_device {
     volume_size = 52

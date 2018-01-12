@@ -8,7 +8,7 @@ variable "capacity" {
 }
 variable "instance_profile_name" {}
 variable "instance_type" {}
-variable "key_name" {}
+variable "aws_key_name" {}
 variable "name" {}
 variable "region" {}
 variable "security_group_id" {}

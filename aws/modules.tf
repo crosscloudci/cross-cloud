@@ -31,7 +31,7 @@ module "master" {
   master_node_count              = "${ var.master_node_count }"
   name                           = "${ var.name }"
   ami_id                         = "${ var.aws_image_ami }"
-  key_name                       = "${ var.aws_key_name }"
+  aws_key_name                   = "${ var.aws_key_name }"
   master_security                = "${ module.security.master_id }"
   external_lb_security           = "${ module.security.external_lb_id }"
   internal_lb_security           = "${ module.security.internal_lb_id }"
@@ -49,7 +49,7 @@ module "bastion" {
 
   ami_id = "${ var.aws_image_ami }"
   instance_type = "${ var.aws_bastion_vm_size }"
-  key_name = "${ var.aws_key_name }"
+  aws_key_name = "${ var.aws_key_name }"
   name = "${ var.name }"
   security_group_id = "${ module.security.bastion_id }"
   subnet_public_id = "${ module.vpc.subnet_public_id }"
@@ -67,7 +67,7 @@ module "worker" {
     min = "${ var.worker_node_min}"
   }
   instance_type = "${ var.aws_worker_vm_size }"
-  key_name = "${ var.aws_key_name }"
+  aws_key_name = "${ var.aws_key_name }"
   name = "${ var.name }"
   region = "${ var.aws_region }"
   security_group_id = "${ module.security.worker_id }"

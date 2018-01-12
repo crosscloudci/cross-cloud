@@ -105,7 +105,6 @@ if [ "$1" = "aws-deploy" ] ; then
     KUBECTL_PATH=$(which kubectl) NUM_NODES="$NODES" KUBERNETES_PROVIDER=local ${DIR}/validate-cluster/cluster/validate-cluster.sh
     _retry "❤ Installing Helm" helm init
     _retry "Wait for Tiller Deployment to be available" kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
-    kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
 elif [ "$1" = "aws-destroy" ] ; then
       cd ${DIR}/aws
       if [ "$3" = "s3" ]; then
@@ -159,7 +158,6 @@ elif [ "$1" = "azure-deploy" ] ; then
     KUBECTL_PATH=$(which kubectl) NUM_NODES="$NODES" KUBERNETES_PROVIDER=local ${DIR}/validate-cluster/cluster/validate-cluster.sh
     _retry "❤ Installing Helm" helm init
     _retry "Wait for Tiller Deployment to be available" kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
-    kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
 
 
 elif [ "$1" = "azure-destroy" ] ; then
@@ -233,7 +231,6 @@ fi
     KUBECTL_PATH=$(which kubectl) NUM_NODES="$NODES" KUBERNETES_PROVIDER=local ${DIR}/validate-cluster/cluster/validate-cluster.sh
     _retry "❤ Installing Helm" helm init
     _retry "Wait for Tiller Deployment to be available" kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
-    kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
 
 elif [ "$1" = "packet-destroy" ] ; then
      cd ${DIR}/packet
@@ -281,7 +278,6 @@ elif [ "$3" = "file" ]; then
     KUBECTL_PATH=$(which kubectl) NUM_NODES="$NODES" KUBERNETES_PROVIDER=local ${DIR}/validate-cluster/cluster/validate-cluster.sh
     _retry "❤ Installing Helm" helm init
     _retry "Wait for Tiller Deployment to be available" kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
-    kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
 
 
 elif [ "$1" = "gce-destroy" ] ; then
@@ -332,7 +328,6 @@ fi
     kubectl cluster-info
     _retry "❤ Installing Helm" helm init
     _retry "Wait for Tiller Deployment to be available" kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
-    kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
 
 elif [ "$1" = "gke-destroy" ] ; then
 cd ${DIR}/gke
@@ -403,3 +398,4 @@ elif [ "$3" = "file" ]; then
 time terraform destroy -force ${DIR}/bluemix
 fi
 fi
+ 

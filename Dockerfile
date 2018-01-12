@@ -9,7 +9,7 @@ ENV TERRAFORM_VERSION=0.10.6
 # ENV TF_RELEASE=true
 ENV ARC=amd64
 
-RUN apt-update && apt install -y unzip git bash util-linux wget tar curl jq less
+RUN apt update && apt install -y unzip git bash util-linux wget tar curl jq less
 
 #Install Kubectl
 RUN wget -O /usr/local/bin/kubectl https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_VERSION}/bin/linux/$ARC/kubectl && \

@@ -21,17 +21,18 @@ tar xvzf helm-${HELM_VERSION}-linux-amd64.tar.gz && \
 mv linux-amd64/helm /usr/local/bin && \
 rm -rf helm-*gz linux-amd64
 
-#Install Terraform from Upstream
-RUN wget https://releases.hashicorp.com/terraform/$TERRAFORM_VERSION/terraform_"${TERRAFORM_VERSION}"_linux_$ARC.zip
-RUN unzip terraform*.zip -d /usr/bin
-
-
 # # Install Terraform 
 # WORKDIR $GOPATH/src/github.com/hashicorp/terraform
 # RUN git clone https://github.com/dlx/terraform.git ./ && \
 #     git checkout ${TERRAFORM_VERSION} && \
 #     /bin/bash scripts/build.sh
 # WORKDIR $GOPATH
+
+
+#Install Terraform from Upstream
+RUN wget https://releases.hashicorp.com/terraform/$TERRAFORM_VERSION/terraform_"${TERRAFORM_VERSION}"_linux_$ARC.zip
+RUN unzip terraform*.zip -d /usr/bin
+
 
 # Install Bluemix Provider
 RUN mkdir -p $GOPATH/src/github.com/terraform-providers \
@@ -46,7 +47,9 @@ RUN go get -u github.com/jakexks/terraform-provider-gzip && \
   echo providers { >> ~/.terraformrc && \
   echo '    gzip = "/go/bin/terraform-provider-gzip"' >> ~/.terraformrc && \
   echo '    etcdiscovery = "/go/bin/terraform-provider-etcdiscovery"' >> ~/.terraformrc && \
+  echo '    ibm = "/go/bin/terraform-provider-ibm"' >> ~/.terraformrc && \
   echo } >> ~/.terraformrc
+
 
 #Add Terraform Modules
 

@@ -51,7 +51,7 @@ docker run \
   -e AWS_ACCESS_KEY_ID= $AWS_ACCESS_KEY_ID    \
   -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY    \
   -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION    \
-  -ti registry.cncf.ci/cncf/cross-cloud/provisioning:ci-stable-v0-2-0
+  -ti registry.cncf.ci/cncf/cross-cloud/provisioning:stable-v0-2-0-integrations
 ```
 
 ##### Quick start for GCE
@@ -86,7 +86,7 @@ docker run \
   -e GOOGLE_REGION=us-central1    \
   -e GOOGLE_PROJECT=test-cncf-cross-cloud  \
   -e GOOGLE_CREDENTIALS=”${GOOGLE_CREDENTIALS}”
-  -ti registry.cncf.ci/cncf/cross-cloud/provisioning:ci-stable-v0-2-0
+  -ti registry.cncf.ci/cncf/cross-cloud/provisioning:stable-v0-2-0-integrations
 ```
 
 ##### Quick start for OpenStack
@@ -108,7 +108,7 @@ docker run \
   -e TF_VAR_os_username=$OS_USERNAME \
   -e TF_VAR_os_project_name=$OS_PROJECT_NAME \
   -e TF_VAR_os_password=$OS_PASSWORD \
-  -ti registry.cncf.ci/cncf/cross-cloud/provisioning:ci-stable-v0-2-0
+  -ti registry.cncf.ci/cncf/cross-cloud/provisioning:stable-v0-2-0-integrations
 ```
 
 #### General usage and configuration
@@ -123,7 +123,7 @@ docker run \
   -e BACKEND=<file|s3>  \ 
   <CLOUD_SPECIFIC_OPTIONS>
   <KUBERNETES_CLUSTER_OPTIONS>
-  -ti registry.cncf.ci/cncf/cross-cloud/provisioning:ci-stable-v0-2-0
+  -ti registry.cncf.ci/cncf/cross-cloud/provisioning:stable-v0-2-0-integrations
 ```
 
 #### Common Options

@@ -186,8 +186,6 @@ Current Phase: In Design/Planning
 ### Meetings / Demos
 
 #### Upcoming
-- January 17th, 2018 - Cross Cloud project demo with Camille Fournier
- on 2nd Tuesday at 8am Pacific
 - January 23rd, 2018 - CI-WG Status Update on 4th Tuesday at 8am Pacific
 - January, 2018 - Intro call with Packet+Arm team, TBD
 - February 13th, 2018 - CI-WG Status Update on 2nd Tuesday at 8am Pacific
@@ -200,6 +198,7 @@ Current Phase: In Design/Planning
 
 
 #### Past
+- January 17th, 2018 - Cross Cloud project demo with Camille Fournier
 - [January 9th, 2018 - CI-WG Status Update](https://docs.google.com/presentation/d/1DXs0DNCnPcpM8Bou6K1A3E9G89CmW8cwZJincwgewuM/edit#slide=id.g242b36cf7c_0_151)
 - December 26th, 2017 - CI-WG Status Update on 4th Tuesday at 8am Pacific: Meeting canceled due to the holidays
 - [December 12th, 2017 - CI-WG Status Updates](https://docs.google.com/presentation/d/16a-oKZcl4CKwMtcvU6mWDOzIcb7oNTXW5wNppN8-M0s/edit?usp=sharing)

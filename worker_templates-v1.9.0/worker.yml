@@ -127,23 +127,3 @@ write-files:
     owner: root
     content: |
       ${ dns_conf }
-
-  - path: /etc/kubernetes/manifests/dns.yml
-    permissions: "0644"
-    encoding: "gzip+base64"
-    content: |
-      ${ dns_worker }
-
-  - path: /var/dns/Corefile
-    permissions: "0644"
-    encoding: "gzip+base64"
-    content: |
-      ${ corefile }
-
-  - path: /etc/kubernetes/manifests/etcd-proxy.yml
-    permissions: "0644"
-    encoding: "gzip+base64"
-    content: |
-      ${ dns_etcd }
-
-

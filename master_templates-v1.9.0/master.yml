@@ -191,8 +191,10 @@ write-files:
       export ETCD_ADVERTISE_CLIENT_URLS=http://$private_ipv4:4002
       export ETCD_INITIAL_ADVERTISE_PEER_URLS=http://$private_ipv4:2381
 
-  - path: /etc/srv/kubernetes/ip.env
+  - path: /etc/srv/kubernetes/bootstrap.env
     content: |
+      export NAME=${ name }
+      export ETCD_BOOTSTRAP=${ etcd_bootstrap }
       export PRIVATE_IPV4=$private_ipv4
       export PUBLIC_IPV4=$public_ipv4
       
@@ -208,9 +210,3 @@ write-files:
     encoding: "gzip+base64"
     content: |
       ${ dns_master }
-
-  - path: /var/dns/Corefile
-    permissions: "0644"
-    encoding: "gzip+base64"
-    content: |
-      ${ corefile }

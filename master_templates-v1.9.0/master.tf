@@ -27,16 +27,16 @@ resource "gzip_me" "cloud_config_file" {
 }
 
 resource "gzip_me" "dns_master" {
-  input = "${ var.dns_master }"
+ input = "${ var.dns_master }"
 }
 
 resource "gzip_me" "dns_conf" {
   input = "${ var.dns_conf }"
 }
 
-resource "gzip_me" "corefile" {
-  input = "${ var.corefile }"
-}
+# resource "gzip_me" "corefile" {
+#   input = "${ var.corefile }"
+# }
 
 
 
@@ -284,7 +284,8 @@ data "template_file" "master" {
     basic_auth_csv = "${ gzip_me.basic_auth_csv.output }"
     dns_master = "${ gzip_me.dns_master.output }"
     dns_conf = "${ gzip_me.dns_conf.output }"
-    corefile = "${ gzip_me.corefile.output }"
+    name = "${ var.name }"
+    etcd_bootstrap = "${ var.etcd_bootstrap }"
 
   }
 }

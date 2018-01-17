@@ -1,6 +1,7 @@
 variable "master_node_count" {}
 variable "name" {}
 variable "etcd_endpoint" {}
+variable "etcd_bootstrap" {}
 
 variable "kubelet_artifact" {}
 variable "cni_artifact" {}
@@ -32,4 +33,4 @@ variable "cloud_config_file" {}
 
 variable "dns_master" {}
 variable "dns_conf" {}
-variable "corefile" {}
+# variable "corefile" {}

@@ -14,10 +14,8 @@ spec:
     - /coredns -conf /etc/coredns/Corefile
     image: coredns/coredns:011
     livenessProbe:
-      httpGet:
-        host: 127.0.0.1
-        path: /health
-        port: 4001
+      tcpSocket:
+        port: 53
       initialDelaySeconds: 15
       timeoutSeconds: 15
     name: dns-container

@@ -45,8 +45,8 @@ module "tls" {
   tls_apiserver_cert_subject_common_name = "kubernetes-master"
   tls_apiserver_cert_validity_period_hours = 1000
   tls_apiserver_cert_early_renewal_hours = 100
-  tls_apiserver_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local,external.skydns.local"
-  tls_apiserver_cert_ip_addresses = "127.0.0.1,100.64.0.1"
+  tls_apiserver_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local,i${ var.name }.packet.local,e${ var.name }.packet.local"
+  tls_apiserver_cert_ip_addresses = "127.0.0.1,100.64.0.1,${ var.dns_service_ip }"
 
   tls_worker_cert_subject_common_name = "kubernetes-worker"
   tls_worker_cert_validity_period_hours = 1000
@@ -61,7 +61,8 @@ module "master_templates" {
 
   master_node_count = "${ var.master_node_count }"
   name = "${ var.name }"
-  etcd_endpoint = "${ var.etcd_endpoint }"
+  etcd_endpoint = "i${ var.name }.packet.local"
+  etcd_bootstrap = "${ var.etcd_bootstrap }"
 
   kubelet_artifact = "${ var.kubelet_artifact }"
   cni_artifact = "${ var.cni_artifact }"
@@ -93,7 +94,6 @@ module "master_templates" {
 
   dns_master = "${ module.dns.dns_master }"
   dns_conf = "${ module.dns.dns_conf }"
-  corefile = "${ module.dns.corefile }"
 
 }
 
@@ -114,34 +114,28 @@ module "worker_templates" {
   pod_cidr = "${ var.pod_cidr }"
   non_masquerade_cidr = "${ var.non_masquerade_cidr }"
   dns_service_ip = "${ var.dns_service_ip }"
-  internal_lb_ip = "external.skydns.local"
+  internal_lb_ip = "i${ var.name }.packet.local"
 
   ca = "${ module.tls.ca }"
   worker = "${ module.tls.worker }"
   worker_key = "${ module.tls.worker_key }"
   cloud_config_file = ""
 
-  dns_worker = "${ module.dns.dns_worker }"
   dns_conf = "${ module.dns.dns_conf }"
-  corefile = "${ module.dns.corefile }"
-  dns_etcd = "${ module.dns.dns_etcd }"
 
 }
 
 module "dns" {
   source = "../dns"
-  domain = "cluster.local"
-
-  etcd_image = "${ var.etcd_image }"
-  etcd_tag = "${ var.etcd_tag }"
-  etcd_discovery = "${ module.master_templates.etcd_discovery }"
+  name = "${ var.name }"
+  discovery_nameserver = "${ var.discovery_nameserver }"
 
 }
 
 module "kubeconfig" {
   source = "../kubeconfig"
   data_dir = "${ var.data_dir }"
-  endpoint = "external.skydns.local"
+  endpoint = "e${ var.name }.packet.local"
   name = "${ var.name }"
   ca = "${ module.tls.ca}"
   client = "${ module.tls.client }"

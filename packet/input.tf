@@ -2,6 +2,8 @@ variable "name" { default = "packet" }
 
 variable "data_dir" { default = "/cncf/data/packet" }
 
+variable "etcd_bootstrap" { default = "147.75.94.227:2379" }
+variable "discovery_nameserver" { default = "147.75.94.149" }
 
 variable "master_node_count" { default = "3" }
 variable "worker_node_count" { default = "1" }
@@ -15,13 +17,12 @@ variable "packet_billing_cycle" { default = "hourly" }
 
 
 # VM Image and size
-variable "packet_master_device_plan" { default = "baremetal_1" }
+variable "packet_master_device_plan" { default = "baremetal_0" }
 variable "packet_worker_device_plan" { default = "baremetal_1" }
 variable "packet_operating_system" { default = "coreos_stable" }
 
 
 # Kubernetes
-variable "etcd_endpoint" {default = "internal.skydns.local"}
 variable "cloud_provider" { default = "" }
 variable "cloud_config" { default = "" }
 variable "cluster_domain" { default = "cluster.local" }

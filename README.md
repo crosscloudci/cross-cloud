@@ -186,8 +186,7 @@ Current Phase: In Design/Planning
 ### Meetings / Demos
 
 #### Upcoming
-- January 23rd, 2018 - CI-WG Status Update on 4th Tuesday at 8am Pacific
-- January, 2018 - Intro call with Packet+Arm team, TBD
+- February, 2018 - Intro call with Packet+Arm team, TBD
 - February 13th, 2018 - CI-WG Status Update on 2nd Tuesday at 8am Pacific
 - February 27th, 2018 - CI-WG Status Update on 4th Tuesday at 8am Pacific
 - March 24th-25th, 2018 - [Cross Community Infra and CICD F2F/Workshop in Los Angeles](https://public.etherpad-mozilla.org/p/cross-community-infra-cicd)
@@ -198,6 +197,7 @@ Current Phase: In Design/Planning
 
 
 #### Past
+- [January 23rd, 2018 - CI-WG Status Update](https://docs.google.com/presentation/d/1j8wa5xGMFFiLBwxuu4xyhtMFUyGSnDb-EIJY2ghsf-A/edit#slide=id.g242b36cf7c_0_137)
 - January 18th, 2018 - Cross Cloud project demo with Lucas Käldström
 - January 17th, 2018 - Cross Cloud project demo with Camille Fournier
 - [January 9th, 2018 - CI-WG Status Update](https://docs.google.com/presentation/d/1DXs0DNCnPcpM8Bou6K1A3E9G89CmW8cwZJincwgewuM/edit#slide=id.g242b36cf7c_0_151)

@@ -197,7 +197,7 @@ Current Phase: In Design/Planning
 
 
 #### Past
-- [January 23rd, 2018 - CI-WG Status Update](https://docs.google.com/presentation/d/1j8wa5xGMFFiLBwxuu4xyhtMFUyGSnDb-EIJY2ghsf-A/edit#slide=id.g242b36cf7c_0_137)
+- [January 23rd, 2018 - CI-WG Status Update](https://docs.google.com/presentation/d/1j8wa5xGMFFiLBwxuu4xyhtMFUyGSnDb-EIJY2ghsf-A/)
 - January 18th, 2018 - Cross Cloud project demo with Lucas Käldström
 - January 17th, 2018 - Cross Cloud project demo with Camille Fournier
 - [January 9th, 2018 - CI-WG Status Update](https://docs.google.com/presentation/d/1DXs0DNCnPcpM8Bou6K1A3E9G89CmW8cwZJincwgewuM/edit#slide=id.g242b36cf7c_0_151)

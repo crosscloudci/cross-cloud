@@ -102,7 +102,7 @@ if [ "$1" = "aws-deploy" ] ; then
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
     echo "❤ Polling for cluster life - this could take a minute or more"
     export NODES="$(expr $TF_VAR_master_node_count + $TF_VAR_worker_node_count)"
-    KUBECTL_PATH=$(which kubectl) NUM_NODES="$NODES" KUBERNETES_PROVIDER=local ${DIR}/validate-cluster/cluster/validate-cluster.sh
+    KUBECTL_PATH=$(which kubectl) NUM_NODES="$NODES" KUBERNETES_PROVIDER=local ${DIR}/validate-cluster/cluster/validate-cluster.sh || true
     _retry "❤ Installing Helm" helm init
     _retry "Wait for Tiller Deployment to be available" kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
 elif [ "$1" = "aws-destroy" ] ; then
@@ -155,7 +155,7 @@ elif [ "$1" = "azure-deploy" ] ; then
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
     echo "❤ Polling for cluster life - this could take a minute or more"
     export NODES="$(expr $TF_VAR_master_node_count + $TF_VAR_worker_node_count)"
-    KUBECTL_PATH=$(which kubectl) NUM_NODES="$NODES" KUBERNETES_PROVIDER=local ${DIR}/validate-cluster/cluster/validate-cluster.sh
+    KUBECTL_PATH=$(which kubectl) NUM_NODES="$NODES" KUBERNETES_PROVIDER=local ${DIR}/validate-cluster/cluster/validate-cluster.sh || true
     _retry "❤ Installing Helm" helm init
     _retry "Wait for Tiller Deployment to be available" kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
 
@@ -185,9 +185,9 @@ elif [[ "$1" = "openstack-deploy" || "$1" = "openstack-destroy" ]] ; then
     if [ "$3" = "s3" ] ; then
         cp ../s3-backend.tf .
         terraform init \
-            -backend-config 'bucket=aws65972563' \
+            -backend-config "bucket=${AWS_BUCKET}" \
             -backend-config "key=openstack-${TF_VAR_name}" \
-            -backend-config 'region=ap-southeast-2'
+            -backend-config "region=${AWS_DEFAULT_REGION}"
     elif [ "$3" = "file" ] ; then
         cp ../file-backend.tf .
         terraform init -backend-config "path=/cncf/data/${TF_VAR_NAME}/terraform.tfstate"
@@ -227,7 +227,7 @@ fi
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
     echo "❤ Polling for cluster life - this could take a minute or more"
     export NODES="$(expr $TF_VAR_master_node_count + $TF_VAR_worker_node_count)"
-    KUBECTL_PATH=$(which kubectl) NUM_NODES="$NODES" KUBERNETES_PROVIDER=local ${DIR}/validate-cluster/cluster/validate-cluster.sh
+    KUBECTL_PATH=$(which kubectl) NUM_NODES="$NODES" KUBERNETES_PROVIDER=local ${DIR}/validate-cluster/cluster/validate-cluster.sh || true
     _retry "❤ Installing Helm" helm init
     _retry "Wait for Tiller Deployment to be available" kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
 
@@ -274,7 +274,7 @@ elif [ "$3" = "file" ]; then
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
     echo "❤ Polling for cluster life - this could take a minute or more"
     export NODES="$(expr $TF_VAR_master_node_count + $TF_VAR_worker_node_count)"
-    KUBECTL_PATH=$(which kubectl) NUM_NODES="$NODES" KUBERNETES_PROVIDER=local ${DIR}/validate-cluster/cluster/validate-cluster.sh
+    KUBECTL_PATH=$(which kubectl) NUM_NODES="$NODES" KUBERNETES_PROVIDER=local ${DIR}/validate-cluster/cluster/validate-cluster.sh || true
     _retry "❤ Installing Helm" helm init
     _retry "Wait for Tiller Deployment to be available" kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
 

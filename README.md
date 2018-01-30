@@ -197,6 +197,7 @@ Current Phase: In Design/Planning
 
 
 #### Past
+- [January 26th, 2018 - Cross-Cloud CI Dashboard v1.0.0 Release](https://docs.google.com/presentation/d/1hhhx0C3REd3l94QU-0DB6Try4jdHZ8ou2klzJOfCC9M/edit?usp=sharing)
 - [January 23rd, 2018 - CI-WG Status Update](https://docs.google.com/presentation/d/1j8wa5xGMFFiLBwxuu4xyhtMFUyGSnDb-EIJY2ghsf-A/)
 - January 18th, 2018 - Cross Cloud project demo with Lucas Käldström
 - January 17th, 2018 - Cross Cloud project demo with Camille Fournier

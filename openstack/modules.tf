@@ -38,6 +38,7 @@ module "master_templates" {
   master_node_count = "${ var.master_node_count }"
   name = "${ var.name }"
   etcd_endpoint = "${ var.etcd_endpoint }"
+  etcd_bootstrap = ""
 
   kubelet_artifact = "${ var.kubelet_artifact }"
   cni_artifact = "${ var.cni_artifact }"
@@ -69,7 +70,6 @@ module "master_templates" {
 
   dns_master = ""
   dns_conf = ""
-  corefile = ""
 }
 
 module "worker" {
@@ -109,10 +109,7 @@ module "worker_templates" {
   worker_key = "${ module.tls.worker_key }"
   cloud_config_file = "${ data.template_file.cloud_conf.rendered }"
 
-  dns_worker = ""
   dns_conf = ""
-  corefile = ""
-  dns_etcd = ""
 }
 
 

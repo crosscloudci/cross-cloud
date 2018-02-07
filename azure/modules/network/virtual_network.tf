@@ -4,18 +4,15 @@ resource "azurerm_virtual_network" "cncf" {
   address_space       = ["${ var.vpc_cidr }"]
   location            = "${ var.location }"
   resource_group_name = "${ var.name }"
+
+  subnet {
+    name           = "${ var.name }-subnet"
+    address_prefix = "${ var.subnet_cidr }"
+  }
 }
 
-
-
-# resource "azurerm_network_security_group" "cncf" {
-#   name                = "${ var.name }"
-#   location            = "${ var.location}"
-#   resource_group_name = "${ var.name }"
-# }
-
-# resource "azurerm_route_table" "cncf" {
-#   name                = "${ var.name }"
-#   location            = "${ var.location }"
-#   resource_group_name = "${ var.name }"
-# }
+data "azurerm_subnet" "cncf" {
+  name                 = "${ var.name }-subnet"
+  virtual_network_name = "${ var.name }"
+  resource_group_name  = "${ var.name }"
+}

@@ -4,7 +4,7 @@ resource "aws_instance" "master" {
   ami = "${ var.ami_id }"
   iam_instance_profile = "${ var.instance_profile_name }"
   instance_type = "${ var.instance_type }"
-  key_name = "${ var.key_name }"
+  key_name = "${ var.aws_key_name }"
 
   source_dest_check = false
   associate_public_ip_address = false

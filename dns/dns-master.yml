@@ -6,29 +6,16 @@ metadata:
     k8s-app: dns-server
   name: dns-server
   namespace: kube-system
-  annotations:
-    pod.beta.kubernetes.io/init-containers: '[
-        {
-            "name": "seed-dns",
-            "image": "docker.io/iidlx/bootstrap",
-            "command": [
-              "/bin/sh", "-c", "/seed/entrypoint.sh"
-            ],
-            "volumeMounts":[{"name":"cloudvars","mountPath":"/etc/srv/kubernetes"}]
-          }
-        ]'
 spec:
   containers:
   - command:
     - /bin/sh
     - -c
-    - /coredns -conf /etc/coredns/Corefile
+    - /coredns 
     image: coredns/coredns:011
     livenessProbe:
-      httpGet:
-        host: 127.0.0.1
-        path: /health
-        port: 4001
+      tcpSocket:
+        port: 53
       initialDelaySeconds: 15
       timeoutSeconds: 15
     name: dns-container
@@ -44,6 +31,16 @@ spec:
       mountPath: /etc/coredns
     - mountPath: /etc/srv/kubernetes
       name: cloudvars
+  initContainers:
+  - command:
+    - /bin/sh
+    - -c
+    - /seed/entrypoint.sh
+    image: docker.io/iidlx/bootstrap
+    name: seed-dns
+    volumeMounts:
+    - name: cloudvars
+      mountPath: /etc/srv/kubernetes
   hostNetwork: true
   volumes:
   - hostPath:

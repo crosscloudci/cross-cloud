@@ -1,11 +1,7 @@
-FROM golang:alpine
-MAINTAINER "Denver Williams <denver@ii.coop>"
-ENV KUBECTL_VERSION=v1.6.6
-ENV HELM_VERSION=v2.4.1
-ENV GCLOUD_VERSION=150.0.0
-ENV AWSCLI_VERSION=1.11.75
-ENV AZURECLI_VERSION=2.0.2
-ENV PACKETCLI_VERSION=1.33
+FROM crosscloudci/debian-go:latest
+MAINTAINER "Denver Williams <denver@debian.nz>"
+ENV KUBECTL_VERSION=v1.8.1
+ENV HELM_VERSION=v2.7.2
 #PIN to Commit on Master
 ENV TERRAFORM_VERSION=0.10.6
 # ENV TERRAFORM_VERSION=master
@@ -13,26 +9,7 @@ ENV TERRAFORM_VERSION=0.10.6
 # ENV TF_RELEASE=true
 ENV ARC=amd64
 
-
-# Install AWS / AZURE CLI Deps
-RUN apk update
-RUN apk add --update git bash util-linux wget tar curl build-base jq \
-  py-pip groff less openssh bind-tools python python-dev libffi-dev openssl-dev
-
-# no way to pin this packet-cli at the moment
-RUN go get -u github.com/ebsarr/packet
-RUN pip install packet-python==${PACKETCLI_VERSION} argh tabulate
-RUN pip install azure-cli==${AZURECLI_VERSION}
-RUN pip install awscli==${AWSCLI_VERSION}
-
-RUN apk --purge -v del py-pip && \
-	rm /var/cache/apk/*
-
-# Install Google Cloud SDK
-RUN wget https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-${GCLOUD_VERSION}-linux-x86.tar.gz && \
-tar xvfz google-cloud-sdk-${GCLOUD_VERSION}-linux-x86.tar.gz && \
-./google-cloud-sdk/install.sh -q
-
+RUN apt update && apt install -y unzip git bash util-linux wget tar curl jq less
 
 #Install Kubectl
 RUN wget -O /usr/local/bin/kubectl https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_VERSION}/bin/linux/$ARC/kubectl && \
@@ -44,17 +21,18 @@ tar xvzf helm-${HELM_VERSION}-linux-amd64.tar.gz && \
 mv linux-amd64/helm /usr/local/bin && \
 rm -rf helm-*gz linux-amd64
 
-#Install Terraform from Upstream
-RUN wget https://releases.hashicorp.com/terraform/$TERRAFORM_VERSION/terraform_"${TERRAFORM_VERSION}"_linux_$ARC.zip
-RUN unzip terraform*.zip -d /usr/bin
-
-
 # # Install Terraform 
 # WORKDIR $GOPATH/src/github.com/hashicorp/terraform
 # RUN git clone https://github.com/dlx/terraform.git ./ && \
 #     git checkout ${TERRAFORM_VERSION} && \
 #     /bin/bash scripts/build.sh
 # WORKDIR $GOPATH
+
+
+#Install Terraform from Upstream
+RUN wget https://releases.hashicorp.com/terraform/$TERRAFORM_VERSION/terraform_"${TERRAFORM_VERSION}"_linux_$ARC.zip
+RUN unzip terraform*.zip -d /usr/bin
+
 
 # Install Bluemix Provider
 RUN mkdir -p $GOPATH/src/github.com/terraform-providers \
@@ -69,9 +47,13 @@ RUN go get -u github.com/jakexks/terraform-provider-gzip && \
   echo providers { >> ~/.terraformrc && \
   echo '    gzip = "/go/bin/terraform-provider-gzip"' >> ~/.terraformrc && \
   echo '    etcdiscovery = "/go/bin/terraform-provider-etcdiscovery"' >> ~/.terraformrc && \
+  echo '    ibm = "/go/bin/terraform-provider-ibm"' >> ~/.terraformrc && \
   echo } >> ~/.terraformrc
 
+
 #Add Terraform Modules
+
+COPY validate-cluster/ /cncf/validate-cluster/
 
 COPY aws/ /cncf/aws/
 COPY azure/ /cncf/azure/
@@ -96,12 +78,14 @@ COPY file-backend.tf /cncf/
 COPY master_templates-v1.7.2/ /cncf/master_templates-v1.7.2/
 COPY master_templates-v1.8.1/ /cncf/master_templates-v1.8.1/
 COPY master_templates-v1.9.0-alpha.1/ /cncf/master_templates-v1.9.0-alpha.1/
+COPY master_templates-v1.9.0/ /cncf/master_templates-v1.9.0/
 
 COPY worker_templates-v1.7.2/ /cncf/worker_templates-v1.7.2/
 COPY worker_templates-v1.8.1/ /cncf/worker_templates-v1.8.1/
 COPY worker_templates-v1.9.0-alpha.1/ /cncf/worker_templates-v1.9.0-alpha.1/
+COPY worker_templates-v1.9.0/ /cncf/worker_templates-v1.9.0/
 
 RUN chmod +x /cncf/provision.sh
 WORKDIR /cncf/
 
-CMD ["bash", "-c", "/cncf/provision.sh ${CLOUD}-${COMMAND} ${NAME} ${BACKEND}"]
+CMD ["bash", "-c", "/cncf/provision.sh ${CLOUD}-${COMMAND} ${NAME} ${BACKEND} ${DATA_FOLDER}"]

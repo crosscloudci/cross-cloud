@@ -16,9 +16,9 @@ NC='\033[0m' # No Color
 
 # Setup Enviroment Using $NAME
 export TF_VAR_name="$2"
-export TF_VAR_data_dir=$(pwd)/data/${TF_VAR_name}
-export TF_VAR_aws_key_name=${TF_VAR_name}
+export TF_VAR_data_dir=$(pwd)/data/"$4"
 export TF_VAR_packet_api_key=${PACKET_AUTH_TOKEN}
+export TF_VAR_google_project=${GOOGLE_PROJECT}
 
 # Configure Artifacts
 if [ ! -e $KUBELET_ARTIFACT ] ; then
@@ -65,8 +65,16 @@ if [ ! -e $KUBE_SCHEDULER_TAG ] ; then
     export TF_VAR_kube_scheduler_tag=$KUBE_SCHEDULER_TAG
 fi
 
+if [ ! -e $KUBE_PROXY_IMAGE ] ; then
+    export TF_VAR_kube_proxy_image=$KUBE_PROXY_IMAGE
+fi
+
+if [ ! -e $KUBE_PROXY_TAG ] ; then
+    export TF_VAR_kube_proxy_tag=$KUBE_PROXY_TAG
+fi
 
 
+ 
 # tfstate, sslcerts, and ssh keys are currently stored in TF_VAR_data_dir
 mkdir -p $TF_VAR_data_dir
 
@@ -93,8 +101,10 @@ if [ "$1" = "aws-deploy" ] ; then
 
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
     echo "❤ Polling for cluster life - this could take a minute or more"
-    _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info
-    kubectl cluster-info
+    export NODES="$(expr $TF_VAR_master_node_count + $TF_VAR_worker_node_count)"
+    KUBECTL_PATH=$(which kubectl) NUM_NODES="$NODES" KUBERNETES_PROVIDER=local ${DIR}/validate-cluster/cluster/validate-cluster.sh || true
+    _retry "❤ Installing Helm" helm init
+    _retry "Wait for Tiller Deployment to be available" kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
 elif [ "$1" = "aws-destroy" ] ; then
       cd ${DIR}/aws
       if [ "$3" = "s3" ]; then
@@ -125,8 +135,9 @@ elif [ "$1" = "azure-deploy" ] ; then
               -backend-config "region=${AWS_DEFAULT_REGION}"
     # ensure kubeconfig is written to disk on infrastructure refresh
     terraform taint -module=kubeconfig null_resource.kubeconfig || true
-    terraform apply -target null_resource.ssh_gen ${DIR}/azure && \
         terraform apply -target azurerm_resource_group.cncf ${DIR}/azure && \
+        terraform apply -target module.network.azurerm_virtual_network.cncf ${DIR}/azure || true && \
+        terraform apply -target module.network.azurerm_subnet.cncf ${DIR}/azure || true && \
         time terraform apply ${DIR}/azure
 
     elif [ "$3" = "file" ]; then
@@ -135,15 +146,18 @@ elif [ "$1" = "azure-deploy" ] ; then
                   -backend-config "path=/cncf/data/${TF_VAR_name}/terraform.tfstate"
         # ensure kubeconfig is written to disk on infrastructure refresh
         terraform taint -module=kubeconfig null_resource.kubeconfig || true
-        terraform apply -target null_resource.ssh_gen ${DIR}/azure && \
             terraform apply -target azurerm_resource_group.cncf ${DIR}/azure && \
+            terraform apply -target module.network.azurerm_virtual_network.cncf ${DIR}/azure || true && \
+            terraform apply -target module.network.azurerm_subnet.cncf ${DIR}/azure || true && \
             time terraform apply ${DIR}/azure
        fi 
 
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
     echo "❤ Polling for cluster life - this could take a minute or more"
-    _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info
-    kubectl cluster-info
+    export NODES="$(expr $TF_VAR_master_node_count + $TF_VAR_worker_node_count)"
+    KUBECTL_PATH=$(which kubectl) NUM_NODES="$NODES" KUBERNETES_PROVIDER=local ${DIR}/validate-cluster/cluster/validate-cluster.sh || true
+    _retry "❤ Installing Helm" helm init
+    _retry "Wait for Tiller Deployment to be available" kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
 
 
 elif [ "$1" = "azure-destroy" ] ; then
@@ -171,9 +185,9 @@ elif [[ "$1" = "openstack-deploy" || "$1" = "openstack-destroy" ]] ; then
     if [ "$3" = "s3" ] ; then
         cp ../s3-backend.tf .
         terraform init \
-            -backend-config 'bucket=aws65972563' \
+            -backend-config "bucket=${AWS_BUCKET}" \
             -backend-config "key=openstack-${TF_VAR_name}" \
-            -backend-config 'region=ap-southeast-2'
+            -backend-config "region=${AWS_DEFAULT_REGION}"
     elif [ "$3" = "file" ] ; then
         cp ../file-backend.tf .
         terraform init -backend-config "path=/cncf/data/${TF_VAR_NAME}/terraform.tfstate"
@@ -196,7 +210,7 @@ elif [ "$1" = "packet-deploy" ] ; then
               -backend-config "bucket=${AWS_BUCKET}" \
               -backend-config "key=packet-${TF_VAR_name}" \
               -backend-config "region=${AWS_DEFAULT_REGION}"
-    # ensure kubeconfig is written to disk on infrastructure refresh
+    # ensure kubeconfig & resolv.conf is written to disk on infrastructure refresh
     terraform taint -module=kubeconfig null_resource.kubeconfig || true ${DIR}/packet
     time terraform apply ${DIR}/packet
 
@@ -209,10 +223,13 @@ elif [ "$1" = "packet-deploy" ] ; then
         time terraform apply ${DIR}/packet
 fi
 
+
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
     echo "❤ Polling for cluster life - this could take a minute or more"
-    _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info
-    kubectl cluster-info
+    export NODES="$(expr $TF_VAR_master_node_count + $TF_VAR_worker_node_count)"
+    KUBECTL_PATH=$(which kubectl) NUM_NODES="$NODES" KUBERNETES_PROVIDER=local ${DIR}/validate-cluster/cluster/validate-cluster.sh || true
+    _retry "❤ Installing Helm" helm init
+    _retry "Wait for Tiller Deployment to be available" kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
 
 elif [ "$1" = "packet-destroy" ] ; then
      cd ${DIR}/packet
@@ -256,8 +273,11 @@ elif [ "$3" = "file" ]; then
 
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
     echo "❤ Polling for cluster life - this could take a minute or more"
-    _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info
-    kubectl cluster-info
+    export NODES="$(expr $TF_VAR_master_node_count + $TF_VAR_worker_node_count)"
+    KUBECTL_PATH=$(which kubectl) NUM_NODES="$NODES" KUBERNETES_PROVIDER=local ${DIR}/validate-cluster/cluster/validate-cluster.sh || true
+    _retry "❤ Installing Helm" helm init
+    _retry "Wait for Tiller Deployment to be available" kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
+
 
 elif [ "$1" = "gce-destroy" ] ; then
     cd ${DIR}/gce
@@ -303,8 +323,10 @@ fi
 
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
     echo "❤ Polling for cluster life - this could take a minute or more"
-    _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info
+    _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info 
     kubectl cluster-info
+    _retry "❤ Installing Helm" helm init
+    _retry "Wait for Tiller Deployment to be available" kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
 
 elif [ "$1" = "gke-destroy" ] ; then
 cd ${DIR}/gke
@@ -355,6 +377,8 @@ fi
     echo "❤ Polling for cluster life - this could take a minute or more"
     _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info
     kubectl cluster-info
+    _retry "❤ Installing Helm" helm init
+    kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
 
 elif [ "$1" = "bluemix-destroy" ] ; then
 cd ${DIR}/gke
@@ -373,3 +397,4 @@ elif [ "$3" = "file" ]; then
 time terraform destroy -force ${DIR}/bluemix
 fi
 fi
+ 

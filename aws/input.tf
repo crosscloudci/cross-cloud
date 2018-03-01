@@ -4,7 +4,7 @@ variable "data_dir" { default = "/cncf/data/aws" }
 
 # AWS Cloud Specific Settings
 variable "aws_region" { default = "ap-southeast-2" }
-variable "aws_key_name" { default = "aws" }
+variable "aws_key_name" { default = "cross-cloud" }
 variable "aws_availability_zone" { default = "ap-southeast-2a" }
 variable "vpc_cidr"        { default = "10.0.0.0/16" }
 variable "subnet_cidr_private"     { default = "10.0.240.0/24"}
@@ -15,7 +15,7 @@ variable "allow_ssh_cidr" { default = "0.0.0.0/0" }
 variable "admin_username" { default = "core" }
 variable "aws_image_ami" { default = "ami-266d8b44"} # channel/stable type/hvm
 variable "aws_master_vm_size" { default = "m3.medium" }
-variable "aws_worker_vm_size" { default = "t2.nano" }
+variable "aws_worker_vm_size" { default = "m3.medium" }
 variable "aws_bastion_vm_size" { default = "t2.nano" }
 
 # Kubernetes
@@ -30,8 +30,6 @@ variable "non_masquerade_cidr" { default = "100.64.0.0/10"}
 variable "dns_service_ip" { default = "100.64.0.10" }
 variable "master_node_count" { default = "3" }
 variable "worker_node_count" { default = "3" }
-variable "worker_node_min" { default = "3" }
-variable "worker_node_max" { default = "5" }
 
 # Deployment Artifact Versions
 variable "kubelet_artifact" { default = "https://storage.googleapis.com/kubernetes-release/release/v1.8.1/bin/linux/amd64/kubelet" }

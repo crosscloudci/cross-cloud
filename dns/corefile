@@ -1,8 +1,8 @@
 . {
-    etcd skydns.local {
+    etcd ${ name }.local {
         stubzones
         path /skydns
-        endpoint http://localhost:4001
+        endpoint ${ etcd_bootstrap }
     }
     loadbalance
 }

@@ -2,7 +2,7 @@ resource "aws_instance" "bastion" {
   ami = "${ var.ami_id }"
   associate_public_ip_address = true
   instance_type = "${ var.instance_type }"
-  key_name = "${ var.key_name }"
+  key_name = "${ var.aws_key_name }"
 
   # TODO: force private_ip to prevent collision with etcd machines
 

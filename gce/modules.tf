@@ -91,11 +91,12 @@ module "tls" {
 }
 
 module "master_templates" {
-  source = "../master_templates-v1.8.1"
+  source = "../master_templates-v1.9.0"
 
   master_node_count = "${ var.master_node_count }"
   name = "${ var.name }"
   etcd_endpoint = "${ var.etcd_endpoint }"
+  etcd_bootstrap = ""
 
   kubelet_artifact = "${ var.kubelet_artifact }"
   cni_artifact = "${ var.cni_artifact }"
@@ -127,12 +128,11 @@ module "master_templates" {
 
   dns_master = ""
   dns_conf = ""
-  corefile = ""
 
 }
 
 module "worker_templates" {
-  source = "../worker_templates-v1.8.1"
+  source = "../worker_templates-v1.9.0"
 
   worker_node_count = "${ var.worker_node_count }"
   name = "${ var.name }"
@@ -155,9 +155,6 @@ module "worker_templates" {
   worker_key = "${ module.tls.worker_key }"
   cloud_config_file = ""
 
-  dns_worker = ""
   dns_conf = ""
-  corefile = ""
-  dns_etcd = ""
 
 }

@@ -31,7 +31,7 @@ module "master" {
   master_node_count              = "${ var.master_node_count }"
   name                           = "${ var.name }"
   ami_id                         = "${ var.aws_image_ami }"
-  key_name                       = "${ var.aws_key_name }"
+  aws_key_name                   = "${ var.aws_key_name }"
   master_security                = "${ module.security.master_id }"
   external_lb_security           = "${ module.security.external_lb_id }"
   internal_lb_security           = "${ module.security.internal_lb_id }"
@@ -49,7 +49,7 @@ module "bastion" {
 
   ami_id = "${ var.aws_image_ami }"
   instance_type = "${ var.aws_bastion_vm_size }"
-  key_name = "${ var.aws_key_name }"
+  aws_key_name = "${ var.aws_key_name }"
   name = "${ var.name }"
   security_group_id = "${ module.security.bastion_id }"
   subnet_public_id = "${ module.vpc.subnet_public_id }"
@@ -60,15 +60,11 @@ module "worker" {
   source = "./modules/worker"
   instance_profile_name = "${ module.iam.instance_profile_name_worker }"
 
-  ami_id = "${ var.aws_image_ami }"
-  capacity = {
-    desired = "${ var.worker_node_count }"
-    max = "${ var.worker_node_max}"
-    min = "${ var.worker_node_min}"
-  }
-  instance_type = "${ var.aws_worker_vm_size }"
-  key_name = "${ var.aws_key_name }"
+  worker_node_count = "${ var.worker_node_count }"
   name = "${ var.name }"
+  ami_id = "${ var.aws_image_ami }"
+  instance_type = "${ var.aws_worker_vm_size }"
+  aws_key_name = "${ var.aws_key_name }"
   region = "${ var.aws_region }"
   security_group_id = "${ module.security.worker_id }"
   subnet_private_id = "${ module.vpc.subnet_private_id }"
@@ -121,11 +117,12 @@ module "tls" {
 }
 
 module "master_templates" {
-  source = "../master_templates-v1.8.1"
+  source = "../master_templates-v1.9.0"
 
   master_node_count = "${ var.master_node_count }"
   name = "${ var.name }"
   etcd_endpoint = "${ var.etcd_endpoint }"
+  etcd_bootstrap = ""
 
   kubelet_artifact = "${ var.kubelet_artifact }"
   cni_artifact = "${ var.cni_artifact }"
@@ -157,12 +154,11 @@ module "master_templates" {
 
   dns_master = ""
   dns_conf = ""
-  corefile = ""
 
 }
 
 module "worker_templates" {
-  source = "../worker_templates-v1.8.1"
+  source = "../worker_templates-v1.9.0"
 
   worker_node_count = "${ var.worker_node_count }"
   name = "${ var.name }"
@@ -185,9 +181,6 @@ module "worker_templates" {
   worker_key = "${ module.tls.worker_key }"
   cloud_config_file = ""
 
-  dns_worker = ""
   dns_conf = ""
-  corefile = ""
-  dns_etcd = ""
 
 }

@@ -1,5 +1,5 @@
 resource "google_compute_firewall" "allow-internal-lb" {
-  name    = "allow-internal-lb"
+  name    = "${ var.name }-internal-lb"
   network = "${ var.name }"
 
   allow {
@@ -12,7 +12,7 @@ resource "google_compute_firewall" "allow-internal-lb" {
 }
 
 resource "google_compute_firewall" "allow-health-check" {
-  name    = "allow-health-check"
+  name    = "${ var.name }-health-check"
   network = "${ var.name }"
 
   allow {
@@ -24,7 +24,7 @@ resource "google_compute_firewall" "allow-health-check" {
 }
 
 resource "google_compute_firewall" "allow-ssh-bastion" {
-  name    = "allow-ssh-bastion"
+  name    = "${ var.name }-ssh-bastion"
   network = "${ var.name }"
 
   allow {
@@ -37,7 +37,7 @@ resource "google_compute_firewall" "allow-ssh-bastion" {
 }
 
 resource "google_compute_firewall" "kubernetes-default-internal-master" {
-  name    = "kubernetes-default-internal-master"
+  name    = "${ var.name }-internal-master"
   network = "${ var.name }"
 
   allow {
@@ -57,7 +57,7 @@ resource "google_compute_firewall" "kubernetes-default-internal-master" {
 }
 
 resource "google_compute_firewall" "kubernetes-default-internal-node" {
-  name    = "kubernetes-default-internal-node"
+  name    = "${ var.name }-internal-node"
   network = "${ var.name }"
 
   allow {
@@ -77,7 +77,7 @@ resource "google_compute_firewall" "kubernetes-default-internal-node" {
 }
 
 resource "google_compute_firewall" "kubernetes-master-etcd" {
-  name    = "kubernetes-master-etcd"
+  name    = "${ var.name }-master-etcd"
   network = "${ var.name }"
 
   allow {
@@ -91,7 +91,7 @@ resource "google_compute_firewall" "kubernetes-master-etcd" {
 
 
 resource "google_compute_firewall" "kubernetes-master-https" {
-  name    = "kubernetes-master-https"
+  name    = "${ var.name }-master-https"
   network = "${ var.name }"
 
   allow {
@@ -104,7 +104,7 @@ resource "google_compute_firewall" "kubernetes-master-https" {
 }
 
 resource "google_compute_firewall" "kubernetes-minion-all" {
-  name    = "kubernetes-minion-all"
+  name    = "${ var.name }-minion-all"
   network = "${ var.name }"
 
   allow {

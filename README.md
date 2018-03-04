@@ -134,7 +134,9 @@ Packet:
  * -e PACKET_AUTH_TOKEN=secret
  * -e TF_VAR_packet_project_id=secret 
  * -e DNSIMPLE_TOKEN=secret
- * -e DNSIMPLE_ACCOUNT=secret   
+ * -e DNSIMPLE_ACCOUNT=secret 
+ 
+ *DNSIMPLE_TOKEN and DNSIMPLE_ACCOUNT are taken from your https://dnsimple.com/ account for the automated dns name resolution.*
 
 GCE/GKE:
  * -e GOOGLE_CREDENTIALS=secret

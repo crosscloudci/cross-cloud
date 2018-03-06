@@ -5,6 +5,7 @@ variable "cidr" { default = "10.0.0.0/16" }
 variable "image_type" { default = "ubuntu" }
 variable "node_count" { default = "1" }
 variable "node_version" { default = "1.9.3" }
+variable "min_master_version" { default = "1.9.3" } 
 variable "master_user" { default = "cncf" }
 variable "master_password" { default = "Thae6quuisaiLieG"}
 variable "vm_size" { default = "n1-standard-32"}

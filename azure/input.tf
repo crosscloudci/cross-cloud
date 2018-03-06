@@ -15,9 +15,9 @@ variable "image_publisher" { default = "CoreOS" }
 variable "image_offer"     { default = "CoreOS" }
 variable "image_sku"       { default = "Stable" }
 variable "image_version"   { default = "1465.8.0" }
-variable "master_vm_size"   { default = "Standard_A1" }
-variable "worker_vm_size"   { default = "Standard_A1" }
-variable "bastion_vm_size"   { default = "Standard_A2" }
+variable "master_vm_size"   { default = "Standard_A3" }
+variable "worker_vm_size"   { default = "Standard_A7" }
+variable "bastion_vm_size"   { default = "Standard_A1" }
 
 # Kubernetes
 variable "etcd_endpoint" {default = "127.0.0.1"}

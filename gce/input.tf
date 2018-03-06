@@ -4,7 +4,7 @@ variable "worker_node_count" { default = "3" }
 
 variable "bastion_vm_size"   { default = "n1-standard-1" }
 variable "master_vm_size"    { default = "n1-standard-1" }
-variable "worker_vm_size"    { default = "n1-standard-1" }
+variable "worker_vm_size"    { default = "n1-standard-16" }
 variable "image_id"          { default = "coreos-stable-1298-7-0-v20170401"}
 
 variable "region"          { default = "us-central1" }

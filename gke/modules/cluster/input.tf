@@ -2,6 +2,7 @@ variable "name" {}
 variable "region" {}
 variable "zone" {}
 variable "node_count" {}
+variable "image_type" {}
 variable "network" {}
 variable "subnetwork" {}
 variable "node_version" {}

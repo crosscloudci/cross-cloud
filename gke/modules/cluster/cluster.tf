@@ -3,14 +3,10 @@ resource "google_container_cluster" "cncf" {
   zone               = "${ var.zone }"
   initial_node_count = "${ var.node_count }"
 
-  additional_zones   = [
-    "us-central1-b",
-    "us-central1-c",
-  ]
-
   network            = "${ var.network }"
   subnetwork         = "${ var.subnetwork }"
-  #node_version       = "${ var.node_version }"
+  node_version       = "${ var.node_version }"
+  image_type         = "${ var.image_type }"
 
   master_auth {
     username         = "${ var.master_user }"

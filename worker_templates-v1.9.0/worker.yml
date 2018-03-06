@@ -6,7 +6,10 @@ coreos:
   units:
     - name: systemd-resolved.service
       command: restart
-      
+
+    - name: systemd-sysctl.service
+      command: restart
+
     - name: docker.service
       command: start
       drop-ins:
@@ -72,6 +75,10 @@ write-files:
   - path: /etc/default/docker
     content: |
       DOCKER_OPTS="--ip-masq=false --iptables=false --log-driver=json-file --log-level=warn --log-opt=max-file=5 --log-opt=max-size=10m --storage-driver=overlay"
+
+  - path: /etc/sysctl.d/elk.conf
+    content: |
+      vm.max_map_count=262144
 
   - path: /etc/default/kubelet
     permissions: "0644"

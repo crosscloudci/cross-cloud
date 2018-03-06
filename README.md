@@ -133,8 +133,6 @@ AWS:
 Packet:
  * -e PACKET_AUTH_TOKEN=secret
  * -e TF_VAR_packet_project_id=secret 
- * -e DNSIMPLE_TOKEN=secret
- * -e DNSIMPLE_ACCOUNT=secret   
 
 GCE/GKE:
  * -e GOOGLE_CREDENTIALS=secret

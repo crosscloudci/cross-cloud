@@ -1,6 +1,6 @@
 variable "name" { default = "gce" }
 variable "master_node_count" { default = "3" }
-variable "worker_node_count" { default = "3" }
+variable "worker_node_count" { default = "1" }
 
 variable "bastion_vm_size"   { default = "n1-standard-1" }
 variable "master_vm_size"    { default = "n1-standard-1" }

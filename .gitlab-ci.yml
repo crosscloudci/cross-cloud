@@ -83,7 +83,14 @@ Socat:
     CLOUD: MUST BE SET
   script:
     - /cncf/provision.sh ${CLOUD}-deploy ${CLOUD}-${DEPLOYMENT_SHA}-${ENVIRONMENT} s3 ${CLOUD}
-    - helm init; kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
+    - kubectl create -f ./helm-rbac.yml || true
+    - >
+      if ["$CLOUD" == gke ]; then
+         kube-dns is already deployed, skipping
+      else
+        kubectl create -f ./kube-dns.yml || true
+      fi
+    - helm init --service-account tiller; kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
   artifacts:
     when: always
     expire_in: 4 weeks

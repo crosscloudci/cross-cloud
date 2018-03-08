@@ -6,7 +6,7 @@ coreos:
   units:
     - name: systemd-resolved.service
       command: restart
-      
+
     - name: docker.service
       command: start
       drop-ins:

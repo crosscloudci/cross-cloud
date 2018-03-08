@@ -10,6 +10,7 @@ resource "google_compute_instance" "cncf" {
   boot_disk {
     initialize_params {
     image = "${ var.image_id }"
+    size = "${ var.disk_size }"
     }
   }
 

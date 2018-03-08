@@ -57,7 +57,7 @@ COPY validate-cluster/ /cncf/validate-cluster/
 
 COPY aws/ /cncf/aws/
 COPY azure/ /cncf/azure/
-COPY bluemix/ /cncf/bluemix/
+COPY ibm/ /cncf/ibm/
 COPY gce/ /cncf/gce/
 COPY gke/ /cncf/gke/
 COPY openstack/ /cncf/openstack/

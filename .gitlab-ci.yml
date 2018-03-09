@@ -86,7 +86,9 @@ Socat:
     - kubectl create -f ./helm-rbac.yml || true
     - >
       if ["$CLOUD" == gke ]; then
-         kube-dns is already deployed, skipping
+         echo "kube-dns is already deployed, skipping"
+      elif ["$CLOUD" == ibm ]; then
+         echo "kube-dns is already deployed, skipping"
       else
         kubectl create -f ./kube-dns.yml || true
       fi

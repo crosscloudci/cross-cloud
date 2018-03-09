@@ -85,9 +85,9 @@ Socat:
     - /cncf/provision.sh ${CLOUD}-deploy ${CLOUD}-${DEPLOYMENT_SHA}-${ENVIRONMENT} s3 ${CLOUD}
     - kubectl create -f ./helm-rbac.yml || true
     - >
-      if ["$CLOUD" == gke ]; then
+      if ["$CLOUD" == "gke" ]; then
          echo "kube-dns is already deployed, skipping"
-      elif ["$CLOUD" == ibm ]; then
+      elif ["$CLOUD" == "ibm" ]; then
          echo "kube-dns is already deployed, skipping"
       else
         kubectl create -f ./kube-dns.yml || true

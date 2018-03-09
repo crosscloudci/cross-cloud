@@ -33,15 +33,7 @@ resource "ibm_container_cluster" "testacc_cluster" {
   workers = [{
     name = "worker1"
     action = "add"
-  },
-  {
-    name = "worker2"
-    action = "add"
-  },
-  {
-    name = "worker3"
-    action = "add"
-  },
+  }
 ]
 
   org_guid     = "${ data.ibm_org.orgdata.id }"

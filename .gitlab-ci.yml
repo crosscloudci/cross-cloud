@@ -87,7 +87,7 @@ Socat:
     - >
       if ["$CLOUD" == "gke" ]; then
          echo "kube-dns is already deployed, skipping"
-      elif ["$CLOUD" == "ibm" ]; then
+      elif ["$CLOUD" == "ibmcloud" ]; then
          echo "kube-dns is already deployed, skipping"
       else
         kubectl create -f ./kube-dns.yml || true

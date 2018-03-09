@@ -353,7 +353,7 @@ time terraform destroy -force ${DIR}/gke || true
 fi
 
 
-elif [ "$1" = "ibm-deploy" ] ; then
+elif [ "$1" = "ibmcloud-deploy" ] ; then
 cd ${DIR}/ibm
 if [ "$3" = "s3" ]; then
     cp ../s3-backend.tf .
@@ -380,7 +380,7 @@ fi
     _retry "❤ Installing Helm" helm init
     kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
 
-elif [ "$1" = "ibm-destroy" ] ; then
+elif [ "$1" = "ibmcloud-destroy" ] ; then
 cd ${DIR}/ibm
 if [ "$3" = "s3" ]; then
     cp ../s3-backend.tf .

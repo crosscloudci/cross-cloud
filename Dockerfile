@@ -66,7 +66,6 @@ COPY packet/ /cncf/packet/
 COPY bootstrap/ /cncf/bootstrap/
 COPY dns/ /cncf/dns/
 
-COPY cross-cloud/ /cncf/cross-cloud/
 COPY kubeconfig/ /cncf/kubeconfig/
 COPY socat/ /cncf/socat/
 COPY tls/ /cncf/tls/

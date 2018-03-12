@@ -29,19 +29,11 @@ resource "ibm_container_cluster" "testacc_cluster" {
   public_vlan_id  = "${ data.ibm_network_vlan.vlan_public.id }"
   private_vlan_id = "${ data.ibm_network_vlan.vlan_private.id }"
   no_subnet       = false
-  # subnet_id       = ["1154643"]
+  #subnet_id       = ["${var.subnet_id"]
   workers = [{
     name = "worker1"
     action = "add"
-  },
-  {
-    name = "worker2"
-    action = "add"
-  },
-  {
-    name = "worker3"
-    action = "add"
-  },
+  }
 ]
 
   org_guid     = "${ data.ibm_org.orgdata.id }"
@@ -63,8 +55,9 @@ resource "null_resource" "kubeconfig" {
     command = <<LOCAL_EXEC
 cp "${ var.data_dir }"/*/* "${ var.data_dir }"
 mv "${ var.data_dir }"/config.yml "${ var.data_dir}"/kubeconfig
-sed -i "/certificate-authority:/c\    certificate-authority-data: $( base64 ./*.pem | tr -d '\n')" "${ var.data_dir}"/kubeconfig
+sed -i "/certificate-authority:/c\    certificate-authority-data: $( base64 "${ var.data_dir }"/*.pem | tr -d '\n')" "${ var.data_dir}"/kubeconfig
 LOCAL_EXEC
   }
-}
 
+  depends_on = ["data.ibm_container_cluster_config.cluster_config"]
+}

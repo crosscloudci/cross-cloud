@@ -11,13 +11,14 @@ module "cluster" {
   region = "${ var.region }"
   zone = "${ var.zone }"
   node_count = "${ var.node_count }"
+  image_type = "${ var.image_type }"
   network = "${ var.name }"
   subnetwork = "${ var.name }"
+  min_master_version = "${ var.min_master_version }"
   node_version = "${ var.node_version }"
   master_user = "${ var.master_user }"
   master_password = "${ var.master_password }"
   vm_size = "${ var.vm_size }"
-  node_pool_count = "${ var.node_pool_count }"
   data_dir = "${ var.data_dir }"
 }
 

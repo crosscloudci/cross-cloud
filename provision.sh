@@ -353,24 +353,24 @@ time terraform destroy -force ${DIR}/gke || true
 fi
 
 
-elif [ "$1" = "bluemix-deploy" ] ; then
-cd ${DIR}/bluemix
+elif [ "$1" = "ibmcloud-deploy" ] ; then
+cd ${DIR}/ibm
 if [ "$3" = "s3" ]; then
     cp ../s3-backend.tf .
     terraform init \
               -backend-config "bucket=${AWS_BUCKET}" \
-              -backend-config "key=bluemix-${TF_VAR_name}" \
+              -backend-config "key=ibm-${TF_VAR_name}" \
               -backend-config "region=${AWS_DEFAULT_REGION}"
     # ensure kubeconfig is written to disk on infrastructure refresh
     terraform taint null_resource.kubeconfig || true
-    time terraform apply ${DIR}/bluemix
+    time terraform apply ${DIR}/ibm
 elif [ "$3" = "file" ]; then
     cp ../file-backend.tf .
     terraform init \
               -backend-config "path=/cncf/data/${TF_VAR_name}/terraform.tfstate"
     # ensure kubeconfig is written to disk on infrastructure refresh
     terraform taint null_resource.kubeconfig || true
-    time terraform apply ${DIR}/bluemix
+    time terraform apply ${DIR}/ibm
 fi
 
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
@@ -380,21 +380,21 @@ fi
     _retry "❤ Installing Helm" helm init
     kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
 
-elif [ "$1" = "bluemix-destroy" ] ; then
-cd ${DIR}/gke
+elif [ "$1" = "ibmcloud-destroy" ] ; then
+cd ${DIR}/ibm
 if [ "$3" = "s3" ]; then
     cp ../s3-backend.tf .
     terraform init \
               -backend-config "bucket=${AWS_BUCKET}" \
-              -backend-config "key=bluemix-${TF_VAR_name}" \
+              -backend-config "key=ibm-${TF_VAR_name}" \
               -backend-config "region=${AWS_DEFAULT_REGION}"
-    time terraform destroy -force ${DIR}/bluemix 
+    time terraform destroy -force ${DIR}/ibm
 
 elif [ "$3" = "file" ]; then
     cp ../file-backend.tf .
     terraform init \
               -backend-config "path=/cncf/data/${TF_VAR_name}/terraform.tfstate" 
-time terraform destroy -force ${DIR}/bluemix
+time terraform destroy -force ${DIR}/ibm
 fi
 fi
  

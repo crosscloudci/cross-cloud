@@ -13,7 +13,7 @@ resource "openstack_networking_subnet_v2" "k8s" {
 
 resource "openstack_networking_router_v2" "k8s" {
   name = "k8s-router"
-  external_gateway = "${ var.external_network_id }"
+  external_network_id = "${ var.external_network_id }"
 }
 
 resource "openstack_networking_router_interface_v2" "ks" {

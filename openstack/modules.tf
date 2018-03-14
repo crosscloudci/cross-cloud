@@ -14,6 +14,7 @@ module "master" {
 module "network" {
   source = "./modules/network"
 
+  name = "${ var.name }"
   external_network_id = "${ var.external_network_id }"
   internal_network_cidr = "${ var.internal_network_cidr }"
   floating_ip_pool = "${ var.public_floating_ip_pool }"

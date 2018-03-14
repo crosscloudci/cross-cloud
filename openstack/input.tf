@@ -26,7 +26,7 @@ variable "master_image_name" { default = "Container-Linux" }
 variable "master_node_count" { default = "3" }
 
 # Worker Configuration
-variable "worker_flavor_name" { default = "v1-standard-1" }
+variable "worker_flavor_name" { default = "v2-highcpu-16" }
 variable "worker_image_name"  { default = "Container-Linux" }
 variable "worker_node_count" { default = "1" }
 

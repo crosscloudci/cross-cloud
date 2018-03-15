@@ -1,4 +1,9 @@
 variable "name" {}
-variable "cloud_Provider" {}
-variable "etcd_bootstrap" {}
+variable "etcd_server" {}
 variable "discovery_nameserver" {}
+variable "cloud_provider" {}
+variable "master_ips" {}
+variable "public_master_ips" {}
+variable "worker_ips" {}
+variable "master_node_count" {}
+variable "worker_node_count" {}

@@ -65,6 +65,7 @@ COPY packet/ /cncf/packet/
 
 COPY bootstrap/ /cncf/bootstrap/
 COPY dns/ /cncf/dns/
+COPY dns-etcd/ /cncf/dns-etcd/
 
 COPY kubeconfig/ /cncf/kubeconfig/
 COPY socat/ /cncf/socat/

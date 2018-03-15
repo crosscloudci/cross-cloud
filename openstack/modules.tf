@@ -104,6 +104,22 @@ module "worker_templates" {
   dns_conf   = ""
 }
 
+module "dns" {
+  source = "../dns-etcd"
+
+  name = "${ var.name }"
+  etcd_server = "${ var.etcd_server }"
+  discovery_nameserver = "${ var.discovery_nameserver }"
+  cloud_provider = "${ var.cloud_provider }"
+
+  master_ips = "${ module.master.master_ips }"
+  public_master_ips = "${ split(",", module.network.fips) }"
+  worker_ips = "${ module.worker.worker_ips }"
+
+  master_node_count = "${ var.master_node_count }"
+  worker_node_count = "${ var.worker_node_count }"
+}
+
 
 module "tls" {
   source = "../tls"

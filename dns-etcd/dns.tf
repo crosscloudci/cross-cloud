@@ -13,7 +13,7 @@ resource "null_resource" "master_etcd" {
     on_failure = "fail"
     command = <<EOF
     #Master Host Record
-    curl -XPUT http://"${ var.etcd_server }"/v2/keys/skydns/local/"${ var.cloud_provider }"/"${ var.name }"/"${ element(packet_device.infra.*.hostname, count.index) }" \
+    curl -XPUT http://"${ var.etcd_server }"/v2/keys/skydns/local/"${ var.cloud_provider }"/"${ var.name }"/"${ var.name}-master-${ count.index +1 }" \
     -d value='{"host":"${ element(var.master_ips, count.index) }"}'
     
     # Etcd SRV Records
@@ -28,7 +28,7 @@ resource "null_resource" "master_etcd" {
 
     # Public Master Record
     curl -XPUT http://"${ var.etcd_server }"/v2/keys/skydns/local/"${ var.cloud_provider }"/"${ var.name }"/master/"${ var.name }-master-${ count.index +1 }" \
-    -d value='{"host":"${ element(var.public_ips_needed_here, count.index) }"}'
+    -d value='{"host":"${ element(var.public_master_ips, count.index) }"}'
 
     # Internal-Master Record
     curl -XPUT http://"${ var.etcd_server }"/v2/keys/skydns/local/"${ var.cloud_provider }"/"${ var.name }"/internal-master/"${ var.name }-master-${ count.index +1 }" \
@@ -46,7 +46,7 @@ resource "null_resource" "worker_etcd" {
     command = <<EOF
     #Worker Host Record
     curl -XPUT http://"${ var.etcd_server }"/v2/keys/skydns/local/"${ var.cloud_provider }"/"${ var.name }"/"${ var.name }-worker-${ count.index +1 }" \
-    -d value='{"host":"${ element(var.worker_ips, count.index }"}'
+    -d value='{"host":"${ element(var.worker_ips, count.index) }"}'
 EOF
   }
 }

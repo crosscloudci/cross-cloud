@@ -1,1 +1,1 @@
-output "worker_ips" { value = "${ openstack_compute_instance_v2.k8s.*.network.0.fixed_ip_v4 }" }
+output "worker_ips" { value = "${ join(",", openstack_compute_instance_v2.k8s.*.network.0.fixed_ip_v4) }" }

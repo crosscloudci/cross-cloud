@@ -113,7 +113,7 @@ module "dns" {
   cloud_provider = "${ var.cloud_provider }"
 
   master_ips = "${ module.master.master_ips }"
-  public_master_ips = "${ split(",", module.network.fips) }"
+  public_master_ips = "${ module.network.fips }"
   worker_ips = "${ module.worker.worker_ips }"
 
   master_node_count = "${ var.master_node_count }"

@@ -79,6 +79,7 @@ COPY master_templates-v1.7.2/ /cncf/master_templates-v1.7.2/
 COPY master_templates-v1.8.1/ /cncf/master_templates-v1.8.1/
 COPY master_templates-v1.9.0-alpha.1/ /cncf/master_templates-v1.9.0-alpha.1/
 COPY master_templates-v1.9.0/ /cncf/master_templates-v1.9.0/
+COPY master_templates-v1.9.0-dns-etcd/ /cncf/master_templates-v1.9.0-dns-etcd/
 
 COPY worker_templates-v1.7.2/ /cncf/worker_templates-v1.7.2/
 COPY worker_templates-v1.8.1/ /cncf/worker_templates-v1.8.1/

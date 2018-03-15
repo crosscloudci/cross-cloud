@@ -23,12 +23,12 @@ module "network" {
 }
 
 module "master_templates" {
-  source = "/cncf/master_templates-v1.9.0"
+  source = "/cncf/master_templates-v1.9.0-dns-etcd"
 
   master_node_count = "${ var.master_node_count }"
   name              = "${ var.name }"
-  etcd_endpoint     = "${ var.etcd_endpoint }"
-  etcd_bootstrap    = ""
+  etcd_endpoint     = "etcd.${ var.name }.${ var.cloud_provider }.local"
+  etcd_discovery    = "${ var.name }.${ var.cloud_provider }.local"
 
   kubelet_artifact              = "${ var.kubelet_artifact }"
   cni_artifact                  = "${ var.cni_artifact }"
@@ -59,8 +59,7 @@ module "master_templates" {
 
   cloud_config_file = "${ data.template_file.cloud_conf.rendered }"
 
-  dns_master = ""
-  dns_conf = ""
+  dns_conf = "${ module.dns.dns_conf }"
 }
 
 module "worker" {
@@ -93,7 +92,7 @@ module "worker_templates" {
   pod_cidr            = "${ var.pod_cidr }"
   non_masquerade_cidr = "${ var.non_masquerade_cidr }"
   dns_service_ip      = "${ var.dns_service_ip }"
-  internal_lb_ip      = "temp"
+  internal_lb_ip      = "internal-master.${ var.name }.${ var.cloud_provider }.local"
 
   ca         = "${ module.tls.ca }"
   worker     = "${ module.tls.worker }"
@@ -101,7 +100,7 @@ module "worker_templates" {
 
   cloud_config_file = "${ data.template_file.cloud_conf.rendered }"
 
-  dns_conf   = ""
+  dns_conf = "${ module.dns.dns_conf }"
 }
 
 module "dns" {
@@ -143,8 +142,8 @@ module "tls" {
   tls_apiserver_cert_subject_common_name = "kubernetes-master"
   tls_apiserver_cert_validity_period_hours = 1000
   tls_apiserver_cert_early_renewal_hours = 100
-  tls_apiserver_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local,*.${ var.cloud_location }"
-  tls_apiserver_cert_ip_addresses = "127.0.0.1,10.0.0.1,100.64.0.1,${ var.dns_service_ip },${ module.network.fip },111.111.111.111"
+  tls_apiserver_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local,*.${ var.name }.${ var.cloud_provider }.local"
+  tls_apiserver_cert_ip_addresses = "127.0.0.1,10.0.0.1,100.64.0.1,${ var.dns_service_ip }"
 
   tls_worker_cert_subject_common_name = "kubernetes-worker"
   tls_worker_cert_validity_period_hours = 1000
@@ -157,7 +156,7 @@ module "kubeconfig" {
   source = "../kubeconfig"
 
   data_dir = "${ var.data_dir }"
-  endpoint = "${ module.network.fip }"
+  endpoint = "master.${ var.name }.${ var.cloud_provider }.local"
   name = "${ var.name }"
   ca = "${ module.tls.ca }"
   client = "${ module.tls.client }"

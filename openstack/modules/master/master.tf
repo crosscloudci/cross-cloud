@@ -12,3 +12,10 @@ resource "openstack_compute_instance_v2" "master" {
     uuid = "${ var.network_id }"
   }
 }
+
+resource "openstack_compute_floatingip_associate_v2" "master" {
+  count = "${ var.count }"
+  floating_ip = "${ element(split(",", var.fips), count.index) }"
+  instance_id = "${ element(openstack_compute_instance_v2.master.*.id, count.index) }"
+  fixed_ip    = "${ element(openstack_compute_instance_v2.master.*.network.0.fixed_ip_v4, count.index) }"
+}

@@ -58,18 +58,23 @@ resource "openstack_networking_secgroup_rule_v2" "k8s_https" {
   security_group_id = "${ openstack_networking_secgroup_v2.k8s.id }"
 }
 
-### Floating IP
+### Floating IPs
 
-resource "openstack_compute_floatingip_v2" "fip" {
+resource "openstack_compute_floatingip_v2" "master" {
+  count = "${ var.count }"
   pool = "${ var.floating_ip_pool }"
 }
 
-resource "openstack_networking_port_v2" "lb_port" {
-  name = "${ var.name }_lb_ip"
-  network_id = "${ openstack_networking_network_v2.k8s.id }"
-  admin_state_up = "true"
-  security_group_ids = [ "${ openstack_networking_secgroup_v2.k8s.id }" ]
-  fixed_ip {
-    subnet_id = "${ openstack_networking_subnet_v2.k8s.id }"
-  }
-}
+# resource "openstack_compute_floatingip_v2" "fip" {
+#   pool = "${ var.floating_ip_pool }"
+# }
+
+# resource "openstack_networking_port_v2" "lb_port" {
+#   name = "${ var.name }_lb_ip"
+#   network_id = "${ openstack_networking_network_v2.k8s.id }"
+#   admin_state_up = "true"
+#   security_group_ids = [ "${ openstack_networking_secgroup_v2.k8s.id }" ]
+#   fixed_ip {
+#     subnet_id = "${ openstack_networking_subnet_v2.k8s.id }"
+#   }
+# }

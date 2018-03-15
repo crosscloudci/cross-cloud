@@ -2,6 +2,7 @@ variable "name" {}
 variable "flavor" {}
 variable "image" {}
 variable "count" {}
+variable "fips" {}
 variable "network_id" {}
 variable "cloud_init" {}
 variable "security_group" {}

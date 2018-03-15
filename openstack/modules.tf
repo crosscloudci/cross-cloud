@@ -6,6 +6,7 @@ module "master" {
   image          = "${ var.master_image_name }"
   count          = "${ var.master_node_count }"
   network_id     = "${ module.network.network_id }"
+  fips           = "${ module.network.fips }"
   cloud_init     = "${ module.master_templates.master_cloud_init }"
   security_group = "${ module.network.security_group_name }"
   keypair        = "${ var.keypair_name }"
@@ -14,7 +15,8 @@ module "master" {
 module "network" {
   source = "./modules/network"
 
-  name = "${ var.name }"
+  name           = "${ var.name }"
+  count          = "${ var.master_node_count }"
   external_network_id = "${ var.external_network_id }"
   internal_network_cidr = "${ var.internal_network_cidr }"
   floating_ip_pool = "${ var.public_floating_ip_pool }"
@@ -91,7 +93,7 @@ module "worker_templates" {
   pod_cidr            = "${ var.pod_cidr }"
   non_masquerade_cidr = "${ var.non_masquerade_cidr }"
   dns_service_ip      = "${ var.dns_service_ip }"
-  internal_lb_ip      = "${ module.network.lb_ip }"
+  internal_lb_ip      = "temp"
 
   ca         = "${ module.tls.ca }"
   worker     = "${ module.tls.worker }"
@@ -126,7 +128,7 @@ module "tls" {
   tls_apiserver_cert_validity_period_hours = 1000
   tls_apiserver_cert_early_renewal_hours = 100
   tls_apiserver_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local,*.${ var.cloud_location }"
-  tls_apiserver_cert_ip_addresses = "127.0.0.1,10.0.0.1,100.64.0.1,${ var.dns_service_ip },${ module.network.fip },${ module.network.lb_ip }"
+  tls_apiserver_cert_ip_addresses = "127.0.0.1,10.0.0.1,100.64.0.1,${ var.dns_service_ip },${ module.network.fip },111.111.111.111"
 
   tls_worker_cert_subject_common_name = "kubernetes-worker"
   tls_worker_cert_validity_period_hours = 1000
@@ -146,17 +148,17 @@ module "kubeconfig" {
   client_key = "${ module.tls.client_key }"
 }
 
-module "loadbalancer" {
-  source = "./modules/loadbalancer"
+# module "loadbalancer" {
+#   source = "./modules/loadbalancer"
 
-  name              = "${ var.name }"
-  flavor            = "${ var.lb_flavor_name }"
-  image             = "${ var.lb_image_name }"
-  network_id        = "${ module.network.network_id }"
-  fip               = "${ module.network.fip }"
-  lb_port           = "${ module.network.lb_port }"
-  master_count      = "${ var.master_node_count }"
-  master_ips        = "${ module.master.ips }"
-  security_group    = "${ module.network.security_group_name }"
-  keypair           = "${ var.keypair_name }"
-}
+#   name              = "${ var.name }"
+#   flavor            = "${ var.lb_flavor_name }"
+#   image             = "${ var.lb_image_name }"
+#   network_id        = "${ module.network.network_id }"
+#   fip               = "${ module.network.fip }"
+#   lb_port           = "${ module.network.lb_port }"
+#   master_count      = "${ var.master_node_count }"
+#   master_ips        = "${ module.master.ips }"
+#   security_group    = "${ module.network.security_group_name }"
+#   keypair           = "${ var.keypair_name }"
+# }

@@ -25,38 +25,33 @@ resource "openstack_networking_router_interface_v2" "ks" {
 
 resource "openstack_networking_secgroup_v2" "k8s" {
   name        = "${ var.name }-secgroup"
-  description = "Cross Cloud Security Group (ssh, http, https)"
+  description = "Cross Cloud Security Group (ssh, http, https, kubernetes, icmp)"
 }
 
-resource "openstack_networking_secgroup_rule_v2" "k8s_ssh" {
+resource "openstack_networking_secgroup_rule_v2" "kubernetes_tcp" {
   direction         = "ingress"
   ethertype         = "IPv4"
   protocol          = "tcp"
-  port_range_min    = 22
-  port_range_max    = 22
   remote_ip_prefix  = "0.0.0.0/0"
   security_group_id = "${ openstack_networking_secgroup_v2.k8s.id }"
 }
 
-resource "openstack_networking_secgroup_rule_v2" "k8s_etcd" {
+resource "openstack_networking_secgroup_rule_v2" "kubernetes_udp" {
   direction         = "ingress"
   ethertype         = "IPv4"
-  protocol          = "tcp"
-  port_range_min    = "2379" 
-  port_range_max    = "2381"
+  protocol          = "udp"
   remote_ip_prefix  = "0.0.0.0/0"
   security_group_id = "${ openstack_networking_secgroup_v2.k8s.id }"
 }
 
-resource "openstack_networking_secgroup_rule_v2" "k8s_https" {
+resource "openstack_networking_secgroup_rule_v2" "kubernetes_icmp" {
   direction         = "ingress"
   ethertype         = "IPv4"
-  protocol          = "tcp"
-  port_range_min    = 443
-  port_range_max    = 443
+  protocol          = "icmp"
   remote_ip_prefix  = "0.0.0.0/0"
   security_group_id = "${ openstack_networking_secgroup_v2.k8s.id }"
 }
+
 
 ### Floating IPs
 

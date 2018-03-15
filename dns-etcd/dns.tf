@@ -5,35 +5,59 @@ data "template_file" "dns_conf" {
   }
 }
 
-resource "null_resource" "etcd" {
-  count = "3"
+resource "null_resource" "master_etcd" {
+  count = "${ var.master_node_count }"
 
   provisioner "local-exec" {
     when = "create"
     on_failure = "fail"
     command = <<EOF
-    curl -XPUT http://"${ var.etcd_server }"/v2/keys/skydns/local/"${ var.cloud_provider }"/"${ element(packet_device.infra.*.hostname, count.index) }" \
-    -d value='{"host":"${ element(packet_device.infra.*.access_public_ipv4, count.index) }"}'
-    curl -XPUT http://"${ var.etcd_server }"/v2/keys/skydns/io/goppa-internal/"${ element(packet_device.worker.*.hostname, count.index) }" \
-    -d value='{"host":"${ element(packet_device.worker.*.access_public_ipv4, count.index) }"}'
-    curl -XPUT http://"${ var.etcd_server}"/v2/keys/skydns/io/goppa-internal/_tcp/_etcd-server/"${ element(packet_device.infra.*.hostname, count.index) }" \
-    -d value='{"host":"${ element(packet_device.infra.*.hostname, count.index) }.goppa-internal.io","port":2380,"priority":0,"weight":0}'
-    curl -XPUT http://"${ var.etcd_server}"/v2/keys/skydns/io/goppa-internal/_tcp/_etcd-client/"${ element(packet_device.infra.*.hostname, count.index) }" \
-    -d value='{"host":"${ element(packet_device.infra.*.hostname, count.index) }.goppa-internal.io","port":2379,"priority":0,"weight":0}'
-    curl -XPUT http://"${ var.etcd_server }"/v2/keys/skydns/io/goppa-internal/etcd/"${ element(packet_device.infra.*.hostname, count.index) }" \
-    -d value='{"host":"${ element(packet_device.infra.*.access_public_ipv4, count.index) }"}'
-    curl -XPUT http://"${ var.etcd_server }"/v2/keys/skydns/io/goppa-internal/master/"${ element(packet_device.infra.*.hostname, count.index) }" \
-    -d value='{"host":"${ element(packet_device.infra.*.access_public_ipv4, count.index) }"}'
-    curl -XPUT http://"${ var.etcd_server }"/v2/keys/skydns/io/goppa-internal/internal-master/"${ element(packet_device.infra.*.hostname, count.index) }" \
-    -d value='{"host":"${ element(packet_device.infra.*.access_public_ipv4, count.index) }"}'
+    #Master Host Record
+    curl -XPUT http://"${ var.etcd_server }"/v2/keys/skydns/local/"${ var.cloud_provider }"/"${ var.name }"/"${ element(packet_device.infra.*.hostname, count.index) }" \
+    -d value='{"host":"${ element(var.master_ips, count.index) }"}'
+    
+    # Etcd SRV Records
+    curl -XPUT http://"${ var.etcd_server}"/v2/keys/skydns/local/"${ var.cloud_provider }"/"${ var.name }"/_tcp/_etcd-server/"${ var.name }-master-${ count.index +1 }" \
+    -d value='{"host":"${ var.name }-master-${ count.index +1 }.${ var.name }.${ var.cloud_provider }.local","port":2380,"priority":0,"weight":0}'
+    curl -XPUT http://"${ var.etcd_server}"/v2/keys/skydns/local/"${ var.cloud_provider }"/"${ var.name }"/_tcp/_etcd-client/"${ var.name }-master-${ count.index +1 }" \
+    -d value='{"host":"${ var.name }-master-${ count.index +1 }.${ var.name }.${ var.cloud_provider }.local","port":2379,"priority":0,"weight":0}'
+
+    # ETCD Host Records
+    curl -XPUT http://"${ var.etcd_server }"/v2/keys/skydns/local/"${ var.cloud_provider }"/"${ var.name }"/etcd/"${ var.name }-master-${ count.index +1 }" \
+    -d value='{"host":"${ element(var.master_ips, count.index) }"}'
+
+    # Public Master Record
+    curl -XPUT http://"${ var.etcd_server }"/v2/keys/skydns/local/"${ var.cloud_provider }"/"${ var.name }"/master/"${ var.name }-master-${ count.index +1 }" \
+    -d value='{"host":"${ element(var.public_ips_needed_here, count.index) }"}'
+
+    # Internal-Master Record
+    curl -XPUT http://"${ var.etcd_server }"/v2/keys/skydns/local/"${ var.cloud_provider }"/"${ var.name }"/internal-master/"${ var.name }-master-${ count.index +1 }" \
+    -d value='{"host":"${ element(var.master_ips, count.index) }"}'
 EOF
   }
+}
+
+resource "null_resource" "worker_etcd" {
+  count = "${ var.worker_node_count }"
+
+  provisioner "local-exec" {
+    when = "create"
+    on_failure = "fail"
+    command = <<EOF
+    #Worker Host Record
+    curl -XPUT http://"${ var.etcd_server }"/v2/keys/skydns/local/"${ var.cloud_provider }"/"${ var.name }"/"${ var.name }-worker-${ count.index +1 }" \
+    -d value='{"host":"${ element(var.worker_ips, count.index }"}'
+EOF
+  }
+}
+
+resource "null_resource" "cleanup_etcd" {
 
   provisioner "local-exec" {
     when = "destroy"
     on_failure = "fail"
     command = <<EOF
-    curl -L http://"${ var.etcd_server }"/v2/keys/skydns/io/goppa-internal\?recursive\=true -XDELETE
+    curl -L http://"${ var.etcd_server }"/v2/keys/skydns/local/"${ var.cloud_provider }"/"${ var.name }"\?recursive\=true -XDELETE
 EOF
   }
 

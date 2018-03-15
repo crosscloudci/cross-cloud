@@ -92,10 +92,10 @@ write-files:
     content: |
       ${ etcd }
 
-  - path: /etc/kubernetes/manifests/etcd-events.yml
-    encoding: "gzip+base64"
-    content: |
-      ${ etcd_events }
+  # - path: /etc/kubernetes/manifests/etcd-events.yml
+  #   encoding: "gzip+base64"
+  #   content: |
+  #     { etcd_events }
 
   - path: /etc/kubernetes/manifests/kube-apiserver.yml
     encoding: "gzip+base64"
@@ -176,38 +176,9 @@ write-files:
     content: |
       ${ basic_auth_csv }
       
-  - path: /etc/srv/kubernetes/etcd.env
-    content: |
-      export ETCD_NAME=$private_ipv4
-      export ETCD_LISTEN_PEER_URLS=http://$private_ipv4:2380
-      export ETCD_LISTEN_CLIENT_URLS=http://$private_ipv4:4001,http://127.0.0.1:4001
-      export ETCD_ADVERTISE_CLIENT_URLS=http://$private_ipv4:4001
-      export ETCD_INITIAL_ADVERTISE_PEER_URLS=http://$private_ipv4:2380
-
-  - path: /etc/srv/kubernetes/etcd-events.env
-    content: |
-      export ETCD_NAME=$private_ipv4
-      export ETCD_LISTEN_PEER_URLS=http://$private_ipv4:2381
-      export ETCD_LISTEN_CLIENT_URLS=http://$private_ipv4:4002,http://127.0.0.1:4002
-      export ETCD_ADVERTISE_CLIENT_URLS=http://$private_ipv4:4002
-      export ETCD_INITIAL_ADVERTISE_PEER_URLS=http://$private_ipv4:2381
-
-  - path: /etc/srv/kubernetes/bootstrap.env
-    content: |
-      export NAME=${ name }
-      export ETCD_BOOTSTRAP=${ etcd_bootstrap }
-      export PRIVATE_IPV4=$private_ipv4
-      export PUBLIC_IPV4=$public_ipv4
-      
   - path: /etc/systemd/resolved.conf.d/dns.conf
     permissions: 0644
     encoding: "gzip+base64"
     owner: root
     content: |
       ${ dns_conf }
-
-  - path: /etc/kubernetes/manifests/dns.yml
-    permissions: "0644"
-    encoding: "gzip+base64"
-    content: |
-      ${ dns_master }

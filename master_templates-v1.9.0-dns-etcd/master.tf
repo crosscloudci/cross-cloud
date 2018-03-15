@@ -26,17 +26,9 @@ resource "gzip_me" "cloud_config_file" {
   input = "${ var.cloud_config_file }"
 }
 
-resource "gzip_me" "dns_master" {
- input = "${ var.dns_master }"
-}
-
 resource "gzip_me" "dns_conf" {
   input = "${ var.dns_conf }"
 }
-
-# resource "gzip_me" "corefile" {
-#   input = "${ var.corefile }"
-# }
 
 
 
@@ -94,9 +86,11 @@ data "template_file" "etcd" {
   count = "${ var.master_node_count }"
   template = "${ file( "${ path.module }/etcd.yml" )}"
   vars {
+    name = "${ var.name }"
+    node = "${ var.name }-master-${ count.index +1 }"
     etcd_image = "${ var.etcd_image }"
     etcd_tag = "${ var.etcd_tag }"
-    etcd_discovery = "${ etcdiscovery_token.etcd.id }"
+    etcd_discovery = "${ var.etcd_discovery }"
 
   }
 }
@@ -105,20 +99,22 @@ data "template_file" "etcd" {
 
 
 
-resource "gzip_me" "etcd_events" {
-  count = "${ var.master_node_count }"
-  input = "${ element(data.template_file.etcd_events.*.rendered, count.index) }"
-}
+# resource "gzip_me" "etcd_events" {
+#   count = "${ var.master_node_count }"
+#   input = "${ element(data.template_file.etcd_events.*.rendered, count.index) }"
+# }
 
-data "template_file" "etcd_events" {
-  count = "${ var.master_node_count }"
-  template = "${ file( "${ path.module }/etcd-events.yml" )}"
-  vars {
-    etcd_image = "${ var.etcd_image }"
-    etcd_tag = "${ var.etcd_tag }"
-    etcd_events_discovery = "${ etcdiscovery_token.etcd_events.id }"
-  }
-}
+# data "template_file" "etcd_events" {
+#   count = "${ var.master_node_count }"
+#   template = "${ file( "${ path.module }/etcd-events.yml" )}"
+#   vars {
+#     name = "${ var.name }"
+#     node = "${ var.name }-worker-${ count.index +1 }"
+#     etcd_image = "${ var.etcd_image }"
+#     etcd_tag = "${ var.etcd_tag }"
+#     etcd_discovery = "${ var.etcd_discovery }"
+#   }
+# }
 
 
 
@@ -267,7 +263,7 @@ data "template_file" "master" {
     kubelet = "${ element(gzip_me.kubelet.*.output, count.index) }"
     kubelet_kubeconfig = "${ gzip_me.kubelet_kubeconfig.output }"
     etcd = "${ element(gzip_me.etcd.*.output, count.index) }"
-    etcd_events = "${ element(gzip_me.etcd_events.*.output, count.index) }"
+    # etcd_events = "${ element(gzip_me.etcd_events.*.output, count.index) }"
     kube_apiserver = "${ element(gzip_me.kube_apiserver.*.output, count.index) }"
     kube_scheduler = "${ gzip_me.kube_scheduler.output }"
     kube_scheduler_kubeconfig = "${ gzip_me.kube_scheduler_kubeconfig.output }"
@@ -282,10 +278,8 @@ data "template_file" "master" {
     cloud_config_file = "${ gzip_me.cloud_config_file.output }"
     known_tokens_csv = "${ gzip_me.known_tokens_csv.output }"
     basic_auth_csv = "${ gzip_me.basic_auth_csv.output }"
-    dns_master = "${ gzip_me.dns_master.output }"
     dns_conf = "${ gzip_me.dns_conf.output }"
     name = "${ var.name }"
-    etcd_bootstrap = "${ var.etcd_bootstrap }"
 
   }
 }

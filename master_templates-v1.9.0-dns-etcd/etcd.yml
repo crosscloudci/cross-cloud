@@ -11,12 +11,26 @@ spec:
   - command:
     - /bin/sh
     - -c
-    - . /etc/srv/kubernetes/etcd.env && /usr/local/bin/etcd 1>>/var/log/etcd.log 2>&1
+    - /usr/local/bin/etcd 1>>/var/log/etcd.log 2>&1
     env:
+    - name: ETCD_NAME
+      value: ${ name }
+    - name: ETCD_DISCOVERY_SRV
+      value: ${ etcd_discovery }
+    - name: ETCD_INITIAL_ADVERTISE_PEER_URLS
+      value: http://${ node }.${ etcd_discovery }:2380
+    - name: ETCD_INITIAL_CLUSTER_TOKEN
+      value: ${ name }-etcd
+    - name: ETCD_INITIAL_CLUSTER_STATE
+      value: new
+    - name: ETCD_ADVERTISE_CLIENT_URLS
+      value: http://${ node }.${ etcd_discovery }:4001
+    - name: ETCD_LISTEN_CLIENT_URLS
+      value: http://0.0.0.0:4001
+    - name: ETCD_LISTEN_PEER_URLS
+      value: http://0.0.0.0:2380
     - name: ETCD_DATA_DIR
       value: /var/etcd/data
-    - name: ETCD_DISCOVERY
-      value: ${ etcd_discovery }
     image: ${ etcd_image }:${ etcd_tag }
     livenessProbe:
       httpGet:
@@ -44,8 +58,6 @@ spec:
       name: varetcdata
     - mountPath: /var/log
       name: varlogetcd
-    - mountPath: /etc/srv/kubernetes
-      name: cloudvars
   hostNetwork: true
   volumes:
   - hostPath:
@@ -57,7 +69,4 @@ spec:
   - hostPath:
       path: /var/log
     name: varlogetcd
-  - hostPath:
-      path: /etc/srv/kubernetes
-    name: cloudvars
 status: {}

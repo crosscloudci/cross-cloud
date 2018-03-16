@@ -21,8 +21,8 @@ variable "lb_flavor_name" { default = "v1-standard-1" }
 variable "lb_image_name" { default = "Container-Linux" }
 
 # DNS Configuration
-variable "etcd_server" { default = "147.75.100.149:2379" }
-variable "discovery_nameserver" { default = "147.75.100.149" } 
+variable "etcd_server" { default = "147.75.83.101:2379" }
+variable "discovery_nameserver" { default = "147.75.83.101" } 
 
 # Master Configuration
 variable "master_flavor_name" { default = "v1-standard-1" }

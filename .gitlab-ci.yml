@@ -82,7 +82,7 @@ Socat:
   variables:
     CLOUD: MUST BE SET
   script:
-    - /cncf/provision.sh ${CLOUD}-deploy ${CLOUD}-${DEPLOYMENT_SHA}-${ENVIRONMENT} s3 ${CLOUD}
+    - /cncf/provision.sh ${CLOUD}-deploy ${CLOUD}${DEPLOYMENT_SHA}${ENVIRONMENT} s3 ${CLOUD}
     - kubectl create -f ./helm-rbac.yml || true
     - >
       if ["$CLOUD" == "gke" ]; then

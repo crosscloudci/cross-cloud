@@ -2,8 +2,10 @@ variable "name" { default = "packet" }
 
 variable "data_dir" { default = "/cncf/data/packet" }
 
-variable "etcd_bootstrap" { default = "147.75.83.101:2379" }
-variable "discovery_nameserver" { default = "147.75.83.101" }
+# DNS Configuration
+variable "etcd_server" { default = "147.75.83.101:2379" }
+variable "discovery_nameserver" { default = "147.75.83.101" } 
+
 
 variable "master_node_count" { default = "3" }
 variable "worker_node_count" { default = "1" }
@@ -23,7 +25,7 @@ variable "packet_operating_system" { default = "coreos_stable" }
 
 
 # Kubernetes
-variable "cloud_provider" { default = "" }
+variable "cloud_provider" { default = "packet" }
 variable "cloud_config" { default = "" }
 variable "cluster_domain" { default = "cluster.local" }
 variable "cluster_name" { default = "kubernetes" }

@@ -1,0 +1,1 @@
+output "worker_ips" { value = "${ join(",", packet_device.workers.*.access_private_ipv4) }" }

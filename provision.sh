@@ -199,6 +199,8 @@ elif [[ "$1" = "openstack-deploy" || "$1" = "openstack-destroy" ]] ; then
         time terraform apply -auto-approve ${DIR}/openstack
     elif [ "$1" = "openstack-destroy" ] ; then
         time terraform destroy -force ${DIR}/openstack || true
+        # Exit after destroying resources as further commands cause hang
+        exit
     fi
 
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig

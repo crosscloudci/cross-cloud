@@ -18,13 +18,13 @@ before_script:
     fi
   - >
     if [ "$BASE_URL" == "https://gitlab.cncf.ci" ]; then
-      export ENVIRONMENT="prod"
+      export ENVIRONMENT="pd"
     elif [ "$BASE_URL" == "https://gitlab.staging.cncf.ci" ]; then
-      export ENVIRONMENT="stage"
+      export ENVIRONMENT="sg"
     elif [ "$BASE_URL" == "https://gitlab.dev.cncf.ci" ]; then
-      export ENVIRONMENT="dev"
+      export ENVIRONMENT="dv"
     elif [ "$BASE_URL" == "https://gitlab.cidev.cncf.ci" ]; then
-      export ENVIRONMENT="cidev"
+      export ENVIRONMENT="ci"
     else
       echo "Environment unknown"
       exit 1
@@ -82,7 +82,7 @@ Socat:
   variables:
     CLOUD: MUST BE SET
   script:
-    - /cncf/provision.sh ${CLOUD}-deploy ${CLOUD}-${DEPLOYMENT_SHA}-${ENVIRONMENT} s3 ${CLOUD}
+    - /cncf/provision.sh ${CLOUD}-deploy ${CLOUD}${DEPLOYMENT_SHA}${ENVIRONMENT} s3 ${CLOUD}
     - kubectl create -f ./helm-rbac.yml || true
     - >
       if ["$CLOUD" == "gke" ]; then
@@ -119,7 +119,7 @@ Socat:
   variables:
     CLOUD: MUST BE SET
   script:
-    - /cncf/provision.sh ${CLOUD}-destroy ${CLOUD}-${DEPLOYMENT_SHA}-${ENVIRONMENT} s3 ${CLOUD} 
+    - /cncf/provision.sh ${CLOUD}-destroy ${CLOUD}${DEPLOYMENT_SHA}${ENVIRONMENT} s3 ${CLOUD} 
 
 # Build-Source VARs
 Build-Source:

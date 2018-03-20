@@ -1,0 +1,86 @@
+#cloud-config
+
+---
+coreos:
+
+  units:
+    - name: docker.service
+      command: start
+      drop-ins:
+        - name: docker.conf
+          content: |
+            [Service]
+            EnvironmentFile=/etc/default/docker
+
+    - name: nginx.service
+      command: start
+      content: |
+        [Unit]
+        Description=NginxLoadBalancer
+        After=docker.service
+        Requires=docker.service
+
+        [Service]
+        TimeoutStartExec=0
+        Restart=always
+        RestartSec=10
+        ExecStartPre=-/usr/bin/docker kill nginxlb
+        ExecStartPre=-/usr/bin/docker rm nginxlb
+        ExecStartPre=/usr/bin/docker pull nginx
+        ExecStart=/usr/bin/docker run -v /etc/nginx.conf:/etc/nginx/nginx.conf --network host --name nginxlb nginx
+        ExecStop=/usr/bin/docker stop nginxlb
+
+        [Install]
+        WantedBy=multi-user.target
+
+write-files:
+
+  - path: /etc/default/docker
+    content: |
+      DOCKER_OPTS="--ip-masq=false --iptables=false --log-driver=json-file --log-level=warn --log-opt=max-file=5 --log-opt=max-size=10m --storage-driver=overlay"
+
+  - path: /etc/nginx.conf
+    content: |
+      user  nginx;
+      worker_processes  1;  
+
+      error_log  /var/log/nginx/error.log warn;
+      pid        /var/run/nginx.pid;
+
+
+      events {
+         worker_connections  1024;
+      }
+
+
+      http {
+        include       /etc/nginx/mime.types;
+        default_type  application/octet-stream;
+
+        log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                          '$status $body_bytes_sent "$http_referer" '
+                          '"$http_user_agent" "$http_x_forwarded_for"';
+
+        access_log  /var/log/nginx/access.log  main;
+
+        sendfile        on; 
+        #tcp_nopush     on; 
+
+        keepalive_timeout  65; 
+
+        #gzip  on; 
+
+        include /etc/nginx/conf.d/*.conf;
+      }
+
+      stream {
+        upstream ssl {
+${server_ips}
+        }      
+
+        server {
+          listen 443;
+          proxy_pass ssl; 
+        }
+      }
+

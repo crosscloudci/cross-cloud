@@ -1,0 +1,9 @@
+variable "name" {}
+variable "etcd_server" {}
+variable "discovery_nameserver" {}
+variable "cloud_provider" {}
+variable "master_ips" {}
+variable "public_master_ips" {}
+variable "worker_ips" {}
+variable "master_node_count" {}
+variable "worker_node_count" {}

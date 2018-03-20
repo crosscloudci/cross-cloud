@@ -1,8 +1,10 @@
 variable "name" {}
 variable "flavor" {}
 variable "image" {}
-variable "count" {}
+variable "master_count" {}
+variable "master_ips" { type = "list" }
 variable "network_id" {}
+variable "fip" {}
+variable "lb_port" {}
 variable "security_group" {}
-variable "cloud_init" {}
 variable "keypair" {}

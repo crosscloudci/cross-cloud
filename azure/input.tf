@@ -16,7 +16,7 @@ variable "image_offer"     { default = "CoreOS" }
 variable "image_sku"       { default = "Stable" }
 variable "image_version"   { default = "1465.8.0" }
 variable "master_vm_size"   { default = "Standard_A3" }
-variable "worker_vm_size"   { default = "Standard_A7" }
+variable "worker_vm_size"   { default = "Standard_F16" }
 variable "bastion_vm_size"   { default = "Standard_A1" }
 
 # Kubernetes

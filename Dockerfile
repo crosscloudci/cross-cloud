@@ -3,7 +3,7 @@ MAINTAINER "Denver Williams <denver@debian.nz>"
 ENV KUBECTL_VERSION=v1.8.1
 ENV HELM_VERSION=v2.7.2
 #PIN to Commit on Master
-ENV TERRAFORM_VERSION=0.10.6
+ENV TERRAFORM_VERSION=0.11.3
 # ENV TERRAFORM_VERSION=master
 # ENV TF_DEV=true
 # ENV TF_RELEASE=true
@@ -65,6 +65,7 @@ COPY packet/ /cncf/packet/
 
 COPY bootstrap/ /cncf/bootstrap/
 COPY dns/ /cncf/dns/
+COPY dns-etcd/ /cncf/dns-etcd/
 
 COPY kubeconfig/ /cncf/kubeconfig/
 COPY socat/ /cncf/socat/
@@ -78,6 +79,7 @@ COPY master_templates-v1.7.2/ /cncf/master_templates-v1.7.2/
 COPY master_templates-v1.8.1/ /cncf/master_templates-v1.8.1/
 COPY master_templates-v1.9.0-alpha.1/ /cncf/master_templates-v1.9.0-alpha.1/
 COPY master_templates-v1.9.0/ /cncf/master_templates-v1.9.0/
+COPY master_templates-v1.9.0-dns-etcd/ /cncf/master_templates-v1.9.0-dns-etcd/
 
 COPY worker_templates-v1.7.2/ /cncf/worker_templates-v1.7.2/
 COPY worker_templates-v1.8.1/ /cncf/worker_templates-v1.8.1/

@@ -89,14 +89,14 @@ if [ "$1" = "aws-deploy" ] ; then
               -backend-config "region=${AWS_DEFAULT_REGION}"
     # ensure kubeconfig is written to disk on infrastructure refresh
     terraform taint -module=kubeconfig null_resource.kubeconfig || true
-    time terraform apply ${DIR}/aws
+    time terraform apply -auto-approve ${DIR}/aws
     elif [ "$3" = "file" ]; then
         cp ../file-backend.tf .
         terraform init \
                   -backend-config "path=/cncf/data/${TF_VAR_name}/terraform.tfstate"
         # ensure kubeconfig is written to disk on infrastructure refresh
         terraform taint -module=kubeconfig null_resource.kubeconfig || true ${DIR}/aws
-        time terraform apply ${DIR}/aws
+        time terraform apply -auto-approve  ${DIR}/aws
     fi
 
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
@@ -135,10 +135,10 @@ elif [ "$1" = "azure-deploy" ] ; then
               -backend-config "region=${AWS_DEFAULT_REGION}"
     # ensure kubeconfig is written to disk on infrastructure refresh
     terraform taint -module=kubeconfig null_resource.kubeconfig || true
-        terraform apply -target azurerm_resource_group.cncf ${DIR}/azure && \
-        terraform apply -target module.network.azurerm_virtual_network.cncf ${DIR}/azure || true && \
-        terraform apply -target module.network.azurerm_subnet.cncf ${DIR}/azure || true && \
-        time terraform apply ${DIR}/azure
+        terraform apply -target azurerm_resource_group.cncf -auto-approve ${DIR}/azure && \
+        terraform apply -target module.network.azurerm_virtual_network.cncf -auto-approve ${DIR}/azure || true && \
+        terraform apply -target module.network.azurerm_subnet.cncf -auto-approve ${DIR}/azure || true && \
+        time terraform apply -auto-approve ${DIR}/azure
 
     elif [ "$3" = "file" ]; then
         cp ../file-backend.tf .
@@ -146,10 +146,10 @@ elif [ "$1" = "azure-deploy" ] ; then
                   -backend-config "path=/cncf/data/${TF_VAR_name}/terraform.tfstate"
         # ensure kubeconfig is written to disk on infrastructure refresh
         terraform taint -module=kubeconfig null_resource.kubeconfig || true
-            terraform apply -target azurerm_resource_group.cncf ${DIR}/azure && \
-            terraform apply -target module.network.azurerm_virtual_network.cncf ${DIR}/azure || true && \
-            terraform apply -target module.network.azurerm_subnet.cncf ${DIR}/azure || true && \
-            time terraform apply ${DIR}/azure
+            terraform apply -target azurerm_resource_group.cncf -auto-approve ${DIR}/azure && \
+            terraform apply -target module.network.azurerm_virtual_network.cncf -auto-approve ${DIR}/azure || true && \
+            terraform apply -target module.network.azurerm_subnet.cncf -auto-approve ${DIR}/azure || true && \
+            time terraform apply -auto-approve ${DIR}/azure
        fi 
 
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
@@ -196,10 +196,19 @@ elif [[ "$1" = "openstack-deploy" || "$1" = "openstack-destroy" ]] ; then
     # deploy/destroy implementations
     if [ "$1" = "openstack-deploy" ] ; then
         terraform taint -module=kubeconfig null_resource.kubeconfig || true
-        time terraform apply ${DIR}/openstack
+        time terraform apply -auto-approve ${DIR}/openstack
     elif [ "$1" = "openstack-destroy" ] ; then
         time terraform destroy -force ${DIR}/openstack || true
+        # Exit after destroying resources as further commands cause hang
+        exit
     fi
+
+    export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
+    echo "❤ Polling for cluster life - this could take a minute or more"
+    export NODES="$(expr $TF_VAR_master_node_count + $TF_VAR_worker_node_count)"
+    KUBECTL_PATH=$(which kubectl) NUM_NODES="$NODES" KUBERNETES_PROVIDER=local ${DIR}/validate-cluster/cluster/validate-cluster.sh || true
+    _retry "❤ Installing Helm" helm init
+    _retry "Wait for Tiller Deployment to be available" kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
 # End OpenStack
 
 elif [ "$1" = "packet-deploy" ] ; then
@@ -212,7 +221,7 @@ elif [ "$1" = "packet-deploy" ] ; then
               -backend-config "region=${AWS_DEFAULT_REGION}"
     # ensure kubeconfig & resolv.conf is written to disk on infrastructure refresh
     terraform taint -module=kubeconfig null_resource.kubeconfig || true ${DIR}/packet
-    time terraform apply ${DIR}/packet
+    time terraform apply -auto-approve ${DIR}/packet
 
     elif [ "$3" = "file" ]; then
         cp ../file-backend.tf .
@@ -220,7 +229,7 @@ elif [ "$1" = "packet-deploy" ] ; then
                   -backend-config "path=/cncf/data/${TF_VAR_name}/terraform.tfstate" 
         # ensure kubeconfig is written to disk on infrastructure refresh
         terraform taint -module=kubeconfig null_resource.kubeconfig || true ${DIR}/packet
-        time terraform apply ${DIR}/packet
+        time terraform apply -auto-approve ${DIR}/packet
 fi
 
 
@@ -258,8 +267,8 @@ elif [ "$1" = "gce-deploy" ] ; then
               -backend-config "region=${AWS_DEFAULT_REGION}"
     # ensure kubeconfig is written to disk on infrastructure refresh
     terraform taint -module=kubeconfig null_resource.kubeconfig || true ${DIR}/gce
-    time terraform apply -target module.vpc.google_compute_subnetwork.cncf ${DIR}/gce
-    time terraform apply ${DIR}/gce
+    time terraform apply -target module.vpc.google_compute_subnetwork.cncf -auto-approve ${DIR}/gce
+    time terraform apply -auto-approve ${DIR}/gce
 
 elif [ "$3" = "file" ]; then
         cp ../file-backend.tf .
@@ -267,8 +276,8 @@ elif [ "$3" = "file" ]; then
                   -backend-config "path=/cncf/data/${TF_VAR_name}/terraform.tfstate"
         # ensure kubeconfig is written to disk on infrastructure refresh
         terraform taint -module=kubeconfig null_resource.kubeconfig || true ${DIR}/gce
-        time terraform apply -target module.vpc.google_compute_subnetwork.cncf ${DIR}/gce
-        time terraform apply ${DIR}/gce
+        time terraform apply -target module.vpc.google_compute_subnetwork.cncf -auto-approve ${DIR}/gce
+        time terraform apply -auto-approve ${DIR}/gce
     fi
 
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
@@ -309,16 +318,16 @@ if [ "$3" = "s3" ]; then
               -backend-config "region=${AWS_DEFAULT_REGION}"
     # ensure kubeconfig is written to disk on infrastructure refresh
     terraform taint -module=kubeconfig null_resource.kubeconfig || true          
-    time terraform apply -target module.vpc ${DIR}/gke && \
-    time terraform apply ${DIR}/gke
+    time terraform apply -target module.vpc -auto-approve ${DIR}/gke && \
+    time terraform apply -auto-approve ${DIR}/gke
 elif [ "$3" = "file" ]; then
     cp ../file-backend.tf .
     terraform init \
               -backend-config "path=/cncf/data/${TF_VAR_name}/terraform.tfstate"
     # ensure kubeconfig is written to disk on infrastructure refresh
     terraform taint -module=kubeconfig null_resource.kubeconfig || true          
-    time terraform apply -target module.vpc ${DIR}/gke && \
-    time terraform apply ${DIR}/gke
+    time terraform apply -target module.vpc -auto-approve ${DIR}/gke && \
+    time terraform apply -auto-approve ${DIR}/gke
 fi
 
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
@@ -363,14 +372,14 @@ if [ "$3" = "s3" ]; then
               -backend-config "region=${AWS_DEFAULT_REGION}"
     # ensure kubeconfig is written to disk on infrastructure refresh
     terraform taint null_resource.kubeconfig || true
-    time terraform apply ${DIR}/ibm
+    time terraform apply -auto-approve ${DIR}/ibm
 elif [ "$3" = "file" ]; then
     cp ../file-backend.tf .
     terraform init \
               -backend-config "path=/cncf/data/${TF_VAR_name}/terraform.tfstate"
     # ensure kubeconfig is written to disk on infrastructure refresh
     terraform taint null_resource.kubeconfig || true
-    time terraform apply ${DIR}/ibm
+    time terraform apply -auto-approve ${DIR}/ibm
 fi
 
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig

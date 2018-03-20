@@ -45,7 +45,7 @@ module "tls" {
   tls_apiserver_cert_subject_common_name = "kubernetes-master"
   tls_apiserver_cert_validity_period_hours = 1000
   tls_apiserver_cert_early_renewal_hours = 100
-  tls_apiserver_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local,i${ var.name }.packet.local,e${ var.name }.packet.local"
+  tls_apiserver_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local,*.${ var.name }.${ var.cloud_provider }.local"
   tls_apiserver_cert_ip_addresses = "127.0.0.1,100.64.0.1,${ var.dns_service_ip }"
 
   tls_worker_cert_subject_common_name = "kubernetes-worker"
@@ -57,12 +57,12 @@ module "tls" {
 
 
 module "master_templates" {
-  source = "../master_templates-v1.9.0"
+  source = "/cncf/master_templates-v1.9.0-dns-etcd"
 
   master_node_count = "${ var.master_node_count }"
   name = "${ var.name }"
-  etcd_endpoint = "i${ var.name }.packet.local"
-  etcd_bootstrap = "${ var.etcd_bootstrap }"
+  etcd_endpoint     = "etcd.${ var.name }.${ var.cloud_provider }.local"
+  etcd_discovery    = "${ var.name }.${ var.cloud_provider }.local"
 
   kubelet_artifact = "${ var.kubelet_artifact }"
   cni_artifact = "${ var.cni_artifact }"
@@ -77,7 +77,7 @@ module "master_templates" {
   kube_proxy_image = "${ var.kube_proxy_image }"
   kube_proxy_tag = "${ var.kube_proxy_tag }"
 
-  cloud_provider = "${ var.cloud_provider }"
+  cloud_provider = ""
   cloud_config = "${ var.cloud_config }"
   cluster_domain = "${ var.cluster_domain }"
   cluster_name = "${ var.cluster_name }"
@@ -92,7 +92,6 @@ module "master_templates" {
   apiserver_key = "${ module.tls.apiserver_key }"
   cloud_config_file = ""
 
-  dns_master = "${ module.dns.dns_master }"
   dns_conf = "${ module.dns.dns_conf }"
 
 }
@@ -108,13 +107,13 @@ module "worker_templates" {
   kube_proxy_image = "${ var.kube_proxy_image }"
   kube_proxy_tag = "${ var.kube_proxy_tag }"
 
-  cloud_provider = "${ var.cloud_provider }"
+  cloud_provider = ""
   cloud_config = "${ var.cloud_config }"
   cluster_domain = "${ var.cluster_domain }"
   pod_cidr = "${ var.pod_cidr }"
   non_masquerade_cidr = "${ var.non_masquerade_cidr }"
   dns_service_ip = "${ var.dns_service_ip }"
-  internal_lb_ip = "i${ var.name }.packet.local"
+  internal_lb_ip      = "internal-master.${ var.name }.${ var.cloud_provider }.local"
 
   ca = "${ module.tls.ca }"
   worker = "${ module.tls.worker }"
@@ -126,16 +125,26 @@ module "worker_templates" {
 }
 
 module "dns" {
-  source = "../dns"
+  source = "../dns-etcd"
+  
   name = "${ var.name }"
+  etcd_server = "${ var.etcd_server }"
   discovery_nameserver = "${ var.discovery_nameserver }"
+  cloud_provider = "${ var.cloud_provider }"
+
+  master_ips = "${ module.master.master_ips }"
+  public_master_ips = "${ module.master.public_master_ips }"
+  worker_ips = "${ module.worker.worker_ips }"
+
+  master_node_count = "${ var.master_node_count }"
+  worker_node_count = "${ var.worker_node_count }"
 
 }
 
 module "kubeconfig" {
   source = "../kubeconfig"
   data_dir = "${ var.data_dir }"
-  endpoint = "e${ var.name }.packet.local"
+  endpoint = "master.${ var.name }.${ var.cloud_provider }.local"
   name = "${ var.name }"
   ca = "${ module.tls.ca}"
   client = "${ module.tls.client }"

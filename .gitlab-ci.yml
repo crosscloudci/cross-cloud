@@ -25,8 +25,12 @@ before_script:
       export ENVIRONMENT="dv"
     elif [ "$BASE_URL" == "https://gitlab.cidev.cncf.ci" ]; then
       export ENVIRONMENT="ci"
+    elif [ "$BASE_URL" == "https://gitlab.demo.cncf.ci" ]; then
+      export ENVIRONMENT="dm"
+    elif [ "$BASE_URL" == "https://gitlab.onap.cncf.ci" ]; then
+      export ENVIRONMENT="on"
     else
-      echo "Environment unknown"
+      echo "Environment unknown: $BASE_URL"
       exit 1
     fi
   - source /opt/local/etc/rvmrc ; source /opt/local/etc/profile.d/rvm.sh ; cp -a /opt/local/dashboard /dashboard ; pushd /dashboard ; source /opt/local/.env ; ./bin/update_dashboard ; popd

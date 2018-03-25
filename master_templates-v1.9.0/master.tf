@@ -22,9 +22,9 @@ resource "gzip_me" "basic_auth_csv" {
   input = "${ data.template_file.basic_auth_csv.rendered }"
 }
 
-resource "gzip_me" "cloud_config_file" {
-  input = "${ var.cloud_config_file }"
-}
+#resource "gzip_me" "cloud_config_file" {
+#  input = "${ var.cloud_config_file }"
+#}
 
 resource "gzip_me" "dns_master" {
  input = "${ var.dns_master }"
@@ -279,7 +279,8 @@ data "template_file" "master" {
     ca_key = "${ gzip_me.ca_key.output }"
     apiserver = "${ gzip_me.apiserver.output }"
     apiserver_key = "${ gzip_me.apiserver_key.output }"
-    cloud_config_file = "${ gzip_me.cloud_config_file.output }"
+    #cloud_config_file = "${ gzip_me.cloud_config_file.output }"
+    cloud_config_file = "${ var.cloud_config_file }"
     known_tokens_csv = "${ gzip_me.known_tokens_csv.output }"
     basic_auth_csv = "${ gzip_me.basic_auth_csv.output }"
     dns_master = "${ gzip_me.dns_master.output }"

@@ -10,9 +10,9 @@ resource "gzip_me" "worker_key" {
   input = "${ var.worker_key }"
 }
 
-resource "gzip_me" "cloud_config_file" {
-  input = "${ var.cloud_config_file }"
-}
+#resource "gzip_me" "cloud_config_file" {
+#  input = "${ var.cloud_config_file }"
+#}
 
 # resource "gzip_me" "dns_worker" {
 #   input = "${ var.dns_worker }"
@@ -122,7 +122,8 @@ data "template_file" "worker" {
   template = "${ file( "${ path.module }/worker.yml" )}"
 
   vars {
-    cloud_config_file = "${ gzip_me.cloud_config_file.output }"
+    #cloud_config_file = "${ gzip_me.cloud_config_file.output }"
+    cloud_config_file = "${ var.cloud_config_file }"
     ca = "${ gzip_me.ca.output }"
     worker = "${ gzip_me.worker.output }"
     worker_key = "${ gzip_me.worker_key.output }"

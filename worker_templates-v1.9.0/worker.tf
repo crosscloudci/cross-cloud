@@ -123,7 +123,7 @@ data "template_file" "worker" {
 
   vars {
     #cloud_config_file = "${ gzip_me.cloud_config_file.output }"
-    cloud_config_file = "${ var.cloud_config_file }"
+    cloud_config_file = "${ base64gzip(var.cloud_config_file) }"
     ca = "${ gzip_me.ca.output }"
     worker = "${ gzip_me.worker.output }"
     worker_key = "${ gzip_me.worker_key.output }"

@@ -160,6 +160,7 @@ write-files:
 
   - path: /etc/srv/kubernetes/cloud-config
     permissions: "0644"
+    encoding: "gzip+base64"
     content: |
       ${ cloud_config_file }
 

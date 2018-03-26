@@ -280,7 +280,7 @@ data "template_file" "master" {
     apiserver = "${ gzip_me.apiserver.output }"
     apiserver_key = "${ gzip_me.apiserver_key.output }"
     #cloud_config_file = "${ gzip_me.cloud_config_file.output }"
-    cloud_config_file = "${ var.cloud_config_file }"
+    cloud_config_file = "${ base64gzip(var.cloud_config_file) }"
     known_tokens_csv = "${ gzip_me.known_tokens_csv.output }"
     basic_auth_csv = "${ gzip_me.basic_auth_csv.output }"
     dns_master = "${ gzip_me.dns_master.output }"

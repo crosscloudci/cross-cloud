@@ -45,10 +45,6 @@ resource "azurerm_availability_set" "cncf" {
 
 
 # Create Azure Cloud Config
-resource "gzip_me" "cloud_config_file" {
-  input = "${ data.template_file.cloud_config_file.rendered }"
-}
-
 data "template_file" "cloud_config_file" {
   template = "${ file( "${ path.module }/azure_cloud.json" )}"
   vars {

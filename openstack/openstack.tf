@@ -25,10 +25,6 @@ provider "gzip" {
 }
 
 # OpenStack cloud.json file
-resource "gzip_me" "cloud_config_file" {
-  input = "${ data.template_file.cloud_conf.rendered }"
-}
-
 data "template_file" "cloud_conf" {
   template = "${ file( "${ path.module }/cloud.conf" )}"
   vars {

@@ -14,21 +14,15 @@ resource "gzip_me" "cloud_config_file" {
   input = "${ var.cloud_config_file }"
 }
 
-# resource "gzip_me" "dns_worker" {
-#   input = "${ var.dns_worker }"
-# }
-
 resource "gzip_me" "dns_conf" {
   input = "${ var.dns_conf }"
 }
 
-# resource "gzip_me" "corefile" {
-#   input = "${ var.corefile }"
-# }
+resource "gzip_me" "dns_dhcp" {
+  input = "${ var.dns_dhcp }"
+}
 
-# resource "gzip_me" "dns_etcd" {
-#   input = "${ var.dns_etcd }"
-# }
+
 
 
 
@@ -132,10 +126,8 @@ data "template_file" "worker" {
     proxy_kubeconfig = "${ gzip_me.proxy_kubeconfig.output }"
     kubelet_artifact = "${ var.kubelet_artifact }"
     cni_artifact = "${ var.cni_artifact }"
-    # dns_worker = "${ gzip_me.dns_worker.output }"
     dns_conf = "${ gzip_me.dns_conf.output }"
-    # corefile = "${ gzip_me.corefile.output }"
-    #dns_etcd = "${ gzip_me.dns_etcd.output }"
+    dns_dhcp = "${ gzip_me.dns_dhcp.output }"
 
   }
 }

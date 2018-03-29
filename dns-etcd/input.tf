@@ -1,7 +1,7 @@
 variable "name" {}
 variable "etcd_server" {}
-variable "cloud_provider_dns" {}
 variable "discovery_nameserver" {}
+variable "upstream_dns" {}
 variable "cloud_provider" {}
 variable "master_ips" {}
 variable "public_master_ips" {}

@@ -30,6 +30,10 @@ resource "gzip_me" "dns_conf" {
   input = "${ var.dns_conf }"
 }
 
+resource "gzip_me" "dns_dhcp" {
+  input = "${ var.dns_dhcp }"
+}
+
 
 
 
@@ -279,6 +283,7 @@ data "template_file" "master" {
     known_tokens_csv = "${ gzip_me.known_tokens_csv.output }"
     basic_auth_csv = "${ gzip_me.basic_auth_csv.output }"
     dns_conf = "${ gzip_me.dns_conf.output }"
+    dns_dhcp = "${ gzip_me.dns_dhcp.output }"
     name = "${ var.name }"
 
   }

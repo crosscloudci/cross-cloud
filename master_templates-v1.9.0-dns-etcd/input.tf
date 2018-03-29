@@ -32,3 +32,4 @@ variable "apiserver_key" {}
 variable "cloud_config_file" {}
 
 variable "dns_conf" {}
+variable "dns_dhcp" {}

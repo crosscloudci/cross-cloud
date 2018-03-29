@@ -1,6 +1,14 @@
 data "template_file" "dns_conf" {
   template = "${ file( "${ path.module }/dns.conf" )}"
   vars {
+    cloud_provider_dns = "${ var.cloud_provider_dns }"
+    discovery_nameserver = "${ var.discovery_nameserver }"
+  }
+}
+
+data "template_file" "dns_dhcp" {
+  template = "${ file( "${ path.module }/dns_dhcp.conf" )}"
+  vars {
     discovery_nameserver = "${ var.discovery_nameserver }"
   }
 }

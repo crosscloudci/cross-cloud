@@ -14,7 +14,6 @@ module "security" {
 
   vpc_cidr       = "${ var.vpc_cidr }"
   vpc_id         = "${ module.vpc.vpc_id }"
-  allow_ssh_cidr = "${ var.allow_ssh_cidr }"
 }
 
 
@@ -33,8 +32,6 @@ module "master" {
   ami_id                         = "${ var.aws_image_ami }"
   aws_key_name                   = "${ var.aws_key_name }"
   master_security                = "${ module.security.master_id }"
-  external_lb_security           = "${ module.security.external_lb_id }"
-  internal_lb_security           = "${ module.security.internal_lb_id }"
   instance_type                  = "${ var.aws_master_vm_size }"
   region                         = "${ var.aws_region }"
   subnet_public_id               = "${ module.vpc.subnet_public_id }"
@@ -43,18 +40,6 @@ module "master" {
   master_cloud_init = "${ module.master_templates.master_cloud_init }"
 }
 
-
-module "bastion" {
-  source = "./modules/bastion"
-
-  ami_id = "${ var.aws_image_ami }"
-  instance_type = "${ var.aws_bastion_vm_size }"
-  aws_key_name = "${ var.aws_key_name }"
-  name = "${ var.name }"
-  security_group_id = "${ module.security.bastion_id }"
-  subnet_public_id = "${ module.vpc.subnet_public_id }"
-  vpc_id = "${ module.vpc.vpc_id }"
-}
 
 module "worker" {
   source = "./modules/worker"

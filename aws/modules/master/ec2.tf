@@ -7,7 +7,7 @@ resource "aws_instance" "master" {
   key_name = "${ var.aws_key_name }"
 
   source_dest_check = false
-  associate_public_ip_address = false
+  associate_public_ip_address = true
   subnet_id = "${ var.subnet_private_id }"
   vpc_security_group_ids = [ "${ var.master_security }" ]
 

@@ -77,7 +77,7 @@ module "kubeconfig" {
   source = "../kubeconfig"
 
   data_dir = "${ var.data_dir }"
-  endpoint = ""
+  endpoint = "master.${ var.name }.${ var.cloud_provider }.local"
   name = "${ var.name }"
   ca = "${ module.tls.ca}"
   client = "${ module.tls.client }"
@@ -106,24 +106,24 @@ module "tls" {
   tls_apiserver_cert_subject_common_name = "kubernetes-master"
   tls_apiserver_cert_validity_period_hours = 1000
   tls_apiserver_cert_early_renewal_hours = 100
-  tls_apiserver_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local,*.ap-southeast-2.elb.amazonaws.com"
+  tls_apiserver_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local,*.${ var.name }.${ var.cloud_provider }.local"
   tls_apiserver_cert_ip_addresses = "127.0.0.1,100.64.0.1,${ var.dns_service_ip }"
 
   tls_worker_cert_subject_common_name = "kubernetes-worker"
   tls_worker_cert_validity_period_hours = 1000
   tls_worker_cert_early_renewal_hours = 100
-  tls_worker_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local,*.*.compute.internal,*.ec2.internal"
+  tls_worker_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local"
   tls_worker_cert_ip_addresses = "127.0.0.1"
 
 }
 
 module "master_templates" {
-  source = "../master_templates-v1.9.0"
+  source = "/cncf/master_templates-v1.9.0-dns-etcd"
 
   master_node_count = "${ var.master_node_count }"
   name = "${ var.name }"
-  etcd_endpoint = "${ var.etcd_endpoint }"
-  etcd_bootstrap = ""
+  etcd_endpoint     = "etcd.${ var.name }.${ var.cloud_provider }.local"
+  etcd_discovery    = "${ var.name }.${ var.cloud_provider }.local"
 
   kubelet_artifact = "${ var.kubelet_artifact }"
   cni_artifact = "${ var.cni_artifact }"
@@ -153,8 +153,8 @@ module "master_templates" {
   apiserver_key = "${ module.tls.apiserver_key }"
   cloud_config_file = ""
 
-  dns_master = ""
-  dns_conf = ""
+  dns_conf = "${ module.dns.dns_conf }"
+  dns_dhcp = ""
 
 }
 
@@ -175,14 +175,14 @@ module "worker_templates" {
   pod_cidr = "${ var.pod_cidr }"
   non_masquerade_cidr = "${ var.non_masquerade_cidr }"
   dns_service_ip = "${ var.dns_service_ip }"
-  internal_lb_ip = ""
+  internal_lb_ip = "internal-master.${ var.name }.${ var.cloud_provider }.local"
 
   ca = "${ module.tls.ca }"
   worker = "${ module.tls.worker }"
   worker_key = "${ module.tls.worker_key }"
   cloud_config_file = ""
 
-  dns_conf = ""
+  dns_conf = "${ module.dns.dns_conf }"
   dns_dhcp = ""
 
 }

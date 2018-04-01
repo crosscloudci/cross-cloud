@@ -9,6 +9,10 @@ variable "aws_availability_zone" { default = "ap-southeast-2a" }
 variable "vpc_cidr"        { default = "10.0.0.0/16" }
 variable "subnet_cidr"     { default = "10.0.240.0/24"}
 
+# DNS Configuration
+variable "etcd_server" { default = "147.75.83.101:2379" }
+variable "discovery_nameserver" { default = "147.75.83.101" } 
+
 # VM Image and size
 variable "admin_username" { default = "core" }
 variable "aws_image_ami" { default = "ami-266d8b44"} # channel/stable type/hvm

@@ -3,8 +3,7 @@ module "vpc" {
   name = "${ var.name }"
 
   aws_availability_zone = "${ var.aws_availability_zone }"
-  subnet_cidr_public = "${ var.subnet_cidr_public }"
-  subnet_cidr_private = "${ var.subnet_cidr_private }"
+  subnet_cidr = "${ var.subnet_cidr }"
   cidr = "${ var.vpc_cidr }"
 }
 
@@ -34,8 +33,7 @@ module "master" {
   master_security                = "${ module.security.master_id }"
   instance_type                  = "${ var.aws_master_vm_size }"
   region                         = "${ var.aws_region }"
-  subnet_public_id               = "${ module.vpc.subnet_public_id }"
-  subnet_private_id              = "${ module.vpc.subnet_private_id }"
+  subnet_id                      = "${ module.vpc.subnet_id }"
   vpc_id                         = "${ module.vpc.vpc_id }"
   master_cloud_init = "${ module.master_templates.master_cloud_init }"
 }
@@ -52,16 +50,34 @@ module "worker" {
   aws_key_name = "${ var.aws_key_name }"
   region = "${ var.aws_region }"
   security_group_id = "${ module.security.worker_id }"
-  subnet_private_id = "${ module.vpc.subnet_private_id }"
+  subnet_id = "${ module.vpc.subnet_id }"
   worker_cloud_init = "${ module.worker_templates.worker_cloud_init }"
 
 }
+
+ # module "dns" {
+ #   source = "../dns-etcd"
+  
+ #   name = "${ var.name }"
+ #   etcd_server = "${ var.etcd_server }"
+ #   discovery_nameserver = "${ var.discovery_nameserver }"
+ #   upstream_dns = "DNS=169.254.169.254"
+ #   cloud_provider = "${ var.cloud_provider }"
+
+ #   master_ips = "${ module.master.master_ips }"
+ #   public_master_ips = "${ module.master.public_master_ips }"
+ #   worker_ips = "${ module.worker.worker_ips }"
+
+ #   master_node_count = "${ var.master_node_count }"
+ #   worker_node_count = "${ var.worker_node_count }"
+
+ # }
 
 module "kubeconfig" {
   source = "../kubeconfig"
 
   data_dir = "${ var.data_dir }"
-  endpoint = "${ module.master.external_elb }"
+  endpoint = ""
   name = "${ var.name }"
   ca = "${ module.tls.ca}"
   client = "${ module.tls.client }"
@@ -159,7 +175,7 @@ module "worker_templates" {
   pod_cidr = "${ var.pod_cidr }"
   non_masquerade_cidr = "${ var.non_masquerade_cidr }"
   dns_service_ip = "${ var.dns_service_ip }"
-  internal_lb_ip = "${ module.master.internal_elb }"
+  internal_lb_ip = ""
 
   ca = "${ module.tls.ca }"
   worker = "${ module.tls.worker }"
@@ -167,5 +183,6 @@ module "worker_templates" {
   cloud_config_file = ""
 
   dns_conf = ""
+  dns_dhcp = ""
 
 }

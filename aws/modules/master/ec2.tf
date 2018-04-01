@@ -8,7 +8,7 @@ resource "aws_instance" "master" {
 
   source_dest_check = false
   associate_public_ip_address = true
-  subnet_id = "${ var.subnet_private_id }"
+  subnet_id = "${ var.subnet_id }"
   vpc_security_group_ids = [ "${ var.master_security }" ]
 
   root_block_device {

@@ -4,8 +4,7 @@ variable "instance_type" {}
 variable "aws_key_name" {}
 variable "name" {}
 variable "region" {}
-variable "subnet_public_id" {}
-variable "subnet_private_id" {}
+variable "subnet_id" {}
 variable "vpc_id" {}
 variable "instance_profile_name" {}
 variable "master_node_count" {}

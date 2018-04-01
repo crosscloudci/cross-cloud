@@ -7,8 +7,7 @@ variable "aws_region" { default = "ap-southeast-2" }
 variable "aws_key_name" { default = "cross-cloud" }
 variable "aws_availability_zone" { default = "ap-southeast-2a" }
 variable "vpc_cidr"        { default = "10.0.0.0/16" }
-variable "subnet_cidr_private"     { default = "10.0.240.0/24"}
-variable "subnet_cidr_public"     { default = "10.0.241.0/24"}
+variable "subnet_cidr"     { default = "10.0.240.0/24"}
 
 # VM Image and size
 variable "admin_username" { default = "core" }

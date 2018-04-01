@@ -55,23 +55,23 @@ module "worker" {
 
 }
 
- # module "dns" {
- #   source = "../dns-etcd"
+module "dns" {
+  source = "../dns-etcd"
   
- #   name = "${ var.name }"
- #   etcd_server = "${ var.etcd_server }"
- #   discovery_nameserver = "${ var.discovery_nameserver }"
- #   upstream_dns = "DNS=169.254.169.254"
- #   cloud_provider = "${ var.cloud_provider }"
+  name = "${ var.name }"
+  etcd_server = "${ var.etcd_server }"
+  discovery_nameserver = "${ var.discovery_nameserver }"
+  upstream_dns = "DNS=10.0.0.2"
+  cloud_provider = "${ var.cloud_provider }"
 
- #   master_ips = "${ module.master.master_ips }"
- #   public_master_ips = "${ module.master.public_master_ips }"
- #   worker_ips = "${ module.worker.worker_ips }"
+  master_ips = "${ module.master.master_ips }"
+  public_master_ips = "${ module.master.public_master_ips }"
+  worker_ips = "${ module.worker.worker_ips }"
 
- #   master_node_count = "${ var.master_node_count }"
- #   worker_node_count = "${ var.worker_node_count }"
+  master_node_count = "${ var.master_node_count }"
+  worker_node_count = "${ var.worker_node_count }"
 
- # }
+}
 
 module "kubeconfig" {
   source = "../kubeconfig"

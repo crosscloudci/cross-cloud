@@ -1,5 +1,4 @@
 stages:
-  - Build
   - Artifacts
   - Cross-Cloud
   - End-To-End
@@ -34,22 +33,6 @@ before_script:
       exit 1
     fi
   - source /opt/local/etc/rvmrc ; source /opt/local/etc/profile.d/rvm.sh ; cp -a /opt/local/dashboard /dashboard ; pushd /dashboard ; source /opt/local/.env ; ./bin/update_dashboard ; popd
-
-Cross-Cloud:
-  image: crosscloudci/debian-docker 
-  stage: Build
-  script:
-    - docker login -u "gitlab-ci-token" -p "$CI_JOB_TOKEN" $CI_REGISTRY
-    - docker build --pull -t "$CI_REGISTRY_IMAGE/provisioning:$CI_COMMIT_REF_SLUG" .
-    - docker push "$CI_REGISTRY_IMAGE/provisioning:$CI_COMMIT_REF_SLUG"
-
-Socat:
-  stage: Build
-  image: crosscloudci/debian-docker
-  script:
-    - docker login -u "gitlab-ci-token" -p "$CI_JOB_TOKEN" $CI_REGISTRY
-    - docker build --pull -t "$CI_REGISTRY_IMAGE/socat:$CI_COMMIT_REF_SLUG" ./socat/
-    - docker push "$CI_REGISTRY_IMAGE/socat:$CI_COMMIT_REF_SLUG"
 
 .build_source: &build_source
   image: buildpack-deps:stretch

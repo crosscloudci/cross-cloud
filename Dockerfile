@@ -11,6 +11,12 @@ ENV ARC=amd64
 
 RUN apt update && apt install -y unzip git bash util-linux wget tar curl jq less
 
+#Install Gcloud
+RUN echo "deb http://packages.cloud.google.com/apt cloud-sdk-stretch main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && \
+curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add - && \
+apt-get update && \
+apt-get -y install google-cloud-sdk
+
 #Install Kubectl
 RUN wget -O /usr/local/bin/kubectl https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_VERSION}/bin/linux/$ARC/kubectl && \
 chmod +x /usr/local/bin/kubectl

@@ -22,13 +22,13 @@ module "cluster" {
   data_dir = "${ var.data_dir }"
 }
 
-module "kubeconfig" {
-  source = "../kubeconfig"
+# module "kubeconfig" {
+#   source = "../kubeconfig"
 
-  ca = "${base64decode(module.cluster.ca)}"
-  client = "${base64decode(module.cluster.client)}"
-  client_key = "${base64decode(module.cluster.client_key)}"
-  endpoint = "${ module.cluster.endpoint }"
-  data_dir = "${ var.data_dir }"
-  name = "gke_${ var.google_project }_${ var.zone }-a_${ var.name }"
-}
+#   ca = "${base64decode(module.cluster.ca)}"
+#   client = "${base64decode(module.cluster.client)}"
+#   client_key = "${base64decode(module.cluster.client_key)}"
+#   endpoint = "${ module.cluster.endpoint }"
+#   data_dir = "${ var.data_dir }"
+#   name = "gke_${ var.google_project }_${ var.zone }-a_${ var.name }"
+# }

@@ -12,11 +12,14 @@ variable "region"          { default = "us-central1" }
 variable "zone"            { default = "us-central1-a" }
 
 variable "cidr" { default = "10.240.0.0/16" }
-variable "internal_lb_ip" { default = "10.240.0.100"}
 
 variable "allow_ssh_cidr" { default = "0.0.0.0/0" }
 
 variable "data_dir" { default = "/cncf/data/gce" }
+
+# DNS Configuration
+variable "etcd_server" { default = "147.75.83.101:2379" }
+variable "discovery_nameserver" { default = "147.75.83.101" } 
 
 
 # Kubernetes

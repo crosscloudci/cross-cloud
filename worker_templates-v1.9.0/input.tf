@@ -22,5 +22,6 @@ variable "cloud_config_file" {}
 
 # variable "dns_worker" {}
 variable "dns_conf" {}
+variable "dns_dhcp" {}
 # variable "corefile" {}
 # variable "dns_etcd" {}

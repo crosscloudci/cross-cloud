@@ -1,3 +1,3 @@
-output "external_elb" { value = "${ aws_elb.external.dns_name }" }
-output "internal_elb" { value = "${ aws_elb.internal.dns_name }" }
+output "public_master_ips" { value = "${ join(",", aws_instance.master.*.public_ip) }" }
+output "master_ips" { value = "${ join(",", aws_instance.master.*.private_ip) }" }
 

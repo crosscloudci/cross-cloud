@@ -3,8 +3,7 @@ module "vpc" {
   name = "${ var.name }"
 
   aws_availability_zone = "${ var.aws_availability_zone }"
-  subnet_cidr_public = "${ var.subnet_cidr_public }"
-  subnet_cidr_private = "${ var.subnet_cidr_private }"
+  subnet_cidr = "${ var.subnet_cidr }"
   cidr = "${ var.vpc_cidr }"
 }
 
@@ -14,7 +13,6 @@ module "security" {
 
   vpc_cidr       = "${ var.vpc_cidr }"
   vpc_id         = "${ module.vpc.vpc_id }"
-  allow_ssh_cidr = "${ var.allow_ssh_cidr }"
 }
 
 
@@ -33,28 +31,13 @@ module "master" {
   ami_id                         = "${ var.aws_image_ami }"
   aws_key_name                   = "${ var.aws_key_name }"
   master_security                = "${ module.security.master_id }"
-  external_lb_security           = "${ module.security.external_lb_id }"
-  internal_lb_security           = "${ module.security.internal_lb_id }"
   instance_type                  = "${ var.aws_master_vm_size }"
   region                         = "${ var.aws_region }"
-  subnet_public_id               = "${ module.vpc.subnet_public_id }"
-  subnet_private_id              = "${ module.vpc.subnet_private_id }"
+  subnet_id                      = "${ module.vpc.subnet_id }"
   vpc_id                         = "${ module.vpc.vpc_id }"
   master_cloud_init = "${ module.master_templates.master_cloud_init }"
 }
 
-
-module "bastion" {
-  source = "./modules/bastion"
-
-  ami_id = "${ var.aws_image_ami }"
-  instance_type = "${ var.aws_bastion_vm_size }"
-  aws_key_name = "${ var.aws_key_name }"
-  name = "${ var.name }"
-  security_group_id = "${ module.security.bastion_id }"
-  subnet_public_id = "${ module.vpc.subnet_public_id }"
-  vpc_id = "${ module.vpc.vpc_id }"
-}
 
 module "worker" {
   source = "./modules/worker"
@@ -67,8 +50,26 @@ module "worker" {
   aws_key_name = "${ var.aws_key_name }"
   region = "${ var.aws_region }"
   security_group_id = "${ module.security.worker_id }"
-  subnet_private_id = "${ module.vpc.subnet_private_id }"
+  subnet_id = "${ module.vpc.subnet_id }"
   worker_cloud_init = "${ module.worker_templates.worker_cloud_init }"
+
+}
+
+module "dns" {
+  source = "../dns-etcd"
+  
+  name = "${ var.name }"
+  etcd_server = "${ var.etcd_server }"
+  discovery_nameserver = "${ var.discovery_nameserver }"
+  upstream_dns = "DNS=10.0.0.2"
+  cloud_provider = "${ var.cloud_provider }"
+
+  master_ips = "${ module.master.master_ips }"
+  public_master_ips = "${ module.master.public_master_ips }"
+  worker_ips = "${ module.worker.worker_ips }"
+
+  master_node_count = "${ var.master_node_count }"
+  worker_node_count = "${ var.worker_node_count }"
 
 }
 
@@ -76,7 +77,7 @@ module "kubeconfig" {
   source = "../kubeconfig"
 
   data_dir = "${ var.data_dir }"
-  endpoint = "${ module.master.external_elb }"
+  endpoint = "master.${ var.name }.${ var.cloud_provider }.local"
   name = "${ var.name }"
   ca = "${ module.tls.ca}"
   client = "${ module.tls.client }"
@@ -105,24 +106,24 @@ module "tls" {
   tls_apiserver_cert_subject_common_name = "kubernetes-master"
   tls_apiserver_cert_validity_period_hours = 1000
   tls_apiserver_cert_early_renewal_hours = 100
-  tls_apiserver_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local,*.ap-southeast-2.elb.amazonaws.com"
+  tls_apiserver_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local,*.${ var.name }.${ var.cloud_provider }.local"
   tls_apiserver_cert_ip_addresses = "127.0.0.1,100.64.0.1,${ var.dns_service_ip }"
 
   tls_worker_cert_subject_common_name = "kubernetes-worker"
   tls_worker_cert_validity_period_hours = 1000
   tls_worker_cert_early_renewal_hours = 100
-  tls_worker_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local,*.*.compute.internal,*.ec2.internal"
+  tls_worker_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local"
   tls_worker_cert_ip_addresses = "127.0.0.1"
 
 }
 
 module "master_templates" {
-  source = "../master_templates-v1.9.0"
+  source = "/cncf/master_templates-v1.9.0-dns-etcd"
 
   master_node_count = "${ var.master_node_count }"
   name = "${ var.name }"
-  etcd_endpoint = "${ var.etcd_endpoint }"
-  etcd_bootstrap = ""
+  etcd_endpoint     = "etcd.${ var.name }.${ var.cloud_provider }.local"
+  etcd_discovery    = "${ var.name }.${ var.cloud_provider }.local"
 
   kubelet_artifact = "${ var.kubelet_artifact }"
   cni_artifact = "${ var.cni_artifact }"
@@ -152,8 +153,8 @@ module "master_templates" {
   apiserver_key = "${ module.tls.apiserver_key }"
   cloud_config_file = ""
 
-  dns_master = ""
-  dns_conf = ""
+  dns_conf = "${ module.dns.dns_conf }"
+  dns_dhcp = ""
 
 }
 
@@ -174,13 +175,14 @@ module "worker_templates" {
   pod_cidr = "${ var.pod_cidr }"
   non_masquerade_cidr = "${ var.non_masquerade_cidr }"
   dns_service_ip = "${ var.dns_service_ip }"
-  internal_lb_ip = "${ module.master.internal_elb }"
+  internal_lb_ip = "internal-master.${ var.name }.${ var.cloud_provider }.local"
 
   ca = "${ module.tls.ca }"
   worker = "${ module.tls.worker }"
   worker_key = "${ module.tls.worker_key }"
   cloud_config_file = ""
 
-  dns_conf = ""
+  dns_conf = "${ module.dns.dns_conf }"
+  dns_dhcp = ""
 
 }

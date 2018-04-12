@@ -128,3 +128,10 @@ write-files:
     owner: root
     content: |
       ${ dns_conf }
+
+  - path: /etc/dhcp/dhclient.conf
+    permissions: 0644
+    encoding: "gzip+base64"
+    owner: root
+    content: |
+      ${ dns_dhcp }

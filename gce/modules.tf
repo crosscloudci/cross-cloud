@@ -15,7 +15,6 @@ module "vpc" {
    master_vm_size = "${ var.master_vm_size }"
    master_node_count = "${ var.master_node_count }"
    image_id = "${ var.image_id }"
-   internal_lb_ip = "${ var.internal_lb_ip }"
    master_cloud_init = "${ module.master_templates.master_cloud_init }"
 }
 
@@ -48,11 +47,29 @@ module "security" {
   allow_ssh_cidr = "${ var.allow_ssh_cidr }"
 }
 
+module "dns" {
+  source = "../dns-etcd"
+  
+  name = "${ var.name }"
+  etcd_server = "${ var.etcd_server }"
+  discovery_nameserver = "${ var.discovery_nameserver }"
+  upstream_dns = "DNS=169.254.169.254"
+  cloud_provider = "${ var.cloud_provider }"
+
+  master_ips = "${ module.master.master_ips }"
+  public_master_ips = "${ module.master.public_master_ips }"
+  worker_ips = "${ module.worker.worker_ips }"
+
+  master_node_count = "${ var.master_node_count }"
+  worker_node_count = "${ var.worker_node_count }"
+
+}
+
 module "kubeconfig" {
   source = "../kubeconfig"
 
   data_dir = "${ var.data_dir }"
-  endpoint = "${ module.master.external_lb }"
+  endpoint = "master.${ var.name }.${ var.cloud_provider }.local"
   name = "${ var.name }"
   ca = "${ module.tls.ca }"
   client = "${ module.tls.client }"
@@ -81,8 +98,8 @@ module "tls" {
   tls_apiserver_cert_subject_common_name = "kubernetes-master"
   tls_apiserver_cert_validity_period_hours = 1000
   tls_apiserver_cert_early_renewal_hours = 100
-  tls_apiserver_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local"
-  tls_apiserver_cert_ip_addresses = "127.0.0.1,100.64.0.1,${ var.dns_service_ip },${ module.master.external_lb },${ var.internal_lb_ip }"
+  tls_apiserver_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local,*.${ var.name }.${ var.cloud_provider }.local"
+  tls_apiserver_cert_ip_addresses = "127.0.0.1,100.64.0.1,${ var.dns_service_ip }"
 
   tls_worker_cert_subject_common_name = "kubernetes-worker"
   tls_worker_cert_validity_period_hours = 1000
@@ -92,12 +109,12 @@ module "tls" {
 }
 
 module "master_templates" {
-  source = "../master_templates-v1.9.0"
+  source = "/cncf/master_templates-v1.9.0-dns-etcd"
 
   master_node_count = "${ var.master_node_count }"
   name = "${ var.name }"
-  etcd_endpoint = "${ var.etcd_endpoint }"
-  etcd_bootstrap = ""
+  etcd_endpoint     = "etcd.${ var.name }.${ var.cloud_provider }.local"
+  etcd_discovery    = "${ var.name }.${ var.cloud_provider }.local"
 
   kubelet_artifact = "${ var.kubelet_artifact }"
   cni_artifact = "${ var.cni_artifact }"
@@ -127,8 +144,8 @@ module "master_templates" {
   apiserver_key = "${ module.tls.apiserver_key }"
   cloud_config_file = ""
 
-  dns_master = ""
-  dns_conf = ""
+  dns_conf = "${ module.dns.dns_conf }"
+  dns_dhcp = ""
 
 }
 
@@ -149,13 +166,14 @@ module "worker_templates" {
   pod_cidr = "${ var.pod_cidr }"
   non_masquerade_cidr = "${ var.non_masquerade_cidr }"
   dns_service_ip = "${ var.dns_service_ip }"
-  internal_lb_ip = "${ var.internal_lb_ip }"
+  internal_lb_ip = "internal-master.${ var.name }.${ var.cloud_provider }.local"
 
   ca = "${ module.tls.ca }"
   worker = "${ module.tls.worker }"
   worker_key = "${ module.tls.worker_key }"
   cloud_config_file = ""
 
-  dns_conf = ""
+  dns_conf = "${ module.dns.dns_conf }"
+  dns_dhcp = ""
 
 }

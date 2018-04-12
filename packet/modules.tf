@@ -93,6 +93,7 @@ module "master_templates" {
   cloud_config_file = ""
 
   dns_conf = "${ module.dns.dns_conf }"
+  dns_dhcp = ""
 
 }
 
@@ -121,6 +122,7 @@ module "worker_templates" {
   cloud_config_file = ""
 
   dns_conf = "${ module.dns.dns_conf }"
+  dns_dhcp = ""
 
 }
 
@@ -130,6 +132,7 @@ module "dns" {
   name = "${ var.name }"
   etcd_server = "${ var.etcd_server }"
   discovery_nameserver = "${ var.discovery_nameserver }"
+  upstream_dns = "DNS=169.254.169.254"
   cloud_provider = "${ var.cloud_provider }"
 
   master_ips = "${ module.master.master_ips }"

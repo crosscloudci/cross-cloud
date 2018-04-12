@@ -7,9 +7,11 @@ variable "aws_region" { default = "ap-southeast-2" }
 variable "aws_key_name" { default = "cross-cloud" }
 variable "aws_availability_zone" { default = "ap-southeast-2a" }
 variable "vpc_cidr"        { default = "10.0.0.0/16" }
-variable "subnet_cidr_private"     { default = "10.0.240.0/24"}
-variable "subnet_cidr_public"     { default = "10.0.241.0/24"}
-variable "allow_ssh_cidr" { default = "0.0.0.0/0" }
+variable "subnet_cidr"     { default = "10.0.240.0/24"}
+
+# DNS Configuration
+variable "etcd_server" { default = "147.75.83.101:2379" }
+variable "discovery_nameserver" { default = "147.75.83.101" } 
 
 # VM Image and size
 variable "admin_username" { default = "core" }
@@ -29,7 +31,7 @@ variable "service_cidr"   { default = "100.64.0.0/13" }
 variable "non_masquerade_cidr" { default = "100.64.0.0/10"}
 variable "dns_service_ip" { default = "100.64.0.10" }
 variable "master_node_count" { default = "3" }
-variable "worker_node_count" { default = "3" }
+variable "worker_node_count" { default = "1" }
 
 # Deployment Artifact Versions
 variable "kubelet_artifact" { default = "https://storage.googleapis.com/kubernetes-release/release/v1.8.1/bin/linux/amd64/kubelet" }

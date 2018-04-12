@@ -4,7 +4,6 @@ variable "zone" {}
 variable "master_vm_size" {}
 variable "master_node_count" {}
 variable "image_id" {}
-variable "internal_lb_ip" {}
 variable "network" {}
 variable "subnetwork" {}
 variable "master_cloud_init" {}

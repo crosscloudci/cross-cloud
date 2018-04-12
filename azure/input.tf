@@ -3,6 +3,10 @@ variable "name" { default = "azure" }
 variable "internal_tld" { default = "cncf.demo" }
 variable "data_dir" { default = "/cncf/data/azure" }
 
+# DNS Configuration
+variable "etcd_server" { default = "147.75.83.101:2379" }
+variable "discovery_nameserver" { default = "147.75.83.101" } 
+
 # Azure Cloud Specific Settings
 variable "location"        { default = "westus" }
 variable "vpc_cidr"        { default = "10.0.0.0/8" }

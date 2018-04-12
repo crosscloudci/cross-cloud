@@ -316,26 +316,24 @@ if [ "$3" = "s3" ]; then
               -backend-config "bucket=${AWS_BUCKET}" \
               -backend-config "key=gke-${TF_VAR_name}" \
               -backend-config "region=${AWS_DEFAULT_REGION}"
-    # ensure kubeconfig is written to disk on infrastructure refresh
-    terraform taint -module=kubeconfig null_resource.kubeconfig || true          
     time terraform apply -target module.vpc -auto-approve ${DIR}/gke && \
     time terraform apply -auto-approve ${DIR}/gke
 elif [ "$3" = "file" ]; then
     cp ../file-backend.tf .
     terraform init \
               -backend-config "path=/cncf/data/${TF_VAR_name}/terraform.tfstate"
-    # ensure kubeconfig is written to disk on infrastructure refresh
-    terraform taint -module=kubeconfig null_resource.kubeconfig || true          
     time terraform apply -target module.vpc -auto-approve ${DIR}/gke && \
     time terraform apply -auto-approve ${DIR}/gke
 fi
 
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
+    echo $GOOGLE_CREDENTIALS > ${TF_VAR_data_dir}/keyfile.json
+    gcloud auth activate-service-account $GOOGLE_AUTH_EMAIL --key-file ${TF_VAR_data_dir}/keyfile.json --project $GOOGLE_PROJECT
+    gcloud container clusters get-credentials $TF_VAR_name --zone $GOOGLE_ZONE --project $GOOGLE_PROJECT
+
     echo "❤ Polling for cluster life - this could take a minute or more"
     _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info 
     kubectl cluster-info
-    _retry "❤ Installing Helm" helm init
-    _retry "Wait for Tiller Deployment to be available" kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
 
 elif [ "$1" = "gke-destroy" ] ; then
 cd ${DIR}/gke

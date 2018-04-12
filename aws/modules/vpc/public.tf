@@ -7,9 +7,9 @@ resource "aws_internet_gateway" "cncf" {
   }
 }
 
-resource "aws_subnet" "public" {
+resource "aws_subnet" "cncf" {
   availability_zone = "${ var.aws_availability_zone }"
-  cidr_block = "${ var.subnet_cidr_public }"
+  cidr_block = "${ var.subnet_cidr }"
   vpc_id = "${ aws_vpc.cncf.id }"
 
   tags {
@@ -26,5 +26,5 @@ resource "aws_route" "cncf" {
 
 resource "aws_route_table_association" "cncf" {
   route_table_id = "${ aws_vpc.cncf.main_route_table_id }"
-  subnet_id = "${ aws_subnet.public.id }"
+  subnet_id = "${ aws_subnet.cncf.id }"
 }

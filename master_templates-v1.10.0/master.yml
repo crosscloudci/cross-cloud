@@ -1,0 +1,192 @@
+#cloud-config
+
+---
+coreos:
+
+  units:
+    - name: systemd-resolved.service
+      command: restart
+    
+    - name: docker.service
+      command: start
+      drop-ins:
+        - name: docker.conf
+          content: |
+            [Service]
+            EnvironmentFile=/etc/default/docker
+
+    - name: bins.service
+      command: start
+      content: |
+        [Unit]
+        Description=Download Binaries
+        After=network-online.target
+        Requires=network-online.target
+        [Service]
+        Type=oneshot
+        RemainAfterExit=yes
+        ExecStartPre=/usr/bin/bash -c "while true; do ping -c1 www.google.com > /dev/null && break; done"
+        ExecStartPre=/usr/bin/mkdir --parents /home/kubernetes/bin
+        ExecStartPre=/usr/bin/mkdir --parents /opt/cni/bin
+        ExecStartPre=/usr/bin/mkdir --parents /etc/cni/net.d
+        ExecStart=/usr/bin/curl --retry-max-time 120 -L -o /home/kubernetes/bin/kubelet ${ kubelet_artifact }
+        ExecStart=/usr/bin/curl --retry-max-time 120 -L -o /home/kubernetes/bin/cni.tar ${ cni_artifact }
+        ExecStart=/usr/bin/tar -xvf /home/kubernetes/bin/cni.tar -C /opt/cni/bin/
+        ExecStart=/usr/bin/chmod +x /home/kubernetes/bin/kubelet
+
+
+    - name: socat.service
+      command: start
+      content: |
+        [Unit]
+        Description=Install Socat
+        After=docker.service
+        Requires=docker.service
+
+        [Service]
+        Type=oneshot
+        RemainAfterExit=yes
+        ExecStartPre=/usr/bin/mkdir --parents /opt/bin
+        ExecStart=/usr/bin/docker run --rm -v /opt/bin/:/socat/ registry.cncf.ci/cncf/cross-cloud/socat:production cp /output/linux/x86_64/socat /socat
+
+    - name: kubelet.service
+      command: start
+      content: |
+        [Unit]
+        Description=Kubernetes kubelet
+        After=socat.service
+        Requires=socat.service
+
+        [Service]
+        Restart=always
+        RestartSec=10
+        Environment="PATH=/opt/bin/:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+        EnvironmentFile=/etc/default/kubelet
+        ExecStart=/home/kubernetes/bin/kubelet $KUBELET_OPTS
+
+        [Install]
+        WantedBy=multi-user.target
+
+  update:
+    reboot-strategy: etcd-lock
+
+
+write-files:
+
+  - path: /etc/default/docker
+    content: |
+      DOCKER_OPTS="--ip-masq=false --iptables=false --log-driver=json-file --log-level=warn --log-opt=max-file=5 --log-opt=max-size=10m --storage-driver=overlay"
+
+  - path: /etc/default/kubelet
+    encoding: "gzip+base64"
+    content: |
+      ${ kubelet }
+
+  - path: /var/lib/kubelet/kubeconfig
+    encoding: "gzip+base64"
+    content: |
+      ${ kubelet_kubeconfig }
+
+  - path: /etc/kubernetes/manifests/etcd.yml
+    encoding: "gzip+base64"
+    content: |
+      ${ etcd }
+
+  # - path: /etc/kubernetes/manifests/etcd-events.yml
+  #   encoding: "gzip+base64"
+  #   content: |
+  #     { etcd_events }
+
+  - path: /etc/kubernetes/manifests/kube-apiserver.yml
+    encoding: "gzip+base64"
+    content: |
+      ${ kube_apiserver }
+
+  - path: /etc/kubernetes/manifests/kube-controller-manager.yml
+    encoding: "gzip+base64"
+    content: |
+      ${ kube_controller_manager }
+
+  - path: /var/lib/kube-controller-manager/kubeconfig
+    encoding: "gzip+base64"
+    content: |
+      ${ kube_controller_manager_kubeconfig }
+
+  - path: /etc/kubernetes/manifests/kube-scheduler.yml
+    encoding: "gzip+base64"
+    content: |
+      ${ kube_scheduler }
+
+  - path: /var/lib/kube-scheduler/kubeconfig
+    encoding: "gzip+base64"
+    content: |
+      ${ kube_scheduler_kubeconfig }
+
+  - path: /etc/kubernetes/manifests/kube-proxy.yml
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ kube_proxy }
+
+  - path: /var/lib/kube-proxy/kubeconfig
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ proxy_kubeconfig }
+
+  - path: /etc/srv/kubernetes/pki/ca-certificates.crt
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ ca }
+
+  - path: /etc/srv/kubernetes/pki/ca-certificates.key
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ ca_key }
+
+  - path: /etc/srv/kubernetes/pki/apiserver.crt
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ apiserver }
+
+  - path: /etc/srv/kubernetes/pki/apiserver.key
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ apiserver_key }
+
+  - path: /etc/srv/kubernetes/cloud-config
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ cloud_config_file }
+
+  # - path: /etc/srv/kubernetes/known_tokens.csv
+  #   permissions: "0644"
+  #   encoding: "gzip+base64"
+  #   content: |
+  #     ${ known_tokens_csv }
+
+  # - path: /etc/srv/kubernetes/basic_auth.csv
+  #   permissions: "0644"
+  #   encoding: "gzip+base64"
+  #   content: |
+  #     ${ basic_auth_csv }
+      
+  - path: /etc/systemd/resolved.conf.d/dns.conf
+    permissions: 0644
+    encoding: "gzip+base64"
+    owner: root
+    content: |
+      ${ dns_conf }
+
+  - path: /etc/dhcp/dhclient.conf
+    permissions: 0644
+    encoding: "gzip+base64"
+    owner: root
+    content: |
+      ${ dns_dhcp }
+

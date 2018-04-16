@@ -9,7 +9,7 @@ resource "tls_cert_request" "worker_csr" {
   key_algorithm = "${ element( tls_private_key.worker_key.*.algorithm, count.index )}"
   private_key_pem = "${ element( tls_private_key.worker_key.*.private_key_pem, count.index )}"
   subject {
-    common_name = "${var.tls_worker_cert_subject_common_name}${ count.index + 1}.${ var.dns_domain }"
+    common_name = "${var.tls_worker_cert_subject_common_name}-${ count.index +1 }.${var.tls_worker_cert_subject_common_name_suffix}"
     locality = "${var.tls_worker_cert_subject_locality}"
     organization = "${var.tls_worker_cert_subject_organization}"
     organizational_unit = "${var.tls_worker_cert_subject_organization_unit}"
@@ -28,14 +28,18 @@ resource "tls_cert_request" "worker_csr" {
 
 resource "tls_locally_signed_cert" "worker_cert" {
   count = "${ var.worker_node_count }"
-  cert_request_pem = "${tls_cert_request.worker_csr.cert_request_pem}"
+  cert_request_pem = "${ element( tls_cert_request.worker_csr.*.cert_request_pem, count.index )}"
   ca_key_algorithm = "${tls_private_key.ca_key.algorithm}"
   ca_private_key_pem = "${tls_private_key.ca_key.private_key_pem}"
   ca_cert_pem = "${tls_self_signed_cert.ca_cert.cert_pem}"
   validity_period_hours = "${var.tls_worker_cert_validity_period_hours}"
   allowed_uses = [
+    "cert_signing",
+    "crl_signing",
+    "code_signing",
+    "ocsp_signing",
     "key_encipherment",
-    "digital_signature",
+    "server_auth",
     "client_auth"
   ]
   early_renewal_hours = "${var.tls_worker_cert_early_renewal_hours}"

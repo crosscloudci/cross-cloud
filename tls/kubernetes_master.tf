@@ -9,7 +9,7 @@ resource "tls_cert_request" "master_csr" {
   key_algorithm = "${ element( tls_private_key.master_key.*.algorithm, count.index )}"
   private_key_pem = "${ element( tls_private_key.master_key.*.private_key_pem, count.index )}"
  subject {
-    common_name = "${var.tls_master_cert_subject_common_name}${ count.index + 1}.${ var.dns_domain }"
+    common_name = "${var.tls_master_cert_subject_common_name}-${ count.index +1 }.${var.tls_master_cert_subject_common_name_suffix}"
     locality = "${var.tls_master_cert_subject_locality}"
     organization = "${var.tls_master_cert_subject_organization}"
     organizational_unit = "${var.tls_master_cert_subject_organization_unit}"

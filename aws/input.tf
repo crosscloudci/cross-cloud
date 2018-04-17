@@ -34,16 +34,16 @@ variable "master_node_count" { default = "3" }
 variable "worker_node_count" { default = "1" }
 
 # Deployment Artifact Versions
-variable "kubelet_artifact" { default = "https://storage.googleapis.com/kubernetes-release/release/v1.8.1/bin/linux/amd64/kubelet" }
-variable "cni_artifact" { default = "https://github.com/containernetworking/cni/releases/download/v0.5.2/cni-amd64-v0.5.2.tgz" }
+variable "kubelet_artifact" { default = "https://storage.googleapis.com/kubernetes-release/release/v1.10.0/bin/linux/amd64/kubelet" }
+variable "cni_artifact" { default = "https://github.com/containernetworking/cni/releases/download/v0.6.0/cni-amd64-v0.6.0.tgz" }
 
 variable "etcd_image" { default = "gcr.io/google_containers/etcd"}
-variable "etcd_tag" { default = "2.2.1"}
+variable "etcd_tag" { default = "3.1.12"}
 variable "kube_apiserver_image" { default = "gcr.io/google_containers/kube-apiserver"}
-variable "kube_apiserver_tag" { default = "v1.8.1"}
+variable "kube_apiserver_tag" { default = "v1.10.0"}
 variable "kube_controller_manager_image" { default = "gcr.io/google_containers/kube-controller-manager"}
-variable "kube_controller_manager_tag" { default = "v1.8.1"}
+variable "kube_controller_manager_tag" { default = "v1.10.0"}
 variable "kube_scheduler_image" { default = "gcr.io/google_containers/kube-scheduler"}
-variable "kube_scheduler_tag" { default = "v1.8.1"}
+variable "kube_scheduler_tag" { default = "v1.10.0"}
 variable "kube_proxy_image" { default = "gcr.io/google_containers/kube-proxy"}
-variable "kube_proxy_tag" { default = "v1.8.1"}
+variable "kube_proxy_tag" { default = "v1.10.0"}

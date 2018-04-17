@@ -146,17 +146,17 @@ write-files:
     content: |
       ${ ca_key }
 
-  - path: /etc/srv/kubernetes/pki/apiserver.crt
+  - path: /etc/srv/kubernetes/pki/master.crt
     permissions: "0644"
     encoding: "gzip+base64"
     content: |
-      ${ apiserver }
+      ${ master }
 
-  - path: /etc/srv/kubernetes/pki/apiserver.key
+  - path: /etc/srv/kubernetes/pki/master.key
     permissions: "0644"
     encoding: "gzip+base64"
     content: |
-      ${ apiserver_key }
+      ${ master_key }
 
   - path: /etc/srv/kubernetes/cloud-config
     permissions: "0644"
@@ -164,18 +164,6 @@ write-files:
     content: |
       ${ cloud_config_file }
 
-  # - path: /etc/srv/kubernetes/known_tokens.csv
-  #   permissions: "0644"
-  #   encoding: "gzip+base64"
-  #   content: |
-  #     ${ known_tokens_csv }
-
-  # - path: /etc/srv/kubernetes/basic_auth.csv
-  #   permissions: "0644"
-  #   encoding: "gzip+base64"
-  #   content: |
-  #     ${ basic_auth_csv }
-      
   - path: /etc/systemd/resolved.conf.d/dns.conf
     permissions: 0644
     encoding: "gzip+base64"

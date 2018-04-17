@@ -11,11 +11,7 @@ spec:
   - command:
     - /bin/sh
     - -c
-    - /usr/local/bin/kube-scheduler \\
-    --leader-elect=true \\
-    --kubeconfig=/var/lib/kube-scheduler/kubeconfig \\
-    --v=2 \\
-    1>>/var/log/kube-scheduler.log 2>&1
+    - /usr/local/bin/kube-scheduler --leader-elect=true --kubeconfig=/var/lib/kube-scheduler/kubeconfig --v=2 1>>/var/log/kube-scheduler.log 2>&1
     image: ${ kube_scheduler_image }:${ kube_scheduler_tag }
     livenessProbe:
       httpGet:

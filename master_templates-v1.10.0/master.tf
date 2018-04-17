@@ -7,13 +7,13 @@ resource "gzip_me" "ca_key" {
 }
 
 resource "gzip_me" "master" {
-  count = "${ var.master_node_count" }"
-  input = "${ element(split(",", var.apiserver), count.index) }"
+  count = "${ var.master_node_count }"
+  input = "${ element(split(",", var.master), count.index) }"
 }
 
 resource "gzip_me" "master_key" {
-  count = "${ var.master_node_count" }"
-  input = "${ element(split(",", var.apiserver_key), count.index) }"
+  count = "${ var.master_node_count }"
+  input = "${ element(split(",", var.master_key), count.index) }"
 }
 
 resource "gzip_me" "dns_conf" {
@@ -61,7 +61,7 @@ data "template_file" "kubelet_kubeconfig" {
     cluster = "certificate-authority: /etc/srv/kubernetes/pki/ca-certificates.crt \n    server: https://127.0.0.1"
     user = "kubelet"
     name = "service-account-context"
-    user_authentication = "client-certificate: /etc/srv/kubernetes/pki/apiserver.crt \n    client-key: /etc/srv/kubernetes/pki/apiserver.key"
+    user_authentication = "client-certificate: /etc/srv/kubernetes/pki/master.crt \n    client-key: /etc/srv/kubernetes/pki/master.key"
   }
 }
 
@@ -123,7 +123,6 @@ data "template_file" "kube_apiserver" {
   vars {
     kube_apiserver_image = "${ var.kube_apiserver_image }"
     kube_apiserver_tag = "${ var.kube_apiserver_tag }"
-    advertise_address = "${ var.name }-master-${ count.index +1 }.${ var.name }.${ var.cloud_provider }.local"
     etcd_endpoint = "${ var.etcd_endpoint }"
     service_cidr = "${ var.service_cidr }"
     master_node_count = "${ var.master_node_count }"
@@ -146,6 +145,7 @@ data "template_file" "kube_controller_manager" {
     kube_controller_manager_image = "${ var.kube_controller_manager_image }"
     kube_controller_manager_tag = "${ var.kube_controller_manager_tag }"
     pod_cidr = "${ var.pod_cidr }"
+    service_cidr = "${ var.service_cidr }"
     cluster_name = "${ var.cluster_name }"
     cloud_provider = "${ var.cloud_provider }"
     cloud_config = "${ var.cloud_config }"

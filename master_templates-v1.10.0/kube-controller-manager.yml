@@ -11,22 +11,7 @@ spec:
   - command:
     - /bin/sh
     - -c
-    - /usr/local/bin/kube-controller-manager \\
-    --cluster-cidr=${ pods_cidr } \\
-    --cluster-name=${ cluster_name } \\
-    --cluster-signing-cert-file=/etc/srv/kubernetes/pki/ca-certificates.crt \\
-    --cluster-signing-key-file=/etc/srv/kubernetes/pki/ca-certificates.key \\
-    --leader-elect=true \\
-    --kubeconfig=/var/lib/kube-controller-manager/kubeconfig \\
-    --root-ca-file=/etc/srv/kubernetes/pki/ca-certificates.crt \\
-    --service-account-private-key-file=/etc/srv/kubernetes/pki/ca-certificates.key \\
-    --service-cluster-ip-range=${ service_cidr } \\
-    --cloud-provider=${ cloud_provider } ${ cloud_config } \\
-    --allocate-node-cidrs=true \\
-    --configure-cloud-routes=true \\
-    --horizontal-pod-autoscaler-use-rest-clients=false \\ #This is needed for heapster v1.7.0
-    --v=2 \\
-    1>>/var/log/kube-controller-manager.log 2>&1
+    - /usr/local/bin/kube-controller-manager --cluster-cidr=${ pod_cidr } --cluster-name=${ cluster_name } --cluster-signing-cert-file=/etc/srv/kubernetes/pki/ca-certificates.crt --cluster-signing-key-file=/etc/srv/kubernetes/pki/ca-certificates.key --leader-elect=true --kubeconfig=/var/lib/kube-controller-manager/kubeconfig --root-ca-file=/etc/srv/kubernetes/pki/ca-certificates.crt --service-account-private-key-file=/etc/srv/kubernetes/pki/ca-certificates.key --service-cluster-ip-range=${ service_cidr } --cloud-provider=${ cloud_provider } ${ cloud_config } --allocate-node-cidrs=true --configure-cloud-routes=true --horizontal-pod-autoscaler-use-rest-clients=false --v=2 1>>/var/log/kube-controller-manager.log 2>&1
     image: ${ kube_controller_manager_image }:${ kube_controller_manager_tag }
     livenessProbe:
       httpGet:

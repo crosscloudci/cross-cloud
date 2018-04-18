@@ -14,12 +14,7 @@ spec:
   - command:
     - /bin/sh
     - -c
-    - kube-proxy \\
-    --cluster-cidr=${ pod_cidr } \\
-    --kubeconfig=/var/lib/kube-proxy/kubeconfig \\
-    --proxy-mode=iptables \\
-    --v=2 \\
-    2>&1 | /usr/bin/tee /var/log/kube-proxy.log
+    - kube-proxy --cluster-cidr=${ pod_cidr } --kubeconfig=/var/lib/kube-proxy/kubeconfig --proxy-mode=iptables --hostname-override=${ hostname } --v=2 2>&1 | /usr/bin/tee /var/log/kube-proxy.log
     image: ${ kube_proxy_image }:${ kube_proxy_tag }
     imagePullPolicy: IfNotPresent
     name: kube-proxy

@@ -95,6 +95,7 @@ data "template_file" "kube-proxy" {
   template = "${ file( "${ path.module }/kube-proxy.yml" )}"
 
   vars {
+    hostname = "${ var.hostname }-${ count.index + 1 }.${ var.hostname_suffix }"
     master_node = "${ var.internal_lb_ip }"
     pod_cidr = "${ var.pod_cidr }"
     kube_proxy_image = "${ var.kube_proxy_image }"

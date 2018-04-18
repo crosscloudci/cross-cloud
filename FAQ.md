@@ -91,23 +91,23 @@ No it does not use Jenkins or CircleCI.
 
 The current implementation uses GitLab runners.
 
-### What does typical CI environment look like?
+## What does typical CI environment look like?
 
-## How many instances are needed? 
+### How many instances are needed? 
 - 2 clusters, 8 nodes (total)
 - 3 master nodes  
 - 1 worker node
   - We are using 1 worker node because ONAP requires 1, but 3 worker nodes would be ideal in the future
 
-## How big are the instances?
+### How big are the instances?
 - 64GB of RAM per node
 - 16-cores
 
-## How much memory is used?
+### How much memory is used?
 - Full usage, but we can shrink master nodes to use 10 CPU minimum
 - Workers need to be 64 GB at least (ONAP needs that minimum to deploy)
 
-### How do I add a new cloud? 
+## How do I add a new cloud? 
 - Determine if a terraform module will work for the new cloud environment
 - Review how terraform templates were built
 - Look at how to do auth

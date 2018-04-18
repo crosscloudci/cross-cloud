@@ -39,6 +39,7 @@ data "template_file" "kubelet" {
   template = "${ file( "${ path.module }/kubelet" )}"
   vars {
 
+    hostname = "${ var.hostname }-${ count.index + 1 }.${ var.hostname_suffix }"
     cloud_provider = "${ var.cloud_provider }"
     cloud_config = "${ var.cloud_config }"
     dns_service_ip = "${ var.dns_service_ip }"
@@ -220,6 +221,7 @@ data "template_file" "kube-proxy" {
     pod_cidr = "${ var.pod_cidr }"
     kube_proxy_image = "${ var.kube_proxy_image }"
     kube_proxy_tag = "${ var.kube_proxy_tag }"
+    hostname = "${ var.hostname }-${ count.index + 1 }.${ var.hostname_suffix }"
   }
 }
 

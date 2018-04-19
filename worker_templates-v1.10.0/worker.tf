@@ -47,18 +47,18 @@ data "template_file" "kubelet" {
 
 
 
-resource "gzip_me" "kubelet_kubeconfig" {
-  input = "${ data.template_file.kubelet_kubeconfig.rendered }"
+resource "gzip_me" "kubelet_bootstrap_kubeconfig" {
+  input = "${ data.template_file.kubelet_bootstrap_kubeconfig.rendered }"
 }
 
-data "template_file" "kubelet_kubeconfig" {
+data "template_file" "kubelet_bootstrap_kubeconfig" {
   template = "${ file( "${ path.module }/kubeconfig" )}"
 
   vars {
     cluster = "certificate-authority: /etc/srv/kubernetes/pki/ca-certificates.crt \n    server: https://${ var.internal_lb_ip }"
-    user = "kubelet"
+    user = "kubelet-bootstrap"
     name = "service-account-context"
-    user_authentication = "client-certificate: /etc/srv/kubernetes/pki/kubelet.crt \n    client-key: /etc/srv/kubernetes/pki/kubelet.key"
+    user_authentication = "token: ${ var.bootstrap }"
   }
 }
 
@@ -95,7 +95,6 @@ data "template_file" "kube-proxy" {
   template = "${ file( "${ path.module }/kube-proxy.yml" )}"
 
   vars {
-    hostname = "${ var.hostname }-${ count.index + 1 }.${ var.hostname_suffix }"
     master_node = "${ var.internal_lb_ip }"
     pod_cidr = "${ var.pod_cidr }"
     kube_proxy_image = "${ var.kube_proxy_image }"
@@ -118,7 +117,7 @@ data "template_file" "worker" {
     worker = "${ element(gzip_me.worker.*.output, count.index) }"
     worker_key = "${ element(gzip_me.worker_key.*.output, count.index) }"
     kubelet = "${ element(gzip_me.kubelet.*.output, count.index) }"
-    kubelet_kubeconfig = "${ gzip_me.kubelet_kubeconfig.output }"
+    kubelet_bootstrap_kubeconfig = "${ gzip_me.kubelet_bootstrap_kubeconfig.output }"
     kube_proxy = "${ element(gzip_me.kube_proxy.*.output, count.index) }"
     proxy_kubeconfig = "${ gzip_me.proxy_kubeconfig.output }"
     kubelet_artifact = "${ var.kubelet_artifact }"

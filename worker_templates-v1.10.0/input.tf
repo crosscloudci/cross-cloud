@@ -1,7 +1,5 @@
 variable "worker_node_count" {}
 variable "name" {}
-variable "hostname" {}
-variable "hostname_suffix" {}
 
 variable "kubelet_artifact" {}
 variable "cni_artifact" {}
@@ -20,6 +18,7 @@ variable "internal_lb_ip" {}
 variable "ca" {}
 variable "worker" {}
 variable "worker_key" {}
+variable "bootstrap" {}
 variable "cloud_config_file" {}
 
 # variable "dns_worker" {}

@@ -79,11 +79,10 @@ write-files:
     content: |
       ${ kubelet }
 
-  - path: /var/lib/kubelet/kubeconfig
-    permissions: "0644"
+  - path: /var/lib/kubelet/bootstrap.kubeconfig
     encoding: "gzip+base64"
     content: |
-      ${ kubelet_kubeconfig }
+      ${ kubelet_bootstrap_kubeconfig }
 
   - path: /etc/kubernetes/manifests/kube-proxy.yml
     permissions: "0644"

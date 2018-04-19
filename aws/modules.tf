@@ -145,8 +145,6 @@ module "master_templates" {
 
   master_node_count = "${ var.master_node_count }"
   name = "${ var.name }"
-  hostname = "${ var.name }-master"
-  hostname_suffix = "${ var.name }.${ var.cloud_provider }.local"
   etcd_endpoint     = "etcd.${ var.name }.${ var.cloud_provider }.local"
   etcd_discovery    = "${ var.name }.${ var.cloud_provider }.local"
 
@@ -187,8 +185,6 @@ module "worker_templates" {
   source = "../worker_templates-v1.10.0"
 
   worker_node_count = "${ var.worker_node_count }"
-  hostname = "${ var.name }-master"
-  hostname_suffix = "${ var.name }.${ var.cloud_provider }.local"
   name = "${ var.name }"
 
   kubelet_artifact = "${ var.kubelet_artifact }"
@@ -207,6 +203,7 @@ module "worker_templates" {
   ca = "${ module.tls.ca }"
   worker = "${ module.tls.worker }"
   worker_key = "${ module.tls.worker_key }"
+  bootstrap = "${ module.master_templates.bootstrap }"
   cloud_config_file = ""
 
   dns_conf = "${ module.dns.dns_conf }"

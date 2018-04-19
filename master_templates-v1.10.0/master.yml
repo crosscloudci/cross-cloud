@@ -29,40 +29,141 @@ coreos:
         ExecStartPre=/usr/bin/mkdir --parents /home/kubernetes/bin
         ExecStartPre=/usr/bin/mkdir --parents /opt/cni/bin
         ExecStartPre=/usr/bin/mkdir --parents /etc/cni/net.d
-        ExecStart=/usr/bin/curl --retry-max-time 120 -L -o /home/kubernetes/bin/kubelet ${ kubelet_artifact }
-        ExecStart=/usr/bin/curl --retry-max-time 120 -L -o /home/kubernetes/bin/cni.tar ${ cni_artifact }
-        ExecStart=/usr/bin/tar -xvf /home/kubernetes/bin/cni.tar -C /opt/cni/bin/
-        ExecStart=/usr/bin/chmod +x /home/kubernetes/bin/kubelet
+        ExecStart=/usr/bin/curl --retry-max-time 120 -L -o /home/kubernetes/bin/etcd.tar.gz ${ etcd_artifact }
+        ExecStart=/usr/bin/curl --retry-max-time 120 -L -o /home/kubernetes/bin/kube-apiserver ${ kube_apiserver_artifact }
+        ExecStart=/usr/bin/curl --retry-max-time 120 -L -o /home/kubernetes/bin/kube-controller-manager ${ kube_controller_manager_artifact }
+        ExecStart=/usr/bin/curl --retry-max-time 120 -L -o /home/kubernetes/bin/kube-scheduler ${ kube_scheduler_artifact }
+        ExecStart=/usr/bin/tar -xzvf /home/kubernetes/bin/etcd.tar.gz -C /home/kubernetes/bin/ --strip-components=1
+        ExecStart=/usr/bin/chmod +x /home/kubernetes/bin/etcd
+        ExecStart=/usr/bin/chmod +x /home/kubernetes/bin/kube-apiserver
+        ExecStart=/usr/bin/chmod +x /home/kubernetes/bin/kube-controller-manager
+        ExecStart=/usr/bin/chmod +x /home/kubernetes/bin/kube-scheduler
 
-
-    - name: socat.service
+    - name: etcd.service
       command: start
       content: |
         [Unit]
-        Description=Install Socat
-        After=docker.service
-        Requires=docker.service
-
+        Description=etcd
+        Documentation=https://github.com/coreos/etcd
+        After=bins.service
+        Requires=bins.service
+        
         [Service]
-        Type=oneshot
-        RemainAfterExit=yes
-        ExecStartPre=/usr/bin/mkdir --parents /opt/bin
-        ExecStart=/usr/bin/docker run --rm -v /opt/bin/:/socat/ registry.cncf.ci/cncf/cross-cloud/socat:production cp /output/linux/x86_64/socat /socat
-
-    - name: kubelet.service
-      command: start
-      content: |
-        [Unit]
-        Description=Kubernetes kubelet
-        After=socat.service
-        Requires=socat.service
-
-        [Service]
+        Type=notify
         Restart=always
-        RestartSec=10
-        Environment="PATH=/opt/bin/:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-        EnvironmentFile=/etc/default/kubelet
-        ExecStart=/home/kubernetes/bin/kubelet $KUBELET_OPTS
+        RestartSec=10s
+        LimitNOFILE=40000
+        TimeoutStartSec=0
+
+        Environment=ETCD_NAME=${ name }
+        Environment=ETCD_DISCOVERY_SRV=${ etcd_discovery }
+        Environment=ETCD_INITIAL_ADVERTISE_PEER_URLS=http://${ node }.${ etcd_discovery }:2380
+        Environment=ETCD_INITIAL_CLUSTER_TOKEN=${ name }-etcd
+        Environment=ETCD_INITIAL_CLUSTER_STATE=new       
+        Environment=ETCD_ADVERTISE_CLIENT_URLS=http://${ node }.${ etcd_discovery }:4001       
+        Environment=ETCD_LISTEN_CLIENT_URLS=http://0.0.0.0:4001
+        Environment=ETCD_LISTEN_PEER_URLS=http://0.0.0.0:2380
+        Environment=ETCD_DATA_DIR=/var/etcd/data       
+        
+        ExecStart=/home/kubernetes/bin/etcd
+
+        [Install]
+        WantedBy=multi-user.target
+        
+    - name: kube-apiserver.service
+      command: start
+      content: |
+        [Unit]
+        Description=Kubernetes API Server
+        Documentation=https://github.com/kubernetes/kubernetes
+        After=bins.service
+        Requires=bins.service
+
+        [Service]
+        ExecStart=/home/kubernetes/bin/kube-apiserver \\
+          --admission-control=Initializers,NamespaceLifecycle,NodeRestriction,LimitRanger,ServiceAccount,DefaultStorageClass,ResourceQuota \\
+          --allow-privileged=true \\
+          --apiserver-count=${ master_node_count } \\
+          --audit-log-maxage=30 \\
+          --audit-log-maxbackup=3 \\
+          --audit-log-maxsize=100 \\
+          --audit-log-path=/var/log/audit.log \\
+          --authorization-mode=Node,RBAC \\
+          --token-auth-file=/etc/srv/kubernetes/known_tokens.csv \\
+          --bind-address=0.0.0.0 \\
+          --secure-port=443 \\
+          --kubelet-preferred-address-types=Hostname \\
+          --client-ca-file=/etc/srv/kubernetes/pki/ca-certificates.crt \\
+          --enable-swagger-ui=true \\
+          --etcd-servers=http://${ etcd_endpoint }:4001 \\
+          --event-ttl=1h \\
+          --insecure-bind-address=127.0.0.1 \\
+          --kubelet-certificate-authority=/etc/srv/kubernetes/pki/ca-certificates.crt \\
+          --kubelet-client-certificate=/etc/srv/kubernetes/pki/master.crt \\
+          --kubelet-client-key=/etc/srv/kubernetes/pki/master.key \\
+          --kubelet-https=true \\
+          --cloud-provider=${ cloud_provider } ${ cloud_config } \\
+          --service-account-key-file=/etc/srv/kubernetes/pki/ca-certificates.key \\
+          --service-cluster-ip-range=${ service_cidr } \\
+          --tls-cert-file=/etc/srv/kubernetes/pki/master.crt \\
+          --tls-private-key-file=/etc/srv/kubernetes/pki/master.key \\
+          --v=2
+
+        Restart=always
+        RestartSec=5
+
+        [Install]
+        WantedBy=multi-user.target
+
+    - name: kube-controller-manager.service
+      command: start
+      content: |
+        [Unit]
+        Description=Kubernetes Controller Manager
+        Documentation=https://github.com/kubernetes/kubernetes
+        After=bins.service
+        Requires=bins.service
+
+        [Service]
+        ExecStart=/home/kubernetes/bin/kube-controller-manager \\
+          --cluster-cidr=${ pod_cidr } \\
+          --cluster-name=${ cluster_name } \\
+          --cluster-signing-cert-file=/etc/srv/kubernetes/pki/ca-certificates.crt \\
+          --cluster-signing-key-file=/etc/srv/kubernetes/pki/ca-certificates.key \\
+          --leader-elect=true \\
+          --kubeconfig=/var/lib/kube-controller-manager/kubeconfig \\
+          --root-ca-file=/etc/srv/kubernetes/pki/ca-certificates.crt \\
+          --service-account-private-key-file=/etc/srv/kubernetes/pki/ca-certificates.key \\
+          --service-cluster-ip-range=${ service_cidr } \\
+          --cloud-provider=${ cloud_provider } ${ cloud_config } \\
+          --allocate-node-cidrs=true \\
+          --configure-cloud-routes=true \\
+          --horizontal-pod-autoscaler-use-rest-clients=false \\
+          --v=2
+        
+        Restart=always
+        RestartSec=5
+
+        [Install]
+        WantedBy=multi-user.target
+
+    - name: kube-scheduler.service
+      command: start
+      content: |
+        [Unit]
+        Description=Kubernetes Scheduler
+        Documentation=https://github.com/kubernetes/kubernetes
+        After=bins.service
+        Requires=bins.service
+
+        [Service]
+        ExecStart=/home/kubernetes/bin/kube-scheduler \\
+          --leader-elect=true \\
+          --kubeconfig=/var/lib/kube-scheduler/kubeconfig \\
+          --v=2
+
+        Restart=always
+        RestartSec=5
 
         [Install]
         WantedBy=multi-user.target
@@ -77,62 +178,15 @@ write-files:
     content: |
       DOCKER_OPTS="--ip-masq=false --iptables=false --log-driver=json-file --log-level=warn --log-opt=max-file=5 --log-opt=max-size=10m --storage-driver=overlay"
 
-  - path: /etc/default/kubelet
-    encoding: "gzip+base64"
-    content: |
-      ${ kubelet }
-
-  - path: /var/lib/kubelet/bootstrap.kubeconfig
-    encoding: "gzip+base64"
-    content: |
-      ${ kubelet_bootstrap_kubeconfig }
-
-  - path: /etc/kubernetes/manifests/etcd.yml
-    encoding: "gzip+base64"
-    content: |
-      ${ etcd }
-
-  # - path: /etc/kubernetes/manifests/etcd-events.yml
-  #   encoding: "gzip+base64"
-  #   content: |
-  #     { etcd_events }
-
-  - path: /etc/kubernetes/manifests/kube-apiserver.yml
-    encoding: "gzip+base64"
-    content: |
-      ${ kube_apiserver }
-
-  - path: /etc/kubernetes/manifests/kube-controller-manager.yml
-    encoding: "gzip+base64"
-    content: |
-      ${ kube_controller_manager }
-
   - path: /var/lib/kube-controller-manager/kubeconfig
     encoding: "gzip+base64"
     content: |
       ${ kube_controller_manager_kubeconfig }
 
-  - path: /etc/kubernetes/manifests/kube-scheduler.yml
-    encoding: "gzip+base64"
-    content: |
-      ${ kube_scheduler }
-
   - path: /var/lib/kube-scheduler/kubeconfig
     encoding: "gzip+base64"
     content: |
       ${ kube_scheduler_kubeconfig }
-
-  - path: /etc/kubernetes/manifests/kube-proxy.yml
-    permissions: "0644"
-    encoding: "gzip+base64"
-    content: |
-      ${ kube_proxy }
-
-  - path: /var/lib/kube-proxy/kubeconfig
-    permissions: "0644"
-    encoding: "gzip+base64"
-    content: |
-      ${ proxy_kubeconfig }
 
   - path: /etc/srv/kubernetes/pki/ca-certificates.crt
     permissions: "0644"

@@ -1,7 +1,5 @@
 variable "master_node_count" {}
 variable "name" {}
-variable "hostname" {}
-variable "hostname_suffix" {}
 
 variable "etcd_endpoint" {}
 variable "etcd_discovery" {}

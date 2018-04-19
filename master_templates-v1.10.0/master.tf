@@ -16,6 +16,10 @@ resource "gzip_me" "master_key" {
   input = "${ element(split(",", var.master_key), count.index) }"
 }
 
+resource "gzip_me" "known_tokens_csv" {
+  input = "${ data.template_file.known_tokens_csv.rendered }"
+}
+
 resource "gzip_me" "dns_conf" {
   input = "${ var.dns_conf }"
 }
@@ -39,7 +43,6 @@ data "template_file" "kubelet" {
   template = "${ file( "${ path.module }/kubelet" )}"
   vars {
 
-    hostname = "${ var.hostname }-${ count.index + 1 }.${ var.hostname_suffix }"
     cloud_provider = "${ var.cloud_provider }"
     cloud_config = "${ var.cloud_config }"
     dns_service_ip = "${ var.dns_service_ip }"
@@ -52,17 +55,18 @@ data "template_file" "kubelet" {
 
 
 
-resource "gzip_me" "kubelet_kubeconfig" {
-  input = "${ data.template_file.kubelet_kubeconfig.rendered }"
+resource "gzip_me" "kubelet_bootstrap_kubeconfig" {
+  input = "${ data.template_file.kubelet_bootstrap_kubeconfig.rendered }"
 }
 
-data "template_file" "kubelet_kubeconfig" {
+data "template_file" "kubelet_bootstrap_kubeconfig" {
   template = "${ file( "${ path.module }/kubeconfig" )}"
+
   vars {
     cluster = "certificate-authority: /etc/srv/kubernetes/pki/ca-certificates.crt \n    server: https://127.0.0.1"
-    user = "kubelet"
+    user = "kubelet-bootstrap"
     name = "service-account-context"
-    user_authentication = "client-certificate: /etc/srv/kubernetes/pki/master.crt \n    client-key: /etc/srv/kubernetes/pki/master.key"
+    user_authentication = "token: ${ random_string.bootstrap.result }"
   }
 }
 
@@ -221,7 +225,6 @@ data "template_file" "kube-proxy" {
     pod_cidr = "${ var.pod_cidr }"
     kube_proxy_image = "${ var.kube_proxy_image }"
     kube_proxy_tag = "${ var.kube_proxy_tag }"
-    hostname = "${ var.hostname }-${ count.index + 1 }.${ var.hostname_suffix }"
   }
 }
 
@@ -256,7 +259,7 @@ data "template_file" "master" {
     kubelet_artifact = "${ var.kubelet_artifact }"
     cni_artifact = "${ var.cni_artifact }"
     kubelet = "${ element(gzip_me.kubelet.*.output, count.index) }"
-    kubelet_kubeconfig = "${ gzip_me.kubelet_kubeconfig.output }"
+    kubelet_bootstrap_kubeconfig = "${ gzip_me.kubelet_bootstrap_kubeconfig.output }"
     etcd = "${ element(gzip_me.etcd.*.output, count.index) }"
     # etcd_events = "${ element(gzip_me.etcd_events.*.output, count.index) }"
     kube_apiserver = "${ element(gzip_me.kube_apiserver.*.output, count.index) }"
@@ -270,6 +273,7 @@ data "template_file" "master" {
     ca_key = "${ gzip_me.ca_key.output }"
     master = "${ element(gzip_me.master.*.output, count.index) }"
     master_key = "${ element(gzip_me.master_key.*.output, count.index) }"
+    known_tokens_csv = "${ gzip_me.known_tokens_csv.output }"
     cloud_config_file = "${ base64gzip(var.cloud_config_file) }"
     dns_conf = "${ gzip_me.dns_conf.output }"
     dns_dhcp = "${ gzip_me.dns_dhcp.output }"

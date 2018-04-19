@@ -5,9 +5,9 @@ KUBELET_OPTS="--allow-privileged=true \
 --cloud-provider=${ cloud_provider } ${ cloud_config } \
 --cluster-dns=${ dns_service_ip } \
 --cluster-domain=${ cluster_domain } \
---hostname-override=${ hostname } \
 --image-pull-progress-deadline=2m \
 --kubeconfig=/var/lib/kubelet/kubeconfig \
+--bootstrap-kubeconfig=/var/lib/kubelet/bootstrap.kubeconfig \
 --network-plugin=kubenet \
 --network-plugin-mtu=9001 \
 --cni-bin-dir=/opt/cni/bin/ \

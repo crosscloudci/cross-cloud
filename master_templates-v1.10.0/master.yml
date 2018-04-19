@@ -82,10 +82,10 @@ write-files:
     content: |
       ${ kubelet }
 
-  - path: /var/lib/kubelet/kubeconfig
+  - path: /var/lib/kubelet/bootstrap.kubeconfig
     encoding: "gzip+base64"
     content: |
-      ${ kubelet_kubeconfig }
+      ${ kubelet_bootstrap_kubeconfig }
 
   - path: /etc/kubernetes/manifests/etcd.yml
     encoding: "gzip+base64"
@@ -157,6 +157,12 @@ write-files:
     encoding: "gzip+base64"
     content: |
       ${ master_key }
+
+  - path: /etc/srv/kubernetes/known_tokens.csv
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ known_tokens_csv }
 
   - path: /etc/srv/kubernetes/cloud-config
     permissions: "0644"

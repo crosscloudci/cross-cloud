@@ -28,6 +28,23 @@ resource "gzip_me" "dns_dhcp" {
   input = "${ var.dns_dhcp }"
 }
 
+resource "gzip_me" "kube_apiserver" {
+  count = "${ var.master_node_count }"
+  input = "${ element(data.template_file.kube_apiserver.*.rendered, count.index) }"
+}
+
+data "template_file" "kube_apiserver" {
+  count = "${ var.master_node_count }"
+  template = "${ file( "${ path.module }/kube-apiserver" )}"
+  vars {
+    master_node_count = "${ var.master_node_count }"
+    etcd_endpoint = "${ var.etcd_endpoint }"
+    service_cidr = "${ var.service_cidr }"
+    cloud_provider = "${ var.cloud_provider }"
+    cloud_config = "${ var.cloud_config }"
+  }
+}
+
 
 resource "gzip_me" "kube_controller_manager_kubeconfig" {
   input = "${ data.template_file.kube_controller_manager_kubeconfig.rendered }"
@@ -68,10 +85,9 @@ data "template_file" "master" {
   vars {
     name = "${ var.name }"
     node = "${ var.name }-master-${ count.index +1 }"
-    master_node_count = "${ var.master_node_count }"
     etcd_artifact = "${ var.etcd_artifact }"
     etcd_discovery = "${ var.etcd_discovery }"
-    etcd_endpoint = "${ var.etcd_endpoint }"
+    kube_apiserver = "${ element(gzip_me.kube_apiserver.*.output, count.index) }"
     kube_apiserver_artifact = "${ var.kube_apiserver_artifact }"
     kube_controller_manager_artifact = "${ var.kube_controller_manager_artifact }"
     kube_scheduler_artifact = "${ var.kube_scheduler_artifact }"
@@ -79,8 +95,8 @@ data "template_file" "master" {
     cloud_provider = "${ var.cloud_provider }"
     cloud_config = "${ var.cloud_config }"
     cloud_config_file = "${ base64gzip(var.cloud_config_file) }"
-    service_cidr = "${ var.service_cidr }"
     pod_cidr = "${ var.pod_cidr }"
+    service_cidr = "${ var.service_cidr }"
     ca = "${ gzip_me.ca.output }"
     ca_key = "${ gzip_me.ca_key.output }"
     master = "${ element(gzip_me.master.*.output, count.index) }"

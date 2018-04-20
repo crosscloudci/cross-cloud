@@ -66,6 +66,19 @@ data "template_file" "kube_controller_manager" {
 
 
 
+resource "gzip_me" "kube_scheduler" {
+  input = "${ data.template_file.kube_scheduler.rendered }"
+}
+
+data "template_file" "kube_scheduler" {
+  template = "${ file( "${ path.module }/kube-scheduler" )}"
+  vars {
+  }
+}
+
+
+
+
 resource "gzip_me" "kube_controller_manager_kubeconfig" {
   input = "${ data.template_file.kube_controller_manager_kubeconfig.rendered }"
 }
@@ -111,9 +124,9 @@ data "template_file" "master" {
     kube_apiserver_artifact = "${ var.kube_apiserver_artifact }"
     kube_controller_manager = "${ element(gzip_me.kube_controller_manager.*.output, count.index) }" 
     kube_controller_manager_artifact = "${ var.kube_controller_manager_artifact }"
+    kube_scheduler = "${ element(gzip_me.kube_scheduler.*.output, count.index) }"
     kube_scheduler_artifact = "${ var.kube_scheduler_artifact }"
     cloud_config_file = "${ base64gzip(var.cloud_config_file) }"
-    service_cidr = "${ var.service_cidr }"
     ca = "${ gzip_me.ca.output }"
     ca_key = "${ gzip_me.ca_key.output }"
     master = "${ element(gzip_me.master.*.output, count.index) }"

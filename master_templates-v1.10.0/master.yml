@@ -118,10 +118,8 @@ coreos:
         Requires=bins.service
 
         [Service]
-        ExecStart=/home/kubernetes/bin/kube-scheduler \\
-          --leader-elect=true \\
-          --kubeconfig=/var/lib/kube-scheduler/kubeconfig \\
-          --v=2
+        EnvironmentFile=/etc/default/kube-scheduler
+        ExecStart=/home/kubernetes/bin/kube-scheduler $SCHEDULER_OPTS 
 
         Restart=always
         RestartSec=5
@@ -148,6 +146,11 @@ write-files:
     encoding: "gzip+base64"
     content: |
       ${ kube_controller_manager }
+
+  - path: /etc/default/kube-scheduler
+    encoding: "gzip+base64"
+    content: |
+      ${ kube_scheduler }
 
   - path: /var/lib/kube-controller-manager/kubeconfig
     encoding: "gzip+base64"

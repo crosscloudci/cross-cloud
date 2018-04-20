@@ -99,21 +99,8 @@ coreos:
         Requires=bins.service
 
         [Service]
-        ExecStart=/home/kubernetes/bin/kube-controller-manager \\
-          --cluster-cidr=${ pod_cidr } \\
-          --cluster-name=${ cluster_name } \\
-          --cluster-signing-cert-file=/etc/srv/kubernetes/pki/ca-certificates.crt \\
-          --cluster-signing-key-file=/etc/srv/kubernetes/pki/ca-certificates.key \\
-          --leader-elect=true \\
-          --kubeconfig=/var/lib/kube-controller-manager/kubeconfig \\
-          --root-ca-file=/etc/srv/kubernetes/pki/ca-certificates.crt \\
-          --service-account-private-key-file=/etc/srv/kubernetes/pki/ca-certificates.key \\
-          --service-cluster-ip-range=${ service_cidr } \\
-          --cloud-provider=${ cloud_provider } ${ cloud_config } \\
-          --allocate-node-cidrs=true \\
-          --configure-cloud-routes=true \\
-          --horizontal-pod-autoscaler-use-rest-clients=false \\
-          --v=2
+        EnvironmentFile=/etc/default/kube-controller-manager
+        ExecStart=/home/kubernetes/bin/kube-controller-manager $CONTROLLER_OPTS
         
         Restart=always
         RestartSec=5
@@ -156,6 +143,11 @@ write-files:
     encoding: "gzip+base64"
     content: |
       ${ kube_apiserver }
+
+  - path: /etc/default/kube-controller-manager
+    encoding: "gzip+base64"
+    content: |
+      ${ kube_controller_manager }
 
   - path: /var/lib/kube-controller-manager/kubeconfig
     encoding: "gzip+base64"

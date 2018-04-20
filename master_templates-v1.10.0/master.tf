@@ -46,6 +46,26 @@ data "template_file" "kube_apiserver" {
 }
 
 
+
+
+resource "gzip_me" "kube_controller_manager" {
+  input = "${ data.template_file.kube_controller_manager.rendered }"
+}
+
+data "template_file" "kube_controller_manager" {
+  template = "${ file( "${ path.module }/kube-controller-manager" )}"
+  vars {
+    pod_cidr = "${ var.pod_cidr }"
+    service_cidr = "${ var.service_cidr }"
+    cluster_name = "${ var.cluster_name }"
+    cloud_provider = "${ var.cloud_provider }"
+    cloud_config = "${ var.cloud_config }"
+  }
+}
+
+
+
+
 resource "gzip_me" "kube_controller_manager_kubeconfig" {
   input = "${ data.template_file.kube_controller_manager_kubeconfig.rendered }"
 }
@@ -89,13 +109,10 @@ data "template_file" "master" {
     etcd_discovery = "${ var.etcd_discovery }"
     kube_apiserver = "${ element(gzip_me.kube_apiserver.*.output, count.index) }"
     kube_apiserver_artifact = "${ var.kube_apiserver_artifact }"
+    kube_controller_manager = "${ element(gzip_me.kube_controller_manager.*.output, count.index) }" 
     kube_controller_manager_artifact = "${ var.kube_controller_manager_artifact }"
     kube_scheduler_artifact = "${ var.kube_scheduler_artifact }"
-    cluster_name = "${ var.cluster_name }"
-    cloud_provider = "${ var.cloud_provider }"
-    cloud_config = "${ var.cloud_config }"
     cloud_config_file = "${ base64gzip(var.cloud_config_file) }"
-    pod_cidr = "${ var.pod_cidr }"
     service_cidr = "${ var.service_cidr }"
     ca = "${ gzip_me.ca.output }"
     ca_key = "${ gzip_me.ca_key.output }"

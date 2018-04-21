@@ -198,6 +198,18 @@ write-files:
     content: |
       ${ controller_key }
 
+  - path: /etc/srv/kubernetes/pki/scheduler.crt
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ scheduler }
+
+  - path: /etc/srv/kubernetes/pki/scheduler.key
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ scheduler_key }
+
   - path: /etc/srv/kubernetes/known_tokens.csv
     permissions: "0644"
     encoding: "gzip+base64"

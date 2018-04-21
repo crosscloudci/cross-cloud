@@ -134,6 +134,17 @@ module "tls" {
   tls_controller_cert_ip_addresses = "127.0.0.1"
   tls_controller_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local" 
 
+  tls_scheduler_cert_subject_common_name = "system:kube-scheduler"
+  tls_scheduler_cert_subject_locality = "San Francisco"
+  tls_scheduler_cert_subject_organization = "system:kube-scheduler"
+  tls_scheduler_cert_subject_organization_unit = "Kubernetes"
+  tls_scheduler_cert_subject_province = "California"
+  tls_scheduler_cert_subject_country = "US"
+  tls_scheduler_cert_validity_period_hours = "1000"
+  tls_scheduler_cert_early_renewal_hours = "100"
+  tls_scheduler_cert_ip_addresses = "127.0.0.1"
+  tls_scheduler_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local" 
+
 
   tls_worker_cert_subject_common_name = "system:node:${ var.name }-worker"
   tls_worker_cert_subject_common_name_suffix = "${ var.name }.${ var.cloud_provider }.local"
@@ -177,6 +188,8 @@ module "master_templates" {
   apiserver_key = "${ module.tls.apiserver_key }"
   controller = "${ module.tls.controller }"
   controller_key = "${ module.tls.controller_key }"
+  scheduler = "${ module.tls.scheduler }"
+  scheduler_key = "${ module.tls.scheduler_key }"
   cloud_config_file = ""
 
   dns_conf = "${ module.dns.dns_conf }"

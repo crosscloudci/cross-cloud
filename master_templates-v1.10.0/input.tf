@@ -24,6 +24,8 @@ variable "apiserver" {}
 variable "apiserver_key" {}
 variable "controller" {}
 variable "controller_key" {}
+variable "scheduler" {}
+variable "scheduler_key" {}
 variable "cloud_config_file" {}
 
 variable "dns_conf" {}

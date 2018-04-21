@@ -5,6 +5,7 @@ CONTROLLER_OPTS="--cluster-cidr=${ pod_cidr } \
 --leader-elect=true \
 --kubeconfig=/var/lib/kube-controller-manager/kubeconfig \
 --root-ca-file=/etc/srv/kubernetes/pki/ca-certificates.crt \
+--use-service-account-credentials=true \
 --service-account-private-key-file=/etc/srv/kubernetes/pki/ca-certificates.key \
 --service-cluster-ip-range=${ service_cidr } \
 --cloud-provider=${ cloud_provider } ${ cloud_config } \

@@ -176,7 +176,6 @@ module "master_templates" {
   cloud_provider = "${ var.cloud_provider }"
   cloud_config = "${ var.cloud_config }"
   cluster_domain = "${ var.cluster_domain }"
-  cluster_name = "${ var.cluster_name }"
   pod_cidr = "${ var.pod_cidr }"
   service_cidr = "${ var.service_cidr }"
   non_masquerade_cidr = "${ var.non_masquerade_cidr }"

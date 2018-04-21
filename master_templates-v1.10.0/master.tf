@@ -71,7 +71,7 @@ data "template_file" "kube_controller_manager" {
   vars {
     pod_cidr = "${ var.pod_cidr }"
     service_cidr = "${ var.service_cidr }"
-    cluster_name = "${ var.cluster_name }"
+    cluster_name = "${ var.name }"
     cloud_provider = "${ var.cloud_provider }"
     cloud_config = "${ var.cloud_config }"
   }

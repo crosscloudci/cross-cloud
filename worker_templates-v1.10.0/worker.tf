@@ -2,6 +2,14 @@ resource "gzip_me" "ca" {
   input = "${ var.ca }"
 }
 
+resource "gzip_me" "kubelet" {
+  input = "${ var.kubelet }"
+}
+
+resource "gzip_me" "kubelet_key" {
+  input = "${ var.kubelet_key }"
+}
+
 resource "gzip_me" "proxy" {
   input = "${ var.proxy }"
 }
@@ -112,6 +120,8 @@ data "template_file" "worker" {
   vars {
     cloud_config_file = "${ base64gzip(var.cloud_config_file) }"
     ca = "${ gzip_me.ca.output }"
+    kubelet = "${ gzip_me.kubelet.output }"
+    kubelet_key = "${ gzip_me.kubelet_key.output }"
     proxy = "${ gzip_me.proxy.output }"
     proxy_key = "${ gzip_me.proxy_key.output }"
     kubelet = "${ element(gzip_me.kubelet.*.output, count.index) }"

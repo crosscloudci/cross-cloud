@@ -104,6 +104,18 @@ write-files:
     encoding: "gzip+base64"
     content: |
       ${ ca }
+
+  - path: /etc/srv/kubernetes/pki/kubelet.crt
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ kubelet }
+      
+  - path: /etc/srv/kubernetes/pki/kubelet.key
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ kubelet_key }
       
   - path: /etc/srv/kubernetes/pki/proxy.crt
     permissions: "0644"

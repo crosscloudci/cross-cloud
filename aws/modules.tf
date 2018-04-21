@@ -129,6 +129,7 @@ module "tls" {
   tls_controller_cert_early_renewal_hours = "100"
   tls_controller_cert_ip_addresses = "127.0.0.1"
   tls_controller_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local" 
+  
 
   tls_scheduler_cert_subject_common_name = "system:kube-scheduler"
   tls_scheduler_cert_subject_locality = "San Francisco"
@@ -140,6 +141,18 @@ module "tls" {
   tls_scheduler_cert_early_renewal_hours = "100"
   tls_scheduler_cert_ip_addresses = "127.0.0.1"
   tls_scheduler_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local" 
+  
+
+  tls_kubelet_cert_subject_common_name = "kubernetes"
+  tls_kubelet_cert_subject_locality = "San Francisco"
+  tls_kubelet_cert_subject_organization = "Kubernetes"
+  tls_kubelet_cert_subject_organization_unit = "Kubernetes"
+  tls_kubelet_cert_subject_province = "California"
+  tls_kubelet_cert_subject_country = "US"
+  tls_kubelet_cert_validity_period_hours = "1000"
+  tls_kubelet_cert_early_renewal_hours = "100"
+  tls_kubelet_cert_ip_addresses = "127.0.0.1"
+  tls_kubelet_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local,*.${ var.aws_region }.compute.internal" 
 
 
   tls_proxy_cert_subject_common_name = "system:kube-proxy"
@@ -212,6 +225,8 @@ module "worker_templates" {
   internal_lb_ip = "internal-master.${ var.name }.${ var.cloud_provider }.local"
 
   ca = "${ module.tls.ca }"
+  kubelet = "${ module.tls.kubelet }"
+  kubelet_key = "${ module.tls.kubelet_key }"
   proxy = "${ module.tls.proxy }"
   proxy_key = "${ module.tls.proxy_key }"
   bootstrap = "${ module.master_templates.bootstrap }"

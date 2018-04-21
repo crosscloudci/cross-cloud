@@ -56,6 +56,18 @@ variable "tls_scheduler_cert_ip_addresses" {}
 variable "tls_scheduler_cert_dns_names" {}
 
 
+variable "tls_kubelet_cert_subject_common_name" {}
+variable "tls_kubelet_cert_subject_locality" {}
+variable "tls_kubelet_cert_subject_organization" {}
+variable "tls_kubelet_cert_subject_organization_unit" {}
+variable "tls_kubelet_cert_subject_province" {}
+variable "tls_kubelet_cert_subject_country" {}
+variable "tls_kubelet_cert_validity_period_hours" {}
+variable "tls_kubelet_cert_early_renewal_hours" {}
+variable "tls_kubelet_cert_ip_addresses" {}
+variable "tls_kubelet_cert_dns_names" {}
+
+
 variable "tls_proxy_cert_subject_common_name" {}
 variable "tls_proxy_cert_subject_locality" {}
 variable "tls_proxy_cert_subject_organization" {}

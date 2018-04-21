@@ -14,6 +14,6 @@ KUBELET_OPTS="--allow-privileged=true \
 --cni-conf-dir=/etc/cni/net.d/ \
 --pod-manifest-path=/etc/kubernetes/manifests \
 --runtime-request-timeout=15m \
---tls-cert-file=/etc/srv/kubernetes/pki/proxy.crt \
---tls-private-key-file=/etc/srv/kubernetes/pki/proxy.key \
+--tls-cert-file=/etc/srv/kubernetes/pki/kubelet.crt \
+--tls-private-key-file=/etc/srv/kubernetes/pki/kubelet.key \
 --v=2"

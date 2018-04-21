@@ -16,6 +16,8 @@ variable "dns_service_ip" {}
 variable "internal_lb_ip" {}
 
 variable "ca" {}
+variable "kubelet" {}
+variable "kubelet_key" {}
 variable "proxy" {}
 variable "proxy_key" {}
 variable "bootstrap" {}

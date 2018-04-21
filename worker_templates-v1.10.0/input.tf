@@ -16,13 +16,10 @@ variable "dns_service_ip" {}
 variable "internal_lb_ip" {}
 
 variable "ca" {}
-variable "worker" {}
-variable "worker_key" {}
+variable "proxy" {}
+variable "proxy_key" {}
 variable "bootstrap" {}
 variable "cloud_config_file" {}
 
-# variable "dns_worker" {}
 variable "dns_conf" {}
 variable "dns_dhcp" {}
-# variable "corefile" {}
-# variable "dns_etcd" {}

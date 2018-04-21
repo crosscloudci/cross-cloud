@@ -13,7 +13,7 @@ output "controller_key" { value = "${ tls_private_key.controller_key.private_key
 output "scheduler" { value = "${ tls_locally_signed_cert.scheduler_cert.cert_pem }" }
 output "scheduler_key" { value = "${ tls_private_key.scheduler_key.private_key_pem }" }
 
-output "worker" { value = "${ join(",", tls_locally_signed_cert.worker_cert.*.cert_pem) }" }
-output "worker_key" { value = "${ join(",", tls_private_key.worker_key.*.private_key_pem) }" }
+output "proxy" { value = "${ tls_locally_signed_cert.proxy_cert.cert_pem }" }
+output "proxy_key" { value = "${ tls_private_key.proxy_key.private_key_pem}" }
 
 

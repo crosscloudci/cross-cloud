@@ -103,17 +103,17 @@ write-files:
     content: |
       ${ ca }
       
-  - path: /etc/srv/kubernetes/pki/worker.crt
+  - path: /etc/srv/kubernetes/pki/proxy.crt
     permissions: "0644"
     encoding: "gzip+base64"
     content: |
-      ${ worker }
+      ${ proxy }
       
-  - path: /etc/srv/kubernetes/pki/worker.key
+  - path: /etc/srv/kubernetes/pki/proxy.key
     permissions: "0644"
     encoding: "gzip+base64"
     content: |
-      ${ worker_key }
+      ${ proxy_key }
 
   - path: /etc/srv/kubernetes/cloud-config
     permissions: "0644"

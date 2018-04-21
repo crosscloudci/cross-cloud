@@ -87,10 +87,6 @@ module "kubeconfig" {
 module "tls" {
   source = "../tls"
 
-  data_dir = "${ var.data_dir }"
-  master_node_count = "${ var.master_node_count }"
-  worker_node_count = "${ var.worker_node_count }"
-
   tls_ca_cert_subject_common_name = "kubernetes"
   tls_ca_cert_subject_locality = "San Francisco"
   tls_ca_cert_subject_organization = "Kubernetes"
@@ -146,17 +142,16 @@ module "tls" {
   tls_scheduler_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local" 
 
 
-  tls_worker_cert_subject_common_name = "system:node:${ var.name }-worker"
-  tls_worker_cert_subject_common_name_suffix = "${ var.name }.${ var.cloud_provider }.local"
-  tls_worker_cert_subject_locality = "San Francisco"
-  tls_worker_cert_subject_organization = "system:nodes"
-  tls_worker_cert_subject_organization_unit = "Kubernetes"
-  tls_worker_cert_subject_province = "California"
-  tls_worker_cert_subject_country = "US"
-  tls_worker_cert_validity_period_hours = 1000
-  tls_worker_cert_early_renewal_hours = 100
-  tls_worker_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local,*.${ var.name }.${ var.cloud_provider }.local"
-  tls_worker_cert_ip_addresses = "127.0.0.1,100.64.0.1,${ var.dns_service_ip }"
+  tls_proxy_cert_subject_common_name = "system:kube-proxy"
+  tls_proxy_cert_subject_locality = "San Francisco"
+  tls_proxy_cert_subject_organization = "system:node-proxier"
+  tls_proxy_cert_subject_organization_unit = "Kubernetes"
+  tls_proxy_cert_subject_province = "California"
+  tls_proxy_cert_subject_country = "US"
+  tls_proxy_cert_validity_period_hours = "1000"
+  tls_proxy_cert_early_renewal_hours = "100"
+  tls_proxy_cert_ip_addresses = "127.0.0.1"
+  tls_proxy_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local" 
 
 }
 
@@ -216,8 +211,8 @@ module "worker_templates" {
   internal_lb_ip = "internal-master.${ var.name }.${ var.cloud_provider }.local"
 
   ca = "${ module.tls.ca }"
-  worker = "${ module.tls.worker }"
-  worker_key = "${ module.tls.worker_key }"
+  proxy = "${ module.tls.proxy }"
+  proxy_key = "${ module.tls.proxy_key }"
   bootstrap = "${ module.master_templates.bootstrap }"
   cloud_config_file = ""
 

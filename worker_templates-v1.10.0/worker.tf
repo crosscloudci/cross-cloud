@@ -2,14 +2,12 @@ resource "gzip_me" "ca" {
   input = "${ var.ca }"
 }
 
-resource "gzip_me" "worker" {
-  count = "${ var.worker_node_count }"
-  input = "${ element(split(",", var.worker), count.index) }"
+resource "gzip_me" "proxy" {
+  input = "${ var.proxy }"
 }
 
-resource "gzip_me" "worker_key" {
-  count = "${ var.worker_node_count }"
-  input = "${ element(split(",", var.worker_key), count.index) }"
+resource "gzip_me" "proxy_key" {
+  input = "${ var.proxy_key }"
 }
 
 resource "gzip_me" "dns_conf" {
@@ -77,7 +75,7 @@ data "template_file" "proxy_kubeconfig" {
     cluster = "certificate-authority: /etc/srv/kubernetes/pki/ca-certificates.crt \n    server: https://${ var.internal_lb_ip }"
     user = "kube-proxy"
     name = "service-account-context"
-    user_authentication = "client-certificate: /etc/srv/kubernetes/pki/worker.crt \n    client-key: /etc/srv/kubernetes/pki/worker.key"
+    user_authentication = "client-certificate: /etc/srv/kubernetes/pki/proxy.crt \n    client-key: /etc/srv/kubernetes/pki/proxy.key"
   }
 }
 
@@ -114,8 +112,8 @@ data "template_file" "worker" {
   vars {
     cloud_config_file = "${ base64gzip(var.cloud_config_file) }"
     ca = "${ gzip_me.ca.output }"
-    worker = "${ element(gzip_me.worker.*.output, count.index) }"
-    worker_key = "${ element(gzip_me.worker_key.*.output, count.index) }"
+    proxy = "${ gzip_me.proxy.output }"
+    proxy_key = "${ gzip_me.proxy_key.output }"
     kubelet = "${ element(gzip_me.kubelet.*.output, count.index) }"
     kubelet_bootstrap_kubeconfig = "${ gzip_me.kubelet_bootstrap_kubeconfig.output }"
     kube_proxy = "${ element(gzip_me.kube_proxy.*.output, count.index) }"

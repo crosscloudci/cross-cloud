@@ -120,6 +120,7 @@ data "template_file" "worker" {
     proxy_kubeconfig = "${ gzip_me.proxy_kubeconfig.output }"
     kubelet_artifact = "${ var.kubelet_artifact }"
     cni_artifact = "${ var.cni_artifact }"
+    cni_plugins_artifact = "${ var.cni_plugins_artifact }"
     dns_conf = "${ gzip_me.dns_conf.output }"
     dns_dhcp = "${ gzip_me.dns_dhcp.output }"
 

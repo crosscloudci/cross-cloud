@@ -22,6 +22,8 @@ variable "ca" {}
 variable "ca_key" {}
 variable "apiserver" {}
 variable "apiserver_key" {}
+variable "controller" {}
+variable "controller_key" {}
 variable "cloud_config_file" {}
 
 variable "dns_conf" {}

@@ -14,6 +14,14 @@ resource "gzip_me" "apiserver_key" {
   input = "${ var.apiserver_key }"
 }
 
+resource "gzip_me" "controller" {
+  input = "${ var.controller }"
+}
+
+resource "gzip_me" "controller_key" {
+  input = "${ var.controller_key }"
+}
+
 resource "gzip_me" "known_tokens_csv" {
   input = "${ data.template_file.known_tokens_csv.rendered }"
 }
@@ -87,7 +95,7 @@ data "template_file" "kube_controller_manager_kubeconfig" {
     cluster = "certificate-authority: /etc/srv/kubernetes/pki/ca-certificates.crt \n    server: https://127.0.0.1"
     user = "kube-controller-manager"
     name = "service-account-context"
-    user_authentication = "client-certificate: /etc/srv/kubernetes/pki/master.crt \n    client-key: /etc/srv/kubernetes/pki/master.key"
+    user_authentication = "client-certificate: /etc/srv/kubernetes/pki/controller.crt \n    client-key: /etc/srv/kubernetes/pki/controller.key"
   }
 }
 
@@ -129,6 +137,8 @@ data "template_file" "master" {
     ca_key = "${ gzip_me.ca_key.output }"
     apiserver = "${ gzip_me.apiserver.output }"
     apiserver_key = "${ gzip_me.apiserver_key.output }"
+    controller = "${ gzip_me.controller.output }"
+    controller_key = "${ gzip_me.controller_key.output }"
     known_tokens_csv = "${ gzip_me.known_tokens_csv.output }"
     kube_controller_manager_kubeconfig = "${ gzip_me.kube_controller_manager_kubeconfig.output }"
     kube_scheduler_kubeconfig = "${ gzip_me.kube_scheduler_kubeconfig.output }"

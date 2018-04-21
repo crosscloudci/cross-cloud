@@ -119,8 +119,20 @@ module "tls" {
   tls_apiserver_cert_subject_country = "US"
   tls_apiserver_cert_validity_period_hours = "1000"
   tls_apiserver_cert_early_renewal_hours = "100"
-  tls_apiserver_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local,*.${ var.name }.${ var.cloud_provider }.local"
   tls_apiserver_cert_ip_addresses = "127.0.0.1,100.64.0.1,${ var.dns_service_ip }"
+  tls_apiserver_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local,*.${ var.name }.${ var.cloud_provider }.local"
+
+
+  tls_controller_cert_subject_common_name = "system:kube-controller-manager"
+  tls_controller_cert_subject_locality = "San Francisco"
+  tls_controller_cert_subject_organization = "system:kube-controller-manager"
+  tls_controller_cert_subject_organization_unit = "Kubernetes"
+  tls_controller_cert_subject_province = "California"
+  tls_controller_cert_subject_country = "US"
+  tls_controller_cert_validity_period_hours = "1000"
+  tls_controller_cert_early_renewal_hours = "100"
+  tls_controller_cert_ip_addresses = "127.0.0.1"
+  tls_controller_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local" 
 
 
   tls_worker_cert_subject_common_name = "system:node:${ var.name }-worker"
@@ -161,8 +173,10 @@ module "master_templates" {
 
   ca = "${ module.tls.ca }"
   ca_key = "${ module.tls.ca_key }"
-  master = "${ module.tls.master }"
-  master_key = "${ module.tls.master_key }"
+  apiserver = "${ module.tls.apiserver }"
+  apiserver_key = "${ module.tls.apiserver_key }"
+  controller = "${ module.tls.controller }"
+  controller_key = "${ module.tls.controller_key }"
   cloud_config_file = ""
 
   dns_conf = "${ module.dns.dns_conf }"

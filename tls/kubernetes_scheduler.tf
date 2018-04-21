@@ -1,6 +1,6 @@
 resource "tls_private_key" "scheduler_key" {
   algorithm = "RSA"
-  rsa_bits = 2048
+  rsa_bits = 1024
 }
 
 resource "tls_cert_request" "scheduler_csr" {

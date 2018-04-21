@@ -109,7 +109,7 @@ write-files:
     permissions: "0644"
     encoding: "gzip+base64"
     content: |
-      ${ kubelet }
+      ${ kubelet_crt }
       
   - path: /etc/srv/kubernetes/pki/kubelet.key
     permissions: "0644"

@@ -2,7 +2,7 @@ resource "gzip_me" "ca" {
   input = "${ var.ca }"
 }
 
-resource "gzip_me" "kubelet" {
+resource "gzip_me" "kubelet_crt" {
   input = "${ var.kubelet }"
 }
 
@@ -120,7 +120,7 @@ data "template_file" "worker" {
   vars {
     cloud_config_file = "${ base64gzip(var.cloud_config_file) }"
     ca = "${ gzip_me.ca.output }"
-    kubelet = "${ gzip_me.kubelet.output }"
+    kubelet_crt = "${ gzip_me.kubelet_crt.output }"
     kubelet_key = "${ gzip_me.kubelet_key.output }"
     proxy = "${ gzip_me.proxy.output }"
     proxy_key = "${ gzip_me.proxy_key.output }"

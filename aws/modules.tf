@@ -199,6 +199,7 @@ module "worker_templates" {
 
   kubelet_artifact = "${ var.kubelet_artifact }"
   cni_artifact = "${ var.cni_artifact }"
+  cni_plugins_artifact = "${ var.cni_artifact }"
   kube_proxy_image = "${ var.kube_proxy_image }"
   kube_proxy_tag = "${ var.kube_proxy_tag }"
 

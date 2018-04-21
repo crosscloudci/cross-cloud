@@ -20,8 +20,8 @@ variable "dns_service_ip" {}
 
 variable "ca" {}
 variable "ca_key" {}
-variable "master" {}
-variable "master_key" {}
+variable "apiserver" {}
+variable "apiserver_key" {}
 variable "cloud_config_file" {}
 
 variable "dns_conf" {}

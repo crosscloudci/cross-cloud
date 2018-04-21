@@ -16,12 +16,12 @@ APISERVER_OPTS="--admission-control=Initializers,NamespaceLifecycle,NodeRestrict
 --event-ttl=1h \
 --insecure-bind-address=127.0.0.1 \
 --kubelet-certificate-authority=/etc/srv/kubernetes/pki/ca-certificates.crt \
---kubelet-client-certificate=/etc/srv/kubernetes/pki/master.crt \
---kubelet-client-key=/etc/srv/kubernetes/pki/master.key \
+--kubelet-client-certificate=/etc/srv/kubernetes/pki/apiserver.crt \
+--kubelet-client-key=/etc/srv/kubernetes/pki/apiserver.key \
 --kubelet-https=true \
 --cloud-provider=${ cloud_provider } ${ cloud_config } \
 --service-account-key-file=/etc/srv/kubernetes/pki/ca-certificates.key \
 --service-cluster-ip-range=${ service_cidr } \
---tls-cert-file=/etc/srv/kubernetes/pki/master.crt \
---tls-private-key-file=/etc/srv/kubernetes/pki/master.key \
+--tls-cert-file=/etc/srv/kubernetes/pki/apiserver.crt \
+--tls-private-key-file=/etc/srv/kubernetes/pki/apiserver.key \
 --v=2"

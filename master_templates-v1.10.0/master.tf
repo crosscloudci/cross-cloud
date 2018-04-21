@@ -6,14 +6,12 @@ resource "gzip_me" "ca_key" {
   input = "${ var.ca_key }"
 }
 
-resource "gzip_me" "master" {
-  count = "${ var.master_node_count }"
-  input = "${ element(split(",", var.master), count.index) }"
+resource "gzip_me" "apiserver" {
+  input = "${ var.apiserver }"
 }
 
-resource "gzip_me" "master_key" {
-  count = "${ var.master_node_count }"
-  input = "${ element(split(",", var.master_key), count.index) }"
+resource "gzip_me" "apiserver_key" {
+  input = "${ var.apiserver_key }"
 }
 
 resource "gzip_me" "known_tokens_csv" {
@@ -129,8 +127,8 @@ data "template_file" "master" {
     cloud_config_file = "${ base64gzip(var.cloud_config_file) }"
     ca = "${ gzip_me.ca.output }"
     ca_key = "${ gzip_me.ca_key.output }"
-    master = "${ element(gzip_me.master.*.output, count.index) }"
-    master_key = "${ element(gzip_me.master_key.*.output, count.index) }"
+    apiserver = "${ gzip_me.apiserver.output }"
+    apiserver_key = "${ gzip_me.apiserver_key.output }"
     known_tokens_csv = "${ gzip_me.known_tokens_csv.output }"
     kube_controller_manager_kubeconfig = "${ gzip_me.kube_controller_manager_kubeconfig.output }"
     kube_scheduler_kubeconfig = "${ gzip_me.kube_scheduler_kubeconfig.output }"

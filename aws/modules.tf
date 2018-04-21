@@ -111,19 +111,16 @@ module "tls" {
   tls_admin_cert_ip_addresses = "127.0.0.1"
   tls_admin_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local"
 
-  tls_master_cert_subject_common_name = "system:node:${ var.name }-master"
-  tls_master_cert_subject_common_name_suffix = "${ var.name }.${ var.cloud_provider }.local"
-  tls_master_cert_subject_locality = "San Francisco"
-  tls_master_cert_subject_organization = "system:nodes"
-  tls_master_cert_subject_organization_unit = "Kubernetes"
-  tls_master_cert_subject_province = "California"
-  tls_master_cert_subject_country = "US"
-  tls_master_cert_validity_period_hours = "1000"
-  tls_master_cert_early_renewal_hours = "100"
-  tls_master_cert_validity_period_hours = 1000
-  tls_master_cert_early_renewal_hours = 100
-  tls_master_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local,*.${ var.name }.${ var.cloud_provider }.local"
-  tls_master_cert_ip_addresses = "127.0.0.1,100.64.0.1,${ var.dns_service_ip }"
+  tls_apiserver_cert_subject_common_name = "kubernetes"
+  tls_apiserver_cert_subject_locality = "San Francisco"
+  tls_apiserver_cert_subject_organization = "Kubernetes"
+  tls_apiserver_cert_subject_organization_unit = "Kubernetes"
+  tls_apiserver_cert_subject_province = "California"
+  tls_apiserver_cert_subject_country = "US"
+  tls_apiserver_cert_validity_period_hours = "1000"
+  tls_apiserver_cert_early_renewal_hours = "100"
+  tls_apiserver_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local,*.${ var.name }.${ var.cloud_provider }.local"
+  tls_apiserver_cert_ip_addresses = "127.0.0.1,100.64.0.1,${ var.dns_service_ip }"
 
 
   tls_worker_cert_subject_common_name = "system:node:${ var.name }-worker"

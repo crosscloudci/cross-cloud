@@ -174,17 +174,17 @@ write-files:
     content: |
       ${ ca_key }
 
-  - path: /etc/srv/kubernetes/pki/master.crt
+  - path: /etc/srv/kubernetes/pki/apiserver.crt
     permissions: "0644"
     encoding: "gzip+base64"
     content: |
-      ${ master }
+      ${ apiserver }
 
-  - path: /etc/srv/kubernetes/pki/master.key
+  - path: /etc/srv/kubernetes/pki/apiserver.key
     permissions: "0644"
     encoding: "gzip+base64"
     content: |
-      ${ master_key }
+      ${ apiserver_key }
 
   - path: /etc/srv/kubernetes/known_tokens.csv
     permissions: "0644"

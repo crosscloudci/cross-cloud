@@ -44,7 +44,6 @@ data "template_file" "kubelet" {
     cloud_provider = "${ var.cloud_provider }"
     cloud_config = "${ var.cloud_config }"
     dns_service_ip = "${ var.dns_service_ip }"
-    non_masquerade_cidr = "${ var.non_masquerade_cidr }"
   }
 }
 

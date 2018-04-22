@@ -11,7 +11,6 @@ variable "cloud_provider" {}
 variable "cloud_config" {}
 variable "cluster_domain" {}
 variable "pod_cidr" {}
-variable "non_masquerade_cidr" {}
 variable "dns_service_ip" {}
 variable "internal_lb_ip" {}
 

@@ -70,15 +70,18 @@ before_script:
     CLOUD: MUST BE SET
   script:
     - /cncf/provision.sh ${CLOUD}-deploy ${CLOUD}${DEPLOYMENT_SHA}${ENVIRONMENT} s3 ${CLOUD}
-    - kubectl create -f ./helm-rbac.yml || true
     - >
       if ["$CLOUD" == "gke" ]; then
          echo "kube-dns is already deployed, skipping"
+         kubectl create -f ./rbac/helm-rbac.yml || true
       elif ["$CLOUD" == "ibmcloud" ]; then
          echo "kube-dns is already deployed, skipping"
+         kubectl create -f ./rbac/helm-rbac.yml || true
       else
-        kubectl create -f ./kube-dns.yml || true
+        kubectl create -f ./rbac/ || true
+        kubectl create -f ./addons/ || true
       fi
+    - KUBECTL_PATH=$(which kubectl) NUM_NODES="$TF_VAR_worker_node_count" KUBERNETES_PROVIDER=local ${DIR}/validate-cluster/cluster/validate-cluster.sh || true
     - helm init --service-account tiller; kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
   artifacts:
     when: always

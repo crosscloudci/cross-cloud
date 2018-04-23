@@ -81,6 +81,9 @@ COPY provision.sh /cncf/
 COPY s3-backend.tf /cncf/
 COPY file-backend.tf /cncf/
 
+COPY rbac/ /cncf/rbac/
+COPY addons/ /cncf/addons/
+
 COPY master_templates-v1.7.2/ /cncf/master_templates-v1.7.2/
 COPY master_templates-v1.8.1/ /cncf/master_templates-v1.8.1/
 COPY master_templates-v1.9.0-alpha.1/ /cncf/master_templates-v1.9.0-alpha.1/

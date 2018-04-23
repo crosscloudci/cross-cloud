@@ -186,7 +186,6 @@ module "worker_templates" {
   source = "../worker_templates-v1.10.0"
 
   worker_node_count = "${ var.worker_node_count }"
-  name = "${ var.name }"
 
   kubelet_artifact = "${ var.kubelet_artifact }"
   cni_artifact = "${ var.cni_artifact }"

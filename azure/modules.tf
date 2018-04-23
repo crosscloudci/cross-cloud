@@ -3,7 +3,6 @@ module "network" {
   name = "${ var.name }"
   vpc_cidr = "${ var.vpc_cidr }"
   subnet_cidr = "${ var.subnet_cidr }"
-  # name_servers_file = "${ module.dns.name_servers_file }"
   location = "${ var.location }"
  }
 

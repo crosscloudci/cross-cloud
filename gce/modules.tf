@@ -150,6 +150,10 @@ module "tls" {
 module "master_templates" {
   source = "/cncf/master_templates-v1.10.0"
 
+  hostname = ""
+  hostname_suffix = ""
+  hostname_path = "/etc/ignore_hostname"
+
   master_node_count = "${ var.master_node_count }"
   name = "${ var.name }"
   etcd_endpoint     = "etcd.${ var.name }.${ var.cloud_provider }.local"
@@ -184,6 +188,10 @@ module "master_templates" {
 
 module "worker_templates" {
   source = "../worker_templates-v1.10.0"
+
+  hostname = ""
+  hostname_suffix = ""
+  hostname_path = "/etc/ignore_hostname"
 
   worker_node_count = "${ var.worker_node_count }"
 

@@ -1,4 +1,6 @@
 variable "name" {}
+variable "hostname" {}
+variable "hostname_suffix" {}
 variable "location" {}
 variable "admin_username" {}
 variable "master_vm_size" {}

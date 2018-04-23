@@ -18,8 +18,8 @@ variable "allow_ssh_cidr" { default = "0.0.0.0/0" }
 variable "data_dir" { default = "/cncf/data/gce" }
 
 # DNS Configuration
-variable "etcd_server" { default = "147.75.83.101:2379" }
-variable "discovery_nameserver" { default = "147.75.83.101" } 
+variable "etcd_server" { default = "147.75.69.23:2379" }
+variable "discovery_nameserver" { default = "147.75.69.23" } 
 
 
 # Kubernetes

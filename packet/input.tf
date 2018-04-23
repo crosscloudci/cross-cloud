@@ -3,8 +3,8 @@ variable "name" { default = "packet" }
 variable "data_dir" { default = "/cncf/data/packet" }
 
 # DNS Configuration
-variable "etcd_server" { default = "147.75.83.101:2379" }
-variable "discovery_nameserver" { default = "147.75.83.101" } 
+variable "etcd_server" { default = "147.75.69.23:2379" }
+variable "discovery_nameserver" { default = "147.75.69.23" } 
 
 
 variable "master_node_count" { default = "3" }

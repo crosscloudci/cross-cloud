@@ -29,39 +29,20 @@ if [ ! -e $CNI_ARTIFACT ] ; then
 fi
 
 
-if [ ! -e $ETCD_IMAGE ] ; then
-  export TF_VAR_etcd_image=$ETCD_IMAGE
+if [ ! -e $ETCD_ARTIFACT ] ; then
+  export TF_VAR_etcd_artifact=$ETCD_ARTIFACT
 fi
 
-if [ ! -e $ETCD_TAG ] ; then
-  export TF_VAR_etcd_tag=$ETCD_TAG
+if [ ! -e $KUBE_APISERVER_ARTIFACT ] ; then
+    export TF_VAR_kube_apiserver_artifact=$KUBE_APISERVER_ARTIFACT
 fi
 
-
-if [ ! -e $KUBE_APISERVER_IMAGE ] ; then
-    export TF_VAR_kube_apiserver_image=$KUBE_APISERVER_IMAGE
+if [ ! -e $KUBE_CONTROLLER_MANAGER_ARTIFACT ] ; then
+    export TF_VAR_kube_controller_manager_artifact=$KUBE_CONTROLLER_MANAGER_ARTIFACT
 fi
 
-if [ ! -e $KUBE_APISERVER_TAG ] ; then
-    export TF_VAR_kube_apiserver_tag=$KUBE_APISERVER_TAG
-fi
-
-
-if [ ! -e $KUBE_CONTROLLER_MANAGER_IMAGE ] ; then
-    export TF_VAR_kube_controller_manager_image=$KUBE_CONTROLLER_MANAGER_IMAGE
-fi
-
-if [ ! -e $KUBE_CONTROLLER_MANAGER_TAG ] ; then
-    export TF_VAR_kube_controller_manager_tag=$KUBE_CONTROLLER_MANAGER_TAG
-fi
-
-
-if [ ! -e $KUBE_SCHEDULER_IMAGE ] ; then
-    export TF_VAR_kube_scheduler_image=$KUBE_SCHEDULER_IMAGE
-fi
-
-if [ ! -e $KUBE_SCHEDULER_TAG ] ; then
-    export TF_VAR_kube_scheduler_tag=$KUBE_SCHEDULER_TAG
+if [ ! -e $KUBE_SCHEDULER_ARTIFACT ] ; then
+    export TF_VAR_kube_scheduler_artifact=$KUBE_SCHEDULER_ARTIFACT
 fi
 
 if [ ! -e $KUBE_PROXY_IMAGE ] ; then

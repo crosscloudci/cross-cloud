@@ -1,5 +1,5 @@
 # General cluster settings
-variable "name" { default = "openstack" }
+variable "name" { default = "openstack2" }
 variable "data_dir" { default = "/cncf/data/openstack" }
 
 # OpenStack Auth Settings

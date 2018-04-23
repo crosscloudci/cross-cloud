@@ -7,6 +7,9 @@ coreos:
     - name: systemd-resolved.service
       command: restart
 
+    - name: systemd-hostnamed.service
+      command: restart
+
     - name: docker.service
       command: start
       drop-ins:
@@ -70,6 +73,10 @@ coreos:
     reboot-strategy: etcd-lock
 
 write-files:
+
+  - path: ${ hostname_path }
+    content: |
+      ${ hostname }
 
   - path: /etc/default/docker
     content: |

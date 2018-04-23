@@ -131,6 +131,8 @@ data "template_file" "master" {
 
   vars {
     name = "${ var.name }"
+    hostname = "${ var.hostname }-${ count.index + 1 }.${ var.hostname_suffix }"
+    hostname_path = "${ var.hostname_path }"
     node = "${ var.name }-master-${ count.index +1 }"
     etcd_artifact = "${ var.etcd_artifact }"
     etcd_discovery = "${ var.etcd_discovery }"

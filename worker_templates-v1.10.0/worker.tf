@@ -117,6 +117,8 @@ data "template_file" "worker" {
   template = "${ file( "${ path.module }/worker.yml" )}"
 
   vars {
+    hostname = "${ var.hostname }-${ count.index + 1 }.${ var.hostname_suffix }"
+    hostname_path = "${ var.hostname_path }"
     cloud_config_file = "${ base64gzip(var.cloud_config_file) }"
     ca = "${ gzip_me.ca.output }"
     kubelet_crt = "${ gzip_me.kubelet_crt.output }"

@@ -6,6 +6,9 @@ coreos:
   units:
     - name: systemd-resolved.service
       command: restart
+
+    - name: systemd-hostnamed.service
+      command: restart
     
     - name: docker.service
       command: start
@@ -130,6 +133,10 @@ coreos:
 
 
 write-files:
+
+  - path: ${ hostname_path }
+    content: |
+      ${ hostname }
 
   - path: /etc/default/docker
     content: |

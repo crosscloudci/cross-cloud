@@ -25,6 +25,10 @@ module "network" {
 module "master_templates" {
   source = "/cncf/master_templates-v1.10.0"
 
+  hostname = "${ var.name }-master"
+  hostname_suffix = "${ var.name }.${ var.cloud_provider }.local"
+  hostname_path = "/etc/hostname"
+
   master_node_count = "${ var.master_node_count }"
   name              = "${ var.name }"
   etcd_endpoint     = "etcd.${ var.name }.${ var.cloud_provider }.local"
@@ -73,8 +77,11 @@ module "worker" {
 module "worker_templates" {
   source = "../worker_templates-v1.10.0"
 
+  hostname = "${ var.name }-worker"
+  hostname_suffix = "${ var.name }.${ var.cloud_provider }.local"
+  hostname_path = "/etc/hostname"
+
   worker_node_count = "${ var.worker_node_count }"
-  name              = "${ var.name }"
 
   kubelet_artifact = "${ var.kubelet_artifact }"
   cni_artifact     = "${ var.cni_artifact }"

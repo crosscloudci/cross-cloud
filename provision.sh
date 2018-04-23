@@ -18,7 +18,6 @@ NC='\033[0m' # No Color
 export TF_VAR_name="$2"
 export TF_VAR_data_dir=$(pwd)/data/"$4"
 export TF_VAR_packet_api_key=${PACKET_AUTH_TOKEN}
-export TF_VAR_google_project=${GOOGLE_PROJECT}
 
 # Configure Artifacts
 if [ ! -e $KUBELET_ARTIFACT ] ; then

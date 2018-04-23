@@ -186,7 +186,6 @@ module "master_templates" {
   cluster_domain = "${ var.cluster_domain }"
   pod_cidr = "${ var.pod_cidr }"
   service_cidr = "${ var.service_cidr }"
-  non_masquerade_cidr = "${ var.non_masquerade_cidr }"
   dns_service_ip = "${ var.dns_service_ip }"
 
   ca = "${ module.tls.ca }"
@@ -220,7 +219,6 @@ module "worker_templates" {
   cloud_config = "${ var.cloud_config }"
   cluster_domain = "${ var.cluster_domain }"
   pod_cidr = "${ var.pod_cidr }"
-  non_masquerade_cidr = "${ var.non_masquerade_cidr }"
   dns_service_ip = "${ var.dns_service_ip }"
   internal_lb_ip = "internal-master.${ var.name }.${ var.cloud_provider }.local"
 

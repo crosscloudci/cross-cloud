@@ -100,7 +100,7 @@ if [ "$1" = "aws-deploy" ] ; then
     fi
 
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
-    _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info
+    _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info dump
     # export NODES="$(expr $TF_VAR_master_node_count + $TF_VAR_worker_node_count)"
     # KUBECTL_PATH=$(which kubectl) NUM_NODES="$NODES" KUBERNETES_PROVIDER=local ${DIR}/validate-cluster/cluster/validate-cluster.sh || true
     # _retry "❤ Installing Helm" helm init
@@ -153,7 +153,7 @@ elif [ "$1" = "azure-deploy" ] ; then
        fi 
 
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
-    _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info
+    _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info dump
     # export NODES="$(expr $TF_VAR_master_node_count + $TF_VAR_worker_node_count)"
     # KUBECTL_PATH=$(which kubectl) NUM_NODES="$NODES" KUBERNETES_PROVIDER=local ${DIR}/validate-cluster/cluster/validate-cluster.sh || true
     # _retry "❤ Installing Helm" helm init
@@ -204,7 +204,7 @@ elif [[ "$1" = "openstack-deploy" || "$1" = "openstack-destroy" ]] ; then
     fi
 
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
-    _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info
+    _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info dump
     # export NODES="$(expr $TF_VAR_master_node_count + $TF_VAR_worker_node_count)"
     # KUBECTL_PATH=$(which kubectl) NUM_NODES="$NODES" KUBERNETES_PROVIDER=local ${DIR}/validate-cluster/cluster/validate-cluster.sh || true
     # _retry "❤ Installing Helm" helm init
@@ -233,7 +233,7 @@ elif [ "$1" = "packet-deploy" ] ; then
 fi
 
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
-    _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info
+    _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info dump
     # export NODES="$(expr $TF_VAR_master_node_count + $TF_VAR_worker_node_count)"
     # KUBECTL_PATH=$(which kubectl) NUM_NODES="$NODES" KUBERNETES_PROVIDER=local ${DIR}/validate-cluster/cluster/validate-cluster.sh || true
     # _retry "❤ Installing Helm" helm init
@@ -280,7 +280,7 @@ elif [ "$3" = "file" ]; then
     fi
 
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
-    _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info
+    _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info dump
     # export NODES="$TF_VAR_worker_node_count"
     # KUBECTL_PATH=$(which kubectl) NUM_NODES="$NODES" KUBERNETES_PROVIDER=local ${DIR}/validate-cluster/cluster/validate-cluster.sh || true
     # _retry "❤ Installing Helm" helm init

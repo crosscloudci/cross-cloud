@@ -6,8 +6,8 @@ variable "data_dir" { default = "/cncf/data/aws" }
 variable "aws_region" { default = "ap-southeast-2" }
 variable "aws_key_name" { default = "cross-cloud" }
 variable "aws_availability_zone" { default = "ap-southeast-2a" }
-variable "vpc_cidr"        { default = "10.0.0.0/16" }
-variable "subnet_cidr"     { default = "10.0.240.0/24"}
+variable "vpc_cidr"        { default = "10.0.0.0/8" }
+variable "subnet_cidr"     { default = "10.240.0.0/16"}
 
 # DNS Configuration
 variable "etcd_server" { default = "147.75.69.23:2379" }

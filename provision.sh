@@ -82,12 +82,9 @@ if [ "$1" = "aws-deploy" ] ; then
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
     _retry "❤ Trying to connect to cluster with kubectl" kubectl get cs
     _retry "❤ Ensure that the kube-system namespaces exists" kubectl get namespace kube-system
-    _retry "❤ Ensure that rbac is up" kubectl get ClusterRole.v1.rbac.authorization.k8s.i
-    _retry "❤ Ensure that rbac is up" kubectl get ClusterRoleBinding.v1.rbac.authorization.k8s.io
-    # export NODES="$(expr $TF_VAR_master_node_count + $TF_VAR_worker_node_count)"
-    # KUBECTL_PATH=$(which kubectl) NUM_NODES="$NODES" KUBERNETES_PROVIDER=local ${DIR}/validate-cluster/cluster/validate-cluster.sh || true
-    # _retry "❤ Installing Helm" helm init
-    # _retry "Wait for Tiller Deployment to be available" kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
+    _retry "❤ Ensure that ClusterRoles are available" kubectl get ClusterRole.v1.rbac.authorization.k8s.io
+    _retry "❤ Ensure that ClusterRoleBindings are available" kubectl get ClusterRoleBinding.v1.rbac.authorization.k8s.io
+
 elif [ "$1" = "aws-destroy" ] ; then
       cd ${DIR}/aws
       if [ "$3" = "s3" ]; then
@@ -138,12 +135,8 @@ elif [ "$1" = "azure-deploy" ] ; then
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
     _retry "❤ Trying to connect to cluster with kubectl" kubectl get cs
     _retry "❤ Ensure that the kube-system namespaces exists" kubectl get namespace kube-system
-    _retry "❤ Ensure that rbac is up" kubectl get ClusterRole.v1.rbac.authorization.k8s.i
-    _retry "❤ Ensure that rbac is up" kubectl get ClusterRoleBinding.v1.rbac.authorization.k8s.io
-    # export NODES="$(expr $TF_VAR_master_node_count + $TF_VAR_worker_node_count)"
-    # KUBECTL_PATH=$(which kubectl) NUM_NODES="$NODES" KUBERNETES_PROVIDER=local ${DIR}/validate-cluster/cluster/validate-cluster.sh || true
-    # _retry "❤ Installing Helm" helm init
-    # _retry "Wait for Tiller Deployment to be available" kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
+    _retry "❤ Ensure that ClusterRoles are available" kubectl get ClusterRole.v1.rbac.authorization.k8s.io
+    _retry "❤ Ensure that ClusterRoleBindings are available" kubectl get ClusterRoleBinding.v1.rbac.authorization.k8s.io
 
 
 elif [ "$1" = "azure-destroy" ] ; then
@@ -192,12 +185,9 @@ elif [[ "$1" = "openstack-deploy" || "$1" = "openstack-destroy" ]] ; then
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
     _retry "❤ Trying to connect to cluster with kubectl" kubectl get cs
     _retry "❤ Ensure that the kube-system namespaces exists" kubectl get namespace kube-system
-    _retry "❤ Ensure that rbac is up" kubectl get ClusterRole.v1.rbac.authorization.k8s.i
-    _retry "❤ Ensure that rbac is up" kubectl get ClusterRoleBinding.v1.rbac.authorization.k8s.io
-    # export NODES="$(expr $TF_VAR_master_node_count + $TF_VAR_worker_node_count)"
-    # KUBECTL_PATH=$(which kubectl) NUM_NODES="$NODES" KUBERNETES_PROVIDER=local ${DIR}/validate-cluster/cluster/validate-cluster.sh || true
-    # _retry "❤ Installing Helm" helm init
-    # _retry "Wait for Tiller Deployment to be available" kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
+    _retry "❤ Ensure that ClusterRoles are available" kubectl get ClusterRole.v1.rbac.authorization.k8s.io
+    _retry "❤ Ensure that ClusterRoleBindings are available" kubectl get ClusterRoleBinding.v1.rbac.authorization.k8s.io
+
 # End OpenStack
 
 elif [ "$1" = "packet-deploy" ] ; then
@@ -224,12 +214,8 @@ fi
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
     _retry "❤ Trying to connect to cluster with kubectl" kubectl get cs
     _retry "❤ Ensure that the kube-system namespaces exists" kubectl get namespace kube-system
-    _retry "❤ Ensure that rbac is up" kubectl get ClusterRole.v1.rbac.authorization.k8s.i
-    _retry "❤ Ensure that rbac is up" kubectl get ClusterRoleBinding.v1.rbac.authorization.k8s.io
-    # export NODES="$(expr $TF_VAR_master_node_count + $TF_VAR_worker_node_count)"
-    # KUBECTL_PATH=$(which kubectl) NUM_NODES="$NODES" KUBERNETES_PROVIDER=local ${DIR}/validate-cluster/cluster/validate-cluster.sh || true
-    # _retry "❤ Installing Helm" helm init
-    # _retry "Wait for Tiller Deployment to be available" kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
+    _retry "❤ Ensure that ClusterRoles are available" kubectl get ClusterRole.v1.rbac.authorization.k8s.io
+    _retry "❤ Ensure that ClusterRoleBindings are available" kubectl get ClusterRoleBinding.v1.rbac.authorization.k8s.io
 
 elif [ "$1" = "packet-destroy" ] ; then
      cd ${DIR}/packet
@@ -274,13 +260,8 @@ elif [ "$3" = "file" ]; then
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
     _retry "❤ Trying to connect to cluster with kubectl" kubectl get cs
     _retry "❤ Ensure that the kube-system namespaces exists" kubectl get namespace kube-system
-    _retry "❤ Ensure that rbac is up" kubectl get ClusterRole.v1.rbac.authorization.k8s.i
-    _retry "❤ Ensure that rbac is up" kubectl get ClusterRoleBinding.v1.rbac.authorization.k8s.io
-    # export NODES="$TF_VAR_worker_node_count"
-    # KUBECTL_PATH=$(which kubectl) NUM_NODES="$NODES" KUBERNETES_PROVIDER=local ${DIR}/validate-cluster/cluster/validate-cluster.sh || true
-    # _retry "❤ Installing Helm" helm init
-    # _retry "Wait for Tiller Deployment to be available" kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
-
+    _retry "❤ Ensure that ClusterRoles are available" kubectl get ClusterRole.v1.rbac.authorization.k8s.io
+    _retry "❤ Ensure that ClusterRoleBindings are available" kubectl get ClusterRoleBinding.v1.rbac.authorization.k8s.io
 
 elif [ "$1" = "gce-destroy" ] ; then
     cd ${DIR}/gce

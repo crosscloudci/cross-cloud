@@ -12,6 +12,8 @@ KUBELET_OPTS="--allow-privileged=true \
 --network-plugin-mtu=9001 \
 --cni-bin-dir=/opt/cni/bin/ \
 --cni-conf-dir=/etc/cni/net.d/ \
+--node-labels=kubernetes.io/role=node \
+--non-masquerade-cidr=${ non_masquerade_cidr } \
 --pod-manifest-path=/etc/kubernetes/manifests \
 --runtime-request-timeout=15m \
 --tls-cert-file=/etc/srv/kubernetes/pki/kubelet.crt \

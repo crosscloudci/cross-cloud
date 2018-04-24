@@ -47,6 +47,7 @@ variable "cloud_config" { default = "--cloud-config=/etc/srv/kubernetes/cloud-co
 variable "cluster_domain" { default = "cluster.local" }
 variable "pod_cidr" { default = "100.96.0.0/11" }
 variable "service_cidr"   { default = "100.64.0.0/13" }
+variable "non_masquerade_cidr" { default = "100.64.0.0/10" }
 variable "dns_service_ip" { default = "100.64.0.10" }
 
 # Deployment Artifact Versions

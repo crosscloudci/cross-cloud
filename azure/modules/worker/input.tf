@@ -1,4 +1,6 @@
 variable "name" {}
+variable "hostname" {}
+variable "hostname_suffix" {}
 variable "location" {}
 variable "admin_username" {}
 variable "worker_node_count" {}

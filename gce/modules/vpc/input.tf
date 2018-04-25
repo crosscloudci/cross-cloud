@@ -1,0 +1,2 @@
+variable "cidr" {}
+variable "name" {}

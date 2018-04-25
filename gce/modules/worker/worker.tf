@@ -2,7 +2,6 @@ resource "google_compute_instance" "cncf" {
   count        = "${ var.worker_node_count }"
   name         = "${ var.name }-worker${ count.index + 1 }"
   machine_type = "${ var.worker_vm_size }"
-  zone         = "${ var.zone }"
   can_ip_forward = true
 
   tags = ["kubernetes-minion"]

@@ -3,7 +3,7 @@ MAINTAINER "Denver Williams <denver@debian.nz>"
 ENV KUBECTL_VERSION=v1.8.1
 ENV HELM_VERSION=v2.7.2
 #PIN to Commit on Master
-ENV TERRAFORM_VERSION=0.11.3
+ENV TERRAFORM_VERSION=0.11.7
 # ENV TERRAFORM_VERSION=master
 # ENV TF_DEV=true
 # ENV TF_RELEASE=true
@@ -81,16 +81,21 @@ COPY provision.sh /cncf/
 COPY s3-backend.tf /cncf/
 COPY file-backend.tf /cncf/
 
+COPY rbac/ /cncf/rbac/
+COPY addons/ /cncf/addons/
+
 COPY master_templates-v1.7.2/ /cncf/master_templates-v1.7.2/
 COPY master_templates-v1.8.1/ /cncf/master_templates-v1.8.1/
 COPY master_templates-v1.9.0-alpha.1/ /cncf/master_templates-v1.9.0-alpha.1/
 COPY master_templates-v1.9.0/ /cncf/master_templates-v1.9.0/
 COPY master_templates-v1.9.0-dns-etcd/ /cncf/master_templates-v1.9.0-dns-etcd/
+COPY master_templates-v1.10.0/ /cncf/master_templates-v1.10.0/
 
 COPY worker_templates-v1.7.2/ /cncf/worker_templates-v1.7.2/
 COPY worker_templates-v1.8.1/ /cncf/worker_templates-v1.8.1/
 COPY worker_templates-v1.9.0-alpha.1/ /cncf/worker_templates-v1.9.0-alpha.1/
 COPY worker_templates-v1.9.0/ /cncf/worker_templates-v1.9.0/
+COPY worker_templates-v1.10.0/ /cncf/worker_templates-v1.10.0/
 
 RUN chmod +x /cncf/provision.sh
 WORKDIR /cncf/

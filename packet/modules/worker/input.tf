@@ -1,4 +1,6 @@
 variable "name" {}
+variable "hostname" {}
+variable "hostname_suffix" {}
 variable "worker_node_count" {}
 variable "packet_facility" {}
 variable "packet_project_id" {}

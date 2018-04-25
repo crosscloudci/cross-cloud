@@ -1,0 +1,1 @@
+output "worker_ips" { value = "${ join(",", azurerm_network_interface.cncf.*.private_ip_address) }" }

@@ -1,5 +1,4 @@
 stages:
-  - Build
   - Artifacts
   - Cross-Cloud
   - End-To-End
@@ -34,22 +33,6 @@ before_script:
       exit 1
     fi
   - source /opt/local/etc/rvmrc ; source /opt/local/etc/profile.d/rvm.sh ; cp -a /opt/local/dashboard /dashboard ; pushd /dashboard ; source /opt/local/.env ; ./bin/update_dashboard ; popd
-
-Cross-Cloud:
-  image: crosscloudci/debian-docker 
-  stage: Build
-  script:
-    - docker login -u "gitlab-ci-token" -p "$CI_JOB_TOKEN" $CI_REGISTRY
-    - docker build --pull -t "$CI_REGISTRY_IMAGE/provisioning:$CI_COMMIT_REF_SLUG" .
-    - docker push "$CI_REGISTRY_IMAGE/provisioning:$CI_COMMIT_REF_SLUG"
-
-Socat:
-  stage: Build
-  image: crosscloudci/debian-docker
-  script:
-    - docker login -u "gitlab-ci-token" -p "$CI_JOB_TOKEN" $CI_REGISTRY
-    - docker build --pull -t "$CI_REGISTRY_IMAGE/socat:$CI_COMMIT_REF_SLUG" ./socat/
-    - docker push "$CI_REGISTRY_IMAGE/socat:$CI_COMMIT_REF_SLUG"
 
 .build_source: &build_source
   image: buildpack-deps:stretch
@@ -87,15 +70,18 @@ Socat:
     CLOUD: MUST BE SET
   script:
     - /cncf/provision.sh ${CLOUD}-deploy ${CLOUD}${DEPLOYMENT_SHA}${ENVIRONMENT} s3 ${CLOUD}
-    - kubectl create -f ./helm-rbac.yml || true
     - >
-      if ["$CLOUD" == "gke" ]; then
+      if [ $CLOUD == "gke" ]; then
          echo "kube-dns is already deployed, skipping"
-      elif ["$CLOUD" == "ibmcloud" ]; then
+         kubectl create -f ./rbac/helm-rbac.yml || true
+      elif [ $CLOUD == "ibmcloud" ]; then
          echo "kube-dns is already deployed, skipping"
+         kubectl create -f ./rbac/helm-rbac.yml || true
       else
-        kubectl create -f ./kube-dns.yml || true
+        kubectl create -f ./rbac/ || true
+        kubectl create -f ./addons/ || true
       fi
+    - KUBECTL_PATH=$(which kubectl) NUM_NODES="$TF_VAR_worker_node_count" KUBERNETES_PROVIDER=local ./validate-cluster/cluster/validate-cluster.sh || true
     - helm init --service-account tiller; kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
   artifacts:
     when: always

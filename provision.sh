@@ -18,7 +18,6 @@ NC='\033[0m' # No Color
 export TF_VAR_name="$2"
 export TF_VAR_data_dir=$(pwd)/data/"$4"
 export TF_VAR_packet_api_key=${PACKET_AUTH_TOKEN}
-export TF_VAR_google_project=${GOOGLE_PROJECT}
 
 # Configure Artifacts
 if [ ! -e $KUBELET_ARTIFACT ] ; then
@@ -30,39 +29,20 @@ if [ ! -e $CNI_ARTIFACT ] ; then
 fi
 
 
-if [ ! -e $ETCD_IMAGE ] ; then
-  export TF_VAR_etcd_image=$ETCD_IMAGE
+if [ ! -e $ETCD_ARTIFACT ] ; then
+  export TF_VAR_etcd_artifact=$ETCD_ARTIFACT
 fi
 
-if [ ! -e $ETCD_TAG ] ; then
-  export TF_VAR_etcd_tag=$ETCD_TAG
+if [ ! -e $KUBE_APISERVER_ARTIFACT ] ; then
+    export TF_VAR_kube_apiserver_artifact=$KUBE_APISERVER_ARTIFACT
 fi
 
-
-if [ ! -e $KUBE_APISERVER_IMAGE ] ; then
-    export TF_VAR_kube_apiserver_image=$KUBE_APISERVER_IMAGE
+if [ ! -e $KUBE_CONTROLLER_MANAGER_ARTIFACT ] ; then
+    export TF_VAR_kube_controller_manager_artifact=$KUBE_CONTROLLER_MANAGER_ARTIFACT
 fi
 
-if [ ! -e $KUBE_APISERVER_TAG ] ; then
-    export TF_VAR_kube_apiserver_tag=$KUBE_APISERVER_TAG
-fi
-
-
-if [ ! -e $KUBE_CONTROLLER_MANAGER_IMAGE ] ; then
-    export TF_VAR_kube_controller_manager_image=$KUBE_CONTROLLER_MANAGER_IMAGE
-fi
-
-if [ ! -e $KUBE_CONTROLLER_MANAGER_TAG ] ; then
-    export TF_VAR_kube_controller_manager_tag=$KUBE_CONTROLLER_MANAGER_TAG
-fi
-
-
-if [ ! -e $KUBE_SCHEDULER_IMAGE ] ; then
-    export TF_VAR_kube_scheduler_image=$KUBE_SCHEDULER_IMAGE
-fi
-
-if [ ! -e $KUBE_SCHEDULER_TAG ] ; then
-    export TF_VAR_kube_scheduler_tag=$KUBE_SCHEDULER_TAG
+if [ ! -e $KUBE_SCHEDULER_ARTIFACT ] ; then
+    export TF_VAR_kube_scheduler_artifact=$KUBE_SCHEDULER_ARTIFACT
 fi
 
 if [ ! -e $KUBE_PROXY_IMAGE ] ; then
@@ -100,11 +80,11 @@ if [ "$1" = "aws-deploy" ] ; then
     fi
 
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
-    echo "❤ Polling for cluster life - this could take a minute or more"
-    export NODES="$(expr $TF_VAR_master_node_count + $TF_VAR_worker_node_count)"
-    KUBECTL_PATH=$(which kubectl) NUM_NODES="$NODES" KUBERNETES_PROVIDER=local ${DIR}/validate-cluster/cluster/validate-cluster.sh || true
-    _retry "❤ Installing Helm" helm init
-    _retry "Wait for Tiller Deployment to be available" kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
+    _retry "❤ Trying to connect to cluster with kubectl" kubectl get cs
+    _retry "❤ Ensure that the kube-system namespaces exists" kubectl get namespace kube-system
+    _retry "❤ Ensure that ClusterRoles are available" kubectl get ClusterRole.v1.rbac.authorization.k8s.io
+    _retry "❤ Ensure that ClusterRoleBindings are available" kubectl get ClusterRoleBinding.v1.rbac.authorization.k8s.io
+
 elif [ "$1" = "aws-destroy" ] ; then
       cd ${DIR}/aws
       if [ "$3" = "s3" ]; then
@@ -153,11 +133,10 @@ elif [ "$1" = "azure-deploy" ] ; then
        fi 
 
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
-    echo "❤ Polling for cluster life - this could take a minute or more"
-    export NODES="$(expr $TF_VAR_master_node_count + $TF_VAR_worker_node_count)"
-    KUBECTL_PATH=$(which kubectl) NUM_NODES="$NODES" KUBERNETES_PROVIDER=local ${DIR}/validate-cluster/cluster/validate-cluster.sh || true
-    _retry "❤ Installing Helm" helm init
-    _retry "Wait for Tiller Deployment to be available" kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
+    _retry "❤ Trying to connect to cluster with kubectl" kubectl get cs
+    _retry "❤ Ensure that the kube-system namespaces exists" kubectl get namespace kube-system
+    _retry "❤ Ensure that ClusterRoles are available" kubectl get ClusterRole.v1.rbac.authorization.k8s.io
+    _retry "❤ Ensure that ClusterRoleBindings are available" kubectl get ClusterRoleBinding.v1.rbac.authorization.k8s.io
 
 
 elif [ "$1" = "azure-destroy" ] ; then
@@ -204,11 +183,11 @@ elif [[ "$1" = "openstack-deploy" || "$1" = "openstack-destroy" ]] ; then
     fi
 
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
-    echo "❤ Polling for cluster life - this could take a minute or more"
-    export NODES="$(expr $TF_VAR_master_node_count + $TF_VAR_worker_node_count)"
-    KUBECTL_PATH=$(which kubectl) NUM_NODES="$NODES" KUBERNETES_PROVIDER=local ${DIR}/validate-cluster/cluster/validate-cluster.sh || true
-    _retry "❤ Installing Helm" helm init
-    _retry "Wait for Tiller Deployment to be available" kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
+    _retry "❤ Trying to connect to cluster with kubectl" kubectl get cs
+    _retry "❤ Ensure that the kube-system namespaces exists" kubectl get namespace kube-system
+    _retry "❤ Ensure that ClusterRoles are available" kubectl get ClusterRole.v1.rbac.authorization.k8s.io
+    _retry "❤ Ensure that ClusterRoleBindings are available" kubectl get ClusterRoleBinding.v1.rbac.authorization.k8s.io
+
 # End OpenStack
 
 elif [ "$1" = "packet-deploy" ] ; then
@@ -232,13 +211,11 @@ elif [ "$1" = "packet-deploy" ] ; then
         time terraform apply -auto-approve ${DIR}/packet
 fi
 
-
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
-    echo "❤ Polling for cluster life - this could take a minute or more"
-    export NODES="$(expr $TF_VAR_master_node_count + $TF_VAR_worker_node_count)"
-    KUBECTL_PATH=$(which kubectl) NUM_NODES="$NODES" KUBERNETES_PROVIDER=local ${DIR}/validate-cluster/cluster/validate-cluster.sh || true
-    _retry "❤ Installing Helm" helm init
-    _retry "Wait for Tiller Deployment to be available" kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
+    _retry "❤ Trying to connect to cluster with kubectl" kubectl get cs
+    _retry "❤ Ensure that the kube-system namespaces exists" kubectl get namespace kube-system
+    _retry "❤ Ensure that ClusterRoles are available" kubectl get ClusterRole.v1.rbac.authorization.k8s.io
+    _retry "❤ Ensure that ClusterRoleBindings are available" kubectl get ClusterRoleBinding.v1.rbac.authorization.k8s.io
 
 elif [ "$1" = "packet-destroy" ] ; then
      cd ${DIR}/packet
@@ -281,12 +258,10 @@ elif [ "$3" = "file" ]; then
     fi
 
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
-    echo "❤ Polling for cluster life - this could take a minute or more"
-    export NODES="$(expr $TF_VAR_master_node_count + $TF_VAR_worker_node_count)"
-    KUBECTL_PATH=$(which kubectl) NUM_NODES="$NODES" KUBERNETES_PROVIDER=local ${DIR}/validate-cluster/cluster/validate-cluster.sh || true
-    _retry "❤ Installing Helm" helm init
-    _retry "Wait for Tiller Deployment to be available" kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
-
+    _retry "❤ Trying to connect to cluster with kubectl" kubectl get cs
+    _retry "❤ Ensure that the kube-system namespaces exists" kubectl get namespace kube-system
+    _retry "❤ Ensure that ClusterRoles are available" kubectl get ClusterRole.v1.rbac.authorization.k8s.io
+    _retry "❤ Ensure that ClusterRoleBindings are available" kubectl get ClusterRoleBinding.v1.rbac.authorization.k8s.io
 
 elif [ "$1" = "gce-destroy" ] ; then
     cd ${DIR}/gce
@@ -316,26 +291,24 @@ if [ "$3" = "s3" ]; then
               -backend-config "bucket=${AWS_BUCKET}" \
               -backend-config "key=gke-${TF_VAR_name}" \
               -backend-config "region=${AWS_DEFAULT_REGION}"
-    # ensure kubeconfig is written to disk on infrastructure refresh
-    terraform taint -module=kubeconfig null_resource.kubeconfig || true          
     time terraform apply -target module.vpc -auto-approve ${DIR}/gke && \
     time terraform apply -auto-approve ${DIR}/gke
 elif [ "$3" = "file" ]; then
     cp ../file-backend.tf .
     terraform init \
               -backend-config "path=/cncf/data/${TF_VAR_name}/terraform.tfstate"
-    # ensure kubeconfig is written to disk on infrastructure refresh
-    terraform taint -module=kubeconfig null_resource.kubeconfig || true          
     time terraform apply -target module.vpc -auto-approve ${DIR}/gke && \
     time terraform apply -auto-approve ${DIR}/gke
 fi
 
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
+    echo $GOOGLE_CREDENTIALS > ${TF_VAR_data_dir}/keyfile.json
+    gcloud auth activate-service-account $GOOGLE_AUTH_EMAIL --key-file ${TF_VAR_data_dir}/keyfile.json --project $GOOGLE_PROJECT
+    gcloud container clusters get-credentials $TF_VAR_name --zone $GOOGLE_ZONE --project $GOOGLE_PROJECT
+
     echo "❤ Polling for cluster life - this could take a minute or more"
     _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info 
     kubectl cluster-info
-    _retry "❤ Installing Helm" helm init
-    _retry "Wait for Tiller Deployment to be available" kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
 
 elif [ "$1" = "gke-destroy" ] ; then
 cd ${DIR}/gke

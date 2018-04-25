@@ -19,16 +19,12 @@ resource "azurerm_network_interface" "cncf" {
     subnet_id                     = "${ var.subnet_id }"
     private_ip_address_allocation = "dynamic"
     public_ip_address_id          = "${ element(azurerm_public_ip.master.*.id, count.index) }"
-    load_balancer_backend_address_pools_ids = [
-      "${ azurerm_lb_backend_address_pool.cncf.id }",
-      "${ azurerm_lb_backend_address_pool.apiserver_internal.id }",
-    ]
   }
 }
 
 resource "azurerm_virtual_machine" "cncf" {
   count = "${ var.master_node_count }"
-  name                  = "${ var.name }-master${ count.index + 1 }"
+  name                  = "${ var.hostname }-${ count.index + 1 }.${ var.hostname_suffix }"
   location              = "${ var.location }"
   availability_set_id   = "${ var.availability_id }"
   resource_group_name = "${ var.name }"
@@ -50,7 +46,7 @@ resource "azurerm_virtual_machine" "cncf" {
   }
 
   os_profile {
-    computer_name  = "${ var.name }-master${ count.index + 1 }"
+    computer_name  = "${ var.hostname }-${ count.index + 1 }.${ var.hostname_suffix }"
     admin_username = "${ var.admin_username }"
     admin_password = "Password1234!"
     custom_data = "${ element(split("`", var.master_cloud_init), count.index) }"

@@ -1,4 +1,6 @@
 variable "name" {}
+variable "hostname" {}
+variable "hostname_suffix" {}
 variable "location" {}
 variable "admin_username" {}
 variable "master_vm_size" {}
@@ -11,7 +13,6 @@ variable "subnet_id" {}
 variable "storage_primary_endpoint" {}
 variable "storage_container" {}
 variable "availability_id" {}
-variable "internal_lb_ip" {}
 variable "master_cloud_init" {}
 variable "data_dir" {}
 

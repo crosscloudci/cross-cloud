@@ -3,8 +3,7 @@ module "vpc" {
   name = "${ var.name }"
 
   aws_availability_zone = "${ var.aws_availability_zone }"
-  subnet_cidr_public = "${ var.subnet_cidr_public }"
-  subnet_cidr_private = "${ var.subnet_cidr_private }"
+  subnet_cidr = "${ var.subnet_cidr }"
   cidr = "${ var.vpc_cidr }"
 }
 
@@ -14,7 +13,6 @@ module "security" {
 
   vpc_cidr       = "${ var.vpc_cidr }"
   vpc_id         = "${ module.vpc.vpc_id }"
-  allow_ssh_cidr = "${ var.allow_ssh_cidr }"
 }
 
 
@@ -33,28 +31,13 @@ module "master" {
   ami_id                         = "${ var.aws_image_ami }"
   aws_key_name                   = "${ var.aws_key_name }"
   master_security                = "${ module.security.master_id }"
-  external_lb_security           = "${ module.security.external_lb_id }"
-  internal_lb_security           = "${ module.security.internal_lb_id }"
   instance_type                  = "${ var.aws_master_vm_size }"
   region                         = "${ var.aws_region }"
-  subnet_public_id               = "${ module.vpc.subnet_public_id }"
-  subnet_private_id              = "${ module.vpc.subnet_private_id }"
+  subnet_id                      = "${ module.vpc.subnet_id }"
   vpc_id                         = "${ module.vpc.vpc_id }"
   master_cloud_init = "${ module.master_templates.master_cloud_init }"
 }
 
-
-module "bastion" {
-  source = "./modules/bastion"
-
-  ami_id = "${ var.aws_image_ami }"
-  instance_type = "${ var.aws_bastion_vm_size }"
-  aws_key_name = "${ var.aws_key_name }"
-  name = "${ var.name }"
-  security_group_id = "${ module.security.bastion_id }"
-  subnet_public_id = "${ module.vpc.subnet_public_id }"
-  vpc_id = "${ module.vpc.vpc_id }"
-}
 
 module "worker" {
   source = "./modules/worker"
@@ -67,8 +50,26 @@ module "worker" {
   aws_key_name = "${ var.aws_key_name }"
   region = "${ var.aws_region }"
   security_group_id = "${ module.security.worker_id }"
-  subnet_private_id = "${ module.vpc.subnet_private_id }"
+  subnet_id = "${ module.vpc.subnet_id }"
   worker_cloud_init = "${ module.worker_templates.worker_cloud_init }"
+
+}
+
+module "dns" {
+  source = "../dns-etcd"
+  
+  name = "${ var.name }"
+  etcd_server = "${ var.etcd_server }"
+  discovery_nameserver = "${ var.discovery_nameserver }"
+  upstream_dns = "DNS=10.0.0.2"
+  cloud_provider = "${ var.cloud_provider }"
+
+  master_ips = "${ module.master.master_ips }"
+  public_master_ips = "${ module.master.public_master_ips }"
+  worker_ips = "${ module.worker.worker_ips }"
+
+  master_node_count = "${ var.master_node_count }"
+  worker_node_count = "${ var.worker_node_count }"
 
 }
 
@@ -76,95 +77,148 @@ module "kubeconfig" {
   source = "../kubeconfig"
 
   data_dir = "${ var.data_dir }"
-  endpoint = "${ module.master.external_elb }"
+  endpoint = "master.${ var.name }.${ var.cloud_provider }.local"
   name = "${ var.name }"
   ca = "${ module.tls.ca}"
-  client = "${ module.tls.client }"
-  client_key = "${ module.tls.client_key }"
+  client = "${ module.tls.admin }"
+  client_key = "${ module.tls.admin_key }"
 }
 
 module "tls" {
   source = "../tls"
 
-  data_dir = "${ var.data_dir }"
-
   tls_ca_cert_subject_common_name = "kubernetes"
-  tls_ca_cert_subject_organization = "Kubernetes"
   tls_ca_cert_subject_locality = "San Francisco"
+  tls_ca_cert_subject_organization = "Kubernetes"
+  tls_ca_cert_subject_organization_unit = "Kubernetes" 
   tls_ca_cert_subject_province = "California"
   tls_ca_cert_subject_country = "US"
   tls_ca_cert_validity_period_hours = 1000
   tls_ca_cert_early_renewal_hours = 100
 
-  tls_client_cert_subject_common_name = "kubecfg"
-  tls_client_cert_validity_period_hours = 1000
-  tls_client_cert_early_renewal_hours = 100
-  tls_client_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local,*.*.compute.internal,*.ec2.internal"
-  tls_client_cert_ip_addresses = "127.0.0.1"
+  tls_admin_cert_subject_common_name = "admin"
+  tls_admin_cert_subject_locality = "San Francisco"
+  tls_admin_cert_subject_organization = "system:masters"
+  tls_admin_cert_subject_organization_unit = "Kubernetes"
+  tls_admin_cert_subject_province = "Callifornia"
+  tls_admin_cert_subject_country = "US"
+  tls_admin_cert_validity_period_hours = 1000
+  tls_admin_cert_early_renewal_hours = 100
+  tls_admin_cert_ip_addresses = "127.0.0.1"
+  tls_admin_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local"
 
-  tls_apiserver_cert_subject_common_name = "kubernetes-master"
-  tls_apiserver_cert_validity_period_hours = 1000
-  tls_apiserver_cert_early_renewal_hours = 100
-  tls_apiserver_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local,*.ap-southeast-2.elb.amazonaws.com"
+  tls_apiserver_cert_subject_common_name = "kubernetes"
+  tls_apiserver_cert_subject_locality = "San Francisco"
+  tls_apiserver_cert_subject_organization = "Kubernetes"
+  tls_apiserver_cert_subject_organization_unit = "Kubernetes"
+  tls_apiserver_cert_subject_province = "California"
+  tls_apiserver_cert_subject_country = "US"
+  tls_apiserver_cert_validity_period_hours = "1000"
+  tls_apiserver_cert_early_renewal_hours = "100"
   tls_apiserver_cert_ip_addresses = "127.0.0.1,100.64.0.1,${ var.dns_service_ip }"
+  tls_apiserver_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local,*.${ var.name }.${ var.cloud_provider }.local"
 
-  tls_worker_cert_subject_common_name = "kubernetes-worker"
-  tls_worker_cert_validity_period_hours = 1000
-  tls_worker_cert_early_renewal_hours = 100
-  tls_worker_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local,*.*.compute.internal,*.ec2.internal"
-  tls_worker_cert_ip_addresses = "127.0.0.1"
+
+  tls_controller_cert_subject_common_name = "system:kube-controller-manager"
+  tls_controller_cert_subject_locality = "San Francisco"
+  tls_controller_cert_subject_organization = "system:kube-controller-manager"
+  tls_controller_cert_subject_organization_unit = "Kubernetes"
+  tls_controller_cert_subject_province = "California"
+  tls_controller_cert_subject_country = "US"
+  tls_controller_cert_validity_period_hours = "1000"
+  tls_controller_cert_early_renewal_hours = "100"
+  tls_controller_cert_ip_addresses = "127.0.0.1"
+  tls_controller_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local" 
+  
+
+  tls_scheduler_cert_subject_common_name = "system:kube-scheduler"
+  tls_scheduler_cert_subject_locality = "San Francisco"
+  tls_scheduler_cert_subject_organization = "system:kube-scheduler"
+  tls_scheduler_cert_subject_organization_unit = "Kubernetes"
+  tls_scheduler_cert_subject_province = "California"
+  tls_scheduler_cert_subject_country = "US"
+  tls_scheduler_cert_validity_period_hours = "1000"
+  tls_scheduler_cert_early_renewal_hours = "100"
+  tls_scheduler_cert_ip_addresses = "127.0.0.1"
+  tls_scheduler_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local" 
+  
+
+  tls_kubelet_cert_subject_common_name = "kubernetes"
+  tls_kubelet_cert_subject_locality = "San Francisco"
+  tls_kubelet_cert_subject_organization = "Kubernetes"
+  tls_kubelet_cert_subject_organization_unit = "Kubernetes"
+  tls_kubelet_cert_subject_province = "California"
+  tls_kubelet_cert_subject_country = "US"
+  tls_kubelet_cert_validity_period_hours = "1000"
+  tls_kubelet_cert_early_renewal_hours = "100"
+  tls_kubelet_cert_ip_addresses = "127.0.0.1"
+  tls_kubelet_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local,*.${ var.aws_region }.compute.internal" 
+
+
+  tls_proxy_cert_subject_common_name = "system:kube-proxy"
+  tls_proxy_cert_subject_locality = "San Francisco"
+  tls_proxy_cert_subject_organization = "system:node-proxier"
+  tls_proxy_cert_subject_organization_unit = "Kubernetes"
+  tls_proxy_cert_subject_province = "California"
+  tls_proxy_cert_subject_country = "US"
+  tls_proxy_cert_validity_period_hours = "1000"
+  tls_proxy_cert_early_renewal_hours = "100"
+  tls_proxy_cert_ip_addresses = "127.0.0.1"
+  tls_proxy_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local" 
 
 }
 
 module "master_templates" {
-  source = "../master_templates-v1.9.0"
+  source = "/cncf/master_templates-v1.10.0"
+
+  hostname = ""
+  hostname_suffix = ""
+  hostname_path = "/etc/ignore_hostname"
 
   master_node_count = "${ var.master_node_count }"
   name = "${ var.name }"
-  etcd_endpoint = "${ var.etcd_endpoint }"
-  etcd_bootstrap = ""
+  etcd_endpoint     = "etcd.${ var.name }.${ var.cloud_provider }.local"
+  etcd_discovery    = "${ var.name }.${ var.cloud_provider }.local"
 
-  kubelet_artifact = "${ var.kubelet_artifact }"
-  cni_artifact = "${ var.cni_artifact }"
-  etcd_image = "${ var.etcd_image }"
-  etcd_tag = "${ var.etcd_tag }"
-  kube_apiserver_image = "${ var.kube_apiserver_image }"
-  kube_apiserver_tag = "${ var.kube_apiserver_tag }"
-  kube_controller_manager_image = "${ var.kube_controller_manager_image }"
-  kube_controller_manager_tag = "${ var.kube_controller_manager_tag }"
-  kube_scheduler_image = "${ var.kube_scheduler_image }"
-  kube_scheduler_tag = "${ var.kube_scheduler_tag }"
-  kube_proxy_image = "${ var.kube_proxy_image }"
-  kube_proxy_tag = "${ var.kube_proxy_tag }"
+  etcd_artifact = "${ var.etcd_artifact }"
+  kube_apiserver_artifact = "${ var.kube_apiserver_artifact }"
+  kube_controller_manager_artifact = "${ var.kube_controller_manager_artifact }"
+  kube_scheduler_artifact = "${ var.kube_scheduler_artifact }"
 
   cloud_provider = "${ var.cloud_provider }"
   cloud_config = "${ var.cloud_config }"
   cluster_domain = "${ var.cluster_domain }"
-  cluster_name = "${ var.cluster_name }"
   pod_cidr = "${ var.pod_cidr }"
   service_cidr = "${ var.service_cidr }"
-  non_masquerade_cidr = "${ var.non_masquerade_cidr }"
   dns_service_ip = "${ var.dns_service_ip }"
 
   ca = "${ module.tls.ca }"
   ca_key = "${ module.tls.ca_key }"
   apiserver = "${ module.tls.apiserver }"
   apiserver_key = "${ module.tls.apiserver_key }"
+  controller = "${ module.tls.controller }"
+  controller_key = "${ module.tls.controller_key }"
+  scheduler = "${ module.tls.scheduler }"
+  scheduler_key = "${ module.tls.scheduler_key }"
   cloud_config_file = ""
 
-  dns_master = ""
-  dns_conf = ""
+  dns_conf = "${ module.dns.dns_conf }"
+  dns_dhcp = ""
 
 }
 
 module "worker_templates" {
-  source = "../worker_templates-v1.9.0"
+  source = "../worker_templates-v1.10.0"
+
+  hostname = ""
+  hostname_suffix = ""
+  hostname_path = "/etc/ignore_hostname"
 
   worker_node_count = "${ var.worker_node_count }"
-  name = "${ var.name }"
 
   kubelet_artifact = "${ var.kubelet_artifact }"
   cni_artifact = "${ var.cni_artifact }"
+  cni_plugins_artifact = "${ var.cni_plugins_artifact }"
   kube_proxy_image = "${ var.kube_proxy_image }"
   kube_proxy_tag = "${ var.kube_proxy_tag }"
 
@@ -174,13 +228,17 @@ module "worker_templates" {
   pod_cidr = "${ var.pod_cidr }"
   non_masquerade_cidr = "${ var.non_masquerade_cidr }"
   dns_service_ip = "${ var.dns_service_ip }"
-  internal_lb_ip = "${ module.master.internal_elb }"
+  internal_lb_ip = "internal-master.${ var.name }.${ var.cloud_provider }.local"
 
   ca = "${ module.tls.ca }"
-  worker = "${ module.tls.worker }"
-  worker_key = "${ module.tls.worker_key }"
+  kubelet = "${ module.tls.kubelet }"
+  kubelet_key = "${ module.tls.kubelet_key }"
+  proxy = "${ module.tls.proxy }"
+  proxy_key = "${ module.tls.proxy_key }"
+  bootstrap = "${ module.master_templates.bootstrap }"
   cloud_config_file = ""
 
-  dns_conf = ""
+  dns_conf = "${ module.dns.dns_conf }"
+  dns_dhcp = ""
 
 }

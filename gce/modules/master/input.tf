@@ -1,4 +1,6 @@
 variable "name" {}
+variable "region" {}
+variable "zone" {}
 variable "master_vm_size" {}
 variable "master_node_count" {}
 variable "image_id" {}

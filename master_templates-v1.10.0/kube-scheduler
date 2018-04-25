@@ -1,3 +1,0 @@
-SCHEDULER_OPTS="--leader-elect=true \
---kubeconfig=/var/lib/kube-scheduler/kubeconfig \
---v=2"

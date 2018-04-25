@@ -86,52 +86,8 @@ Yes. Resource limiting includes
 - Control over the number of cloud-provider’s provisioned
 - Control the cloud providers being used
 
+
 ### Does the cross-cloud project use Jenkins or CircleCI?
 No it does not use Jenkins or CircleCI.
 
-The current implementation uses GitLab runners.
-
-## What does typical CI environment look like?
-
-### How many instances are needed? 
-- 2 clusters, 8 nodes (total)
-- 3 master nodes  
-- 1 worker node
-  - We are using 1 worker node because ONAP requires 1, but 3 worker nodes would be ideal in the future
-
-### How big are the instances?
-- 64GB of RAM per node
-- 16-cores
-
-### How much memory is used?
-- Full usage, but we can shrink master nodes to use 10 CPU minimum
-- Workers need to be 64 GB at least (ONAP needs that minimum to deploy)
-
-## How do I add a new cloud? 
-- Determine if a terraform module will work for the new cloud environment
-- Review how terraform templates were built
-- Look at how to do auth
-- Create sub-folder for the new cloud environment
-
-### Are there any examples of how to add a new cloud?
-- For reference, see OpenStack’s PRs:
-  - https://github.com/crosscloudci/cross-cloud/pull/111
-  - https://github.com/crosscloudci/cross-cloud/pull/128 
-  - https://github.com/crosscloudci/cross-cloud/pull/134 
-
-### What does success for the new cloud look like?
-- New cloud can run terraform apply on cluster, 
-- Cloud resources are successfully allocated,
-- K8s is deployed installed to provisioned systems,
-- Installing helm to k8s cluster is successful,
-- New cloud can run K8s conformance tests
-
-### Are K8s clusters showing on internet?
-- Yes, they have public IPs
-- Store public IPs, query DNS records, find end point
-
-### References: 
-https://github.com/crosscloudci/cross-cloud/blob/master/README.md
-https://github.com/crosscloudci/cross-cloud/pull/111
-https://github.com/crosscloudci/cross-cloud/pull/128 
-https://github.com/crosscloudci/cross-cloud/pull/134 
+The current implementation uses Gitlab runners.

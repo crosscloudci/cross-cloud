@@ -24,7 +24,7 @@ resource "azurerm_network_interface" "cncf" {
 
 resource "azurerm_virtual_machine" "cncf" {
   count = "${ var.master_node_count }"
-  name                  = "${ var.hostname }-${ count.index + 1 }.${ var.hostname_suffix }"
+  name                  = "${ var.name }-master${ count.index + 1 }"
   location              = "${ var.location }"
   availability_set_id   = "${ var.availability_id }"
   resource_group_name = "${ var.name }"
@@ -46,7 +46,7 @@ resource "azurerm_virtual_machine" "cncf" {
   }
 
   os_profile {
-    computer_name  = "${ var.hostname }-${ count.index + 1 }.${ var.hostname_suffix }"
+    computer_name  = "${ var.name }-master${ count.index + 1 }"
     admin_username = "${ var.admin_username }"
     admin_password = "Password1234!"
     custom_data = "${ element(split("`", var.master_cloud_init), count.index) }"

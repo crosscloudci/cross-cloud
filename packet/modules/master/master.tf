@@ -1,6 +1,6 @@
 resource "packet_device" "masters" {
+  hostname         = "${ var.name }-master${ count.index + 1 }"
   count            = "${ var.master_node_count }"
-  hostname         = "${ var.hostname }-${ count.index + 1 }.${ var.hostname_suffix }"
   facility         = "${ var.packet_facility }"
   project_id       = "${ var.packet_project_id }"
   plan             = "${ var.packet_master_device_plan }"

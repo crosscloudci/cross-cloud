@@ -69,6 +69,7 @@ before_script:
   variables:
     CLOUD: MUST BE SET
   script:
+    - sleep 1000000000
     - /cncf/provision.sh ${CLOUD}-deploy ${CLOUD}${DEPLOYMENT_SHA}${ENVIRONMENT} s3 ${CLOUD}
     - >
       if [ $CLOUD == "gke" ]; then

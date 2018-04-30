@@ -69,6 +69,12 @@ before_script:
   variables:
     CLOUD: MUST BE SET
   script:
+    - >
+      if [ $CLOUD == "packet" ]; then
+         echo "provision k8s on packet"
+      else
+       exit 1
+      fi
     - /cncf/provision.sh ${CLOUD}-deploy ${ENVIRONMENT}${DEPLOYMENT_SHA} s3 ${CLOUD}
     - >
       if [ $CLOUD == "gke" ]; then
@@ -109,6 +115,12 @@ before_script:
   variables:
     CLOUD: MUST BE SET
   script:
+    - >
+      if [ $CLOUD == "packet" ]; then
+         echo "provision k8s on packet"
+      else
+       exit 1
+      fi
     - /cncf/provision.sh ${CLOUD}-destroy ${ENVIRONMENT}${DEPLOYMENT_SHA} s3 ${CLOUD} 
 
 # Build-Source VARs

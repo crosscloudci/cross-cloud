@@ -14,7 +14,7 @@ variable "worker_node_count" { default = "1" }
 variable "packet_project_id" {} # required for now
 variable "packet_api_key" {}
 # https://www.packet.net/locations/
-variable "packet_facility" { default = "ewr1" }
+variable "packet_facility" { default = "sjc1" }
 variable "packet_billing_cycle" { default = "hourly" }
 
 

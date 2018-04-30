@@ -69,7 +69,7 @@ before_script:
   variables:
     CLOUD: MUST BE SET
   script:
-    - /cncf/provision.sh ${CLOUD}-deploy ${DEPLOYMENT_SHA}${ENVIRONMENT} s3 ${CLOUD}
+    - /cncf/provision.sh ${CLOUD}-deploy ${CLOUD}${DEPLOYMENT_SHA}${ENVIRONMENT} s3 ${CLOUD}
     - >
       if [ $CLOUD == "gke" ]; then
          echo "kube-dns is already deployed, skipping"
@@ -109,7 +109,7 @@ before_script:
   variables:
     CLOUD: MUST BE SET
   script:
-    - /cncf/provision.sh ${CLOUD}-destroy ${DEPLOYMENT_SHA}${ENVIRONMENT} s3 ${CLOUD} 
+    - /cncf/provision.sh ${CLOUD}-destroy ${CLOUD}${DEPLOYMENT_SHA}${ENVIRONMENT} s3 ${CLOUD} 
 
 # Build-Source VARs
 Build-Source:

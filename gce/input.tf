@@ -3,7 +3,7 @@ variable "name" { default = "gce" }
 variable "bastion_vm_size"   { default = "n1-standard-1" }
 variable "master_vm_size"    { default = "n1-standard-1" }
 variable "worker_vm_size"    { default = "n1-standard-16" }
-variable "image_id"          { default = "coreos-stable-1298-7-0-v20170401"}
+variable "image_id"          { default = "coreos-stable-1745-5-0-v20180531"}
 variable "disk_size"         { default = "50" }
 
 variable "cidr" { default = "10.240.0.0/16" }

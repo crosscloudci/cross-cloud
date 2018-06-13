@@ -35,7 +35,7 @@ data "template_file" "virtual_machine_network_content" {
 
   vars = {
     address = "${cidrhost(var.virtual_machine_network_address, var.virtual_machine_ip_address_start + count.index)}"
-    mask    = "${ element(split("/", var.virtual_machine_network_address), count.index) }"
+    mask    = "${ element(split("/", var.virtual_machine_network_address), 1) }"
     gateway = "${var.virtual_machine_gateway}"
     dns     = "${join("\n", formatlist("DNS=%s", var.virtual_machine_dns_servers))}"
   }
@@ -49,23 +49,10 @@ data "ignition_networkd_unit" "virtual_machine_network_unit" {
   content = "${data.template_file.virtual_machine_network_content.*.rendered[count.index]}"
 }
 
-// virtual_machine_hostname_file defines the content of the system
-// hostname file, in other words, it sets the hostname.
-data "ignition_file" "virtual_machine_hostname_file" {
-  count    = "${ var.count }"
-  filesystem = "root"
-  path       = "/etc/hostname"
-  mode       = "420"
-
-  content {
-    content = "${var.virtual_machine_name_prefix}${count.index}.${var.virtual_machine_domain}"
-  }
-}
 
 // ignition_config creates the CoreOS Ignition config for use on the virtual machines.
 data "ignition_config" "ignition_config" {
   count    = "${ var.count }"
-  files    = ["${data.ignition_file.virtual_machine_hostname_file.*.id[count.index]}"]
   networkd = ["${data.ignition_networkd_unit.virtual_machine_network_unit.*.id[count.index]}"]
 }
 
@@ -75,4 +62,6 @@ data "ct_config" "master" {
   content      = "${ element(split("`",  var.cloud_init), count.index) }"
   platform     = "custom"
   pretty_print = false
+
+  snippets = ["${data.ignition_config.ignition_config.*.rendered[count.index]}",]
 }

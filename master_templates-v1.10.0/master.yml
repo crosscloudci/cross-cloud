@@ -280,6 +280,7 @@ storage:
         inline: |
           ${ dns_dhcp }
 
+
 passwd:
   users:
     - name: core

@@ -160,8 +160,9 @@ docker run \
   -e VSPHERE_SERVER=$VSPHERE_SERVER \
   -e VSPHERE_USER=$VSPHERE_USER \
   -e VSPHERE_PASSWORD=$VSPHERE_PASSWORD \
-  -e AWS_ACCESS_KEY=$AWS_ACCESS_KEY \
-  -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY \
+  -e AWS_ACCESS_KEY_ID=$VSPHERE_AWS_ACCESS_KEY_ID \
+  -e AWS_SECRET_ACCESS_KEY=$VSPHERE_AWS_SECRET_ACCESS_KEY \
+  -e AWS_REGION=${VSPHERE_AWS_REGION:-us-west-2} \
   -ti registry.cncf.ci/cncf/cross-cloud/provisioning:ci-stable-v0-2-0
 ```
 
@@ -218,8 +219,9 @@ VMware Cloud (VMC) on AWS:
  * -e VSPHERE_SERVER=1.2.3.4
  * -e VSPHERE_USER=admin
  * -e VSPHERE_PASSWORD=notblank
- * -e AWS_ACCESS_KEY_ID=secret
- * -e AWS_SECRET_ACCESS_KEY=secret
+ * -e VSPHERE_AWS_ACCESS_KEY_ID=public
+ * -e VSPHERE_AWS_SECRET_ACCESS_KEY=secret
+ * -e VSPHERE_AWS_REGION=us-west-2
 
 #### Kubernetes Cluster Options
 Custom Configuration options for the Kubernetes Cluster:

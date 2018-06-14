@@ -72,8 +72,9 @@ vSphere is running on VMC on AWS:
 
 | Name | Description |
 |------|-------------|
-| `AWS_ACCESS_KEY ` | An AWS account used to deploy/destroy an ELB |
-| `AWS_SECRET_ACCESS_KEY ` | The access key for `AWS_ACCESS_KEY` |
+| `VSPHERE_AWS_ACCESS_KEY_ID` | An AWS account used to deploy/destroy an ELB |
+| `VSPHERE_AWS_SECRET_ACCESS_KEY` | The secret key for `VSPHERE_AWS_ACCESS_KEY_ID` |
+| `VSPHERE_AWS_REGION ` | The AWS region. Defaults to `us-west-2` |
 
 ### Deploy
 The following command can be used to provision a Cross-Cloud environment
@@ -100,8 +101,9 @@ docker run \
   -e VSPHERE_SERVER=$VSPHERE_SERVER \
   -e VSPHERE_USER=$VSPHERE_USER \
   -e VSPHERE_PASSWORD=$VSPHERE_PASSWORD \
-  -e AWS_ACCESS_KEY=$AWS_ACCESS_KEY \
-  -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY \
+  -e AWS_ACCESS_KEY_ID=$VSPHERE_AWS_ACCESS_KEY_ID \
+  -e AWS_SECRET_ACCESS_KEY=$VSPHERE_AWS_SECRET_ACCESS_KEY \
+  -e AWS_REGION=${VSPHERE_AWS_REGION:-us-west-2} \
   -e CLOUD=vsphere \
   -e COMMAND=deploy \
   -e NAME=cross-cloud \
@@ -134,8 +136,9 @@ docker run \
   -e VSPHERE_SERVER=$VSPHERE_SERVER \
   -e VSPHERE_USER=$VSPHERE_USER \
   -e VSPHERE_PASSWORD=$VSPHERE_PASSWORD \
-  -e AWS_ACCESS_KEY=$AWS_ACCESS_KEY \
-  -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY \
+  -e AWS_ACCESS_KEY_ID=$VSPHERE_AWS_ACCESS_KEY_ID \
+  -e AWS_SECRET_ACCESS_KEY=$VSPHERE_AWS_SECRET_ACCESS_KEY \
+  -e AWS_REGION=${VSPHERE_AWS_REGION:-us-west-2} \
   -e CLOUD=vsphere \
   -e COMMAND=destroy \
   -e NAME=cross-cloud \

@@ -124,7 +124,7 @@ module "dns" {
   cloud_provider = "${ var.cloud_provider }"
 
   master_ips = "${ module.master.master_ips }"
-  public_master_ips = "${ module.loadbalancer.fips }"
+  public_master_ips = "${ module.lb.host_name }"
   worker_ips = "${ module.worker.worker_ips }"
 
   master_node_count = "${ var.master_node_count }"
@@ -227,6 +227,7 @@ module "kubeconfig" {
 }
 
 
-module "loadbalancer" {
-   source = "./modules/loadbalancer"
+module "lb" {
+  source = "./modules/lb"
+  master_ips = ["${split(",", module.master.master_ips)}"]
 }

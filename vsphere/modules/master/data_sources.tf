@@ -62,6 +62,4 @@ data "ct_config" "master" {
   content      = "${ element(split("`",  var.cloud_init), count.index) }"
   platform     = "custom"
   pretty_print = false
-
-  snippets = ["${data.ignition_config.ignition_config.*.rendered[count.index]}",]
 }

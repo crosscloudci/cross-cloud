@@ -378,5 +378,39 @@ elif [ "$3" = "file" ]; then
               -backend-config "path=/cncf/data/${TF_VAR_name}/terraform.tfstate" 
 time terraform destroy -force ${DIR}/ibm
 fi
+
+# Begin vSphere
+elif [[ "$1" = "vsphere-deploy" || "$1" = "vsphere-destroy" ]] ; then
+    cd ${DIR}/vsphere
+
+    # initialize based on the config type
+    if [ "$3" = "s3" ] ; then
+        cp ../s3-backend.tf .
+        terraform init \
+            -backend-config "bucket=${AWS_BUCKET}" \
+            -backend-config "key=vsphere-${TF_VAR_name}" \
+            -backend-config "region=${AWS_DEFAULT_REGION}"
+    elif [ "$3" = "file" ] ; then
+        cp ../file-backend.tf .
+        terraform init -backend-config "path=/cncf/data/${TF_VAR_name}/terraform.tfstate"
+    fi
+
+    # deploy/destroy implementations
+    if [ "$1" = "vsphere-deploy" ] ; then
+        terraform taint -module=kubeconfig null_resource.kubeconfig || true
+        time terraform apply -auto-approve ${DIR}/vsphere
+    elif [ "$1" = "vsphere-destroy" ] ; then
+        time terraform destroy -force ${DIR}/vsphere || true
+        # Exit after destroying resources as further commands cause hang
+        exit
+    fi
+
+    export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
+    _retry "❤ Trying to connect to cluster with kubectl" kubectl get cs
+    _retry "❤ Ensure that the kube-system namespaces exists" kubectl get namespace kube-system
+    _retry "❤ Ensure that ClusterRoles are available" kubectl get ClusterRole.v1.rbac.authorization.k8s.io
+    _retry "❤ Ensure that ClusterRoleBindings are available" kubectl get ClusterRoleBinding.v1.rbac.authorization.k8s.io
+
 fi
+# End vSphere
  

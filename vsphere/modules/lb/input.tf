@@ -1,15 +1,22 @@
-variable lb_port {
-  default = "6443"
-}
+# Please see ../input_lb.tf for documentation on the variables
+# defined below.
 
-variable subnet_id {
-  default = "subnet-fdee56b6"
-}
+variable "count" {}
 
-variable "vpc_id" {
-  default = "vpc-8f7048f6"
-}
+variable "lb_port" {}
 
-variable "master_ips" {
+variable "lb_subnet_id" {}
+
+variable "lb_target_ips" {
   type = "list"
 }
+
+variable "lb_target_port" {}
+
+variable "lb_vpc_id" {}
+
+variable "vsphere_aws_access_key_id" {}
+
+variable "vsphere_aws_secret_access_key" {}
+
+variable "vsphere_aws_region" {}

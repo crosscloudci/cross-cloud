@@ -225,9 +225,3 @@ module "kubeconfig" {
   client = "${ module.tls.admin }"
   client_key = "${ module.tls.admin_key }"
 }
-
-
-module "lb" {
-  source = "./modules/lb"
-  master_ips = ["${split(",", module.master.master_ips)}"]
-}

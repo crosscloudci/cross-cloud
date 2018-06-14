@@ -383,6 +383,13 @@ fi
 elif [[ "$1" = "vsphere-deploy" || "$1" = "vsphere-destroy" ]] ; then
     cd ${DIR}/vsphere
 
+    export TF_VAR_vsphere_server=$VSPHERE_SERVER
+    export TF_VAR_vsphere_user=$VSPHERE_USER
+    export TF_VAR_vsphere_password=$VSPHERE_PASSWORD
+    export TF_VAR_vsphere_aws_access_key_id=$VSPHERE_AWS_ACCESS_KEY_ID
+    export TF_VAR_vsphere_aws_secret_access_key=$VSPHERE_AWS_SECRET_ACCESS_KEY
+    export TF_VAR_vsphere_aws_region=$VSPHERE_AWS_REGION
+
     # initialize based on the config type
     if [ "$3" = "s3" ] ; then
         cp ../s3-backend.tf .

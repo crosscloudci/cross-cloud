@@ -47,10 +47,15 @@ RUN mkdir -p $GOPATH/src/github.com/terraform-providers \
 && cd $GOPATH/src/github.com/terraform-providers/terraform-provider-ibm \
 && make build
 
+# Install the CT Provider
+RUN curl -sSL https://github.com/coreos/terraform-provider-ct/releases/download/v0.3.0/terraform-provider-ct-v0.3.0-linux-amd64.tar.gz | \
+    tar -xz -C /usr/local/bin --strip-components 1 --no-same-owner
+
 # Install Gzip+base64 & ETCD Provider
 RUN go get -u github.com/jakexks/terraform-provider-gzip && \
     go get -u github.com/paperg/terraform-provider-etcdiscovery && \
   echo providers { >> ~/.terraformrc && \
+  echo '    ct = "/usr/local/bin/terraform-provider-ct"' >> ~/.terraformrc && \
   echo '    gzip = "/go/bin/terraform-provider-gzip"' >> ~/.terraformrc && \
   echo '    etcdiscovery = "/go/bin/terraform-provider-etcdiscovery"' >> ~/.terraformrc && \
   echo '    ibm = "/go/bin/terraform-provider-ibm"' >> ~/.terraformrc && \
@@ -68,6 +73,7 @@ COPY gce/ /cncf/gce/
 COPY gke/ /cncf/gke/
 COPY openstack/ /cncf/openstack/
 COPY packet/ /cncf/packet/
+COPY vsphere/ /cncf/vsphere/
 
 COPY bootstrap/ /cncf/bootstrap/
 COPY dns/ /cncf/dns/

@@ -1,7 +1,7 @@
 # lb_port is the port on which the load-balancer listens for incoming 
 # connections
 variable "lb_port" {
-  default = "6443"
+  default = "443"
 }
 
 # lb_subnet_id is the ID of the subnet to which the load balancer is
@@ -13,7 +13,7 @@ variable "lb_subnet_id" {
 # lb_target_port is the port on which the back-end targets listen for
 # incoming connections from the load balancer
 variable "lb_target_port" {
-  default = "6443"
+  default = "443"
 }
 
 # lb_vpc_id is ID of the VPC to which the load balancer is attached

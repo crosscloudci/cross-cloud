@@ -4,12 +4,20 @@ provider "aws" {
   region     = "${var.vsphere_aws_region}"
 }
 
+resource "aws_eip" "xapi" {
+  vpc = true
+}
+
 resource "aws_lb" "xapi" {
   name_prefix        = "xapi-"
   load_balancer_type = "network"
   internal           = false
   ip_address_type    = "ipv4"
-  subnets            = ["${var.lb_subnet_id}"]
+
+  subnet_mapping {
+    subnet_id     = "${var.lb_subnet_id}"
+    allocation_id = "${aws_eip.xapi.id}"
+  }
 }
 
 resource "aws_lb_target_group" "xapi" {

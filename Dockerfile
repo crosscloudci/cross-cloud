@@ -48,8 +48,12 @@ RUN mkdir -p $GOPATH/src/github.com/terraform-providers \
 && make build
 
 # Install the CT Provider
-RUN curl -sSL https://github.com/coreos/terraform-provider-ct/releases/download/v0.3.0/terraform-provider-ct-v0.3.0-linux-amd64.tar.gz | \
-    tar -xz -C /usr/local/bin --strip-components 1 --no-same-owner
+RUN mkdir -p $GOPATH/src/github.com/coreos && \
+    cd $GOPATH/src/github.com/coreos && \
+    git clone https://github.com/akutz/terraform-provider-ct.git && \
+    cd terraform-provider-ct && \
+    git checkout feature/local-inline-base64-content && \
+    go build -o /usr/local/bin/terraform-provider-ct
 
 # Install Gzip+base64 & ETCD Provider
 RUN go get -u github.com/jakexks/terraform-provider-gzip && \

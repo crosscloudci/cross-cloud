@@ -2,6 +2,7 @@ module "lb" {
   source = "./modules/lb"
 
   count = "${var.master_node_count}"
+  name  = "${var.name}"
 
   lb_port        = "${var.lb_port}"
   lb_subnet_id   = "${var.lb_subnet_id}"

@@ -6,6 +6,10 @@ provider "aws" {
 
 resource "aws_eip" "xapi" {
   vpc = true
+
+  tags {
+    Environment = "${var.name}"
+  }
 }
 
 resource "aws_lb" "xapi" {
@@ -18,6 +22,10 @@ resource "aws_lb" "xapi" {
     subnet_id     = "${var.lb_subnet_id}"
     allocation_id = "${aws_eip.xapi.id}"
   }
+
+  tags {
+    Environment = "${var.name}"
+  }
 }
 
 resource "aws_lb_target_group" "xapi" {
@@ -26,6 +34,10 @@ resource "aws_lb_target_group" "xapi" {
   port        = "${var.lb_target_port}"
   protocol    = "TCP"
   vpc_id      = "${var.lb_vpc_id}"
+
+  tags {
+    Environment = "${var.name}"
+  }
 }
 
 resource "aws_lb_target_group_attachment" "xapi" {

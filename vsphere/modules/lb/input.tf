@@ -1,6 +1,8 @@
 # Please see ../input_lb.tf for documentation on the variables
 # defined below.
 
+variable "name" {}
+
 variable "count" {}
 
 variable "lb_port" {}

@@ -65,4 +65,3 @@ variable "virtual_machine_gateway" {
 variable "virtual_machine_dns_servers" {
   type = "list"
 }
-

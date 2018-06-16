@@ -43,7 +43,6 @@ data "ignition_networkd_unit" "virtual_machine_network_unit" {
   content = "${data.template_file.virtual_machine_network_content.*.rendered[count.index]}"
 }
 
-
 // ignition_config creates the CoreOS Ignition config for use on the virtual machines.
 data "ignition_config" "ignition_config" {
   count    = "${ var.count }"

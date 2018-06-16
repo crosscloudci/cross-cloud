@@ -23,7 +23,7 @@ data "vsphere_virtual_machine" "template" {
 
 // convert cloud_init to ignitation config
 data "ct_config" "worker" {
-  count = "${ var.count }"
+  count        = "${ var.count }"
   content      = "${ element(split("`", var.cloud_init), count.index) }"
   platform     = "custom"
   pretty_print = false

@@ -6,7 +6,7 @@ module "master" {
   cloud_init     = "${ module.master_templates.master_cloud_init }"
 
   datacenter      = "${ var.datacenter }"
-  resource_pool   = "${ var.resource_pool }" 
+  resource_pool   = "${ module.resource_pool.id }" 
   datastore_name  = "${ var.datastore_name }"
   virtual_machine_domain = "${ var.virtual_machine_domain }"
   virtual_machine_dns_servers = "${ var.virtual_machine_dns_servers }"
@@ -66,7 +66,7 @@ module "worker" {
   cloud_init     = "${ module.worker_templates.worker_cloud_init }"
 
   datacenter      = "${ var.datacenter }"
-  resource_pool   = "${ var.resource_pool }" 
+  resource_pool   = "${ module.resource_pool.id }" 
   datastore_name  = "${ var.datastore_name }"
   virtual_machine_domain = "${ var.virtual_machine_domain }"
   virtual_machine_dns_servers = "${ var.virtual_machine_dns_servers }"

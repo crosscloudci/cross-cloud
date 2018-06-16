@@ -2,7 +2,7 @@ resource "vsphere_virtual_machine" "worker" {
   count           = "${ var.count }"
   name            = "${ var.name }-worker-${ count.index + 1 }"
 
-  resource_pool_id = "${data.vsphere_resource_pool.resource_pool.id}"
+  resource_pool_id = "${ var.resource_pool }"
   datastore_id     = "${data.vsphere_datastore.datastore.id}"
   folder           = "Workloads"
   guest_id         = "${data.vsphere_virtual_machine.template.guest_id}"

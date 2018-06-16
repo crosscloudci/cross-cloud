@@ -3,12 +3,6 @@ data "vsphere_datacenter" "datacenter" {
   name = "${var.datacenter}"
 }
 
-// resource_pool looks up the resource pool to place the virtual machines in.
-data "vsphere_resource_pool" "resource_pool" {
-  name          = "${var.resource_pool}"
-  datacenter_id = "${data.vsphere_datacenter.datacenter.id}"
-}
-
 // datastore looks up the datastore to place the virtual machines in.
 data "vsphere_datastore" "datastore" {
   name          = "${var.datastore_name}"

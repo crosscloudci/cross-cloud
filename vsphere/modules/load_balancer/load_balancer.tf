@@ -19,7 +19,7 @@ resource "aws_lb" "xapi" {
   ip_address_type    = "ipv4"
 
   subnet_mapping {
-    subnet_id     = "${var.lb_subnet_id}"
+    subnet_id     = "${var.subnet_id}"
     allocation_id = "${aws_eip.xapi.id}"
   }
 
@@ -31,9 +31,9 @@ resource "aws_lb" "xapi" {
 resource "aws_lb_target_group" "xapi" {
   name_prefix = "xapi-"
   target_type = "ip"
-  port        = "${var.lb_target_port}"
+  port        = "${var.target_port}"
   protocol    = "TCP"
-  vpc_id      = "${var.lb_vpc_id}"
+  vpc_id      = "${var.vpc_id}"
 
   tags {
     Environment = "${var.name}"
@@ -43,14 +43,14 @@ resource "aws_lb_target_group" "xapi" {
 resource "aws_lb_target_group_attachment" "xapi" {
   count             = "${var.count}"
   target_group_arn  = "${aws_lb_target_group.xapi.arn}"
-  target_id         = "${element(var.lb_target_ips, count.index)}"
-  port              = "${var.lb_target_port}"
+  target_id         = "${element(var.target_ips, count.index)}"
+  port              = "${var.target_port}"
   availability_zone = "all"
 }
 
 resource "aws_lb_listener" "xapi" {
   load_balancer_arn = "${aws_lb.xapi.arn}"
-  port              = "${var.lb_port}"
+  port              = "${var.port}"
   protocol          = "TCP"
 
   default_action {

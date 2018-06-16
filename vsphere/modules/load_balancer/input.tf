@@ -5,17 +5,17 @@ variable "name" {}
 
 variable "count" {}
 
-variable "lb_port" {}
+variable "port" {}
 
-variable "lb_subnet_id" {}
+variable "subnet_id" {}
 
-variable "lb_target_ips" {
+variable "target_ips" {
   type = "list"
 }
 
-variable "lb_target_port" {}
+variable "target_port" {}
 
-variable "lb_vpc_id" {}
+variable "vpc_id" {}
 
 variable "vsphere_aws_access_key_id" {}
 

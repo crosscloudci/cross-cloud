@@ -83,6 +83,7 @@ to vSphere:
 #### Deploy to vSphere
 ```shell
 docker run \
+  --rm \
   -v $(pwd)/data:/cncf/data \
   -e VSPHERE_SERVER=$VSPHERE_SERVER \
   -e VSPHERE_USER=$VSPHERE_USER \
@@ -97,6 +98,7 @@ docker run \
 #### Deploy to VMC on AWS
 ```shell
 docker run \
+  --rm \
   -v $(pwd)/data:/cncf/data \
   -e VSPHERE_SERVER=$VSPHERE_SERVER \
   -e VSPHERE_USER=$VSPHERE_USER \
@@ -118,6 +120,7 @@ environment deployed to VMC on AWS:
 #### Destroy on vSphere
 ```shell
 docker run \
+  --rm \
   -v $(pwd)/data:/cncf/data \
   -e VSPHERE_SERVER=$VSPHERE_SERVER \
   -e VSPHERE_USER=$VSPHERE_USER \
@@ -132,6 +135,7 @@ docker run \
 #### Destroy on VMC on AWS
 ```shell
 docker run \
+  --rm \
   -v $(pwd)/data:/cncf/data \
   -e VSPHERE_SERVER=$VSPHERE_SERVER \
   -e VSPHERE_USER=$VSPHERE_USER \

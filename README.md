@@ -132,6 +132,7 @@ A vSphere host and credentials are required:
 **Run the following to provision a vSphere cluster:**
 ``` bash
 docker run \
+  --rm \
   -v $(pwd)/data:/cncf/data \
   -e NAME=cross-cloud \
   -e CLOUD=vsphere \
@@ -152,6 +153,7 @@ as well.
 **Run the following to provision a vSphere cluster:**
 ``` bash
 docker run \
+  --rm \
   -v $(pwd)/data:/cncf/data \
   -e NAME=cross-cloud \
   -e CLOUD=vsphere \

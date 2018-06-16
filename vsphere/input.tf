@@ -13,6 +13,55 @@ variable "vsphere_server" {}
 variable "vsphere_user" {}
 variable "vsphere_password" {}
 
+# AWS Auth Settings for the Load Balancer & Elastic IP
+# This should be the account linked to the VMC SDDC.
+variable "vsphere_aws_access_key_id" {}
+
+variable "vsphere_aws_secret_access_key" {}
+
+variable "vsphere_aws_region" {
+  default = "us-west-2"
+}
+
+# vSphere Resource Pool Settings
+
+# resource_pool_cpu_limit is the limit in MHz of CPU that
+# an environment can consume
+variable "resource_pool_cpu_limit" {
+  default = "128000"
+}
+
+# resource_pool_memory_limit is the limit in MB of memory that
+# an environment can consume
+variable "resource_pool_memory_limit" {
+  default = "262144"
+}
+
+# AWS Load Balancer & Elastic IP Settings
+
+# lb_port is the port on which the load-balancer listens for incoming 
+# connections
+variable "lb_port" {
+  default = "443"
+}
+
+# lb_subnet_id is the ID of the subnet to which the load balancer is
+# attached
+variable "lb_subnet_id" {
+  default = "subnet-fdee56b6"
+}
+
+# lb_target_port is the port on which the back-end targets listen for
+# incoming connections from the load balancer
+variable "lb_target_port" {
+  default = "443"
+}
+
+# lb_vpc_id is ID of the VPC to which the load balancer is attached
+variable "lb_vpc_id" {
+  default = "vpc-8f7048f6"
+}
+
 # DNS Configuration
 variable "etcd_server" {
   default = "147.75.69.23:2379"

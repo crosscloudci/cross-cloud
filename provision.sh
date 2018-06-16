@@ -400,12 +400,24 @@ elif [[ "$CLOUD_CMD" = "vsphere-deploy" || \
 
     cd ${DIR}/vsphere
 
-    export TF_VAR_vsphere_server=$VSPHERE_SERVER
-    export TF_VAR_vsphere_user=$VSPHERE_USER
-    export TF_VAR_vsphere_password=$VSPHERE_PASSWORD
-    export TF_VAR_vsphere_aws_access_key_id=$VSPHERE_AWS_ACCESS_KEY_ID
-    export TF_VAR_vsphere_aws_secret_access_key=$VSPHERE_AWS_SECRET_ACCESS_KEY
-    export TF_VAR_vsphere_aws_region=$VSPHERE_AWS_REGION
+    if [ -n "$VSPHERE_SERVER" ]; then
+        export TF_VAR_vsphere_server=$VSPHERE_SERVER
+    fi
+    if [ -n "$VSPHERE_USER" ]; then
+        export TF_VAR_vsphere_user=$VSPHERE_USER
+    fi
+    if [ -n "$VSPHERE_PASSWORD" ]; then
+        export TF_VAR_vsphere_password=$VSPHERE_PASSWORD
+    fi
+    if [ -n "$VSPHERE_AWS_ACCESS_KEY_ID" ]; then
+        export TF_VAR_vsphere_aws_access_key_id=$VSPHERE_AWS_ACCESS_KEY_ID
+    fi
+    if [ -n "$VSPHERE_AWS_SECRET_ACCESS_KEY" ]; then
+        export TF_VAR_vsphere_aws_secret_access_key=$VSPHERE_AWS_SECRET_ACCESS_KEY
+    fi
+    if [ -n "$VSPHERE_AWS_REGION" ]; then
+        export TF_VAR_vsphere_aws_region=$VSPHERE_AWS_REGION
+    fi
 
     # initialize based on the config type
     if [ "$BACKEND" = "s3" ] ; then

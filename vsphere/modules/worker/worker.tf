@@ -4,7 +4,7 @@ resource "vsphere_virtual_machine" "worker" {
 
   resource_pool_id = "${ var.resource_pool }"
   datastore_id     = "${data.vsphere_datastore.datastore.id}"
-  folder           = "Workloads"
+  folder           = "${var.folder_path}"
   guest_id         = "${data.vsphere_virtual_machine.template.guest_id}"
   scsi_type        = "${data.vsphere_virtual_machine.template.scsi_type}"
 

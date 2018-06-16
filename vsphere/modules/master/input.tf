@@ -17,6 +17,12 @@ variable "datastore_name" {
   type = "string"
 }
 
+// folder_path is the path of the folder in which the VM
+// is created
+variable "folder_path" {
+  type = "string"
+}
+
 // The name of the network to use.
 variable "network_name" {
   type = "string"

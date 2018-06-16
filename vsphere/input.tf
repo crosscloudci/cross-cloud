@@ -13,7 +13,7 @@ variable "discovery_nameserver" { default = "147.75.69.23" }
 
 # VM configuration
 variable "datacenter" { default = "SDDC-Datacenter" }
-variable "resource_pool" { default = "Compute-ResourcePool" }
+variable "resource_pool" { default = "CNCF Cross-Cloud" }
 variable "datastore_name" { default = "WorkloadDatastore" }
 variable "virtual_machine_domain" { default = "vsphere.local" }
 variable "virtual_machine_dns_servers" { default = [ "8.8.8.8",] }

@@ -20,9 +20,6 @@ provider "gzip" {
   compressionlevel = "BestCompression"
 }
 
-# coreos container-linux-config-transpiler
-provider "ct" {}
-
 data "template_file" "cloud_conf" {
   template = "${file( "${ path.module}/cloud.conf" )}"
 

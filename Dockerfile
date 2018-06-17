@@ -47,19 +47,10 @@ RUN mkdir -p $GOPATH/src/github.com/terraform-providers \
 && cd $GOPATH/src/github.com/terraform-providers/terraform-provider-ibm \
 && make build
 
-# Install the CT Provider
-RUN mkdir -p $GOPATH/src/github.com/coreos && \
-    cd $GOPATH/src/github.com/coreos && \
-    git clone https://github.com/akutz/terraform-provider-ct.git && \
-    cd terraform-provider-ct && \
-    git checkout feature/local-inline-base64-content && \
-    go build -o /usr/local/bin/terraform-provider-ct
-
 # Install Gzip+base64 & ETCD Provider
 RUN go get -u github.com/jakexks/terraform-provider-gzip && \
     go get -u github.com/paperg/terraform-provider-etcdiscovery && \
   echo providers { >> ~/.terraformrc && \
-  echo '    ct = "/usr/local/bin/terraform-provider-ct"' >> ~/.terraformrc && \
   echo '    gzip = "/go/bin/terraform-provider-gzip"' >> ~/.terraformrc && \
   echo '    etcdiscovery = "/go/bin/terraform-provider-etcdiscovery"' >> ~/.terraformrc && \
   echo '    ibm = "/go/bin/terraform-provider-ibm"' >> ~/.terraformrc && \

@@ -21,10 +21,11 @@ data "vsphere_virtual_machine" "template" {
   datacenter_id = "${data.vsphere_datacenter.datacenter.id}"
 }
 
-// convert cloud_init to ignitation config
-data "ct_config" "worker" {
-  count        = "${ var.count }"
-  content      = "${ element(split("`", var.cloud_init), count.index) }"
-  platform     = "custom"
-  pretty_print = false
+data "template_file" "ign" {
+  count    = "${var.count}"
+  template = "${file("${path.module}/../../ignition.json")}"
+
+  vars {
+    cloud_config = "${base64encode(element(split("`", var.cloud_init), count.index))}"
+  }
 }

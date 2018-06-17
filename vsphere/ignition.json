@@ -1,0 +1,33 @@
+{
+  "ignition": {
+    "config": {},
+    "timeouts": {},
+    "version": "2.1.0"
+  },
+  "networkd": {},
+  "passwd": {},
+  "storage": {
+    "files": [
+      {
+        "filesystem": "root",
+        "group": {},
+        "path": "/etc/cloud-config.yml",
+        "user": {},
+        "contents": {
+          "source": "data:;base64,${cloud_config}",
+          "verification": {}
+        },
+        "mode": 420
+      }
+    ]
+  },
+  "systemd": {
+    "units": [
+      {
+        "contents": "[Unit]\nType=oneshot\n\n[Service]\nExecStart=/usr/bin/coreos-cloudinit --from-file /etc/cloud-config.yml\n\n[Install]\nWantedBy=multi-user.target",
+        "enabled": true,
+        "name": "cloud-init-onboot.service"
+      }
+    ]
+  }
+}

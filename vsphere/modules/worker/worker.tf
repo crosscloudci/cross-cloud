@@ -26,7 +26,9 @@ resource "vsphere_virtual_machine" "worker" {
 
   vapp {
     properties {
-      "guestinfo.coreos.config.data" = "${ element(data.ct_config.worker.*.rendered, count.index) }"
+      "guestinfo.hostname"                    = "${var.name}-worker-${count.index + 1}"
+      "guestinfo.coreos.config.data"          = "${base64encode(element(data.template_file.ign.*.rendered, count.index))}"
+      "guestinfo.coreos.config.data.encoding" = "base64"
     }
   }
 }

@@ -49,10 +49,11 @@ data "ignition_config" "ignition_config" {
   networkd = ["${data.ignition_networkd_unit.virtual_machine_network_unit.*.id[count.index]}"]
 }
 
-// convert cloud_init to ignition config
-data "ct_config" "master" {
-  count        = "${ var.count }"
-  content      = "${ element(split("`",  var.cloud_init), count.index) }"
-  platform     = "custom"
-  pretty_print = false
+data "template_file" "ign" {
+  count    = "${var.count}"
+  template = "${file("${path.module}/../../ignition.json")}"
+
+  vars {
+    cloud_config = "${base64encode(element(split("`", var.cloud_init), count.index))}"
+  }
 }

@@ -1,3 +1,40 @@
+resource "gzip_me" "ca" {
+  input = "${ var.ca }"
+}
+
+resource "gzip_me" "kubelet_crt" {
+  input = "${ var.kubelet }"
+}
+
+resource "gzip_me" "kubelet_key" {
+  input = "${ var.kubelet_key }"
+}
+
+resource "gzip_me" "proxy" {
+  input = "${ var.proxy }"
+}
+
+resource "gzip_me" "proxy_key" {
+  input = "${ var.proxy_key }"
+}
+
+resource "gzip_me" "dns_conf" {
+  input = "${ var.dns_conf }"
+}
+
+resource "gzip_me" "dns_dhcp" {
+  input = "${ var.dns_dhcp }"
+}
+
+
+
+
+
+resource "gzip_me" "kubelet" {
+  count = "${ var.worker_node_count }"
+  input = "${ element(data.template_file.kubelet.*.rendered, count.index) }"
+}
+
 data "template_file" "kubelet" {
   count = "${ var.worker_node_count }"
   template = "${ file( "${ path.module }/kubelet" )}"
@@ -11,6 +48,15 @@ data "template_file" "kubelet" {
   }
 }
 
+
+
+
+
+
+resource "gzip_me" "kubelet_bootstrap_kubeconfig" {
+  input = "${ data.template_file.kubelet_bootstrap_kubeconfig.rendered }"
+}
+
 data "template_file" "kubelet_bootstrap_kubeconfig" {
   template = "${ file( "${ path.module }/kubeconfig" )}"
 
@@ -20,6 +66,14 @@ data "template_file" "kubelet_bootstrap_kubeconfig" {
     name = "service-account-context"
     user_authentication = "token: ${ var.bootstrap }"
   }
+}
+
+
+
+
+
+resource "gzip_me" "proxy_kubeconfig" {
+  input = "${ data.template_file.proxy_kubeconfig.rendered }"
 }
 
 data "template_file" "proxy_kubeconfig" {
@@ -33,6 +87,14 @@ data "template_file" "proxy_kubeconfig" {
   }
 }
 
+
+
+
+
+resource "gzip_me" "kube_proxy" {
+  count = "${ var.worker_node_count}"
+  input = "${ element(data.template_file.kube-proxy.*.rendered, count.index) }"
+}
 
 data "template_file" "kube-proxy" {
   count = "${ var.worker_node_count }"
@@ -48,6 +110,9 @@ data "template_file" "kube-proxy" {
 }
 
 
+
+
+
 data "template_file" "worker" {
   count = "${ var.worker_node_count }"
   template = "${ file( "${ path.module }/worker.yml" )}"
@@ -55,21 +120,21 @@ data "template_file" "worker" {
   vars {
     hostname = "${ var.hostname }-${ count.index + 1 }.${ var.hostname_suffix }"
     hostname_path = "${ var.hostname_path }"
-    cloud_config_file = "${ base64encode(var.cloud_config_file) }"
-    ca = "${ base64encode(var.ca) }"
-    kubelet_crt = "${ base64encode(var.kubelet) }"
-    kubelet_key = "${ base64encode(var.kubelet_key) }"
-    proxy = "${ base64encode(var.proxy) }"
-    proxy_key = "${ base64encode(var.proxy_key) }"
-    kubelet = "${ base64encode(element(data.template_file.kubelet.*.rendered, count.index)) }"
-    kubelet_bootstrap_kubeconfig = "${ base64encode(data.template_file.kubelet_bootstrap_kubeconfig.rendered) }"
-    kube_proxy = "${ base64encode(element(data.template_file.kube-proxy.*.rendered, count.index)) }"
-    proxy_kubeconfig = "${ base64encode(data.template_file.proxy_kubeconfig.rendered) }"
+    cloud_config_file = "${ base64gzip(var.cloud_config_file) }"
+    ca = "${ gzip_me.ca.output }"
+    kubelet_crt = "${ gzip_me.kubelet_crt.output }"
+    kubelet_key = "${ gzip_me.kubelet_key.output }"
+    proxy = "${ gzip_me.proxy.output }"
+    proxy_key = "${ gzip_me.proxy_key.output }"
+    kubelet = "${ element(gzip_me.kubelet.*.output, count.index) }"
+    kubelet_bootstrap_kubeconfig = "${ gzip_me.kubelet_bootstrap_kubeconfig.output }"
+    kube_proxy = "${ element(gzip_me.kube_proxy.*.output, count.index) }"
+    proxy_kubeconfig = "${ gzip_me.proxy_kubeconfig.output }"
     kubelet_artifact = "${ var.kubelet_artifact }"
     cni_artifact = "${ var.cni_artifact }"
     cni_plugins_artifact = "${ var.cni_plugins_artifact }"
-    dns_conf = "${ base64encode(var.dns_conf) }"
-    dns_dhcp = "${ base64encode(var.dns_dhcp) }"
+    dns_conf = "${ gzip_me.dns_conf.output }"
+    dns_dhcp = "${ gzip_me.dns_dhcp.output }"
 
   }
 }

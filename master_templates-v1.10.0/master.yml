@@ -1,26 +1,26 @@
 #cloud-config
 
 ---
-#coreos:
-systemd:
+coreos:
+
   units:
     - name: systemd-resolved.service
-      enable: true
+      command: restart
 
     - name: systemd-hostnamed.service
-      enable: true
+      command: restart
     
     - name: docker.service
-      enable: true
+      command: start
       drop-ins:
         - name: docker.conf
-          contents: |
+          content: |
             [Service]
             EnvironmentFile=/etc/default/docker
 
     - name: bins.service
-      enable: true
-      contents: |
+      command: start
+      content: |
         [Unit]
         Description=Download Binaries
         After=network-online.target
@@ -41,8 +41,8 @@ systemd:
         ExecStart=/usr/bin/chmod +x /home/kubernetes/bin/kube-scheduler
 
     - name: etcd.service
-      enable: true
-      contents: |
+      command: start
+      content: |
         [Unit]
         Description=etcd
         Documentation=https://github.com/coreos/etcd
@@ -72,8 +72,8 @@ systemd:
         WantedBy=multi-user.target
         
     - name: kube-apiserver.service
-      enable: true
-      contents: |
+      command: start
+      content: |
         [Unit]
         Description=Kubernetes API Server
         Documentation=https://github.com/kubernetes/kubernetes
@@ -91,8 +91,8 @@ systemd:
         WantedBy=multi-user.target
 
     - name: kube-controller-manager.service
-      enable: true
-      contents: |
+      command: start
+      content: |
         [Unit]
         Description=Kubernetes Controller Manager
         Documentation=https://github.com/kubernetes/kubernetes
@@ -110,8 +110,8 @@ systemd:
         WantedBy=multi-user.target
 
     - name: kube-scheduler.service
-      enable: true
-      contents: |
+      command: start
+      content: |
         [Unit]
         Description=Kubernetes Scheduler
         Documentation=https://github.com/kubernetes/kubernetes
@@ -131,158 +131,113 @@ systemd:
   update:
     reboot-strategy: etcd-lock
 
-storage:
-  files:
-    - path: ${ hostname_path }
-      filesystem: "root"
-      contents: 
-        inline: |
-          ${ hostname }
 
-    - path: /etc/default/docker
-      filesystem: "root"
-      contents: 
-        inline: |
-          DOCKER_OPTS="--ip-masq=false --iptables=false --log-driver=json-file --log-level=warn --log-opt=max-file=5 --log-opt=max-size=10m --storage-driver=overlay"
+write-files:
 
-    - path: /etc/default/kube-apiserver
-      filesystem: "root"
-      contents:
-        base64: true
-        inline: |
-          ${ kube_apiserver }
-  
-    - path: /etc/default/kube-controller-manager
-      filesystem: "root"
-      contents:
-        base64: true
-        inline: |
-          ${ kube_controller_manager }
+  - path: ${ hostname_path }
+    content: |
+      ${ hostname }
 
-    - path: /etc/default/kube-scheduler
-      filesystem: "root"
-      contents:
-        base64: true
-        inline: |
-          ${ kube_scheduler }
+  - path: /etc/default/docker
+    content: |
+      DOCKER_OPTS="--ip-masq=false --iptables=false --log-driver=json-file --log-level=warn --log-opt=max-file=5 --log-opt=max-size=10m --storage-driver=overlay"
 
-    - path: /var/lib/kube-controller-manager/kubeconfig
-      filesystem: "root"
-      contents:
-        base64: true
-        inline: |
-          ${ kube_controller_manager_kubeconfig }
+  - path: /etc/default/kube-apiserver
+    encoding: "gzip+base64"
+    content: |
+      ${ kube_apiserver }
 
-    - path: /var/lib/kube-scheduler/kubeconfig
-      filesystem: "root"
-      contents:
-        base64: true
-        inline: |
-          ${ kube_scheduler_kubeconfig }
+  - path: /etc/default/kube-controller-manager
+    encoding: "gzip+base64"
+    content: |
+      ${ kube_controller_manager }
 
-    - path: /etc/srv/kubernetes/pki/ca-certificates.crt
-      filesystem: "root"
-      mode: 0644
-      contents:
-        base64: true
-        inline: |
-          ${ ca }
+  - path: /etc/default/kube-scheduler
+    encoding: "gzip+base64"
+    content: |
+      ${ kube_scheduler }
 
-    - path: /etc/srv/kubernetes/pki/ca-certificates.key
-      filesystem: "root"
-      mode: 0644
-      contents:
-        base64: true
-        inline: |
-          ${ ca_key }
+  - path: /var/lib/kube-controller-manager/kubeconfig
+    encoding: "gzip+base64"
+    content: |
+      ${ kube_controller_manager_kubeconfig }
 
-    - path: /etc/srv/kubernetes/pki/apiserver.crt
-      filesystem: "root"
-      mode: 0644
-      contents:
-        base64: true
-        inline: |
-          ${ apiserver }
+  - path: /var/lib/kube-scheduler/kubeconfig
+    encoding: "gzip+base64"
+    content: |
+      ${ kube_scheduler_kubeconfig }
 
-    - path: /etc/srv/kubernetes/pki/apiserver.key
-      filesystem: "root"
-      mode: 0644
-      contents:
-        base64: true
-        inline: |
-          ${ apiserver_key }
+  - path: /etc/srv/kubernetes/pki/ca-certificates.crt
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ ca }
 
-    - path: /etc/srv/kubernetes/pki/controller.crt
-      filesystem: "root"
-      mode: 0644
-      contents:
-        base64: true
-        inline: |
-          ${ controller }
+  - path: /etc/srv/kubernetes/pki/ca-certificates.key
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ ca_key }
 
-    - path: /etc/srv/kubernetes/pki/controller.key
-      filesystem: "root"
-      mode: 0644
-      contents:
-        base64: true
-        inline: |
-          ${ controller_key }
+  - path: /etc/srv/kubernetes/pki/apiserver.crt
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ apiserver }
 
-    - path: /etc/srv/kubernetes/pki/scheduler.crt
-      filesystem: "root"
-      mode: 0644
-      contents:
-        base64: true
-        inline: |
-          ${ scheduler }
+  - path: /etc/srv/kubernetes/pki/apiserver.key
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ apiserver_key }
 
-    - path: /etc/srv/kubernetes/pki/scheduler.key
-      filesystem: "root"
-      mode: 0644
-      contents:
-        base64: true
-        inline: |
-          ${ scheduler_key }
+  - path: /etc/srv/kubernetes/pki/controller.crt
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ controller }
 
-    - path: /etc/srv/kubernetes/known_tokens.csv
-      filesystem: "root"
-      mode: 0644
-      contents:
-        base64: true
-        inline: |
-          ${ known_tokens_csv }
+  - path: /etc/srv/kubernetes/pki/controller.key
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ controller_key }
 
-    - path: /etc/srv/kubernetes/cloud-config
-      filesystem: "root"
-      mode: 0644
-      contents:
-        base64: true
-        inline: |
-          ${ cloud_config_file }
+  - path: /etc/srv/kubernetes/pki/scheduler.crt
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ scheduler }
 
-    - path: /etc/systemd/resolved.conf.d/dns.conf
-      filesystem: "root"
-      mode: 0644
-      user:
-        name: "root"
-      contents: 
-        base64: true
-        inline: |
-          ${ dns_conf }
+  - path: /etc/srv/kubernetes/pki/scheduler.key
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ scheduler_key }
 
-    - path: /etc/dhcp/dhclient.conf
-      filesystem: "root"
-      mode: 0644
-      user:
-        name: "root"
-      contents:
-        base64: true
-        inline: |
-          ${ dns_dhcp }
+  - path: /etc/srv/kubernetes/known_tokens.csv
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ known_tokens_csv }
 
+  - path: /etc/srv/kubernetes/cloud-config
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ cloud_config_file }
 
-passwd:
-  users:
-    - name: core
-      ssh_authorized_keys:
-        - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDdCb/l7v2Gu44VQTeiUH1sQAmXQpKkJvdQUS2YriO/ysx+adfimT34fkhX7ZbiAC6kNKHFGQ6sRLnudVRv65N4P5SkQ27EtjS1W7rGEykZHarunq6szg5gAEFqVOrucn5Xey+iqDwMvM9w8pqKbJYvDy/7SGfz/cDvnWEcqIoYLy66IUPIaNwN7/eR6bZ7ab3IMpAkaR9gWrl4vpFql0fEVJgisbC8oPuX7sREhpaaO4BSWwEUyn97NnAFbDRN1fsohaLJVYD2vA6oXet/J5w0eFEGEgYAZuBB1VqbUXD4FfLxf8MP7qFniuCcfZHgzO5cbyK4xjrpknkHkk+b7sgON/2olCqM7+XDfgeuSxZgN9OJTRl2TesNMvhbXgFpnWJxIAkH0mbByDUNo+TQK58khTkVDlB6BOchRKN5EzKpUdzlBxVGJie35xAIqcFQGBw7E1nWBgDgAA9KXz4/jAdn3e81aOHzIGmVf9glj65TQRb2qQ4Rr/VwPfyUHCQTeGL5ykcHid7QbvMMXSx6EEXV4zP21vL98eOnwnoTyLD4JrxkEUAJS+9yxB75Ck6DF2AVkF+hnW0BUmcHI0BnWyXdb9SLsGwG4W0O4jOVXmq/yz+I5JkkPX4OB/eugetbb3L1CPczG/N0RbXCykU7TJdLSpBV27P7ho9JfK+UWAC2Gw== luoh@luoh-m01.vmware.com"
+  - path: /etc/systemd/resolved.conf.d/dns.conf
+    permissions: 0644
+    encoding: "gzip+base64"
+    owner: root
+    content: |
+      ${ dns_conf }
+
+  - path: /etc/dhcp/dhclient.conf
+    permissions: 0644
+    encoding: "gzip+base64"
+    owner: root
+    content: |
+      ${ dns_dhcp }
+

@@ -1,26 +1,26 @@
 #cloud-config
 
 ---
-#coreos:
-systemd:
+coreos:
+
   units:
     - name: systemd-resolved.service
-      enable: true
+      command: restart
 
     - name: systemd-hostnamed.service
-      enable: true
+      command: restart
 
     - name: docker.service
-      enable: true
+      command: start
       drop-ins:
         - name: docker.conf
-          contents: |
+          content: |
             [Service]
             EnvironmentFile=/etc/default/docker
 
     - name: bins.service
-      enable: true
-      contents: |
+      command: start
+      content: |
         [Unit]
         Description=Download Binaries
         [Service]
@@ -38,8 +38,8 @@ systemd:
         ExecStart=/usr/bin/chmod +x /home/kubernetes/bin/kubelet
 
     - name: socat.service
-      enable: true
-      contents: |
+      command: start
+      content: |
         [Unit]
         Description=Install Socat
         After=docker.service
@@ -52,12 +52,12 @@ systemd:
         ExecStart=/usr/bin/docker run --rm -v /opt/bin/:/socat/ registry.cncf.ci/cncf/cross-cloud/socat:production cp /output/linux/x86_64/socat /socat
 
     - name: kubelet.service
-      enable: true
-      contents: |
+      command: start
+      content: |
         [Unit]
         Description=Kubernetes kubelet
-        After=socat.service bins.service
-        Requires=socat.service bins.service
+        After=socat.service
+        Requires=socat.service
 
         [Service]
         Restart=always
@@ -72,122 +72,86 @@ systemd:
   update:
     reboot-strategy: etcd-lock
 
-storage:
-  files:
-    - path: ${ hostname_path }
-      filesystem: "root"
-      contents: 
-        inline: |
-          ${ hostname }
+write-files:
 
-    - path: /etc/default/docker
-      filesystem: "root"
-      contents: 
-        inline: |
-          DOCKER_OPTS="--ip-masq=false --iptables=false --log-driver=json-file --log-level=warn --log-opt=max-file=5 --log-opt=max-size=10m --storage-driver=overlay"
+  - path: ${ hostname_path }
+    content: |
+      ${ hostname }
 
-    - path: /etc/default/kubelet
-      filesystem: "root"
-      mode:  0644
-      contents: 
-        base64: true
-        inline: |
-          ${ kubelet }
+  - path: /etc/default/docker
+    content: |
+      DOCKER_OPTS="--ip-masq=false --iptables=false --log-driver=json-file --log-level=warn --log-opt=max-file=5 --log-opt=max-size=10m --storage-driver=overlay"
 
-    - path: /var/lib/kubelet/bootstrap.kubeconfig
-      filesystem: "root"
-      contents: 
-        base64: true
-        inline: |
-          ${ kubelet_bootstrap_kubeconfig }
+  - path: /etc/default/kubelet
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ kubelet }
 
-    - path: /etc/kubernetes/manifests/kube-proxy.yml
-      filesystem: "root"
-      mode:  0644
-      contents: 
-        base64: true
-        inline: |
-          ${ kube_proxy }
+  - path: /var/lib/kubelet/bootstrap.kubeconfig
+    encoding: "gzip+base64"
+    content: |
+      ${ kubelet_bootstrap_kubeconfig }
 
-    - path: /var/lib/kube-proxy/kubeconfig
-      filesystem: "root"
-      mode:  0644
-      contents: 
-        base64: true
-        inline: |
-          ${ proxy_kubeconfig }
+  - path: /etc/kubernetes/manifests/kube-proxy.yml
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ kube_proxy }
+
+  - path: /var/lib/kube-proxy/kubeconfig
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ proxy_kubeconfig }
 
  
-    - path: /etc/srv/kubernetes/pki/ca-certificates.crt
-      filesystem: "root"
-      mode:  0644
-      contents: 
-        base64: true
-        inline: |
-          ${ ca }
+  - path: /etc/srv/kubernetes/pki/ca-certificates.crt
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ ca }
 
-    - path: /etc/srv/kubernetes/pki/kubelet.crt
-      filesystem: "root"
-      mode:  0644
-      contents: 
-        base64: true
-        inline: |
-          ${ kubelet_crt }
+  - path: /etc/srv/kubernetes/pki/kubelet.crt
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ kubelet_crt }
       
-    - path: /etc/srv/kubernetes/pki/kubelet.key
-      filesystem: "root"
-      mode:  0644
-      contents: 
-        base64: true
-        inline: |
-          ${ kubelet_key }
-        
-    - path: /etc/srv/kubernetes/pki/proxy.crt
-      filesystem: "root"
-      mode:  0644
-      contents: 
-        base64: true
-        inline: |
-          ${ proxy }
-        
-    - path: /etc/srv/kubernetes/pki/proxy.key
-      filesystem: "root"
-      mode:  0644
-      contents: 
-        base64: true
-        inline: |
-          ${ proxy_key }
+  - path: /etc/srv/kubernetes/pki/kubelet.key
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ kubelet_key }
+      
+  - path: /etc/srv/kubernetes/pki/proxy.crt
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ proxy }
+      
+  - path: /etc/srv/kubernetes/pki/proxy.key
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ proxy_key }
 
-    - path: /etc/srv/kubernetes/cloud-config
-      filesystem: "root"
-      mode:  0644
-      contents: 
-        base64: true
-        inline: |
-          ${ cloud_config_file }
+  - path: /etc/srv/kubernetes/cloud-config
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ cloud_config_file }
 
-    - path: /etc/systemd/resolved.conf.d/dns.conf
-      filesystem: "root"
-      mode:  0644
-      user:
-        name: "root"
-      contents: 
-        base64: true
-        inline: |
-          ${ dns_conf }
+  - path: /etc/systemd/resolved.conf.d/dns.conf
+    permissions: 0644
+    encoding: "gzip+base64"
+    owner: root
+    content: |
+      ${ dns_conf }
 
-    - path: /etc/dhcp/dhclient.conf
-      filesystem: "root"
-      mode:  0644
-      user:
-        name: "root"
-      contents: 
-        base64: true
-        inline: |
-          ${ dns_dhcp }
-
-passwd:
-  users:
-    - name: core
-      ssh_authorized_keys:
-        - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDdCb/l7v2Gu44VQTeiUH1sQAmXQpKkJvdQUS2YriO/ysx+adfimT34fkhX7ZbiAC6kNKHFGQ6sRLnudVRv65N4P5SkQ27EtjS1W7rGEykZHarunq6szg5gAEFqVOrucn5Xey+iqDwMvM9w8pqKbJYvDy/7SGfz/cDvnWEcqIoYLy66IUPIaNwN7/eR6bZ7ab3IMpAkaR9gWrl4vpFql0fEVJgisbC8oPuX7sREhpaaO4BSWwEUyn97NnAFbDRN1fsohaLJVYD2vA6oXet/J5w0eFEGEgYAZuBB1VqbUXD4FfLxf8MP7qFniuCcfZHgzO5cbyK4xjrpknkHkk+b7sgON/2olCqM7+XDfgeuSxZgN9OJTRl2TesNMvhbXgFpnWJxIAkH0mbByDUNo+TQK58khTkVDlB6BOchRKN5EzKpUdzlBxVGJie35xAIqcFQGBw7E1nWBgDgAA9KXz4/jAdn3e81aOHzIGmVf9glj65TQRb2qQ4Rr/VwPfyUHCQTeGL5ykcHid7QbvMMXSx6EEXV4zP21vL98eOnwnoTyLD4JrxkEUAJS+9yxB75Ck6DF2AVkF+hnW0BUmcHI0BnWyXdb9SLsGwG4W0O4jOVXmq/yz+I5JkkPX4OB/eugetbb3L1CPczG/N0RbXCykU7TJdLSpBV27P7ho9JfK+UWAC2Gw== luoh@luoh-m01.vmware.com"
+  - path: /etc/dhcp/dhclient.conf
+    permissions: 0644
+    encoding: "gzip+base64"
+    owner: root
+    content: |
+      ${ dns_dhcp }

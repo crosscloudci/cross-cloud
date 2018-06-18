@@ -8,10 +8,7 @@ testing with VMware vSphere:
 
 **Required**
 * [Docker](#docker)
-* [vSphere](#vsphere)
-
-**Optional**
-* [VMware Cloud (VMC) on AWS](#vmc)
+* [vSphere via VMware Cloud (VMC) on AWS](#vsphere)
 
 ### Docker
 Docker is required to provision the test environment. The environment
@@ -23,15 +20,12 @@ $ docker build . --tag provisioning
 ```
 
 ### vSphere
-A vSphere server capable of hosting four VMs with 64GB RAM and 16-cores
-each is required. The service account must have the following permissions:
+The VMware Cloud (VMC) on AWS may be leveraged to deploy a cluster to
+a vSphere environment.
 
-// TODO vSphere Permissions
-
-### VMC
-If a local vSphere environment is not available, this provider is also
-compatible with VMC on AWS. Please fill out [this form](https://cloud.vmware.com/vmc-aws/contact-sales) to begin the VMC account 
-creation process.
+#### VMC
+Please fill out [this form](https://cloud.vmware.com/vmc-aws/contact-sales) 
+to begin the VMC account  creation process.
 
 #### AWS
 An AWS [account](https://goo.gl/55j7Px) is required for VMC to utilize services 
@@ -59,19 +53,13 @@ Running the Cross-Cloud tests with vSphere is separated into three phases:
 
 ### Configure
 The following environment variables are used to configure Cross-Cloud
-integration with vSphere:
+integration with vSphere via VMC on AWS:
 
 | Name | Description |
 |------|-------------|
 | `VSPHERE_SERVER` | The IP/FQDN of the vSphere server |
 | `VSPHERE_USER` | A vSphere username used to deploy/destroy the test environment |
 | `VSPHERE_PASSWORD` | The password for `VSPHERE_USER` |
-
-Defining the following environment variables indicates to the provider that
-vSphere is running on VMC on AWS:
-
-| Name | Description |
-|------|-------------|
 | `VSPHERE_AWS_ACCESS_KEY_ID` | An AWS account used to deploy/destroy an ELB |
 | `VSPHERE_AWS_SECRET_ACCESS_KEY` | The secret key for `VSPHERE_AWS_ACCESS_KEY_ID` |
 | `VSPHERE_AWS_REGION ` | The AWS region. Defaults to `us-west-2` |
@@ -80,25 +68,10 @@ vSphere is running on VMC on AWS:
 The following command can be used to provision a Cross-Cloud environment
 to vSphere:
 
-#### Deploy to vSphere
 ```shell
 docker run \
   --rm \
-  -v $(pwd)/data:/cncf/data \
-  -e VSPHERE_SERVER=$VSPHERE_SERVER \
-  -e VSPHERE_USER=$VSPHERE_USER \
-  -e VSPHERE_PASSWORD=$VSPHERE_PASSWORD \
-  -e CLOUD=vsphere \
-  -e COMMAND=deploy \
-  -e NAME=cross-cloud \
-  -e BACKEND=file \
-  -ti provisioning
-```
-
-#### Deploy to VMC on AWS
-```shell
-docker run \
-  --rm \
+  --dns 147.75.69.23 --dns 8.8.8.8 \
   -v $(pwd)/data:/cncf/data \
   -e VSPHERE_SERVER=$VSPHERE_SERVER \
   -e VSPHERE_USER=$VSPHERE_USER \
@@ -107,9 +80,9 @@ docker run \
   -e VSPHERE_AWS_SECRET_ACCESS_KEY=$VSPHERE_AWS_SECRET_ACCESS_KEY \
   -e VSPHERE_AWS_REGION=$VSPHERE_AWS_REGION \
   -e CLOUD=vsphere \
-  -e COMMAND=deploy \
-  -e NAME=cross-cloud \
   -e BACKEND=file \
+  -e NAME=cross-cloud \
+  -e COMMAND=deploy \
   -ti provisioning
 ```
 
@@ -117,25 +90,10 @@ docker run \
 The following command can be used to deprovision a Cross-Cloud 
 environment deployed to VMC on AWS:
 
-#### Destroy on vSphere
 ```shell
 docker run \
   --rm \
-  -v $(pwd)/data:/cncf/data \
-  -e VSPHERE_SERVER=$VSPHERE_SERVER \
-  -e VSPHERE_USER=$VSPHERE_USER \
-  -e VSPHERE_PASSWORD=$VSPHERE_PASSWORD \
-  -e CLOUD=vsphere \
-  -e COMMAND=destroy \
-  -e NAME=cross-cloud \
-  -e BACKEND=file \
-  -ti provisioning
-```
-
-#### Destroy on VMC on AWS
-```shell
-docker run \
-  --rm \
+  --dns 147.75.69.23 --dns 8.8.8.8 \
   -v $(pwd)/data:/cncf/data \
   -e VSPHERE_SERVER=$VSPHERE_SERVER \
   -e VSPHERE_USER=$VSPHERE_USER \
@@ -144,8 +102,8 @@ docker run \
   -e VSPHERE_AWS_SECRET_ACCESS_KEY=$VSPHERE_AWS_SECRET_ACCESS_KEY \
   -e VSPHERE_AWS_REGION=$VSPHERE_AWS_REGION \
   -e CLOUD=vsphere \
-  -e COMMAND=destroy \
-  -e NAME=cross-cloud \
   -e BACKEND=file \
+  -e NAME=cross-cloud \
+  -e COMMAND=destroy \
   -ti provisioning
 ```

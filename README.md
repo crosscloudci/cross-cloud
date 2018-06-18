@@ -125,35 +125,16 @@ docker run \
   -ti registry.cncf.ci/cncf/cross-cloud/provisioning:ci-stable-v0-2-0
 ```
 
-##### Quick start for vSphere
+##### Quick start for vSphere via VMware Cloud (VMC) on AWS
 
-A vSphere host and credentials are required:
-
-**Run the following to provision a vSphere cluster:**
-``` bash
-docker run \
-  --rm \
-  -v $(pwd)/data:/cncf/data \
-  -e NAME=cross-cloud \
-  -e CLOUD=vsphere \
-  -e COMMAND=deploy \
-  -e BACKEND=file \
-  -e VSPHERE_SERVER=$VSPHERE_SERVER \
-  -e VSPHERE_USER=$VSPHERE_USER \
-  -e VSPHERE_PASSWORD=$VSPHERE_PASSWORD \
-  -ti registry.cncf.ci/cncf/cross-cloud/provisioning:ci-stable-v0-2-0
-```
-
-##### Quick start for VMware Cloud (VMC) on AWS
-
-The vSphere provider also supports software defined datacenters (SDDC) 
-running on VMware Cloud (VMC) on AWS. This mode requires an AWS account
-as well.
+The vSphere provider requires vSphere host and credential information,
+as well as credentials for the linked AWS account:
 
 **Run the following to provision a vSphere cluster:**
 ``` bash
 docker run \
   --rm \
+  --dns 147.75.69.23 --dns 8.8.8.8 \
   -v $(pwd)/data:/cncf/data \
   -e NAME=cross-cloud \
   -e CLOUD=vsphere \
@@ -212,12 +193,7 @@ OpenStack:
  * -e TF_VAR_os_project_name=$OS_PROJECT_NAME
  * -e TF_VAR_os_password=$OS_PASSWORD
 
-vSphere:
- * -e VSPHERE_SERVER=1.2.3.4
- * -e VSPHERE_USER=admin
- * -e VSPHERE_PASSWORD=notblank
-
-VMware Cloud (VMC) on AWS:
+vSphere via VMware Cloud (VMC) on AWS:
  * -e VSPHERE_SERVER=1.2.3.4
  * -e VSPHERE_USER=admin
  * -e VSPHERE_PASSWORD=notblank

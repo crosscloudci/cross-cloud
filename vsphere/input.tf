@@ -84,14 +84,6 @@ variable "datastore_name" {
   default = "WorkloadDatastore"
 }
 
-variable "virtual_machine_domain" {
-  default = "vsphere.local"
-}
-
-variable "virtual_machine_dns_servers" {
-  default = ["8.8.8.8"]
-}
-
 variable "vm_folder" {
   default = "Workloads"
 }
@@ -109,22 +101,6 @@ variable "master_template_name" {
   default = "Templates/coreos_production_vmware_ova"
 }
 
-variable "master_name_prefix" {
-  default = "master"
-}
-
-variable "master_network_address" {
-  default = "192.168.1.0/24"
-}
-
-variable "master_ip_address_start" {
-  default = "101"
-}
-
-variable "master_gateway" {
-  default = "192.168.1.1"
-}
-
 # Worker Configuration
 variable "worker_node_count" {
   default = "1"
@@ -136,22 +112,6 @@ variable "worker_network_name" {
 
 variable "worker_template_name" {
   default = "Templates/coreos_production_vmware_ova"
-}
-
-variable "worker_name_prefix" {
-  default = "worker"
-}
-
-variable "worker_network_address" {
-  default = "192.168.1.0/24"
-}
-
-variable "worker_ip_address_start" {
-  default = "111"
-}
-
-variable "worker_gateway" {
-  default = "192.168.1.1"
 }
 
 # Kubernetes configuration

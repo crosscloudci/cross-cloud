@@ -24,18 +24,12 @@ module "master" {
   count      = "${var.master_node_count}"
   cloud_init = "${module.master_templates.master_cloud_init}"
 
-  datacenter                       = "${var.datacenter}"
-  resource_pool                    = "${module.resource_pool.id}"
-  datastore_name                   = "${var.datastore_name}"
-  folder_path                      = "${module.folder.path}"
-  virtual_machine_domain           = "${var.virtual_machine_domain}"
-  virtual_machine_dns_servers      = "${var.virtual_machine_dns_servers}"
-  network_name                     = "${var.master_network_name}"
-  template_name                    = "${var.master_template_name}"
-  virtual_machine_name_prefix      = "${var.master_name_prefix}"
-  virtual_machine_network_address  = "${var.master_network_address}"
-  virtual_machine_ip_address_start = "${var.master_ip_address_start}"
-  virtual_machine_gateway          = "${var.master_gateway}"
+  datacenter     = "${var.datacenter}"
+  resource_pool  = "${module.resource_pool.id}"
+  datastore_name = "${var.datastore_name}"
+  folder_path    = "${module.folder.path}"
+  network_name   = "${var.master_network_name}"
+  template_name  = "${var.master_template_name}"
 }
 
 module "master_templates" {
@@ -83,18 +77,12 @@ module "worker" {
   count      = "${var.worker_node_count}"
   cloud_init = "${module.worker_templates.worker_cloud_init}"
 
-  datacenter                       = "${var.datacenter}"
-  resource_pool                    = "${module.resource_pool.id}"
-  datastore_name                   = "${var.datastore_name}"
-  folder_path                      = "${module.folder.path}"
-  virtual_machine_domain           = "${var.virtual_machine_domain}"
-  virtual_machine_dns_servers      = "${var.virtual_machine_dns_servers}"
-  network_name                     = "${var.worker_network_name}"
-  template_name                    = "${var.worker_template_name}"
-  virtual_machine_name_prefix      = "${var.worker_name_prefix}"
-  virtual_machine_network_address  = "${var.worker_network_address}"
-  virtual_machine_ip_address_start = "${var.worker_ip_address_start}"
-  virtual_machine_gateway          = "${var.worker_gateway}"
+  datacenter     = "${var.datacenter}"
+  resource_pool  = "${module.resource_pool.id}"
+  datastore_name = "${var.datastore_name}"
+  folder_path    = "${module.folder.path}"
+  network_name   = "${var.worker_network_name}"
+  template_name  = "${var.worker_template_name}"
 }
 
 module "worker_templates" {

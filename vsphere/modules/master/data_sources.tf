@@ -21,34 +21,6 @@ data "vsphere_virtual_machine" "template" {
   datacenter_id = "${data.vsphere_datacenter.datacenter.id}"
 }
 
-// virtual_machine_network_content renders a template with the systemd-networkd unit
-// content for a specific virtual machine.
-data "template_file" "virtual_machine_network_content" {
-  count    = "${ var.count }"
-  template = "${file("${path.module}/files/00-ens192.network.tpl")}"
-
-  vars = {
-    address = "${cidrhost(var.virtual_machine_network_address, var.virtual_machine_ip_address_start + count.index)}"
-    mask    = "${ element(split("/", var.virtual_machine_network_address), 1) }"
-    gateway = "${var.virtual_machine_gateway}"
-    dns     = "${join("\n", formatlist("DNS=%s", var.virtual_machine_dns_servers))}"
-  }
-}
-
-// virtual_machine_network_unit defines the systemd network units for
-// each virtual machine.
-data "ignition_networkd_unit" "virtual_machine_network_unit" {
-  count   = "${ var.count }"
-  name    = "00-ens192.network"
-  content = "${data.template_file.virtual_machine_network_content.*.rendered[count.index]}"
-}
-
-// ignition_config creates the CoreOS Ignition config for use on the virtual machines.
-data "ignition_config" "ignition_config" {
-  count    = "${ var.count }"
-  networkd = ["${data.ignition_networkd_unit.virtual_machine_network_unit.*.id[count.index]}"]
-}
-
 data "template_file" "ign" {
   count    = "${var.count}"
   template = "${file("${path.module}/../../ignition.json")}"

@@ -13,6 +13,10 @@ variable "vsphere_server" {}
 variable "vsphere_user" {}
 variable "vsphere_password" {}
 
+variable "allow_unverified_ssl" {
+  default = false
+}
+
 # AWS Auth Settings for the Load Balancer & Elastic IP
 # This should be the account linked to the VMC SDDC.
 variable "vsphere_aws_access_key_id" {}

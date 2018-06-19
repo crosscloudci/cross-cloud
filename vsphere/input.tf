@@ -148,7 +148,7 @@ variable "non_masquerade_cidr" {
 }
 
 variable "dns_service_ip" {
-  default = "18.236.33.106"
+  default = "100.64.0.10"
 }
 
 # Deployment Artifact Versions

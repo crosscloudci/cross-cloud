@@ -93,6 +93,18 @@ variable "vm_folder" {
 }
 
 # Master Configuration
+variable "master_num_cpu" {
+  default = "16"
+}
+
+variable "master_num_cores_per_socket" {
+  default = "8"
+}
+
+variable "master_memory" {
+  default = "65536"
+}
+
 variable "master_node_count" {
   default = "3"
 }
@@ -106,6 +118,18 @@ variable "master_template_name" {
 }
 
 # Worker Configuration
+variable "worker_num_cpu" {
+  default = "16"
+}
+
+variable "worker_num_cores_per_socket" {
+  default = "8"
+}
+
+variable "worker_memory" {
+  default = "65536"
+}
+
 variable "worker_node_count" {
   default = "1"
 }

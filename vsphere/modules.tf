@@ -20,9 +20,12 @@ module "resource_pool" {
 module "master" {
   source = "./modules/master"
 
-  name       = "${var.name}"
-  count      = "${var.master_node_count}"
-  cloud_init = "${module.master_templates.master_cloud_init}"
+  name                 = "${var.name}"
+  count                = "${var.master_node_count}"
+  cloud_init           = "${module.master_templates.master_cloud_init}"
+  num_cpu              = "${var.master_num_cpu}"
+  num_cores_per_socket = "${var.master_num_cores_per_socket}"
+  memory               = "${var.master_memory}"
 
   datacenter     = "${var.datacenter}"
   resource_pool  = "${module.resource_pool.id}"
@@ -73,9 +76,12 @@ module "master_templates" {
 module "worker" {
   source = "./modules/worker"
 
-  name       = "${var.name}"
-  count      = "${var.worker_node_count}"
-  cloud_init = "${module.worker_templates.worker_cloud_init}"
+  name                 = "${var.name}"
+  count                = "${var.worker_node_count}"
+  cloud_init           = "${module.worker_templates.worker_cloud_init}"
+  num_cpu              = "${var.worker_num_cpu}"
+  num_cores_per_socket = "${var.worker_num_cores_per_socket}"
+  memory               = "${var.worker_memory}"
 
   datacenter     = "${var.datacenter}"
   resource_pool  = "${module.resource_pool.id}"

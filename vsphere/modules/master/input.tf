@@ -1,6 +1,9 @@
 variable "name" {}
 variable "count" {}
 variable "cloud_init" {}
+variable "num_cpu" {}
+variable "num_cores_per_socket" {}
+variable "memory" {}
 
 // The datacenter the resources will be created in.
 variable "datacenter" {

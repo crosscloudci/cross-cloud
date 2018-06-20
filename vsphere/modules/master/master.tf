@@ -2,11 +2,14 @@ resource "vsphere_virtual_machine" "master" {
   count = "${ var.count }"
   name  = "${ var.name }-master-${ count.index + 1 }"
 
-  resource_pool_id = "${ var.resource_pool }"
-  datastore_id     = "${data.vsphere_datastore.datastore.id}"
-  folder           = "${var.folder_path}"
-  guest_id         = "${data.vsphere_virtual_machine.template.guest_id}"
-  scsi_type        = "${data.vsphere_virtual_machine.template.scsi_type}"
+  resource_pool_id     = "${ var.resource_pool }"
+  datastore_id         = "${data.vsphere_datastore.datastore.id}"
+  folder               = "${var.folder_path}"
+  guest_id             = "${data.vsphere_virtual_machine.template.guest_id}"
+  scsi_type            = "${data.vsphere_virtual_machine.template.scsi_type}"
+  num_cpus             = "${var.num_cpu}"
+  num_cores_per_socket = "${var.num_cores_per_socket}"
+  memory               = "${var.memory}"
 
   network_interface {
     network_id   = "${data.vsphere_network.network.id}"

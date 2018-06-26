@@ -22,6 +22,8 @@ module "master" {
 
   name                 = "${var.name}"
   count                = "${var.master_node_count}"
+  hostname_suffix      = "${var.name}.${var.cloud_provider}.local"
+  hostname_path        = "/etc/hostname"
   cloud_init           = "${module.master_templates.master_cloud_init}"
   num_cpu              = "${var.master_num_cpu}"
   num_cores_per_socket = "${var.master_num_cores_per_socket}"
@@ -78,6 +80,8 @@ module "worker" {
 
   name                 = "${var.name}"
   count                = "${var.worker_node_count}"
+  hostname_suffix      = "${var.name}.${var.cloud_provider}.local"
+  hostname_path        = "/etc/hostname"
   cloud_init           = "${module.worker_templates.worker_cloud_init}"
   num_cpu              = "${var.worker_num_cpu}"
   num_cores_per_socket = "${var.worker_num_cores_per_socket}"

@@ -68,6 +68,7 @@ COPY gce/ /cncf/gce/
 COPY gke/ /cncf/gke/
 COPY openstack/ /cncf/openstack/
 COPY packet/ /cncf/packet/
+COPY vsphere/ /cncf/vsphere/
 
 COPY bootstrap/ /cncf/bootstrap/
 COPY dns/ /cncf/dns/
@@ -100,4 +101,4 @@ COPY worker_templates-v1.10.0/ /cncf/worker_templates-v1.10.0/
 RUN chmod +x /cncf/provision.sh
 WORKDIR /cncf/
 
-CMD ["bash", "-c", "/cncf/provision.sh ${CLOUD}-${COMMAND} ${NAME} ${BACKEND} ${DATA_FOLDER}"]
+ENTRYPOINT ["/cncf/provision.sh"]

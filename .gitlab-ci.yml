@@ -65,6 +65,7 @@ before_script:
 # Deploy Template used for Each Cloud
 .kubernetes_deploy_template: &kubernetes_deploy_template
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
+  entrypoint: [""]
   stage: Cross-Cloud
   variables:
     CLOUD: MUST BE SET
@@ -104,6 +105,7 @@ before_script:
 # Per Cloud Destroy Template only run when DESTROY_VAR is Set
 .kubernetes_cloud_destroy_template: &kubernetes_cloud_destroy_template
   image: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
+  entrypoint: [""]
   stage: Cross-Cloud
   when: manual
   variables:

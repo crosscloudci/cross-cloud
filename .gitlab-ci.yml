@@ -32,6 +32,7 @@ before_script:
       echo "Environment unknown: $BASE_URL"
       exit 1
     fi
+  - sleep 100000
   - source /opt/local/etc/rvmrc ; source /opt/local/etc/profile.d/rvm.sh ; cp -a /opt/local/dashboard /dashboard ; pushd /dashboard ; source /opt/local/.env ; ./bin/update_dashboard ; popd
 
 .build_source: &build_source

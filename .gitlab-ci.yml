@@ -66,7 +66,7 @@ before_script:
 .kubernetes_deploy_template: &kubernetes_deploy_template
   image: 
     name: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
-    entrypoint: [""]
+    entrypoint: ["/bin/sh"]
   stage: Cross-Cloud
   variables:
     CLOUD: MUST BE SET
@@ -107,7 +107,7 @@ before_script:
 .kubernetes_cloud_destroy_template: &kubernetes_cloud_destroy_template
   image: 
     name: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
-    entrypoint: [""]
+    entrypoint: ["/bin/sh"]
   stage: Cross-Cloud
   when: manual
   variables:

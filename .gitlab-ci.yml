@@ -111,9 +111,9 @@ before_script:
   script:
     - /cncf/provision.sh ${CLOUD}-destroy ${ENVIRONMENT}${DEPLOYMENT_SHA} s3 ${CLOUD} 
 
-# Build-Source VARs
-Build-Source:
-  <<: *build_source
+# # Build-Source VARs
+# Build-Source:
+#   <<: *build_source
 
 # Cloud Deploy VARs
 Provisioning:

@@ -146,7 +146,7 @@ Dashboard:
   image: 
     # name: crosscloudci/debian-docker 
     name: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
-    entrypoint: ["/bin/sh"]
+    entrypoint: ["/bin/sh", "-c"]
   stage: Update-Dashboard
   script:
     - echo 'true'

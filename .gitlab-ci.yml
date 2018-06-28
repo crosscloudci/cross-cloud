@@ -1,5 +1,5 @@
 stages:
-  #- Artifacts
+  - Artifacts
   - Cross-Cloud
   - End-To-End
   - Update-Dashboard
@@ -116,8 +116,8 @@ before_script:
     - /cncf/provision.sh ${CLOUD}-destroy ${ENVIRONMENT}${DEPLOYMENT_SHA} s3 ${CLOUD} 
 
 # Build-Source VARs
-Build-Source:
-  <<: *build_source
+#Build-Source:
+#  <<: *build_source
 
 # Cloud Deploy VARs
 Provisioning:

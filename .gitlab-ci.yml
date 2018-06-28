@@ -121,11 +121,11 @@ before_script:
 #Build-Source:
 #  <<: *build_source
 
-# Cloud Deploy VARs
-Provisioning:
-  <<: *kubernetes_deploy_template
-  variables:
-    CLOUD: "${CLOUD}"
+# # Cloud Deploy VARs
+# Provisioning:
+#   <<: *kubernetes_deploy_template
+#   variables:
+#     CLOUD: "${CLOUD}"
 
 # # AWS E2E VARs
 # aws_k8s_e2e:
@@ -136,14 +136,16 @@ Provisioning:
 #     name: ${AWS_CLOUD}-${CI_COMMIT_REF_SLUG}
 #     url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
 
-# AWS Destroy VARs 
-Kubernetes_destroy:
-  <<: *kubernetes_cloud_destroy_template
-  variables:
-    CLOUD: "${CLOUD}"
+# # AWS Destroy VARs 
+# Kubernetes_destroy:
+#   <<: *kubernetes_cloud_destroy_template
+#   variables:
+#     CLOUD: "${CLOUD}"
 
 Dashboard:
-  image: crosscloudci/debian-docker 
+  image: 
+    name: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
+    entrypoint: ["/bin/sh"]
   stage: Update-Dashboard
   script:
     - echo 'true'

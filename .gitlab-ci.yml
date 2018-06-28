@@ -144,8 +144,8 @@ before_script:
 
 Dashboard:
   image: 
-    name: crosscloudci/debian-docker 
-    # name: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
+    # name: crosscloudci/debian-docker 
+    name: ${CI_REGISTRY}/cncf/cross-cloud/provisioning:$CI_COMMIT_REF_SLUG
     entrypoint: ["/bin/sh"]
   stage: Update-Dashboard
   script:

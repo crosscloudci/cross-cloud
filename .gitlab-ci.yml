@@ -1,5 +1,5 @@
 stages:
-  - Artifacts
+  #- Artifacts
   - Cross-Cloud
   - End-To-End
   - Update-Dashboard

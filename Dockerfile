@@ -47,13 +47,15 @@ RUN mkdir -p $GOPATH/src/github.com/terraform-providers \
 && cd $GOPATH/src/github.com/terraform-providers/terraform-provider-ibm \
 && make build
 
-# Install Gzip+base64 & ETCD Provider
+# Install Gzip+base64, ETCD, ibm, and oci Provider
 RUN go get -u github.com/jakexks/terraform-provider-gzip && \
     go get -u github.com/paperg/terraform-provider-etcdiscovery && \
+    go get -u github.com/oracle/terraform-provider-oci && \
   echo providers { >> ~/.terraformrc && \
   echo '    gzip = "/go/bin/terraform-provider-gzip"' >> ~/.terraformrc && \
   echo '    etcdiscovery = "/go/bin/terraform-provider-etcdiscovery"' >> ~/.terraformrc && \
   echo '    ibm = "/go/bin/terraform-provider-ibm"' >> ~/.terraformrc && \
+  echo '    oci = "/go/bin/terraform-provider-oci"' >> ~/.terraformrc && \
   echo } >> ~/.terraformrc
 
 
@@ -67,6 +69,7 @@ COPY ibm/ /cncf/ibm/
 COPY gce/ /cncf/gce/
 COPY gke/ /cncf/gke/
 COPY openstack/ /cncf/openstack/
+COPY oci/ /cncf/oci/
 COPY packet/ /cncf/packet/
 COPY vsphere/ /cncf/vsphere/
 

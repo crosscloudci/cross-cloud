@@ -32,8 +32,14 @@ before_script:
       echo "Environment unknown: $BASE_URL"
       exit 1
     fi
-  - sleep 100000
-  - source /opt/local/etc/rvmrc ; source /opt/local/etc/profile.d/rvm.sh ; cp -a /opt/local/dashboard /dashboard ; pushd /dashboard ; source /opt/local/.env ; ./bin/update_dashboard ; popd
+  - >
+    if [ "$CI_JOB_NAME" == "Build-Source" ]; then
+      source /opt/local/etc/rvmrc ; source /opt/local/etc/profile.d/rvm.sh ; cp -a /opt/local/dashboard /dashboard ; pushd /dashboard ; source /opt/local/.env ; ./bin/update_dashboard ; popd
+    elif [ "$CI_JOB_NAME" == "Dashboard" ]; then
+      source /opt/local/etc/rvmrc ; source /opt/local/etc/profile.d/rvm.sh ; cp -a /opt/local/dashboard /dashboard ; pushd /dashboard ; source /opt/local/.env ; ./bin/update_dashboard ; popd
+    else
+      source /opt/local/alpine/etc/rvmrc ; source /opt/local/alpine/etc/profile.d/rvm.sh ; cp -a /opt/local/dashboard /dashboard ; pushd /dashboard ; source /opt/local/.env ; ./bin/update_dashboard ; popd
+    fi
 
 .build_source: &build_source
   image: buildpack-deps:stretch
@@ -112,9 +118,9 @@ before_script:
   script:
     - /cncf/provision.sh ${CLOUD}-destroy ${ENVIRONMENT}${DEPLOYMENT_SHA} s3 ${CLOUD} 
 
-# # Build-Source VARs
-# Build-Source:
-#   <<: *build_source
+# Build-Source VARs
+Build-Source:
+  <<: *build_source
 
 # Cloud Deploy VARs
 Provisioning:

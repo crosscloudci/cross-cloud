@@ -34,6 +34,11 @@ RUN apk --no-cache add \
 # Link lib64 to lib
 RUN ln -s /lib /lib64
 
+# Install rvm deps
+RUN apk --no-cache add \
+    gcc gnupg curl ruby bash procps musl-dev make linux-headers \
+        zlib zlib-dev openssl openssl-dev libssl1.0
+
 # Install the Google Cloud SDK
 ENV CLOUD_SDK_VERSION=203.0.0
 ENV PATH=/google-cloud-sdk/bin:$PATH

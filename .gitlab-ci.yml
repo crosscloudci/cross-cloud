@@ -89,7 +89,9 @@ before_script:
         kubectl create -f ./addons/ || true
       fi
     - KUBECTL_PATH=$(which kubectl) NUM_NODES="$TF_VAR_worker_node_count" KUBERNETES_PROVIDER=local ./validate-cluster/cluster/validate-cluster.sh || true
-    - helm init --service-account tiller; kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
+    - helm init --service-account tiller-deploy
+    - sleep 10
+    - kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
   artifacts:
     when: always
     expire_in: 4 weeks

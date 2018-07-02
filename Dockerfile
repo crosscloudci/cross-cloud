@@ -19,7 +19,7 @@ RUN go get github.com/paperg/terraform-provider-etcdiscovery
 FROM alpine:3.7
 LABEL maintainer="Denver Williams <denver@debian.nz>"
 ENV KUBECTL_VERSION=v1.8.1
-ENV HELM_VERSION=v2.7.2
+ENV HELM_VERSION=v2.9.1
 # PIN to Commit on Master
 ENV TERRAFORM_VERSION=0.11.7
 # ENV TERRAFORM_VERSION=master

@@ -17,16 +17,6 @@ variable "allow_unverified_ssl" {
   default = false
 }
 
-# AWS Auth Settings for the Load Balancer & Elastic IP
-# This should be the account linked to the VMC SDDC.
-variable "vsphere_aws_access_key_id" {}
-
-variable "vsphere_aws_secret_access_key" {}
-
-variable "vsphere_aws_region" {
-  default = "us-west-2"
-}
-
 # vSphere Resource Pool Settings
 
 # resource_pool_cpu_limit is the limit in MHz of CPU that

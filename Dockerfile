@@ -18,7 +18,7 @@ RUN go get github.com/paperg/terraform-provider-etcdiscovery
 #FROM crosscloudci/debian-go:latest
 FROM alpine:3.7
 LABEL maintainer="Denver Williams <denver@debian.nz>"
-ENV KUBECTL_VERSION=v1.8.1
+ENV KUBECTL_VERSION=v1.11.0
 ENV HELM_VERSION=v2.9.1
 # PIN to Commit on Master
 ENV TERRAFORM_VERSION=0.11.7

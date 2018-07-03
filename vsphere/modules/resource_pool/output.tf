@@ -1,0 +1,3 @@
+output "id" {
+  value = "${vsphere_resource_pool.resource_pool.id}"
+}

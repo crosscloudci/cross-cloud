@@ -1,8 +1,22 @@
 #!/bin/bash
 # Usage
 #
+# provision.sh shell
 # provision.sh <provider>-<command> <name> <config-backend>
 #
+
+# If the first argument is "shell" then exec into a shell and abandon
+# the rest of the script.
+if [ "$1" = "shell" ]; then exec /bin/bash; fi
+
+# Initialize the configuration properties based on the command-line
+# arguments OR on the corresponding environment variables.
+CLOUD_CMD=$CLOUD-$COMMAND
+if [ ! "$1" = "" ]; then CLOUD_CMD=$1; fi
+if [ ! "$2" = "" ]; then NAME=$2; fi
+if [ ! "$3" = "" ]; then BACKEND=$3; fi
+if [ ! "$4" = "" ]; then DATA_FOLDER=$4; fi
+
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 _retry() {
     [ -z "${2}" ] && return 1
@@ -15,8 +29,8 @@ RED='\033[0;31m'
 NC='\033[0m' # No Color
 
 # Setup Enviroment Using $NAME
-export TF_VAR_name="$2"
-export TF_VAR_data_dir=$(pwd)/data/"$4"
+export TF_VAR_name="$NAME"
+export TF_VAR_data_dir=$(pwd)/data/"$DATA_FOLDER"
 export TF_VAR_packet_api_key=${PACKET_AUTH_TOKEN}
 
 # Configure Artifacts
@@ -30,7 +44,7 @@ fi
 
 
 if [ ! -e $ETCD_ARTIFACT ] ; then
-  export TF_VAR_etcd_artifact=$ETCD_ARTIFACT
+    export TF_VAR_etcd_artifact=$ETCD_ARTIFACT
 fi
 
 if [ ! -e $KUBE_APISERVER_ARTIFACT ] ; then
@@ -59,9 +73,9 @@ fi
 mkdir -p $TF_VAR_data_dir
 
 # Run CMD
-if [ "$1" = "aws-deploy" ] ; then
+if [ "$CLOUD_CMD" = "aws-deploy" ] ; then
     cd ${DIR}/aws
-    if [ "$3" = "s3" ]; then
+    if [ "$BACKEND" = "s3" ]; then
         cp ../s3-backend.tf .
     terraform init \
               -backend-config "bucket=${AWS_BUCKET}" \
@@ -70,7 +84,7 @@ if [ "$1" = "aws-deploy" ] ; then
     # ensure kubeconfig is written to disk on infrastructure refresh
     terraform taint -module=kubeconfig null_resource.kubeconfig || true
     time terraform apply -auto-approve ${DIR}/aws
-    elif [ "$3" = "file" ]; then
+    elif [ "$BACKEND" = "file" ]; then
         cp ../file-backend.tf .
         terraform init \
                   -backend-config "path=/cncf/data/${TF_VAR_name}/terraform.tfstate"
@@ -85,16 +99,16 @@ if [ "$1" = "aws-deploy" ] ; then
     _retry "❤ Ensure that ClusterRoles are available" kubectl get ClusterRole.v1.rbac.authorization.k8s.io
     _retry "❤ Ensure that ClusterRoleBindings are available" kubectl get ClusterRoleBinding.v1.rbac.authorization.k8s.io
 
-elif [ "$1" = "aws-destroy" ] ; then
+elif [ "$CLOUD_CMD" = "aws-destroy" ] ; then
       cd ${DIR}/aws
-      if [ "$3" = "s3" ]; then
+      if [ "$BACKEND" = "s3" ]; then
           cp ../s3-backend.tf .
           terraform init \
                     -backend-config "bucket=${AWS_BUCKET}" \
                     -backend-config "key=aws-${TF_VAR_name}" \
                     -backend-config "region=${AWS_DEFAULT_REGION}"
     time terraform destroy -force ${DIR}/aws
-      elif [ "$3" = "file" ]; then
+      elif [ "$BACKEND" = "file" ]; then
           cp ../file-backend.tf .
           terraform init \
                     -backend-config "path=/cncf/data/${TF_VAR_name}/terraform.tfstate"
@@ -102,12 +116,12 @@ elif [ "$1" = "aws-destroy" ] ; then
 
        fi
 
-elif [ "$1" = "azure-deploy" ] ; then
+elif [ "$CLOUD_CMD" = "azure-deploy" ] ; then
     # There are some dependency issues around cert,sshkey,k8s_cloud_config, and dns
     # since they use files on disk that are created on the fly
     # should probably move these to data resources
     cd ${DIR}/azure
-    if [ "$3" = "s3" ]; then
+    if [ "$BACKEND" = "s3" ]; then
         cp ../s3-backend.tf .
     terraform init \
               -backend-config "bucket=${AWS_BUCKET}" \
@@ -120,7 +134,7 @@ elif [ "$1" = "azure-deploy" ] ; then
         terraform apply -target module.network.azurerm_subnet.cncf -auto-approve ${DIR}/azure || true && \
         time terraform apply -auto-approve ${DIR}/azure
 
-    elif [ "$3" = "file" ]; then
+    elif [ "$BACKEND" = "file" ]; then
         cp ../file-backend.tf .
         terraform init \
                   -backend-config "path=/cncf/data/${TF_VAR_name}/terraform.tfstate"
@@ -139,9 +153,9 @@ elif [ "$1" = "azure-deploy" ] ; then
     _retry "❤ Ensure that ClusterRoleBindings are available" kubectl get ClusterRoleBinding.v1.rbac.authorization.k8s.io
 
 
-elif [ "$1" = "azure-destroy" ] ; then
+elif [ "$CLOUD_CMD" = "azure-destroy" ] ; then
     cd ${DIR}/azure
-    if [ "$3" = "s3" ]; then
+    if [ "$BACKEND" = "s3" ]; then
         cp ../s3-backend.tf .
     terraform init \
               -backend-config "bucket=${AWS_BUCKET}" \
@@ -149,7 +163,7 @@ elif [ "$1" = "azure-destroy" ] ; then
               -backend-config "region=${AWS_DEFAULT_REGION}"
     time terraform destroy -force ${DIR}/azure || true
 
-    elif [ "$3" = "file" ]; then
+    elif [ "$BACKEND" = "file" ]; then
         cp ../file-backend.tf .
         terraform init \
                   -backend-config "path=/cncf/data/${TF_VAR_name}/terraform.tfstate"
@@ -157,26 +171,27 @@ elif [ "$1" = "azure-destroy" ] ; then
     fi
 
 # Begin OpenStack
-elif [[ "$1" = "openstack-deploy" || "$1" = "openstack-destroy" ]] ; then
+elif [[ "$CLOUD_CMD" = "openstack-deploy" || \
+        "$CLOUD_CMD" = "openstack-destroy" ]] ; then
     cd ${DIR}/openstack
 
     # initialize based on the config type
-    if [ "$3" = "s3" ] ; then
+    if [ "$BACKEND" = "s3" ] ; then
         cp ../s3-backend.tf .
         terraform init \
             -backend-config "bucket=${AWS_BUCKET}" \
             -backend-config "key=openstack-${TF_VAR_name}" \
             -backend-config "region=${AWS_DEFAULT_REGION}"
-    elif [ "$3" = "file" ] ; then
+    elif [ "$BACKEND" = "file" ] ; then
         cp ../file-backend.tf .
         terraform init -backend-config "path=/cncf/data/${TF_VAR_NAME}/terraform.tfstate"
     fi
 
     # deploy/destroy implementations
-    if [ "$1" = "openstack-deploy" ] ; then
+    if [ "$CLOUD_CMD" = "openstack-deploy" ] ; then
         terraform taint -module=kubeconfig null_resource.kubeconfig || true
         time terraform apply -auto-approve ${DIR}/openstack
-    elif [ "$1" = "openstack-destroy" ] ; then
+    elif [ "$CLOUD_CMD" = "openstack-destroy" ] ; then
         time terraform destroy -force ${DIR}/openstack || true
         # Exit after destroying resources as further commands cause hang
         exit
@@ -190,9 +205,9 @@ elif [[ "$1" = "openstack-deploy" || "$1" = "openstack-destroy" ]] ; then
 
 # End OpenStack
 
-elif [ "$1" = "packet-deploy" ] ; then
+elif [ "$CLOUD_CMD" = "packet-deploy" ] ; then
     cd ${DIR}/packet
-    if [ "$3" = "s3" ]; then
+    if [ "$BACKEND" = "s3" ]; then
         cp ../s3-backend.tf .
     terraform init \
               -backend-config "bucket=${AWS_BUCKET}" \
@@ -202,7 +217,7 @@ elif [ "$1" = "packet-deploy" ] ; then
     terraform taint -module=kubeconfig null_resource.kubeconfig || true ${DIR}/packet
     time terraform apply -auto-approve ${DIR}/packet
 
-    elif [ "$3" = "file" ]; then
+    elif [ "$BACKEND" = "file" ]; then
         cp ../file-backend.tf .
         terraform init \
                   -backend-config "path=/cncf/data/${TF_VAR_name}/terraform.tfstate" 
@@ -217,9 +232,9 @@ fi
     _retry "❤ Ensure that ClusterRoles are available" kubectl get ClusterRole.v1.rbac.authorization.k8s.io
     _retry "❤ Ensure that ClusterRoleBindings are available" kubectl get ClusterRoleBinding.v1.rbac.authorization.k8s.io
 
-elif [ "$1" = "packet-destroy" ] ; then
+elif [ "$CLOUD_CMD" = "packet-destroy" ] ; then
      cd ${DIR}/packet
-     if [ "$3" = "s3" ]; then
+     if [ "$BACKEND" = "s3" ]; then
          cp ../s3-backend.tf .
     terraform init \
               -backend-config "bucket=${AWS_BUCKET}" \
@@ -227,16 +242,16 @@ elif [ "$1" = "packet-destroy" ] ; then
               -backend-config "region=${AWS_DEFAULT_REGION}"
     time terraform destroy -force ${DIR}/packet
 
-elif [ "$3" = "file" ]; then
+elif [ "$BACKEND" = "file" ]; then
          cp ../file-backend.tf .
          terraform init \
                    -backend-config "path=/cncf/data/${TF_VAR_name}/terraform.tfstate"
          time terraform destroy -force ${DIR}/packet
 fi
 
-elif [ "$1" = "gce-deploy" ] ; then
+elif [ "$CLOUD_CMD" = "gce-deploy" ] ; then
     cd ${DIR}/gce
-    if [ "$3" = "s3" ]; then
+    if [ "$BACKEND" = "s3" ]; then
         cp ../s3-backend.tf .
     terraform init \
               -backend-config "bucket=${AWS_BUCKET}" \
@@ -247,7 +262,7 @@ elif [ "$1" = "gce-deploy" ] ; then
     time terraform apply -target module.vpc.google_compute_subnetwork.cncf -auto-approve ${DIR}/gce
     time terraform apply -auto-approve ${DIR}/gce
 
-elif [ "$3" = "file" ]; then
+elif [ "$BACKEND" = "file" ]; then
         cp ../file-backend.tf .
         terraform init \
                   -backend-config "path=/cncf/data/${TF_VAR_name}/terraform.tfstate"
@@ -263,9 +278,9 @@ elif [ "$3" = "file" ]; then
     _retry "❤ Ensure that ClusterRoles are available" kubectl get ClusterRole.v1.rbac.authorization.k8s.io
     _retry "❤ Ensure that ClusterRoleBindings are available" kubectl get ClusterRoleBinding.v1.rbac.authorization.k8s.io
 
-elif [ "$1" = "gce-destroy" ] ; then
+elif [ "$CLOUD_CMD" = "gce-destroy" ] ; then
     cd ${DIR}/gce
-    if [ "$3" = "s3" ]; then
+    if [ "$BACKEND" = "s3" ]; then
         cp ../s3-backend.tf .
     terraform init \
               -backend-config "bucket=${AWS_BUCKET}" \
@@ -274,7 +289,7 @@ elif [ "$1" = "gce-destroy" ] ; then
     time terraform destroy -force ${DIR}/gce || true # Allow to Fail and clean up network on next step
     time terraform destroy -force -target module.vpc.google_compute_subnetwork.cncf ${DIR}/gce
     time terraform destroy -force -target module.vpc.google_compute_network.cncf ${DIR}/gce
-elif [ "$3" = "file" ]; then
+elif [ "$BACKEND" = "file" ]; then
         cp ../file-backend.tf .
         terraform init \
                   -backend-config "path=/cncf/data/${TF_VAR_name}/terraform.tfstate"
@@ -283,9 +298,9 @@ elif [ "$3" = "file" ]; then
         time terraform destroy -force -target module.vpc.google_compute_network.cncf ${DIR}/gce
 fi
 
-elif [ "$1" = "gke-deploy" ] ; then
+elif [ "$CLOUD_CMD" = "gke-deploy" ] ; then
 cd ${DIR}/gke
-if [ "$3" = "s3" ]; then
+if [ "$BACKEND" = "s3" ]; then
     cp ../s3-backend.tf .
     terraform init \
               -backend-config "bucket=${AWS_BUCKET}" \
@@ -293,7 +308,7 @@ if [ "$3" = "s3" ]; then
               -backend-config "region=${AWS_DEFAULT_REGION}"
     time terraform apply -target module.vpc -auto-approve ${DIR}/gke && \
     time terraform apply -auto-approve ${DIR}/gke
-elif [ "$3" = "file" ]; then
+elif [ "$BACKEND" = "file" ]; then
     cp ../file-backend.tf .
     terraform init \
               -backend-config "path=/cncf/data/${TF_VAR_name}/terraform.tfstate"
@@ -310,9 +325,9 @@ fi
     _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info 
     kubectl cluster-info
 
-elif [ "$1" = "gke-destroy" ] ; then
+elif [ "$CLOUD_CMD" = "gke-destroy" ] ; then
 cd ${DIR}/gke
-if [ "$3" = "s3" ]; then
+if [ "$BACKEND" = "s3" ]; then
     cp ../s3-backend.tf .
     terraform init \
               -backend-config "bucket=${AWS_BUCKET}" \
@@ -324,7 +339,7 @@ if [ "$3" = "s3" ]; then
     time terraform destroy -force -target module.vpc.google_compute_network.cncf ${DIR}/gke || true 
     time terraform destroy -force ${DIR}/gke || true
 
-elif [ "$3" = "file" ]; then
+elif [ "$BACKEND" = "file" ]; then
     cp ../file-backend.tf .
     terraform init \
               -backend-config "path=/cncf/data/${TF_VAR_name}/terraform.tfstate" 
@@ -335,9 +350,9 @@ time terraform destroy -force ${DIR}/gke || true
 fi
 
 
-elif [ "$1" = "ibmcloud-deploy" ] ; then
+elif [ "$CLOUD_CMD" = "ibmcloud-deploy" ] ; then
 cd ${DIR}/ibm
-if [ "$3" = "s3" ]; then
+if [ "$BACKEND" = "s3" ]; then
     cp ../s3-backend.tf .
     terraform init \
               -backend-config "bucket=${AWS_BUCKET}" \
@@ -346,7 +361,7 @@ if [ "$3" = "s3" ]; then
     # ensure kubeconfig is written to disk on infrastructure refresh
     terraform taint null_resource.kubeconfig || true
     time terraform apply -auto-approve ${DIR}/ibm
-elif [ "$3" = "file" ]; then
+elif [ "$BACKEND" = "file" ]; then
     cp ../file-backend.tf .
     terraform init \
               -backend-config "path=/cncf/data/${TF_VAR_name}/terraform.tfstate"
@@ -362,9 +377,9 @@ fi
     _retry "❤ Installing Helm" helm init
     kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
 
-elif [ "$1" = "ibmcloud-destroy" ] ; then
+elif [ "$CLOUD_CMD" = "ibmcloud-destroy" ] ; then
 cd ${DIR}/ibm
-if [ "$3" = "s3" ]; then
+if [ "$BACKEND" = "s3" ]; then
     cp ../s3-backend.tf .
     terraform init \
               -backend-config "bucket=${AWS_BUCKET}" \
@@ -372,11 +387,66 @@ if [ "$3" = "s3" ]; then
               -backend-config "region=${AWS_DEFAULT_REGION}"
     time terraform destroy -force ${DIR}/ibm
 
-elif [ "$3" = "file" ]; then
+elif [ "$BACKEND" = "file" ]; then
     cp ../file-backend.tf .
     terraform init \
               -backend-config "path=/cncf/data/${TF_VAR_name}/terraform.tfstate" 
 time terraform destroy -force ${DIR}/ibm
 fi
+
+# Begin vSphere
+elif [[ "$CLOUD_CMD" = "vsphere-deploy" || \
+        "$CLOUD_CMD" = "vsphere-destroy" ]] ; then
+
+    cd ${DIR}/vsphere
+
+    if [ -n "$VSPHERE_SERVER" ]; then
+        export TF_VAR_vsphere_server=$VSPHERE_SERVER
+    fi
+    if [ -n "$VSPHERE_USER" ]; then
+        export TF_VAR_vsphere_user=$VSPHERE_USER
+    fi
+    if [ -n "$VSPHERE_PASSWORD" ]; then
+        export TF_VAR_vsphere_password=$VSPHERE_PASSWORD
+    fi
+    if [ -n "$VSPHERE_AWS_ACCESS_KEY_ID" ]; then
+        export TF_VAR_vsphere_aws_access_key_id=$VSPHERE_AWS_ACCESS_KEY_ID
+    fi
+    if [ -n "$VSPHERE_AWS_SECRET_ACCESS_KEY" ]; then
+        export TF_VAR_vsphere_aws_secret_access_key=$VSPHERE_AWS_SECRET_ACCESS_KEY
+    fi
+    if [ -n "$VSPHERE_AWS_REGION" ]; then
+        export TF_VAR_vsphere_aws_region=$VSPHERE_AWS_REGION
+    fi
+
+    # initialize based on the config type
+    if [ "$BACKEND" = "s3" ] ; then
+        cp ../s3-backend.tf .
+        terraform init \
+            -backend-config "bucket=${AWS_BUCKET}" \
+            -backend-config "key=vsphere-${TF_VAR_name}" \
+            -backend-config "region=${AWS_DEFAULT_REGION}"
+    elif [ "$BACKEND" = "file" ] ; then
+        cp ../file-backend.tf .
+        terraform init -backend-config "path=/cncf/data/${TF_VAR_name}/terraform.tfstate"
+    fi
+
+    # deploy/destroy implementations
+    if [ "$CLOUD_CMD" = "vsphere-deploy" ] ; then
+        terraform taint -module=kubeconfig null_resource.kubeconfig || true
+        time terraform apply -auto-approve ${DIR}/vsphere
+    elif [ "$CLOUD_CMD" = "vsphere-destroy" ] ; then
+        time terraform destroy -force ${DIR}/vsphere || true
+        # Exit after destroying resources as further commands cause hang
+        exit
+    fi
+
+    export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
+    _retry "❤ Trying to connect to cluster with kubectl" kubectl get cs
+    _retry "❤ Ensure that the kube-system namespaces exists" kubectl get namespace kube-system
+    _retry "❤ Ensure that ClusterRoles are available" kubectl get ClusterRole.v1.rbac.authorization.k8s.io
+    _retry "❤ Ensure that ClusterRoleBindings are available" kubectl get ClusterRoleBinding.v1.rbac.authorization.k8s.io
+
 fi
+# End vSphere
  

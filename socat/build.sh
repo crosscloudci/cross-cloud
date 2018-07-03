@@ -44,7 +44,8 @@ function build_readline() {
     cd /build
 
     # Download
-    curl -LO ftp://ftp.cwru.edu/pub/bash/readline-${READLINE_VERSION}.tar.gz
+    
+    curl -LO ftp://ftp.gnu.org/gnu/readline/readline-${READLINE_VERSION}.tar.gz
     tar xzvf readline-${READLINE_VERSION}.tar.gz
     cd readline-${READLINE_VERSION}
 

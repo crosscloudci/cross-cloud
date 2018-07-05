@@ -26,7 +26,7 @@ resource "azurerm_virtual_machine" "cncf" {
   count = "${ var.worker_node_count }"
   name                  = "${ var.hostname }-${ count.index + 1 }.${ var.hostname_suffix }"
   location              = "${ var.location }"
-  availability_set_id   = "${ var.availability_id }"
+   # availability_set_id   = "${ var.availability_id }"
   resource_group_name   = "${ var.name }"
   network_interface_ids = ["${ element(azurerm_network_interface.cncf.*.id, count.index) }"]
   vm_size               = "${ var.worker_vm_size }"

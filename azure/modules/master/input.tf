@@ -12,7 +12,7 @@ variable "image_version"   {}
 variable "subnet_id" {}
 variable "storage_primary_endpoint" {}
 variable "storage_container" {}
-variable "availability_id" {}
+# variable "availability_id" {}
 variable "master_cloud_init" {}
 variable "data_dir" {}
 

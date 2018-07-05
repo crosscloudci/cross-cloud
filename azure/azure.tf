@@ -37,11 +37,11 @@ resource "azurerm_storage_container" "cncf" {
   container_access_type = "private"
 }
 
-resource "azurerm_availability_set" "cncf" {
-  name                = "${ var.name }"
-  resource_group_name = "${ var.name }"
-  location            = "${ var.location }"
-}
+# resource "azurerm_availability_set" "cncf" {
+#   name                = "${ var.name }"
+#   resource_group_name = "${ var.name }"
+#   location            = "${ var.location }"
+# }
 
 
 # Create Azure Cloud Config

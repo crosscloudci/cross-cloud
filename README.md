@@ -40,7 +40,7 @@ docker run \
   -e CLOUD=aws    \
   -e COMMAND=deploy \
   -e BACKEND=file  \ 
-  -e AWS_ACCESS_KEY_ID= $AWS_ACCESS_KEY_ID    \
+  -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID    \
   -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY    \
   -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION    \
   -ti registry.cncf.ci/cncf/cross-cloud/provisioning:production

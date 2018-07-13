@@ -77,7 +77,7 @@ docker run \
   -e BACKEND=file  \ 
   -e GOOGLE_REGION=us-central1    \
   -e GOOGLE_PROJECT=test-cncf-cross-cloud  \
-  -e GOOGLE_CREDENTIALS=”${GOOGLE_CREDENTIALS}”
+  -e GOOGLE_CREDENTIALS="${GOOGLE_CREDENTIALS}" \
   -ti registry.cncf.ci/cncf/cross-cloud/provisioning:production
 ```
 

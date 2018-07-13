@@ -36,7 +36,7 @@ export AWS_DEFAULT_REGION=”YOUR_AWS_DEFAULT_REGION” # eg. ap-southeast-2
 ```bash
 docker run \
   -v /tmp/data:/cncf/data \
-  -e NAME=cross-cloud
+  -e NAME=cross-cloud \
   -e CLOUD=aws    \
   -e COMMAND=deploy \
   -e BACKEND=file  \ 

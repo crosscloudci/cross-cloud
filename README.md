@@ -36,11 +36,11 @@ export AWS_DEFAULT_REGION=”YOUR_AWS_DEFAULT_REGION” # eg. ap-southeast-2
 ```bash
 docker run \
   -v /tmp/data:/cncf/data \
-  -e NAME=cross-cloud
+  -e NAME=cross-cloud \
   -e CLOUD=aws    \
   -e COMMAND=deploy \
   -e BACKEND=file  \ 
-  -e AWS_ACCESS_KEY_ID= $AWS_ACCESS_KEY_ID    \
+  -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID    \
   -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY    \
   -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION    \
   -ti registry.cncf.ci/cncf/cross-cloud/provisioning:production

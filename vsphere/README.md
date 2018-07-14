@@ -110,11 +110,20 @@ docker run \
 The following command can be used to provision a Cross-Cloud environment
 to vSphere:
 ```
-./scripts/template.sh
+cd ./cncf/vsphere
+
+docker build . --tag template && \
+docker run  \
+  -e VSPHERE_SERVER=$VSPHERE_SERVER \
+  -e VSPHERE_USER=$VSPHERE_USER \
+  -e VSPHERE_PASSWORD=$VSPHERE_PASSWORD \
+  -ti template
+
 ```
 
 
 ```shell
+docker build . --tag provisioning && \
 docker run \
   --rm \
   --dns ${DNS_SERVER} --dns 8.8.8.8 \

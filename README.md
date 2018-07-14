@@ -185,6 +185,7 @@ GCE/GKE:
  * -e GOOGLE_CREDENTIALS=secret
  * -e GOOGLE_REGION=us-central1
  * -e GOOGLE_PROJECT=test-163823
+ * -e GOOGLE_ZONE=us-central1-a
 
 OpenStack:
  * -e TF_VAR_os_auth_url=$OS_AUTH_URL

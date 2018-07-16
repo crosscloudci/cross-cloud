@@ -15,6 +15,13 @@ RUN go get github.com/jakexks/terraform-provider-gzip
 # Build the Etcd Terraform provider
 RUN go get github.com/paperg/terraform-provider-etcdiscovery
 
+ENV GOVC_VERSION=0.18.0
+RUN go get -d github.com/vmware/govmomi && \
+    git --work-tree /go/src/github.com/vmware/govmomi \
+        --git-dir /go/src/github.com/vmware/govmomi/.git \
+        checkout -b v${GOVC_VERSION} v${GOVC_VERSION} && \
+    go install github.com/vmware/govmomi/govc
+
 #FROM crosscloudci/debian-go:latest
 FROM alpine:3.7
 LABEL maintainer="Denver Williams <denver@debian.nz>"

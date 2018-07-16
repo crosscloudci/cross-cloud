@@ -14,17 +14,7 @@ variable "vsphere_user" {}
 variable "vsphere_password" {}
 
 variable "allow_unverified_ssl" {
-  default = false
-}
-
-# AWS Auth Settings for the Load Balancer & Elastic IP
-# This should be the account linked to the VMC SDDC.
-variable "vsphere_aws_access_key_id" {}
-
-variable "vsphere_aws_secret_access_key" {}
-
-variable "vsphere_aws_region" {
-  default = "us-west-2"
+  default = true
 }
 
 # vSphere Resource Pool Settings
@@ -68,11 +58,11 @@ variable "lb_vpc_id" {
 
 # DNS Configuration
 variable "etcd_server" {
-  default = "147.75.69.23:2379"
+  default = "0.0.0.0:2379"
 }
 
 variable "discovery_nameserver" {
-  default = "147.75.69.23"
+  default = "0.0.0.0"
 }
 
 # VM configuration
@@ -81,7 +71,7 @@ variable "datacenter" {
 }
 
 variable "resource_pool" {
-  default = "CNCF Cross-Cloud"
+  default = "Compute-ResourcePool"
 }
 
 variable "datastore_name" {
@@ -94,15 +84,15 @@ variable "vm_folder" {
 
 # Master Configuration
 variable "master_num_cpu" {
-  default = "16"
+  default = "2"
 }
 
 variable "master_num_cores_per_socket" {
-  default = "8"
+  default = "2"
 }
 
 variable "master_memory" {
-  default = "65536"
+  default = "4096"
 }
 
 variable "master_node_count" {
@@ -110,24 +100,24 @@ variable "master_node_count" {
 }
 
 variable "master_network_name" {
-  default = "VMC Networks/sddc-cgw-network-1"
+  default = "VM Network"
 }
 
 variable "master_template_name" {
-  default = "Templates/coreos_production_vmware_ova"
+  default = "coreos_production_vmware_ova"
 }
 
 # Worker Configuration
 variable "worker_num_cpu" {
-  default = "16"
+  default = "2"
 }
 
 variable "worker_num_cores_per_socket" {
-  default = "8"
+  default = "2"
 }
 
 variable "worker_memory" {
-  default = "65536"
+  default = "4096"
 }
 
 variable "worker_node_count" {
@@ -135,11 +125,11 @@ variable "worker_node_count" {
 }
 
 variable "worker_network_name" {
-  default = "VMC Networks/sddc-cgw-network-1"
+  default = "VM Network"
 }
 
 variable "worker_template_name" {
-  default = "Templates/coreos_production_vmware_ova"
+  default = "coreos_production_vmware_ova"
 }
 
 # Kubernetes configuration

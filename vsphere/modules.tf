@@ -2,7 +2,7 @@ module "folder" {
   source = "./modules/folder"
 
   datacenter  = "${var.datacenter}"
-  folder_path = "Workloads/CNCF Cross-Cloud/${var.name}"
+  folder_path = "${var.name}"
 }
 
 module "resource_pool" {
@@ -130,23 +130,6 @@ module "worker_templates" {
   dns_dhcp = ""
 }
 
-module "load_balancer" {
-  source = "./modules/load_balancer"
-
-  count = "${var.master_node_count}"
-  name  = "${var.name}"
-
-  port        = "${var.lb_port}"
-  subnet_id   = "${var.lb_subnet_id}"
-  target_ips  = ["${split(",", module.master.master_ips)}"]
-  target_port = "${var.lb_target_port}"
-  vpc_id      = "${var.lb_vpc_id}"
-
-  vsphere_aws_access_key_id     = "${var.vsphere_aws_access_key_id}"
-  vsphere_aws_secret_access_key = "${var.vsphere_aws_secret_access_key}"
-  vsphere_aws_region            = "${var.vsphere_aws_region}"
-}
-
 module "dns" {
   source = "../dns-etcd"
 
@@ -157,7 +140,7 @@ module "dns" {
   cloud_provider       = "${var.cloud_provider}"
 
   master_ips        = "${module.master.master_ips}"
-  public_master_ips = "${module.load_balancer.public_address}"
+  public_master_ips = "${module.master.master_ips}"
   worker_ips        = "${module.worker.worker_ips}"
 
   master_node_count = "${var.master_node_count}"

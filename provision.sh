@@ -450,7 +450,12 @@ elif [[ "$CLOUD_CMD" = "vsphere-deploy" || \
         terraform taint -module=kubeconfig null_resource.kubeconfig || true
         time terraform apply -auto-approve ${DIR}/vsphere
     elif [ "$CLOUD_CMD" = "vsphere-destroy" ] ; then
-        time terraform destroy -force ${DIR}/vsphere || true
+        VSPHERE_DESTROY_SKIP=${VSPHERE_DESTROY_SKIP:-${DESTROY_SKIP}}
+        if [ "${VSPHERE_DESTROY_SKIP}" = "true" ]; then
+          echo "vsphere environment destruction disabled"
+        else
+          time terraform destroy -force ${DIR}/vsphere || true
+        fi
         # Exit after destroying resources as further commands cause hang
         exit
     fi

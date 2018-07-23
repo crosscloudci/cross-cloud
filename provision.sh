@@ -419,6 +419,20 @@ elif [[ "$CLOUD_CMD" = "vsphere-deploy" || \
         export TF_VAR_vsphere_aws_region=$VSPHERE_AWS_REGION
     fi
 
+    # If VSPHERE_DESTROY_FORCE is set (true, dryrun) then use the 
+    # destroy script to tear down the environment. This option does 
+    # not require the Terraform state.
+    if [ "${CLOUD_CMD}" = "vsphere-destroy" ] && \
+       [ -n "${VSPHERE_DESTROY_FORCE}" ]; then
+
+        if [ "${BACKEND}" = "file" ]; then
+            export VSPHERE_TFSTATE_PATH="/cncf/data/${NAME}"
+        fi
+
+        time ./destroy-force.sh "${NAME}"
+        exit "${?}"
+    fi
+
     # initialize based on the config type
     if [ "$BACKEND" = "s3" ] ; then
         cp ../s3-backend.tf .
@@ -436,7 +450,12 @@ elif [[ "$CLOUD_CMD" = "vsphere-deploy" || \
         terraform taint -module=kubeconfig null_resource.kubeconfig || true
         time terraform apply -auto-approve ${DIR}/vsphere
     elif [ "$CLOUD_CMD" = "vsphere-destroy" ] ; then
-        time terraform destroy -force ${DIR}/vsphere || true
+        VSPHERE_DESTROY_SKIP=${VSPHERE_DESTROY_SKIP:-${DESTROY_SKIP}}
+        if [ "${VSPHERE_DESTROY_SKIP}" = "true" ]; then
+          echo "vsphere environment destruction disabled"
+        else
+          time terraform destroy -force ${DIR}/vsphere || true
+        fi
         # Exit after destroying resources as further commands cause hang
         exit
     fi

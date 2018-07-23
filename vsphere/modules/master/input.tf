@@ -1,4 +1,6 @@
 variable "name" {}
+variable "hostname_suffix" {}
+variable "hostname_path" {}
 variable "count" {}
 variable "cloud_init" {}
 variable "num_cpu" {}

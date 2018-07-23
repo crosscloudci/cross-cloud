@@ -1,66 +1,126 @@
-FROM crosscloudci/debian-go:latest
-MAINTAINER "Denver Williams <denver@debian.nz>"
+# Build the Go binaries using a multi-stage build phase named "golang"
+FROM golang:1.10.3-alpine3.7 as golang
+LABEL maintainer="Andrew Kutz <akutz@vmware.com>"
+
+RUN apk --no-cache add git
+
+# Build the IBM Bluemix Terraform provider
+RUN git clone https://github.com/IBM-Bluemix/terraform-provider-ibm.git \
+    $GOPATH/src/github.com/terraform-providers/terraform-provider-ibm && \
+    go install github.com/terraform-providers/terraform-provider-ibm
+
+# install Oracle terraform provider
+RUN go get github.com/oracle/terraform-provider-oci
+
+# Build the Gzip+Base64 Terraform provider Gzip+base64 & ETCD Provider
+RUN go get github.com/jakexks/terraform-provider-gzip
+
+# Build the Etcd Terraform provider
+RUN go get github.com/paperg/terraform-provider-etcdiscovery
+
+# Build the vSphere CLI tool, govc.
+ENV GOVC_VERSION=0.18.0
+RUN go get -d github.com/vmware/govmomi && \
+    git --work-tree /go/src/github.com/vmware/govmomi \
+        --git-dir /go/src/github.com/vmware/govmomi/.git \
+        checkout -b v${GOVC_VERSION} v${GOVC_VERSION} && \
+    go install github.com/vmware/govmomi/govc
+
+
+#FROM crosscloudci/debian-go:latest
+FROM alpine:3.7
+LABEL maintainer="Denver Williams <denver@debian.nz>"
 ENV KUBECTL_VERSION=v1.8.1
-ENV HELM_VERSION=v2.7.2
-#PIN to Commit on Master
+ENV HELM_VERSION=v2.9.1
+# PIN to Commit on Master
 ENV TERRAFORM_VERSION=0.11.7
 # ENV TERRAFORM_VERSION=master
 # ENV TF_DEV=true
 # ENV TF_RELEASE=true
 ENV ARC=amd64
 
-RUN apt update && apt install -y unzip git bash util-linux wget tar curl jq less
+# Install the common dependencies.
+RUN apk --no-cache add \
+    bash \
+    ca-certificates \
+    curl \
+    git \
+    jq \
+    less \
+    libc6-compat \
+    openssh-client \
+    tar \
+    unzip \
+    util-linux
 
-#Install Gcloud
-RUN echo "deb http://packages.cloud.google.com/apt cloud-sdk-stretch main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && \
-curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add - && \
-apt-get update && \
-apt-get -y install google-cloud-sdk
+# Install the dependencies for rvm.
+RUN apk --no-cache add \
+    gcc \
+    gnupg \
+    libssl1.0 \
+    linux-headers \
+    make \
+    musl-dev \
+    openssl \
+    openssl-dev \
+    procps \
+    ruby \
+    zlib \
+    zlib-dev
 
-#Install Kubectl
-RUN wget -O /usr/local/bin/kubectl https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_VERSION}/bin/linux/$ARC/kubectl && \
-chmod +x /usr/local/bin/kubectl
+# Install pip, used to install the AWS CLI.
+RUN apk --no-cache add \
+    py2-pip
 
-#Install helm
-RUN wget https://storage.googleapis.com/kubernetes-helm/helm-${HELM_VERSION}-linux-amd64.tar.gz  && \
-tar xvzf helm-${HELM_VERSION}-linux-amd64.tar.gz && \
-mv linux-amd64/helm /usr/local/bin && \
-rm -rf helm-*gz linux-amd64
+# Install the dependencies for the Google Cloud SDK.
+RUN apk --no-cache add \
+    python \
+    py-crcmod
 
-# # Install Terraform 
-# WORKDIR $GOPATH/src/github.com/hashicorp/terraform
-# RUN git clone https://github.com/dlx/terraform.git ./ && \
-#     git checkout ${TERRAFORM_VERSION} && \
-#     /bin/bash scripts/build.sh
-# WORKDIR $GOPATH
+# Link lib64 to lib
+RUN ln -s /lib /lib64
 
+# Remove the package cache to free space.
+RUN rm -fr /var/cache/apk/*
 
-#Install Terraform from Upstream
-RUN wget https://releases.hashicorp.com/terraform/$TERRAFORM_VERSION/terraform_"${TERRAFORM_VERSION}"_linux_$ARC.zip
-RUN unzip terraform*.zip -d /usr/bin
+# Upgrade pip and install the AWS CLI.
+RUN pip install --upgrade pip && pip install awscli
 
+# Copy the GoVC binary from the golang build stage.
+COPY --from=golang /go/bin/govc /usr/local/bin/
 
-# Install Bluemix Provider
-RUN mkdir -p $GOPATH/src/github.com/terraform-providers \
-&& cd $GOPATH/src/github.com/terraform-providers \
-&& git clone https://github.com/IBM-Bluemix/terraform-provider-ibm.git \
-&& cd $GOPATH/src/github.com/terraform-providers/terraform-provider-ibm \
-&& make build
+# Install the Google Cloud SDK
+ENV CLOUD_SDK_VERSION=203.0.0
+ENV PATH=/google-cloud-sdk/bin:$PATH
+RUN curl -sSL https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-${CLOUD_SDK_VERSION}-linux-x86_64.tar.gz | \
+    tar xz -C /
 
-# Install Gzip+base64, ETCD, ibm, and oci Provider
-RUN go get -u github.com/jakexks/terraform-provider-gzip && \
-    go get -u github.com/paperg/terraform-provider-etcdiscovery && \
-    go get -u github.com/oracle/terraform-provider-oci && \
-  echo providers { >> ~/.terraformrc && \
-  echo '    gzip = "/go/bin/terraform-provider-gzip"' >> ~/.terraformrc && \
-  echo '    etcdiscovery = "/go/bin/terraform-provider-etcdiscovery"' >> ~/.terraformrc && \
-  echo '    ibm = "/go/bin/terraform-provider-ibm"' >> ~/.terraformrc && \
+# Install the kubectl binary
+RUN curl -sSL -o /usr/local/bin/kubectl https://storage.googleapis.com/kubernetes-release/release/${KUBECTL_VERSION}/bin/linux/${ARC}/kubectl && \
+    chmod +x /usr/local/bin/kubectl
+
+# Install the helm binary
+RUN curl -sSL https://storage.googleapis.com/kubernetes-helm/helm-${HELM_VERSION}-linux-${ARC}.tar.gz | \
+    tar xz --strip-components=1 -C /usr/local/bin linux-${ARC}/helm
+
+# Install the terraform binary
+RUN curl -sSLO https://releases.hashicorp.com/terraform/$TERRAFORM_VERSION/terraform_"${TERRAFORM_VERSION}"_linux_$ARC.zip && \
+    unzip terraform_"${TERRAFORM_VERSION}"_linux_${ARC}.zip -d /usr/bin
+
+# Copy the Terraform providers from the golang build stage
+COPY --from=golang /go/bin/terraform-provider-* /usr/local/bin/
+
+# Write the configuration file Terraform uses to query available providers
+# and their binaries
+RUN echo providers { >> ~/.terraformrc && \
+  echo '    gzip = "/usr/local/bin/terraform-provider-gzip"' >> ~/.terraformrc && \
+  echo '    etcdiscovery = "/usr/local/bin/terraform-provider-etcdiscovery"' >> ~/.terraformrc && \
+  echo '    ibm = "/usr/local/bin/terraform-provider-ibm"' >> ~/.terraformrc && \
   echo '    oci = "/go/bin/terraform-provider-oci"' >> ~/.terraformrc && \
   echo } >> ~/.terraformrc
 
 
 #Add Terraform Modules
-
 COPY validate-cluster/ /cncf/validate-cluster/
 
 COPY aws/ /cncf/aws/
@@ -101,7 +161,10 @@ COPY worker_templates-v1.9.0-alpha.1/ /cncf/worker_templates-v1.9.0-alpha.1/
 COPY worker_templates-v1.9.0/ /cncf/worker_templates-v1.9.0/
 COPY worker_templates-v1.10.0/ /cncf/worker_templates-v1.10.0/
 
-RUN chmod +x /cncf/provision.sh
+# Ensure scripts are executable.
+RUN chmod +x /cncf/provision.sh \
+             /cncf/vsphere/destroy-force.sh
+
 WORKDIR /cncf/
 
-ENTRYPOINT ["/cncf/provision.sh"]
+CMD ["bash", "-c", "/cncf/provision.sh"]

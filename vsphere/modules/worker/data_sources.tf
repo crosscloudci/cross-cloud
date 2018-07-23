@@ -26,6 +26,8 @@ data "template_file" "ign" {
   template = "${file("${path.module}/../../ignition.json")}"
 
   vars {
-    cloud_config = "${base64encode(element(split("`", var.cloud_init), count.index))}"
+    hostname      = "${var.name}-worker-${count.index + 1}.${var.hostname_suffix}"
+    hostname_path = "${var.hostname_path}"
+    cloud_config  = "${base64encode(element(split("`", var.cloud_init), count.index))}"
   }
 }

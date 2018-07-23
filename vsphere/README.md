@@ -63,13 +63,14 @@ integration with vSphere via VMC on AWS:
 | `VSPHERE_AWS_ACCESS_KEY_ID` | An AWS account used to deploy/destroy an ELB |
 | `VSPHERE_AWS_SECRET_ACCESS_KEY` | The secret key for `VSPHERE_AWS_ACCESS_KEY_ID` |
 | `VSPHERE_AWS_REGION ` | The AWS region. Defaults to `us-west-2` |
+| `VSPHERE_DESTROY_FORCE` | Set to `true` to destroy a provisioned environment when the Terraform state is unavailable. This value may also be set to `dryrun` to see what actions would be taken without actually taking them. |
 
 ### Deploy
 The following command can be used to provision a Cross-Cloud environment
 to vSphere:
 
 ```shell
-docker run \
+$ docker run \
   --rm \
   --dns 147.75.69.23 --dns 8.8.8.8 \
   -v $(pwd)/data:/cncf/data \
@@ -91,7 +92,7 @@ The following command can be used to deprovision a Cross-Cloud
 environment deployed to VMC on AWS:
 
 ```shell
-docker run \
+$ docker run \
   --rm \
   --dns 147.75.69.23 --dns 8.8.8.8 \
   -v $(pwd)/data:/cncf/data \
@@ -105,5 +106,29 @@ docker run \
   -e BACKEND=file \
   -e NAME=cross-cloud \
   -e COMMAND=destroy \
+  -ti provisioning
+```
+
+### Destroy without Terraform state
+The following command may be used to deprovision a Cross-Cloud
+environment deployed to VMC on AWS when the Terraform state is
+not available:
+
+```shell
+$ docker run \
+  --rm \
+  --dns 147.75.69.23 --dns 8.8.8.8 \
+  -v $(pwd)/data:/cncf/data \
+  -e VSPHERE_SERVER=$VSPHERE_SERVER \
+  -e VSPHERE_USER=$VSPHERE_USER \
+  -e VSPHERE_PASSWORD=$VSPHERE_PASSWORD \
+  -e VSPHERE_AWS_ACCESS_KEY_ID=$VSPHERE_AWS_ACCESS_KEY_ID \
+  -e VSPHERE_AWS_SECRET_ACCESS_KEY=$VSPHERE_AWS_SECRET_ACCESS_KEY \
+  -e VSPHERE_AWS_REGION=$VSPHERE_AWS_REGION \
+  -e CLOUD=vsphere \
+  -e BACKEND=file \
+  -e NAME=cross-cloud \
+  -e COMMAND=destroy \
+  -e VSPHERE_DESTROY_FORCE=true \
   -ti provisioning
 ```

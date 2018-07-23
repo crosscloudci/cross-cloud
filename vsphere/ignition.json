@@ -20,6 +20,14 @@
     "files": [
       {
         "filesystem": "root",
+        "path": "${hostname_path}",
+        "mode": 420,
+        "contents": {
+          "source": "data:,${hostname}"
+        }
+      },
+      {
+        "filesystem": "root",
         "group": {},
         "path": "/etc/cloud-config.yml",
         "user": {},

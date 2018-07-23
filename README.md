@@ -36,11 +36,11 @@ export AWS_DEFAULT_REGION=”YOUR_AWS_DEFAULT_REGION” # eg. ap-southeast-2
 ```bash
 docker run \
   -v /tmp/data:/cncf/data \
-  -e NAME=cross-cloud
+  -e NAME=cross-cloud \
   -e CLOUD=aws    \
   -e COMMAND=deploy \
   -e BACKEND=file  \ 
-  -e AWS_ACCESS_KEY_ID= $AWS_ACCESS_KEY_ID    \
+  -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID    \
   -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY    \
   -e AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION    \
   -ti registry.cncf.ci/cncf/cross-cloud/provisioning:production
@@ -76,8 +76,9 @@ docker run \
   -e COMMAND=deploy  \
   -e BACKEND=file  \ 
   -e GOOGLE_REGION=us-central1    \
+  -e GOOGLE_ZONE=us-central1-a  \
   -e GOOGLE_PROJECT=test-cncf-cross-cloud  \
-  -e GOOGLE_CREDENTIALS=”${GOOGLE_CREDENTIALS}”
+  -e GOOGLE_CREDENTIALS="${GOOGLE_CREDENTIALS}" \
   -ti registry.cncf.ci/cncf/cross-cloud/provisioning:production
 ```
 
@@ -184,6 +185,7 @@ GCE/GKE:
  * -e GOOGLE_CREDENTIALS=secret
  * -e GOOGLE_REGION=us-central1
  * -e GOOGLE_PROJECT=test-163823
+ * -e GOOGLE_ZONE=us-central1-a
 
 OpenStack:
  * -e TF_VAR_os_auth_url=$OS_AUTH_URL

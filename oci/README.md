@@ -41,7 +41,7 @@ $ docker build . --tag provisioning
 * When you are done you should have All the information you need to move to the next step.
 
 ## Getting Stared
-Running the Cross-Cloud tests with vSphere is separated into three phases:
+Running the Cross-Cloud tests with OCI is separated into three phases:
 
 * [Configure](#configure)
 * [Deploy](#deploy)

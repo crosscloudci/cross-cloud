@@ -116,7 +116,7 @@ RUN echo providers { >> ~/.terraformrc && \
   echo '    gzip = "/usr/local/bin/terraform-provider-gzip"' >> ~/.terraformrc && \
   echo '    etcdiscovery = "/usr/local/bin/terraform-provider-etcdiscovery"' >> ~/.terraformrc && \
   echo '    ibm = "/usr/local/bin/terraform-provider-ibm"' >> ~/.terraformrc && \
-  echo '    oci = "/go/bin/terraform-provider-oci"' >> ~/.terraformrc && \
+  echo '    oci = "/usr/local/bin/terraform-provider-oci"' >> ~/.terraformrc && \
   echo } >> ~/.terraformrc
 
 

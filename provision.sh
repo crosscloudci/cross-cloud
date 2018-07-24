@@ -482,12 +482,6 @@ elif [[ "$CLOUD_CMD" = "oci-deploy" || \
     if [ -n "$OCI_FINGERPRINT" ]; then
         export TF_VAR_oci_fingerprint=$OCI_FINGERPRINT
     fi
-    if [ -n "$OCI_PRIVATE_KEY_PATH" ]; then
-        export TF_VAR_oci_private_key_path=$OCI_PRIVATE_KEY_PATH
-    fi
-    if [ -n "$OCI_REGION" ]; then
-        export TF_VAR_oci_region=$OCI_REGION
-    fi
 
     # initialize based on the config type
     if [ "$BACKEND" = "s3" ] ; then

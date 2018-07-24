@@ -12,7 +12,7 @@ variable "oci_region" { default = "us-phoenix-1" }
 # general
 variable "label_prefix" { default = "crosscloud"}
 variable "ubuntu_linux_image_name" { default = "Canonical-Ubuntu-16.04-2018.06.18-0" }
-variable "coreos_image_ocid" { default = "ocid1.image.oc1.phx.aaaaaaaaurr4h7hwzx234jxr3tieymfdqqroddcr7rneel4rzhhlxyogddmq" }
+variable "coreos_image_ocid" { default = "" }
 
 # ssh
 variable "ssh_private_key" { default = "" }

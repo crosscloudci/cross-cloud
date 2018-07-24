@@ -482,6 +482,9 @@ elif [[ "$CLOUD_CMD" = "oci-deploy" || \
     if [ -n "$OCI_FINGERPRINT" ]; then
         export TF_VAR_oci_fingerprint=$OCI_FINGERPRINT
     fi
+    if [ -n "$OCI_COREOS_OCID" ]; then
+        export TF_VAR_coreos_image_ocid=$OCI_COREOS_OCID
+    fi
 
     # initialize based on the config type
     if [ "$BACKEND" = "s3" ] ; then

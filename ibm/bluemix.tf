@@ -25,17 +25,11 @@ resource "ibm_container_cluster" "testacc_cluster" {
   name            = "${ var.name }"
   datacenter      = "${ var.zone }"
   machine_type    = "${ var.type }"
-  isolation       = "${ var.isolation }"
+  hardware        = "${ var.isolation }"
   public_vlan_id  = "${ data.ibm_network_vlan.vlan_public.id }"
   private_vlan_id = "${ data.ibm_network_vlan.vlan_private.id }"
   no_subnet       = false
-  #subnet_id       = ["${var.subnet_id"]
-  workers = [{
-    name = "worker1"
-    action = "add"
-  }
-]
-
+  worker_num = 1
   org_guid     = "${ data.ibm_org.orgdata.id }"
   space_guid   = "${ var.name }"
   account_guid = "${ data.ibm_account.accountData.id }"

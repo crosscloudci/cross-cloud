@@ -9,6 +9,9 @@ RUN git clone https://github.com/IBM-Bluemix/terraform-provider-ibm.git \
     $GOPATH/src/github.com/terraform-providers/terraform-provider-ibm && \
     go install github.com/terraform-providers/terraform-provider-ibm
 
+# install Oracle terraform provider
+RUN go get github.com/oracle/terraform-provider-oci
+
 # Build the Gzip+Base64 Terraform provider Gzip+base64 & ETCD Provider
 RUN go get github.com/jakexks/terraform-provider-gzip
 
@@ -113,6 +116,7 @@ RUN echo providers { >> ~/.terraformrc && \
   echo '    gzip = "/usr/local/bin/terraform-provider-gzip"' >> ~/.terraformrc && \
   echo '    etcdiscovery = "/usr/local/bin/terraform-provider-etcdiscovery"' >> ~/.terraformrc && \
   echo '    ibm = "/usr/local/bin/terraform-provider-ibm"' >> ~/.terraformrc && \
+  echo '    oci = "/usr/local/bin/terraform-provider-oci"' >> ~/.terraformrc && \
   echo } >> ~/.terraformrc
 
 
@@ -125,6 +129,7 @@ COPY ibm/ /cncf/ibm/
 COPY gce/ /cncf/gce/
 COPY gke/ /cncf/gke/
 COPY openstack/ /cncf/openstack/
+COPY oci/ /cncf/oci/
 COPY packet/ /cncf/packet/
 COPY vsphere/ /cncf/vsphere/
 

@@ -14,6 +14,8 @@ A Kubernetes provisioner supporting multiple clouds (eg. AWS, Azure, Google, Pac
 
 You have to have a working [Docker environment](https://www.docker.com/get-docker)
 
+Note: 147.75.69.23 is the IP address of the DNS server for Cross Cloud deployed Nodes. Should you wish to be able to reach your Nodes by name from outside the cluster, that IP needs to be in your /etc/resolv.conf but it is not a delegating resolver, so it shouldn't be the only nameserver in your resolv.conf.
+
 ##### Quick start for AWS
 
 **Pre-reqs:**

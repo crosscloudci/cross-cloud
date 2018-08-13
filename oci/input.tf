@@ -52,6 +52,7 @@ variable "master_lb_shape" { default="100Mbps"}
 
 # Kubernetes configuration
 variable "etcd_endpoint" {default = "127.0.0.1"}
+variable "kubelet_cloud_provider" {default = "external"}
 variable "cloud_config" { default = "--cloud-config=/etc/srv/kubernetes/cloud-config" }
 variable "cluster_domain" { default = "cluster.local" }
 variable "pod_cidr" { default = "100.96.0.0/11" }

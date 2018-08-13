@@ -1,3 +1,6 @@
+output "oci_core_vcn_id" {
+  value = "${oci_core_virtual_network.cross-cloud-vcn.id}"
+}
 output "k8s_subnet_ad1_id" {
   value = "${oci_core_subnet.K8sSubnetAD1.id}"
 }

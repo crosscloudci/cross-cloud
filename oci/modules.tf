@@ -29,9 +29,8 @@ module "master" {
   count                                         = "${var.master_node_count}"
   availability_domain                           = "${lookup(data.oci_identity_availability_domains.ADs.availability_domains[0],"name")}"
   compartment_id                                = "${module.compartment.compartment_id}"
-  label_prefix                                  = "${var.label_prefix}"
-  display_name_prefix                           = "ad1master"
-  hostname_label_prefix                         = "ad1master"
+  hostname                                      = "${var.name}-master"
+  hostname_suffix                               = "${var.name}.${var.cloud_provider}.local"
   image_id                                      = "${var.master_image_id}"
   shape                                         = "${var.master_shape}"
   subnet_id                                     = "${module.network.k8s_subnet_ad1_id}"
@@ -47,9 +46,8 @@ module "worker" {
   count                                         = "${var.worker_node_count}"
   availability_domain                           = "${lookup(data.oci_identity_availability_domains.ADs.availability_domains[0],"name")}"
   compartment_id                                = "${module.compartment.compartment_id}"
-  label_prefix                                  = "${var.label_prefix}"
-  display_name_prefix                           = "ad1worker"
-  hostname_label_prefix                         = "ad1worker"
+  hostname                                      = "${var.name}-worker"
+  hostname_suffix                               = "${var.name}.${var.cloud_provider}.local"
   image_id                                      = "${var.worker_image_id}"
   shape                                         = "${var.worker_shape}"
   subnet_id                                     = "${module.network.k8s_subnet_ad1_id}"
@@ -60,7 +58,7 @@ module "worker" {
 }
 
 module "master_templates" {
-  source                                        = "../master_templates-v1.10.0"
+  source                                        = "./modules/master_templates-v1.10.0-oci"
 
   hostname                                      = "${var.name}-master"
   hostname_suffix                               = "${var.name}.${var.cloud_provider}.local"
@@ -74,6 +72,9 @@ module "master_templates" {
   kube_scheduler_artifact                       = "${var.kube_scheduler_artifact}"
   apiserver_key                                 = "${module.tls.apiserver_key}"
   kube_apiserver_artifact                       = "${var.kube_apiserver_artifact}"
+  kubelet_artifact                              = "${var.kubelet_artifact}"
+  kube_proxy_image                              = "${var.kube_proxy_image}"
+  kube_proxy_tag                                = "${var.kube_proxy_tag}"
   cloud_config                                  = "${var.cloud_config}"
   apiserver                                     = "${module.tls.apiserver}"
   dns_conf                                      = "${module.dns.dns_conf}"
@@ -81,6 +82,8 @@ module "master_templates" {
   scheduler_key                                 = "${module.tls.scheduler_key}"
   name                                          = "${var.name}"
   dns_dhcp                                      = "${module.dns.dns_dhcp}"
+  cni_artifact                                  = "${var.cni_artifact}"
+  cni_plugins_artifact                          = "${var.cni_plugins_artifact}"
   ca                                            = "${module.tls.ca}"
   etcd_endpoint                                 = "${var.etcd_endpoint}"
   etcd_artifact                                 = "${var.etcd_artifact}"
@@ -90,10 +93,15 @@ module "master_templates" {
   scheduler                                     = "${module.tls.scheduler}"
   cloud_config_file                             = ""
   etcd_discovery                                = "${var.name}.${var.cloud_provider}.local"
+  proxy                                         = "${module.tls.proxy}"
+  proxy_key                                     = "${module.tls.proxy_key}"
+  bootstrap                                     = "${module.master_templates.bootstrap}"
+  non_masquerade_cidr                           = "${var.non_masquerade_cidr}"
+  internal_lb_ip                                = "internal-master.${var.name}.${var.cloud_provider}.local"
 }
 
 module "worker_templates" {
-  source                                        = "../worker_templates-v1.10.0"
+  source                                        = "./modules/worker_templates-v1.10.0-oci"
 
   hostname                                      = "${var.name}-worker"
   hostname_suffix                               = "${var.name}.${var.cloud_provider}.local"
@@ -104,7 +112,7 @@ module "worker_templates" {
   cni_plugins_artifact                          = "${var.cni_plugins_artifact}"
   kube_proxy_image                              = "${var.kube_proxy_image}"
   kube_proxy_tag                                = "${var.kube_proxy_tag}"
-  cloud_provider                                = ""
+  cloud_provider                                = "${var.kubelet_cloud_provider}"
   cloud_config                                  = "${var.cloud_config}"
   cluster_domain                                = "${var.cluster_domain}"
   pod_cidr                                      = "${var.pod_cidr}"
@@ -133,6 +141,20 @@ module "master_lb" {
   k8sMasterAd1Count                             = "${var.master_node_count}"
   label_prefix                                  = "${var.label_prefix}"
   shape                                         = "${var.master_lb_shape}"
+}
+
+module "addons" {
+  source                                        = "./modules/addons"
+
+  oci_region                                    = "${var.oci_region}"
+  oci_tenancy_ocid                              = "${var.oci_tenancy_ocid}"
+  oci_user_ocid                                 = "${var.oci_user_ocid}"
+  oci_api_private_key                           = "${indent(4, file("/cncf/keys/oci_api_key.pem"))}"
+  oci_fingerprint                               = "${var.oci_fingerprint}"
+  oci_compartment_ocid                          = "${module.compartment.compartment_id}"
+  oci_vcn_ocid                                  = "${module.network.oci_core_vcn_id}"
+  oci_lb_subnet_1_ocid                          = "${module.network.k8s_subnet_ad1_id}"
+  oci_lb_subnet_2_ocid                          = "${module.network.k8s_subnet_ad2_id}"
 }
 
 module "dns" {

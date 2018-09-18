@@ -1,13 +1,8 @@
-variable "name" {}
-variable "hostname_suffix" {}
-variable "hostname_path" {}
-variable "label_prefix" {}
-variable "display_name_prefix" {}
-variable "hostname_label_prefix" {}
-variable "master_cloud_init" {}
 variable "count" {}
 variable "availability_domain" {}
 variable "compartment_id" {}
+variable "hostname" {}
+variable "hostname_suffix" {}
 variable "image_id" {}
 variable "shape" {}
 variable "subnet_id" {}

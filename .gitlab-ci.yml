@@ -84,6 +84,12 @@ before_script:
       elif [ $CLOUD == "ibmcloud" ]; then
          echo "kube-dns is already deployed, skipping"
          kubectl create -f ./rbac/helm-rbac.yml || true
+      elif [ $CLOUD == "oci" ]; then
+         kubectl create -f ./rbac/ || true
+         kubectl --namespace kube-system create secret generic oci-cloud-controller-manager --from-file=cloud-provider.yaml=./data/addons/create/oci-ccm-secret.yaml || true
+         kubectl --namespace kube-system create secret generic oci-flexvolume-driver --from-file=config.yaml=./data/addons/create/oci-fvd-secret.yaml || true
+         kubectl --namespace kube-system create secret generic oci-volume-provisioner --from-file=config.yaml=./data/addons/create/oci-vp-secret.yaml || true
+         kubectl apply -f ./data/addons/apply
       else
         kubectl create -f ./rbac/ || true
         kubectl create -f ./addons/ || true
@@ -118,7 +124,7 @@ before_script:
   variables:
     CLOUD: MUST BE SET
   script:
-    - /cncf/provision.sh ${CLOUD}-destroy ${ENVIRONMENT}${DEPLOYMENT_SHA} s3 ${CLOUD} 
+    - /cncf/provision.sh ${CLOUD}-destroy ${ENVIRONMENT}${DEPLOYMENT_SHA} s3 ${CLOUD}
 
 # Build-Source VARs
 Build-Source:
@@ -139,7 +145,7 @@ Provisioning:
 #     name: ${AWS_CLOUD}-${CI_COMMIT_REF_SLUG}
 #     url: https://$CI_ENVIRONMENT_SLUG.demo.cncf.ci/
 
-# AWS Destroy VARs 
+# AWS Destroy VARs
 Kubernetes_destroy:
   <<: *kubernetes_cloud_destroy_template
   variables:

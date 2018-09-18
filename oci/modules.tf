@@ -26,6 +26,7 @@ module "network" {
 module "master" {
   source                                        = "./modules/master"
 
+  name                                          = "${var.name}"
   count                                         = "${var.master_node_count}"
   availability_domain                           = "${lookup(data.oci_identity_availability_domains.ADs.availability_domains[0],"name")}"
   compartment_id                                = "${module.compartment.compartment_id}"
@@ -36,13 +37,13 @@ module "master" {
   subnet_id                                     = "${module.network.k8s_subnet_ad1_id}"
   ssh_public_key                                = "${module.ssh.ssh_public_key}"
   ssh_private_key                               = "${module.ssh.ssh_private_key}"
-  master_cloud_init                             = "${module.master_templates.master_cloud_init}"
   coreos_image_ocid                             = "${var.coreos_image_ocid}"
 }
 
 module "worker" {
   source                                        = "./modules/worker"
 
+  name                                          = "${var.name}"
   count                                         = "${var.worker_node_count}"
   availability_domain                           = "${lookup(data.oci_identity_availability_domains.ADs.availability_domains[0],"name")}"
   compartment_id                                = "${module.compartment.compartment_id}"
@@ -53,7 +54,6 @@ module "worker" {
   subnet_id                                     = "${module.network.k8s_subnet_ad1_id}"
   ssh_public_key                                = "${module.ssh.ssh_public_key}"
   ssh_private_key                              = "${module.ssh.ssh_private_key}"
-  worker_cloud_init                             = "${module.worker_templates.worker_cloud_init}"
   coreos_image_ocid                             = "${var.coreos_image_ocid}"
 }
 

@@ -13,46 +13,11 @@ resource "oci_core_instance" "K8sMaster" {
 
   metadata {
     ssh_authorized_keys = "${var.ssh_public_key}"
+    user_data = "${ base64encode(element(data.template_file.ign.*.rendered, count.index)) }"
   }
 
   timeouts {
     create = "60m"
   }
-
-  provisioner "file" {
-    connection {
-      type = "ssh"
-      user = "core"
-      private_key = "${var.ssh_private_key}"
-      host = "${self.public_ip}"
-    }
-    content = "${ base64encode(element(split("`", var.master_cloud_init), count.index)) }"
-    destination = "~/user_data"
-  }
-
-  provisioner "file" {
-    connection {
-      type = "ssh"
-      user = "core"
-      private_key = "${var.ssh_private_key}"
-      host = "${self.public_ip}"
-    }
-    content = "REBOOT_STRATEGY=off"
-    destination = "~/update.conf"
-  }
-
-  provisioner "remote-exec" {
-    connection {
-      type = "ssh"
-      user = "core"
-      private_key = "${var.ssh_private_key}"
-      host = "${self.public_ip}"
-    }
-    inline = [
-      "base64 -d user_data > user_data_decoded",
-      "sudo coreos-cloudinit --from-file user_data_decoded",
-      "sudo mv ~/update.conf /etc/coreos/",
-      "sudo systemctl restart locksmithd"
-    ]
-  }
 }
+

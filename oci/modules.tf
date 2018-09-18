@@ -26,36 +26,42 @@ module "network" {
 module "master" {
   source                                        = "./modules/master"
 
+  name                                          = "${var.name}"
   count                                         = "${var.master_node_count}"
-  availability_domain                           = "${lookup(data.oci_identity_availability_domains.ADs.availability_domains[0],"name")}"
-  compartment_id                                = "${module.compartment.compartment_id}"
+  hostname_suffix                               = "${var.name}.${var.cloud_provider}.local"
+  hostname_path                                 = "/etc/hostname"
   label_prefix                                  = "${var.label_prefix}"
   display_name_prefix                           = "ad1master"
   hostname_label_prefix                         = "ad1master"
+  master_cloud_init                             = "${module.master_templates.master_cloud_init}"
+  availability_domain                           = "${lookup(data.oci_identity_availability_domains.ADs.availability_domains[0],"name")}"
+  compartment_id                                = "${module.compartment.compartment_id}"
   image_id                                      = "${var.master_image_id}"
   shape                                         = "${var.master_shape}"
   subnet_id                                     = "${module.network.k8s_subnet_ad1_id}"
   ssh_public_key                                = "${module.ssh.ssh_public_key}"
   ssh_private_key                               = "${module.ssh.ssh_private_key}"
-  master_cloud_init                             = "${module.master_templates.master_cloud_init}"
   coreos_image_ocid                             = "${var.coreos_image_ocid}"
 }
 
 module "worker" {
   source                                        = "./modules/worker"
 
+  name                                          = "${var.name}"
   count                                         = "${var.worker_node_count}"
-  availability_domain                           = "${lookup(data.oci_identity_availability_domains.ADs.availability_domains[0],"name")}"
-  compartment_id                                = "${module.compartment.compartment_id}"
+  hostname_suffix                               = "${var.name}.${var.cloud_provider}.local"
+  hostname_path                                 = "/etc/hostname"
   label_prefix                                  = "${var.label_prefix}"
   display_name_prefix                           = "ad1worker"
   hostname_label_prefix                         = "ad1worker"
+  worker_cloud_init                             = "${module.worker_templates.worker_cloud_init}"
+  availability_domain                           = "${lookup(data.oci_identity_availability_domains.ADs.availability_domains[0],"name")}"
+  compartment_id                                = "${module.compartment.compartment_id}"
   image_id                                      = "${var.worker_image_id}"
   shape                                         = "${var.worker_shape}"
   subnet_id                                     = "${module.network.k8s_subnet_ad1_id}"
   ssh_public_key                                = "${module.ssh.ssh_public_key}"
   ssh_private_key                              = "${module.ssh.ssh_private_key}"
-  worker_cloud_init                             = "${module.worker_templates.worker_cloud_init}"
   coreos_image_ocid                             = "${var.coreos_image_ocid}"
 }
 

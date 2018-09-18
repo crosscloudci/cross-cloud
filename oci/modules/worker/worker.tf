@@ -13,24 +13,25 @@ resource "oci_core_instance" "K8sWorker" {
 
   metadata {
     ssh_authorized_keys = "${var.ssh_public_key}"
-    user_data = "${ base64encode(element(split("`", var.worker_cloud_init), count.index)) }"
+    # user_data = "${ base64encode(element(split("`", var.worker_cloud_init), count.index)) }"
+    user_data = "${ base64encode(element(data.template_file.ign.*.rendered, count.index)) }"
   }
 
   timeouts {
     create = "60m"
   }
 
-    provisioner "remote-exec" {
-    connection{
-      type = "ssh"
-      user = "core"
-      private_key = "${var.ssh_private_key}"
-      host = "${self.public_ip}"
-    }
-    inline = [
-      "wget http://169.254.169.254/opc/v1/instance/metadata/user_data",
-      "base64 -d user_data > user_data_decoded",
-      "sudo coreos-cloudinit --from-file user_data_decoded"
-    ]
-  }
+  #   provisioner "remote-exec" {
+  #   connection{
+  #     type = "ssh"
+  #     user = "core"
+  #     private_key = "${var.ssh_private_key}"
+  #     host = "${self.public_ip}"
+  #   }
+  #   inline = [
+  #     "wget http://169.254.169.254/opc/v1/instance/metadata/user_data",
+  #     "base64 -d user_data > user_data_decoded",
+  #     "sudo coreos-cloudinit --from-file user_data_decoded"
+  #   ]
+  # }
 }

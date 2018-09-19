@@ -13,5 +13,3 @@ data "template_file" "ign" {
     cloud_config  = "${ element(gzip_me.cloud_init.*.output, count.index) }"
   }
 }
-
-output "test" { value = "${ data.template_file.ign.0.rendered }" }

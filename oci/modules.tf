@@ -60,9 +60,9 @@ module "worker" {
 module "master_templates" {
   source                                        = "./modules/master_templates-v1.10.0-oci"
 
-  hostname                                      = "${var.name}-master"
-  hostname_suffix                               = "${var.name}.${var.cloud_provider}.local"
-  hostname_path                                 = "/etc/hostname"
+  hostname                                      = ""
+  hostname_suffix                               = ""
+  hostname_path                                 = "/etc/ignore_hostname"
   master_node_count                             = "1"
   kube_controller_manager_artifact              = "${var.kube_controller_manager_artifact}"
   ca_key                                        = "${module.tls.ca_key}"
@@ -103,9 +103,9 @@ module "master_templates" {
 module "worker_templates" {
   source                                        = "./modules/worker_templates-v1.10.0-oci"
 
-  hostname                                      = "${var.name}-worker"
-  hostname_suffix                               = "${var.name}.${var.cloud_provider}.local"
-  hostname_path                                 = "/etc/hostname"
+  hostname                                      = ""
+  hostname_suffix                               = ""
+  hostname_path                                 = "/etc/ignore_hostname"
   worker_node_count                             = "1"
   kubelet_artifact                              = "${var.kubelet_artifact}"
   cni_artifact                                  = "${var.cni_artifact}"

@@ -36,7 +36,7 @@ variable "network_cidrs" {
 # Master vars
 variable "master_node_count" { default = "1" }
 variable "master_image_id" { default = "Canonical-Ubuntu-16.04"}
-variable "master_shape" { default = "VM.Standard2.16" }
+variable "master_shape" { default = "VM.Standard2.4" }
 
 # Worker vars
 variable "worker_node_count" { default = "1" }

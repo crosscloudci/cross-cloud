@@ -8,8 +8,8 @@ data "template_file" "ign" {
   template = "${file("${path.module}/../../ignition.json")}"
 
   vars {
-    hostname      = ""
-    hostname_path = "/etc/ignore_hostname"
+    hostname      = "${ var.hostname }-${count.index + 1}.${var.hostname_suffix}"
+    hostname_path = "${var.hostname_path}"
     cloud_config  = "${ element(gzip_me.cloud_init.*.output, count.index) }"
   }
 }

@@ -26,12 +26,12 @@ module "network" {
 module "master" {
   source                                        = "./modules/master"
 
-  name                                          = "${var.name}"
   count                                         = "${var.master_node_count}"
   availability_domain                           = "${lookup(data.oci_identity_availability_domains.ADs.availability_domains[0],"name")}"
   compartment_id                                = "${module.compartment.compartment_id}"
   hostname                                      = "${var.name}-master"
   hostname_suffix                               = "${var.name}.${var.cloud_provider}.local"
+  hostname_path                                 = "/etc/hostname"
   master_cloud_init                             = "${module.master_templates.master_cloud_init}"
   image_id                                      = "${var.master_image_id}"
   shape                                         = "${var.master_shape}"
@@ -44,12 +44,12 @@ module "master" {
 module "worker" {
   source                                        = "./modules/worker"
 
-  name                                          = "${var.name}"
   count                                         = "${var.worker_node_count}"
   availability_domain                           = "${lookup(data.oci_identity_availability_domains.ADs.availability_domains[0],"name")}"
   compartment_id                                = "${module.compartment.compartment_id}"
   hostname                                      = "${var.name}-worker"
   hostname_suffix                               = "${var.name}.${var.cloud_provider}.local"
+  hostname_path                                 = "/etc/hostname"
   worker_cloud_init                             = "${module.worker_templates.worker_cloud_init}"
   image_id                                      = "${var.worker_image_id}"
   shape                                         = "${var.worker_shape}"

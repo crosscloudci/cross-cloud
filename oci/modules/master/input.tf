@@ -3,6 +3,7 @@ variable "availability_domain" {}
 variable "compartment_id" {}
 variable "hostname" {}
 variable "hostname_suffix" {}
+variable "hostname_path" {}
 variable "master_cloud_init" {}
 variable "image_id" {}
 variable "shape" {}

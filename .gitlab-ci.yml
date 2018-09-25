@@ -76,6 +76,15 @@ before_script:
   variables:
     CLOUD: MUST BE SET
   script:
+    - >
+      if [ $CLOUD == "oci" ]; then
+         echo "Writing certs"
+         mkdir ./cncf/keys
+         echo "$OCI_API_KEY" > ./cncf/keys/oci_api_key.pem
+         echo "$OCI_API_PUB" > ./cncf/keys/oci_api_key_pub.pem
+      else
+        echo "Skipping OCI Cloud Certs"
+      fi
     - /cncf/provision.sh ${CLOUD}-deploy ${ENVIRONMENT}${DEPLOYMENT_SHA} s3 ${CLOUD}
     - >
       if [ $CLOUD == "gke" ]; then

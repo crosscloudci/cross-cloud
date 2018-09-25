@@ -4,9 +4,6 @@
 coreos:
 
   units:
-    - name: locksmithd.service
-      command: restart
-
     - name: systemd-resolved.service
       command: restart
 
@@ -177,11 +174,6 @@ coreos:
 
 
 write-files:
-
-  - path: /etc/coreos/update.conf
-    permissions: "0444"
-    content: |
-      REBOOT_STRATEGY=off
 
   - path: ${ hostname_path }
     content: |

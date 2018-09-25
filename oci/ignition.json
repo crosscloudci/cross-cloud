@@ -43,6 +43,14 @@
         "contents": "[Unit]\nType=oneshot\n\n[Service]\nExecStartPre=/usr/bin/bash -c '/usr/bin/cat /etc/cloud-config-gzip.yml | /usr/bin/base64 -d | /usr/bin/gunzip > /home/core/cloud-config.yml'\nExecStart=/usr/bin/coreos-cloudinit --from-file /home/core/cloud-config.yml\n\n[Install]\nWantedBy=multi-user.target",
         "enabled": true,
         "name": "cloud-init-onboot.service"
+      },
+      {
+        "mask": true,
+        "name": "update-engine.service"
+      },
+      {
+        "mask": true,
+        "name": "locksmithd.service"
       }
     ]
   }

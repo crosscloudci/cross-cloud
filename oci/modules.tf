@@ -18,7 +18,7 @@ module "network" {
 
   network_cidrs                                 = "${var.network_cidrs}"
   compartment_id                                = "${module.compartment.compartment_id}"
-  label_prefix                                  = "${var.label_prefix}"
+  label_prefix                                  = "${var.name}"
   tenancy_id                                    = "${var.oci_tenancy_ocid}"
   ssh_public_key                                = "${module.ssh.ssh_public_key}"
 }
@@ -141,7 +141,7 @@ module "master_lb" {
   lb_subnet_1_id                                = "${module.network.lb_subnet_ad2_id}"
   k8smaster_ad1_private_ips                     = "${module.master.private_master_ips}"
   k8sMasterAd1Count                             = "${var.master_node_count}"
-  label_prefix                                  = "${var.label_prefix}"
+  label_prefix                                  = "${var.name}"
   shape                                         = "${var.master_lb_shape}"
 }
 

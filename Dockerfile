@@ -14,6 +14,12 @@ RUN git clone https://github.com/terraform-providers/terraform-provider-oci.git 
     cd $GOPATH/src/github.com/terraform-providers/terraform-provider-oci ; git checkout tags/v3.0.0 ; cd - && \ 
     go install github.com/terraform-providers/terraform-provider-oci
 
+# Build the Packet.net terraform provider
+RUN git clone https://github.com/terraform-providers/terraform-provider-packet.git \
+    $GOPATH/src/github.com/terraform-providers/terraform-provider-packet && \
+    cd $GOPATH/src/github.com/terraform-providers/terraform-provider-packet && \
+    go install github.com/terraform-providers/terraform-provider-packet
+
 # Build the Gzip+Base64 Terraform provider Gzip+base64 & ETCD Provider
 RUN go get github.com/jakexks/terraform-provider-gzip
 
@@ -119,6 +125,7 @@ RUN echo providers { >> ~/.terraformrc && \
   echo '    etcdiscovery = "/usr/local/bin/terraform-provider-etcdiscovery"' >> ~/.terraformrc && \
   echo '    ibm = "/usr/local/bin/terraform-provider-ibm"' >> ~/.terraformrc && \
   echo '    oci = "/usr/local/bin/terraform-provider-oci"' >> ~/.terraformrc && \
+  echo '    packet = "/usr/local/bin/terraform-provider-packet"' >> ~/.terraformrc && \
   echo } >> ~/.terraformrc
 
 

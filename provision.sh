@@ -491,7 +491,7 @@ elif [[ "$CLOUD_CMD" = "oci-deploy" || \
         cp ../s3-backend.tf .
         terraform init \
             -backend-config "bucket=${AWS_BUCKET}" \
-            -backend-config "key=vsphere-${TF_VAR_name}" \
+            -backend-config "key=oci-${TF_VAR_name}" \
             -backend-config "region=${AWS_DEFAULT_REGION}"
     elif [ "$BACKEND" = "file" ] ; then
         cp ../file-backend.tf .

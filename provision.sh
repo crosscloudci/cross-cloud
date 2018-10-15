@@ -9,6 +9,10 @@
 # the rest of the script.
 if [ "$1" = "shell" ]; then exec /bin/bash; fi
 
+# If the first argument is "kubectl" then execute kubectl with any
+# of the remaining arguments.
+if [ "${1}" = "kubectl" ]; then shift; exec /usr/local/bin/kubectl "${@}"; fi
+
 # Initialize the configuration properties based on the command-line
 # arguments OR on the corresponding environment variables.
 CLOUD_CMD=$CLOUD-$COMMAND

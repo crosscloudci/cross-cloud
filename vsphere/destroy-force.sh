@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# posix complaint
+# posix compliant
 # verified by https://www.shellcheck.net
 
 ################################################################################

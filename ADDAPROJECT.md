@@ -8,7 +8,7 @@ configuration file
 1.  Clone the project
 
 ```
-git clone <project name>
+git clone yourprojectname
 ```	
 ```
 - e.g. git clone https://github.com/envoyproxy/envoy.git
@@ -87,11 +87,11 @@ In Gitlab you need to complete the following steps.
         - Select stable (*e.g. v1.7.0*)
         - Both should be running
 #### How to Debug
-1. Add a sleep to the gitlabyml script
-2. ssh root@runner.<yourgitlaburl> 
+1. Add a sleep to the .gitlab-ci.yml script
+2. ssh root@runner.yourgitlaburl
 3. Click on compile job
 ### Gitlab yml common issue
-- If gitlab.yml does not refresh: 
+- If .gitlab-ci.yml does not refresh: 
   - Go to pipelines
   - Copy/cut the gitlab.yml and save an empty url
   - Paste the url in again and save it
@@ -102,7 +102,7 @@ In Gitlab you need to complete the following steps.
     e.g. envoy-configuration
     ```
 
-3. Get values from upstream in the value . yaml
+3. Get values from upstream in the value.yml
 4. Review helm chart for project
 5. Replace image in .gitlab-ci.yml with image helm chart
 6. Change strategy

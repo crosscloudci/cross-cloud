@@ -91,7 +91,10 @@ In Gitlab you need to complete the following steps.
 2. ssh root@runner.<yourgitlaburl> 
 3. Click on compile job
 ### Gitlab yml common issue
-- If gitlab.yml not refresh, go to pipelines and copy/cut it.  save as empty. then paste it in again
+- If gitlab.yml does not refresh: 
+  - Go to pipelines
+  - Copy/cut the gitlab.yml and save an empty url
+  - Paste the url in again and save it
 ### Gitlab Yml Configuration
 1. Make a crosscloudci/envoy-configuration.git
 2. Edit .gitlab-ci.yml

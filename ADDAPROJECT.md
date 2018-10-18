@@ -79,6 +79,7 @@ In Gitlab you need to complete the following steps.
                 - Link to cross cloud artwork repo
             - Rename the project names to envoy etc
             - Charts are the repo that we get the helm charts from
+            - Change timeout for how long your build takes
 7. Review pipelines
 	- Pipelines
         - manually add new to the url (***this is a workaround***)
@@ -105,18 +106,12 @@ In Gitlab you need to complete the following steps.
 3. Get values from upstream in the value.yml
 4. Review helm chart for project
 5. Replace image in .gitlab-ci.yml with image helm chart
-6. Change strategy
+6. Create a new file in the cross-project defaults directory (envoy.yml)
     - *Helm has a wait flag that only works when you are rolling out: this needs tob be updated*
     	```
     	max unavailable: 0
     	```
-	
-    - *Helm call in gitlab.yml*
-        ```
-    	wait/timeout
-    	```
-	
-	- Update Helm configuration flags
+	  - Update Helm configuration flags
 	
 6. Review value file and compair it with the gitlab-ci.yml
 

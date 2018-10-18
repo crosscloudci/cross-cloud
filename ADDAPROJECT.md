@@ -1,6 +1,6 @@
 # Cross Cloud CI New Project Setup
 
-The trick is to call the project's ci scripts from gitlabs ci 
+The goal is to call the new project's ci scripts from gitlabs ci 
 configuration file
 
 ## CI Setup

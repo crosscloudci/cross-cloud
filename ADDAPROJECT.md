@@ -20,7 +20,7 @@ scripts for building and publishing images
 - e.g. the .circleci/config.yml file outlines lots of shell scripts
 that refer to a docker dependencies image and build image
 
-3. Replicate the buildz
+3. Replicate the builds
 
 - e.g. use docker to replicate a build image using the previously viewed ci 
 - you probably want to pin your image

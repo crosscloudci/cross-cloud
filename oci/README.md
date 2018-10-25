@@ -31,17 +31,17 @@ The last stable version of container linux to include an oracle build was this v
 
 * Once you have downloaded and unzipped, you will need to upload to object storage in your tenancy.
     * Create a bucket in the compartment in the OCI the console: https://console.us-phoenix-1.oraclecloud.com/a/storage/objects
-    * Click 'create bucket' and fill out the info. 
+    * Click 'create bucket' and fill out the info.
     * Click on the newly created bucket
     * In the objects section, click upload object and select the unzipped image.
     * Once the image is uploaded, click on "pre-authenticated requests" on the left side of the screen.
     * Click create pre authenticated request and fill out the info to point it at the object you just created. Once
     you have done this, it will spit out a URL. Copy this url and move on.
-    * Navigate to compute -> custom images on the console. 
+    * Navigate to compute -> custom images on the console.
     * Click import image. Select QCOW2 and native mode. Fill out the rest of the info and use the URL you copied
     from the previous step in the object storage url field. Add any tags you desire and click import image.
     * Once the image is ready, copy its OCID and save it for the provision step.  
-    
+
 
 #### User Setup
 
@@ -53,7 +53,7 @@ The last stable version of container linux to include an oracle build was this v
 
     * Group Documentation: https://docs.cloud.oracle.com/iaas/Content/Identity/Tasks/managinggroups.htm#Working
 
-    * Policy Documentation: https://docs.cloud.oracle.com/iaas/Content/Identity/Concepts/policygetstarted.htm?tocpath=Services%7CIAM%7C_____1 
+    * Policy Documentation: https://docs.cloud.oracle.com/iaas/Content/Identity/Concepts/policygetstarted.htm?tocpath=Services%7CIAM%7C_____1
 
 * Follow the instructions here to add a user: https://docs.cloud.oracle.com/iaas/Content/GSG/Tasks/addingusers.htm
 
@@ -100,13 +100,13 @@ $ docker run \
   -e OCI_COREOS_OCID=$OCI_COREOS_OCID \
   -e CLOUD=oci \
   -e BACKEND=file \
-  -e NAME=cross-cloud \
+  -e NAME=crosscloud \
   -e COMMAND=deploy \
   -ti provisioning
 ```
 
 ### Destroy
-The following command can be used to deprovision a Cross-Cloud 
+The following command can be used to deprovision a Cross-Cloud
 environment deployed to OCI:
 
 ```shell
@@ -121,7 +121,7 @@ $ docker run \
   -e OCI_COREOS_OCID=$OCI_COREOS_OCID \
   -e CLOUD=oci \
   -e BACKEND=file \
-  -e NAME=cross-cloud \
+  -e NAME=crosscloud \
   -e COMMAND=destroy \
   -ti provisioning
 ```

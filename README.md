@@ -14,6 +14,8 @@ A Kubernetes provisioner supporting multiple clouds (eg. AWS, Azure, Google, Pac
 
 You have to have a working [Docker environment](https://www.docker.com/get-docker)
 
+Note: 147.75.69.23 is the IP address of the DNS server for Cross Cloud deployed Nodes. Should you wish to be able to reach your Nodes by name from outside the cluster, that IP needs to be in your /etc/resolv.conf but it is not a delegating resolver, so it shouldn't be the only nameserver in your resolv.conf.
+
 ##### Quick start for AWS
 
 **Pre-reqs:**
@@ -76,6 +78,7 @@ docker run \
   -e COMMAND=deploy  \
   -e BACKEND=file  \ 
   -e GOOGLE_REGION=us-central1    \
+  -e GOOGLE_ZONE=us-central1-a  \
   -e GOOGLE_PROJECT=test-cncf-cross-cloud  \
   -e GOOGLE_CREDENTIALS="${GOOGLE_CREDENTIALS}" \
   -ti registry.cncf.ci/cncf/cross-cloud/provisioning:production
@@ -149,6 +152,44 @@ docker run \
   -ti registry.cncf.ci/cncf/cross-cloud/provisioning:ci-stable-v0-2-0
 ```
 
+#### Quickstart for Packet.net
+
+Packet.net requires an auth token and a project id.
+
+To deploy to packet:
+```bash
+docker run \
+  -v /tmp/data:/cncf/data \
+  --dns 147.75.69.23 --dns 8.8.8.8 \
+  -e NAME=cross-cloud \
+  -e CLOUD=packet    \
+  -e COMMAND=deploy \
+  -e BACKEND=file  \
+  -e PACKET_AUTH_TOKEN=${PACKET_AUTH_TOKEN} \
+  -e TF_VAR_packet_project_id=${PACKET_PROJECT_ID} \
+  -ti registry.cncf.ci/cncf/cross-cloud/provisioning:production
+```
+
+To destroy your cluster in packet:
+```bash
+docker run \
+  -v /tmp/data:/cncf/data \
+  --dns 147.75.69.23 --dns 8.8.8.8 \
+  -e NAME=cross-cloud \
+  -e CLOUD=packet    \
+  -e COMMAND=destroy \
+  -e BACKEND=file  \
+  -e PACKET_AUTH_TOKEN=${PACKET_AUTH_TOKEN} \
+  -e TF_VAR_packet_project_id=${PACKET_PROJECT_ID} \
+  -ti registry.cncf.ci/cncf/cross-cloud/provisioning:production
+```
+
+Note: 147.75.69.23 is the IP address of the DNS server for Cross Cloud
+deployed Nodes.  Should you wish to be able to reach your Nodes by name from
+outside the cluster, that IP needs to be in your /etc/resolv.conf *but* it is
+not a delegating resolver, so it shouldn't be the *only* nameserver in your
+resolv.conf
+
 #### General usage and configuration
 
 Minimum required configuration to use Cross-cloud to deploy a Kubernetes cluster on Cloud X.
@@ -184,6 +225,7 @@ GCE/GKE:
  * -e GOOGLE_CREDENTIALS=secret
  * -e GOOGLE_REGION=us-central1
  * -e GOOGLE_PROJECT=test-163823
+ * -e GOOGLE_ZONE=us-central1-a
 
 OpenStack:
  * -e TF_VAR_os_auth_url=$OS_AUTH_URL

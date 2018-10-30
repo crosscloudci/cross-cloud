@@ -3,11 +3,22 @@ FROM golang:1.10.3-alpine3.7 as golang
 LABEL maintainer="Andrew Kutz <akutz@vmware.com>"
 
 RUN apk --no-cache add git
-
 # Build the IBM Bluemix Terraform provider
-RUN git clone https://github.com/IBM-Bluemix/terraform-provider-ibm.git \
-    $GOPATH/src/github.com/terraform-providers/terraform-provider-ibm && \
-    go install github.com/terraform-providers/terraform-provider-ibm
+RUN git clone https://github.com/IBM-Cloud/terraform-provider-ibm.git \
+    $GOPATH/src/github.com/IBM-Cloud/terraform-provider-ibm && \
+    go install github.com/IBM-Cloud/terraform-provider-ibm
+
+# Build Oracle terraform provider
+RUN git clone https://github.com/terraform-providers/terraform-provider-oci.git \
+    $GOPATH/src/github.com/terraform-providers/terraform-provider-oci && \
+    cd $GOPATH/src/github.com/terraform-providers/terraform-provider-oci ; git checkout tags/v3.0.0 ; cd - && \ 
+    go install github.com/terraform-providers/terraform-provider-oci
+
+# Build the Packet.net terraform provider
+RUN git clone https://github.com/terraform-providers/terraform-provider-packet.git \
+    $GOPATH/src/github.com/terraform-providers/terraform-provider-packet && \
+    cd $GOPATH/src/github.com/terraform-providers/terraform-provider-packet && \
+    go install github.com/terraform-providers/terraform-provider-packet
 
 # Build the Gzip+Base64 Terraform provider Gzip+base64 & ETCD Provider
 RUN go get github.com/jakexks/terraform-provider-gzip
@@ -113,6 +124,8 @@ RUN echo providers { >> ~/.terraformrc && \
   echo '    gzip = "/usr/local/bin/terraform-provider-gzip"' >> ~/.terraformrc && \
   echo '    etcdiscovery = "/usr/local/bin/terraform-provider-etcdiscovery"' >> ~/.terraformrc && \
   echo '    ibm = "/usr/local/bin/terraform-provider-ibm"' >> ~/.terraformrc && \
+  echo '    oci = "/usr/local/bin/terraform-provider-oci"' >> ~/.terraformrc && \
+  echo '    packet = "/usr/local/bin/terraform-provider-packet"' >> ~/.terraformrc && \
   echo } >> ~/.terraformrc
 
 
@@ -125,6 +138,7 @@ COPY ibm/ /cncf/ibm/
 COPY gce/ /cncf/gce/
 COPY gke/ /cncf/gke/
 COPY openstack/ /cncf/openstack/
+COPY oci/ /cncf/oci/
 COPY packet/ /cncf/packet/
 COPY vsphere/ /cncf/vsphere/
 

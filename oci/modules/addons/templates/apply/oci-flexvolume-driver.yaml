@@ -1,0 +1,74 @@
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  name: oci-flexvolume-driver-master
+  namespace: kube-system
+spec:
+  template:
+    metadata:
+      name: oci-flexvolume-driver-master
+      labels:
+        app: oci-flexvolume-driver
+    spec:
+      nodeSelector:
+        kubernetes.io/role: "master"
+      tolerations:
+      - key: node.cloudprovider.kubernetes.io/uninitialized
+        value: "true"
+        effect: NoSchedule
+      - key: kubernetes.io/role
+        value: master
+        effect: NoSchedule
+      containers:
+        - image: iad.ocir.io/oracle/oci-flexvolume-driver:0.7.2
+          imagePullPolicy: Always
+          name: oci-flexvolume-driver
+          env:
+            - name: OCI_FLEXD_DRIVER_DIRECTORY
+              value: /var/lib/kubernetes/volumes
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - mountPath: /flexmnt
+              name: flexvolume-mount
+            - mountPath: /tmp
+              name: config
+              readOnly: true
+      volumes:
+        - name: flexvolume-mount
+          hostPath:
+            path: /var/lib/kubernetes/volumes
+            type: DirectoryOrCreate
+        - name: config
+          secret:
+            secretName: oci-flexvolume-driver
+---
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  name: oci-flexvolume-driver-worker
+  namespace: kube-system
+spec:
+  template:
+    metadata:
+      name: oci-flexvolume-driver-worker
+      labels:
+        app: oci-flexvolume-driver
+    spec:
+      containers:
+        - image: iad.ocir.io/oracle/oci-flexvolume-driver:0.7.2
+          imagePullPolicy: Always
+          name: oci-flexvolume-driver
+          env:
+            - name: OCI_FLEXD_DRIVER_DIRECTORY
+              value: /var/lib/kubernetes/volumes
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - mountPath: /flexmnt
+              name: flexvolume-mount
+      volumes:
+        - name: flexvolume-mount
+          hostPath:
+            path: /var/lib/kubernetes/volumes
+            type: DirectoryOrCreate

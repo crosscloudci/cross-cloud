@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# posix complaint
+# posix compliant
 # verified by https://www.shellcheck.net
 
 # The script requires exactly one argument -- the name of the environment

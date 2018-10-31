@@ -3,17 +3,37 @@ FROM golang:1.10.3-alpine3.7 as golang
 LABEL maintainer="Andrew Kutz <akutz@vmware.com>"
 
 RUN apk --no-cache add git
-
 # Build the IBM Bluemix Terraform provider
-RUN git clone https://github.com/IBM-Bluemix/terraform-provider-ibm.git \
-    $GOPATH/src/github.com/terraform-providers/terraform-provider-ibm && \
-    go install github.com/terraform-providers/terraform-provider-ibm
+RUN git clone https://github.com/IBM-Cloud/terraform-provider-ibm.git \
+    $GOPATH/src/github.com/IBM-Cloud/terraform-provider-ibm && \
+    go install github.com/IBM-Cloud/terraform-provider-ibm
+
+# Build Oracle terraform provider
+RUN git clone https://github.com/terraform-providers/terraform-provider-oci.git \
+    $GOPATH/src/github.com/terraform-providers/terraform-provider-oci && \
+    cd $GOPATH/src/github.com/terraform-providers/terraform-provider-oci ; git checkout tags/v3.0.0 ; cd - && \ 
+    go install github.com/terraform-providers/terraform-provider-oci
+
+# Build the Packet.net terraform provider
+RUN git clone https://github.com/terraform-providers/terraform-provider-packet.git \
+    $GOPATH/src/github.com/terraform-providers/terraform-provider-packet && \
+    cd $GOPATH/src/github.com/terraform-providers/terraform-provider-packet && \
+    go install github.com/terraform-providers/terraform-provider-packet
 
 # Build the Gzip+Base64 Terraform provider Gzip+base64 & ETCD Provider
 RUN go get github.com/jakexks/terraform-provider-gzip
 
 # Build the Etcd Terraform provider
 RUN go get github.com/paperg/terraform-provider-etcdiscovery
+
+# Build the vSphere CLI tool, govc.
+ENV GOVC_VERSION=0.18.0
+RUN go get -d github.com/vmware/govmomi && \
+    git --work-tree /go/src/github.com/vmware/govmomi \
+        --git-dir /go/src/github.com/vmware/govmomi/.git \
+        checkout -b v${GOVC_VERSION} v${GOVC_VERSION} && \
+    go install github.com/vmware/govmomi/govc
+
 
 #FROM crosscloudci/debian-go:latest
 FROM alpine:3.7
@@ -27,22 +47,59 @@ ENV TERRAFORM_VERSION=0.11.7
 # ENV TF_RELEASE=true
 ENV ARC=amd64
 
-# Install some common dependencies
+# Install the common dependencies.
 RUN apk --no-cache add \
-    unzip git bash util-linux curl tar jq less libc6-compat openssh-client
+    bash \
+    ca-certificates \
+    curl \
+    git \
+    jq \
+    less \
+    libc6-compat \
+    openssh-client \
+    tar \
+    unzip \
+    util-linux
+
+# Install the dependencies for rvm.
+RUN apk --no-cache add \
+    gcc \
+    gnupg \
+    libssl1.0 \
+    linux-headers \
+    make \
+    musl-dev \
+    openssl \
+    openssl-dev \
+    procps \
+    ruby \
+    zlib \
+    zlib-dev
+
+# Install pip, used to install the AWS CLI.
+RUN apk --no-cache add \
+    py2-pip
+
+# Install the dependencies for the Google Cloud SDK.
+RUN apk --no-cache add \
+    python \
+    py-crcmod
 
 # Link lib64 to lib
 RUN ln -s /lib /lib64
 
-# Install rvm deps
-RUN apk --no-cache add \
-    gcc gnupg curl ruby bash procps musl-dev make linux-headers \
-        zlib zlib-dev openssl openssl-dev libssl1.0
+# Remove the package cache to free space.
+RUN rm -fr /var/cache/apk/*
+
+# Upgrade pip and install the AWS CLI.
+RUN pip install --upgrade pip && pip install awscli
+
+# Copy the GoVC binary from the golang build stage.
+COPY --from=golang /go/bin/govc /usr/local/bin/
 
 # Install the Google Cloud SDK
 ENV CLOUD_SDK_VERSION=203.0.0
 ENV PATH=/google-cloud-sdk/bin:$PATH
-RUN apk --no-cache add python py-crcmod
 RUN curl -sSL https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-${CLOUD_SDK_VERSION}-linux-x86_64.tar.gz | \
     tar xz -C /
 
@@ -67,6 +124,8 @@ RUN echo providers { >> ~/.terraformrc && \
   echo '    gzip = "/usr/local/bin/terraform-provider-gzip"' >> ~/.terraformrc && \
   echo '    etcdiscovery = "/usr/local/bin/terraform-provider-etcdiscovery"' >> ~/.terraformrc && \
   echo '    ibm = "/usr/local/bin/terraform-provider-ibm"' >> ~/.terraformrc && \
+  echo '    oci = "/usr/local/bin/terraform-provider-oci"' >> ~/.terraformrc && \
+  echo '    packet = "/usr/local/bin/terraform-provider-packet"' >> ~/.terraformrc && \
   echo } >> ~/.terraformrc
 
 
@@ -79,6 +138,7 @@ COPY ibm/ /cncf/ibm/
 COPY gce/ /cncf/gce/
 COPY gke/ /cncf/gke/
 COPY openstack/ /cncf/openstack/
+COPY oci/ /cncf/oci/
 COPY packet/ /cncf/packet/
 COPY vsphere/ /cncf/vsphere/
 
@@ -110,7 +170,10 @@ COPY worker_templates-v1.9.0-alpha.1/ /cncf/worker_templates-v1.9.0-alpha.1/
 COPY worker_templates-v1.9.0/ /cncf/worker_templates-v1.9.0/
 COPY worker_templates-v1.10.0/ /cncf/worker_templates-v1.10.0/
 
-RUN chmod +x /cncf/provision.sh
+# Ensure scripts are executable.
+RUN chmod +x /cncf/provision.sh \
+             /cncf/vsphere/destroy-force.sh
+
 WORKDIR /cncf/
 
 CMD ["bash", "-c", "/cncf/provision.sh"]

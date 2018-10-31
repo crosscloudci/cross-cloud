@@ -9,6 +9,10 @@
 # the rest of the script.
 if [ "$1" = "shell" ]; then exec /bin/bash; fi
 
+# If the first argument is "kubectl" then execute kubectl with any
+# of the remaining arguments.
+if [ "${1}" = "kubectl" ]; then shift; exec /usr/local/bin/kubectl "${@}"; fi
+
 # Initialize the configuration properties based on the command-line
 # arguments OR on the corresponding environment variables.
 CLOUD_CMD=$CLOUD-$COMMAND
@@ -419,6 +423,20 @@ elif [[ "$CLOUD_CMD" = "vsphere-deploy" || \
         export TF_VAR_vsphere_aws_region=$VSPHERE_AWS_REGION
     fi
 
+    # If VSPHERE_DESTROY_FORCE is set (true, dryrun) then use the 
+    # destroy script to tear down the environment. This option does 
+    # not require the Terraform state.
+    if [ "${CLOUD_CMD}" = "vsphere-destroy" ] && \
+       [ -n "${VSPHERE_DESTROY_FORCE}" ]; then
+
+        if [ "${BACKEND}" = "file" ]; then
+            export VSPHERE_TFSTATE_PATH="/cncf/data/${NAME}"
+        fi
+
+        time ./destroy-force.sh "${NAME}"
+        exit "${?}"
+    fi
+
     # initialize based on the config type
     if [ "$BACKEND" = "s3" ] ; then
         cp ../s3-backend.tf .
@@ -438,9 +456,9 @@ elif [[ "$CLOUD_CMD" = "vsphere-deploy" || \
     elif [ "$CLOUD_CMD" = "vsphere-destroy" ] ; then
         VSPHERE_DESTROY_SKIP=${VSPHERE_DESTROY_SKIP:-${DESTROY_SKIP}}
         if [ "${VSPHERE_DESTROY_SKIP}" = "true" ]; then
-            echo "vsphere environment destruction disabled"
+          echo "vsphere environment destruction disabled"
         else
-            time terraform destroy -force ${DIR}/vsphere || true
+          time terraform destroy -force ${DIR}/vsphere || true
         fi
         # Exit after destroying resources as further commands cause hang
         exit
@@ -451,7 +469,53 @@ elif [[ "$CLOUD_CMD" = "vsphere-deploy" || \
     _retry "❤ Ensure that the kube-system namespaces exists" kubectl get namespace kube-system
     _retry "❤ Ensure that ClusterRoles are available" kubectl get ClusterRole.v1.rbac.authorization.k8s.io
     _retry "❤ Ensure that ClusterRoleBindings are available" kubectl get ClusterRoleBinding.v1.rbac.authorization.k8s.io
-
-fi
 # End vSphere
- 
+
+# Begin OCI
+elif [[ "$CLOUD_CMD" = "oci-deploy" || \
+        "$CLOUD_CMD" = "oci-destroy" ]] ; then
+
+    cd ${DIR}/oci
+
+    if [ -n "$OCI_TENANCY_OCID" ]; then
+        export TF_VAR_oci_tenancy_ocid=$OCI_TENANCY_OCID
+    fi
+    if [ -n "$OCI_USER_OCID" ]; then
+        export TF_VAR_oci_user_ocid=$OCI_USER_OCID
+    fi
+    if [ -n "$OCI_FINGERPRINT" ]; then
+        export TF_VAR_oci_fingerprint=$OCI_FINGERPRINT
+    fi
+    if [ -n "$OCI_COREOS_OCID" ]; then
+        export TF_VAR_coreos_image_ocid=$OCI_COREOS_OCID
+    fi
+
+    # initialize based on the config type
+    if [ "$BACKEND" = "s3" ] ; then
+        cp ../s3-backend.tf .
+        terraform init \
+            -backend-config "bucket=${AWS_BUCKET}" \
+            -backend-config "key=oci-${TF_VAR_name}" \
+            -backend-config "region=${AWS_DEFAULT_REGION}"
+    elif [ "$BACKEND" = "file" ] ; then
+        cp ../file-backend.tf .
+        terraform init -backend-config "path=/cncf/data/${TF_VAR_name}/terraform.tfstate"
+    fi
+
+    # deploy/destroy implementations
+    if [ "$CLOUD_CMD" = "oci-deploy" ] ; then
+        terraform taint -module=kubeconfig null_resource.kubeconfig || true
+        time terraform apply -auto-approve ${DIR}/oci
+    elif [ "$CLOUD_CMD" = "oci-destroy" ] ; then
+        time terraform destroy -force ${DIR}/oci || true
+        # Exit after destroying resources as further commands cause hang
+        exit
+    fi
+
+    export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
+    _retry "❤ Trying to connect to cluster with kubectl" kubectl get cs
+    _retry "❤ Ensure that the kube-system namespaces exists" kubectl get namespace kube-system
+    _retry "❤ Ensure that ClusterRoles are available" kubectl get ClusterRole.v1.rbac.authorization.k8s.io
+    _retry "❤ Ensure that ClusterRoleBindings are available" kubectl get ClusterRoleBinding.v1.rbac.authorization.k8s.io
+# End Oracle
+fi

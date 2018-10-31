@@ -1,3 +1,3 @@
 output "public_address" {
-  value = "${aws_eip.xapi.public_ip}"
+  value = "${element(data.dns_a_record_set.xapi.addrs, 0)}"
 }

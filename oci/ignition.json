@@ -1,0 +1,57 @@
+{
+  "ignition": {
+    "config": {},
+    "timeouts": {},
+    "version": "2.1.0"
+  },
+  "networkd": {},
+  "passwd": {
+    "users": [
+      {
+        "name": "core",
+        "sshAuthorizedKeys": [
+          "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCnxGbWpxBQoomQ4hD4eO5HnxM9olcoZbs70hMWHw/e5aErfyqp770GNdNe2HTWOV4pcJewCfo/F0I4xm5HIEVlEE4ml45nBMwiy9btHQ47nyXxrSln+WPpDdnv2/H154JQgrmDCrU3uj2sQGaLFGKsVZ08+XfefVC/uG056GQxco2mA/aASZ7eudPZ4lP6/Hw2O3Qz+dUW0QhYPfCUCfvb80AKpGRAwPoiWsB4AfVUKD1mXrkmVMs4LMT4GJAoIgxKcOxw5796m1YdUdsxAW62fUpO2+xUsjw7FD5HqfckqsNyijKWt9E0gZAtNDAIsOe/HGc7B9M31WK3Fy7FQjep root@twt084pc"
+        ]
+      }
+    ]
+  },
+  "storage": {
+    "files": [
+      {
+        "filesystem": "root",
+        "path": "${hostname_path}",
+        "mode": 420,
+        "contents": {
+          "source": "data:,${hostname}"
+        }
+      },
+      {
+        "filesystem": "root",
+        "group": {},
+        "path": "/etc/cloud-config-gzip.yml",
+        "user": {},
+        "contents": {
+          "source": "data:,${ cloud_config }"
+        },
+        "mode": 420
+      }
+    ]
+  },
+  "systemd": {
+    "units": [
+      {
+        "contents": "[Unit]\nType=oneshot\n\n[Service]\nExecStartPre=/usr/bin/bash -c '/usr/bin/cat /etc/cloud-config-gzip.yml | /usr/bin/base64 -d | /usr/bin/gunzip > /home/core/cloud-config.yml'\nExecStart=/usr/bin/coreos-cloudinit --from-file /home/core/cloud-config.yml\n\n[Install]\nWantedBy=multi-user.target",
+        "enabled": true,
+        "name": "cloud-init-onboot.service"
+      },
+      {
+        "mask": true,
+        "name": "update-engine.service"
+      },
+      {
+        "mask": true,
+        "name": "locksmithd.service"
+      }
+    ]
+  }
+}

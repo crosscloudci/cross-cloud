@@ -4,24 +4,12 @@ provider "aws" {
   region     = "${var.vsphere_aws_region}"
 }
 
-resource "aws_eip" "xapi" {
-  vpc = true
-
-  tags {
-    Environment = "${var.name}"
-  }
-}
-
 resource "aws_lb" "xapi" {
   name_prefix        = "xapi-"
   load_balancer_type = "network"
   internal           = false
   ip_address_type    = "ipv4"
-
-  subnet_mapping {
-    subnet_id     = "${var.subnet_id}"
-    allocation_id = "${aws_eip.xapi.id}"
-  }
+  subnets            = ["${var.subnet_id}"]
 
   tags {
     Environment = "${var.name}"
@@ -57,4 +45,10 @@ resource "aws_lb_listener" "xapi" {
     target_group_arn = "${aws_lb_target_group.xapi.arn}"
     type             = "forward"
   }
+}
+
+provider "dns" {}
+
+data "dns_a_record_set" "xapi" {
+  host = "${aws_lb.xapi.dns_name}"
 }

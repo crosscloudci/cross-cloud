@@ -112,7 +112,7 @@ module "tls" {
 
 
 module "master_templates" {
-  source = "/cncf/master_templates-v1.10.0"
+  source = "/cncf/master_templates-v1.10.0-ubuntu"
 
   hostname = ""
   hostname_suffix = ""

@@ -1,0 +1,9 @@
+#cloud-config
+runcmd:
+  - [ sh, -c 'echo "=========hello world========="' ]
+  - [ touch, /tmp/hello.txt ]
+write_files:
+  - path: /tmp/hello.file
+    encoding: b64
+    content: |
+      Z3Vuemlw

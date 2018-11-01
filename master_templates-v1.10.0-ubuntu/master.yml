@@ -1,4 +1,7 @@
 #cloud-config
+package_upgrade: true
+packages:
+  - [ docker.io ]
 runcmd:
   - [ systemctl, restart, systemd-resolved ]
   - [ systemctl, restart, systemd-hostnamed ]

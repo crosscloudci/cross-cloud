@@ -151,7 +151,7 @@ module "master_templates" {
 }
 
 module "worker_templates" {
-  source = "../worker_templates-v1.10.0"
+  source = "../worker_templates-v1.10.0-ubuntu"
 
   hostname = ""
   hostname_suffix = ""

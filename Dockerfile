@@ -170,6 +170,7 @@ COPY worker_templates-v1.8.1/ /cncf/worker_templates-v1.8.1/
 COPY worker_templates-v1.9.0-alpha.1/ /cncf/worker_templates-v1.9.0-alpha.1/
 COPY worker_templates-v1.9.0/ /cncf/worker_templates-v1.9.0/
 COPY worker_templates-v1.10.0/ /cncf/worker_templates-v1.10.0/
+COPY worker_templates-v1.10.0-ubuntu/ /cncf/worker_templates-v1.10.0-ubuntu/
 
 # Ensure scripts are executable.
 RUN chmod +x /cncf/provision.sh \

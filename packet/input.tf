@@ -20,8 +20,8 @@ variable "packet_billing_cycle" { default = "hourly" }
 
 # VM Image and size
 variable "packet_master_device_plan" { default = "t1.small" }
-variable "packet_worker_device_plan" { default = "c1.xlarge" }
-variable "packet_operating_system" { default = "ubuntu_18_04" }
+variable "packet_worker_device_plan" { default = "c1.small" }
+variable "packet_operating_system" { default = "coreos_stable" }
 
 
 # Kubernetes

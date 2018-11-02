@@ -10,6 +10,8 @@ runcmd:
   - [ systemctl, start, kube-apiserver ]
   - [ systemctl, start, kube-controller-manager ]
   - [ systemctl, start, kube-scheduler ]
+  - [ rm, /etc/resolv.conf ]
+  - [ ln, -s, /run/systemd/resolve/resolv.conf, /etc/resolv.conf ]
 
 write_files:
   - path: /etc/systemd/system/bins.service
@@ -123,6 +125,11 @@ write_files:
   - path: /etc/default/docker
     content: |
       DOCKER_OPTS="--ip-masq=false --iptables=false --log-driver=json-file --log-level=warn --log-opt=max-file=5 --log-opt=max-size=10m --storage-driver=overlay"
+
+  - path: /etc/systemd/system/docker.d/docker.conf
+    content: |
+      [Service]
+      EnvironmentFile=/etc/default/docker
 
   - path: /etc/default/kube-apiserver
     encoding: "gzip+base64"

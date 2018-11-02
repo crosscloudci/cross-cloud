@@ -3,6 +3,7 @@ package_upgrade: true
 packages:
   - [ docker.io ]
 runcmd:
+  - [ swapoff, -a ]
   - [ systemctl, restart, systemd-resolved ]
   - [ systemctl, restart, systemd-hostnamed ]
   - [ systemctl, start, bins ]

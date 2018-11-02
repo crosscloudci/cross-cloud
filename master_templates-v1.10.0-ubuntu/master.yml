@@ -6,6 +6,11 @@ runcmd:
   - [ systemctl, restart, systemd-resolved ]
   - [ systemctl, restart, systemd-hostnamed ]
   - [ systemctl, start, bins ]
+  - [ systemctl, start, etcd ]
+  - [ systemctl, start, kube-apiserver ]
+  - [ systemctl, start, kube-controller-manager ]
+  - [ systemctl, start, kube-scheduler ]
+
 write_files:
   - path: /etc/systemd/system/bins.service
     content: |
@@ -16,17 +21,100 @@ write_files:
       [Service]
       Type=oneshot
       RemainAfterExit=yes
-      ExecStartPre=/usr/bin/bash -c "while true; do ping -c1 www.google.com > /dev/null && break; done"
-      ExecStartPre=/usr/bin/mkdir --parents /home/kubernetes/bin
+      ExecStartPre=/bin/bash -c "while true; do ping -c1 www.google.com > /dev/null && break; done"
+      ExecStartPre=/bin/mkdir --parents /home/kubernetes/bin
       ExecStart=/usr/bin/curl --retry-max-time 120 -L -o /home/kubernetes/bin/etcd.tar.gz ${ etcd_artifact }
       ExecStart=/usr/bin/curl --retry-max-time 120 -L -o /home/kubernetes/bin/kube-apiserver ${ kube_apiserver_artifact }
       ExecStart=/usr/bin/curl --retry-max-time 120 -L -o /home/kubernetes/bin/kube-controller-manager ${ kube_controller_manager_artifact }
       ExecStart=/usr/bin/curl --retry-max-time 120 -L -o /home/kubernetes/bin/kube-scheduler ${ kube_scheduler_artifact }
-      ExecStart=/usr/bin/tar -xzvf /home/kubernetes/bin/etcd.tar.gz -C /home/kubernetes/bin/ --strip-components=1
-      ExecStart=/usr/bin/chmod +x /home/kubernetes/bin/etcd
-      ExecStart=/usr/bin/chmod +x /home/kubernetes/bin/kube-apiserver
-      ExecStart=/usr/bin/chmod +x /home/kubernetes/bin/kube-controller-manager
-      ExecStart=/usr/bin/chmod +x /home/kubernetes/bin/kube-scheduler
+      ExecStart=/bin/tar -xzvf /home/kubernetes/bin/etcd.tar.gz -C /home/kubernetes/bin/ --strip-components=1
+      ExecStart=/bin/chmod +x /home/kubernetes/bin/etcd
+      ExecStart=/bin/chmod +x /home/kubernetes/bin/kube-apiserver
+      ExecStart=/bin/chmod +x /home/kubernetes/bin/kube-controller-manager
+      ExecStart=/bin/chmod +x /home/kubernetes/bin/kube-scheduler
+
+  - path: /etc/systemd/system/etcd.service
+    content: |
+      [Unit]
+      Description=etcd
+      Documentation=https://github.com/coreos/etcd
+      After=bins.service
+      Requires=bins.service
+        
+      [Service]
+      Type=notify
+      Restart=always
+      RestartSec=10s
+      LimitNOFILE=40000
+      TimeoutStartSec=0
+      Environment=ETCD_NAME=${ name }
+      Environment=ETCD_DISCOVERY_SRV=${ etcd_discovery }
+      Environment=ETCD_INITIAL_ADVERTISE_PEER_URLS=http://${ node }.${ etcd_discovery }:2380
+      Environment=ETCD_INITIAL_CLUSTER_TOKEN=${ name }-etcd
+      Environment=ETCD_INITIAL_CLUSTER_STATE=new       
+      Environment=ETCD_ADVERTISE_CLIENT_URLS=http://${ node }.${ etcd_discovery }:4001       
+      Environment=ETCD_LISTEN_CLIENT_URLS=http://0.0.0.0:4001
+      Environment=ETCD_LISTEN_PEER_URLS=http://0.0.0.0:2380
+      Environment=ETCD_DATA_DIR=/var/etcd/data       
+        
+      ExecStart=/home/kubernetes/bin/etcd
+
+      [Install]
+      WantedBy=multi-user.target
+
+  - path: /etc/systemd/system/kube-apiserver.service
+    content: |
+      [Unit]
+      Description=Kubernetes API Server
+      Documentation=https://github.com/kubernetes/kubernetes
+      After=bins.service
+      Requires=bins.service
+
+      [Service]
+      EnvironmentFile=/etc/default/kube-apiserver
+      ExecStart=/home/kubernetes/bin/kube-apiserver $APISERVER_OPTS
+
+      Restart=always
+      RestartSec=5
+
+      [Install]
+      WantedBy=multi-user.target
+
+  - path: /etc/systemd/system/kube-controller-manager.service
+    content: |
+      [Unit]
+      Description=Kubernetes Controller Manager
+      Documentation=https://github.com/kubernetes/kubernetes
+      After=bins.service
+      Requires=bins.service
+
+      [Service]
+      EnvironmentFile=/etc/default/kube-controller-manager
+      ExecStart=/home/kubernetes/bin/kube-controller-manager $CONTROLLER_OPTS
+        
+      Restart=always
+      RestartSec=5
+
+      [Install]
+      WantedBy=multi-user.target
+
+  - path: /etc/systemd/system/kube-scheduler.service
+    content: |
+      [Unit]
+      Description=Kubernetes Scheduler
+      Documentation=https://github.com/kubernetes/kubernetes
+      After=bins.service
+      Requires=bins.service
+
+      [Service]
+      EnvironmentFile=/etc/default/kube-scheduler
+      ExecStart=/home/kubernetes/bin/kube-scheduler $SCHEDULER_OPTS 
+
+      Restart=always
+      RestartSec=5
+
+      [Install]
+      WantedBy=multi-user.target
 
   - path: ${ hostname_path }
     content: |

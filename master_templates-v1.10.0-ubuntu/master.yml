@@ -126,10 +126,12 @@ write_files:
     content: |
       DOCKER_OPTS="--ip-masq=false --iptables=false --log-driver=json-file --log-level=warn --log-opt=max-file=5 --log-opt=max-size=10m --storage-driver=overlay"
 
-  - path: /etc/systemd/system/docker.d/docker.conf
+  - path: /etc/systemd/system/docker.service.d/docker.conf
     content: |
       [Service]
       EnvironmentFile=/etc/default/docker
+      ExecStart=
+      ExecStart=/usr/bin/dockerd -H fd:// $DOCKER_OPTS
 
   - path: /etc/default/kube-apiserver
     encoding: "gzip+base64"

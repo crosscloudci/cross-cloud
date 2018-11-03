@@ -522,17 +522,17 @@ fi
 
 if [ $CLOUD_CMD == "gke-deploy" ]; then
     echo "kube-dns is already deployed, skipping"
-    kubectl create -f ./rbac/helm-rbac.yml || true
+    kubectl create -f /cncf/rbac/helm-rbac.yml || true
 elif [ $CLOUD_CMD == "ibmcloud-deploy" ]; then
     echo "kube-dns is already deployed, skipping"
-    kubectl create -f ./rbac/helm-rbac.yml || true
+    kubectl create -f /cncf/rbac/helm-rbac.yml || true
 elif [ $CLOUD_CMD == "oci-deploy" ]; then
-    kubectl create -f ./rbac/ || true
+    kubectl create -f /cncf/rbac/ || true
     kubectl --namespace kube-system create secret generic oci-cloud-controller-manager --from-file=cloud-provider.yaml=/cncf/data/addons/create/oci-ccm-secret.yaml || true
     kubectl --namespace kube-system create secret generic oci-flexvolume-driver --from-file=config.yaml=/cncf/data/addons/create/oci-fvd-secret.yaml || true
     kubectl --namespace kube-system create secret generic oci-volume-provisioner --from-file=config.yaml=/cncf/data/addons/create/oci-vp-secret.yaml || true
     kubectl apply -f /cncf/data/addons/apply
 else
-    kubectl create -f ./rbac/ || true
-    kubectl create -f ./addons/ || true
+    kubectl create -f /cncf/rbac/ || true
+    kubectl create -f /cncf/addons/ || true
 fi

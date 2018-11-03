@@ -103,6 +103,9 @@ if [ "$CLOUD_CMD" = "aws-deploy" ] ; then
     _retry "❤ Ensure that ClusterRoles are available" kubectl get ClusterRole.v1.rbac.authorization.k8s.io
     _retry "❤ Ensure that ClusterRoleBindings are available" kubectl get ClusterRoleBinding.v1.rbac.authorization.k8s.io
 
+    kubectl create -f /cncf/rbac/ || true
+    kubectl create -f /cncf/addons/ || true
+
 elif [ "$CLOUD_CMD" = "aws-destroy" ] ; then
       cd ${DIR}/aws
       if [ "$BACKEND" = "s3" ]; then
@@ -156,6 +159,9 @@ elif [ "$CLOUD_CMD" = "azure-deploy" ] ; then
     _retry "❤ Ensure that ClusterRoles are available" kubectl get ClusterRole.v1.rbac.authorization.k8s.io
     _retry "❤ Ensure that ClusterRoleBindings are available" kubectl get ClusterRoleBinding.v1.rbac.authorization.k8s.io
 
+    kubectl create -f /cncf/rbac/ || true
+    kubectl create -f /cncf/addons/ || true
+
 
 elif [ "$CLOUD_CMD" = "azure-destroy" ] ; then
     cd ${DIR}/azure
@@ -207,6 +213,9 @@ elif [[ "$CLOUD_CMD" = "openstack-deploy" || \
     _retry "❤ Ensure that ClusterRoles are available" kubectl get ClusterRole.v1.rbac.authorization.k8s.io
     _retry "❤ Ensure that ClusterRoleBindings are available" kubectl get ClusterRoleBinding.v1.rbac.authorization.k8s.io
 
+    kubectl create -f /cncf/rbac/ || true
+    kubectl create -f /cncf/addons/ || true
+
 # End OpenStack
 
 elif [ "$CLOUD_CMD" = "packet-deploy" ] ; then
@@ -235,6 +244,9 @@ fi
     _retry "❤ Ensure that the kube-system namespaces exists" kubectl get namespace kube-system
     _retry "❤ Ensure that ClusterRoles are available" kubectl get ClusterRole.v1.rbac.authorization.k8s.io
     _retry "❤ Ensure that ClusterRoleBindings are available" kubectl get ClusterRoleBinding.v1.rbac.authorization.k8s.io
+
+    kubectl create -f /cncf/rbac/ || true
+    kubectl create -f /cncf/addons/ || true
 
 elif [ "$CLOUD_CMD" = "packet-destroy" ] ; then
      cd ${DIR}/packet
@@ -282,6 +294,9 @@ elif [ "$BACKEND" = "file" ]; then
     _retry "❤ Ensure that ClusterRoles are available" kubectl get ClusterRole.v1.rbac.authorization.k8s.io
     _retry "❤ Ensure that ClusterRoleBindings are available" kubectl get ClusterRoleBinding.v1.rbac.authorization.k8s.io
 
+    kubectl create -f /cncf/rbac/ || true
+    kubectl create -f /cncf/addons/ || true
+
 elif [ "$CLOUD_CMD" = "gce-destroy" ] ; then
     cd ${DIR}/gce
     if [ "$BACKEND" = "s3" ]; then
@@ -328,6 +343,8 @@ fi
     echo "❤ Polling for cluster life - this could take a minute or more"
     _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info 
     kubectl cluster-info
+    echo "kube-dns is already deployed, skipping"
+    kubectl create -f /cncf/rbac/helm-rbac.yml || true
 
 elif [ "$CLOUD_CMD" = "gke-destroy" ] ; then
 cd ${DIR}/gke
@@ -378,6 +395,8 @@ fi
     echo "❤ Polling for cluster life - this could take a minute or more"
     _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info
     kubectl cluster-info
+    echo "kube-dns is already deployed, skipping"
+    kubectl create -f /cncf/rbac/helm-rbac.yml || true
     _retry "❤ Installing Helm" helm init
     kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
 
@@ -469,6 +488,10 @@ elif [[ "$CLOUD_CMD" = "vsphere-deploy" || \
     _retry "❤ Ensure that the kube-system namespaces exists" kubectl get namespace kube-system
     _retry "❤ Ensure that ClusterRoles are available" kubectl get ClusterRole.v1.rbac.authorization.k8s.io
     _retry "❤ Ensure that ClusterRoleBindings are available" kubectl get ClusterRoleBinding.v1.rbac.authorization.k8s.io
+
+    kubectl create -f /cncf/rbac/ || true
+    kubectl create -f /cncf/addons/ || true
+
 # End vSphere
 
 # Begin OCI
@@ -517,22 +540,12 @@ elif [[ "$CLOUD_CMD" = "oci-deploy" || \
     _retry "❤ Ensure that the kube-system namespaces exists" kubectl get namespace kube-system
     _retry "❤ Ensure that ClusterRoles are available" kubectl get ClusterRole.v1.rbac.authorization.k8s.io
     _retry "❤ Ensure that ClusterRoleBindings are available" kubectl get ClusterRoleBinding.v1.rbac.authorization.k8s.io
-# End Oracle
-fi
 
-if [ $CLOUD_CMD == "gke-deploy" ]; then
-    echo "kube-dns is already deployed, skipping"
-    kubectl create -f /cncf/rbac/helm-rbac.yml || true
-elif [ $CLOUD_CMD == "ibmcloud-deploy" ]; then
-    echo "kube-dns is already deployed, skipping"
-    kubectl create -f /cncf/rbac/helm-rbac.yml || true
-elif [ $CLOUD_CMD == "oci-deploy" ]; then
     kubectl create -f /cncf/rbac/ || true
     kubectl --namespace kube-system create secret generic oci-cloud-controller-manager --from-file=cloud-provider.yaml=/cncf/data/addons/create/oci-ccm-secret.yaml || true
     kubectl --namespace kube-system create secret generic oci-flexvolume-driver --from-file=config.yaml=/cncf/data/addons/create/oci-fvd-secret.yaml || true
     kubectl --namespace kube-system create secret generic oci-volume-provisioner --from-file=config.yaml=/cncf/data/addons/create/oci-vp-secret.yaml || true
     kubectl apply -f /cncf/data/addons/apply
-else
-    kubectl create -f /cncf/rbac/ || true
-    kubectl create -f /cncf/addons/ || true
+# End Oracle
 fi
+

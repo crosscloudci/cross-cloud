@@ -16,6 +16,7 @@ KUBELET_OPTS="--allow-privileged=true \
 --non-masquerade-cidr=${ non_masquerade_cidr } \
 --pod-manifest-path=/etc/kubernetes/manifests \
 --runtime-request-timeout=15m \
+--cpu-manager-policy=static \
 --tls-cert-file=/etc/srv/kubernetes/pki/kubelet.crt \
 --tls-private-key-file=/etc/srv/kubernetes/pki/kubelet.key \
 --v=2"

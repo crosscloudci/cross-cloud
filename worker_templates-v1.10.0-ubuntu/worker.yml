@@ -3,13 +3,13 @@ package_upgrade: true
 packages:
   - [ docker.io ]
 runcmd:
-  - [ swapoff, -a ]
   - [ systemctl, restart, systemd-resolved ]
   - [ systemctl, restart, systemd-hostnamed ]
   - [ systemctl, start, bins ]
   - [ systemctl, start, kubelet ]
   - [ rm, /etc/resolv.conf ]
   - [ ln, -s, /run/systemd/resolve/resolv.conf, /etc/resolv.conf ]
+  - [ systemctl, enable, kubelet ]
 
 write_files:
   - path: /etc/systemd/system/bins.service
@@ -41,6 +41,7 @@ write_files:
       RestartSec=10
       Environment="PATH=/opt/bin/:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
       EnvironmentFile=/etc/default/kubelet
+      ExecStartPre=/sbin/swapoff -a
       ExecStart=/home/kubernetes/bin/kubelet $KUBELET_OPTS
       [Install]
       WantedBy=multi-user.target

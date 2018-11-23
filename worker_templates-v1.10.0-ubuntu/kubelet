@@ -17,6 +17,7 @@ KUBELET_OPTS="--allow-privileged=true \
 --pod-manifest-path=/etc/kubernetes/manifests \
 --runtime-request-timeout=15m \
 --cpu-manager-policy=static \
+--kube-reserved=cpu=1 \
 --tls-cert-file=/etc/srv/kubernetes/pki/kubelet.crt \
 --tls-private-key-file=/etc/srv/kubernetes/pki/kubelet.key \
 --v=2"

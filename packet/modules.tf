@@ -197,7 +197,6 @@ module "dns" {
 
   master_ips = "${ module.master.master_ips }"
   public_master_ips = "${ module.master.public_master_ips }"
-  public_worker_ips = "${ module.worker.public_worker_ips }"
   worker_ips = "${ module.worker.worker_ips }"
 
   master_node_count = "${ var.master_node_count }"

@@ -105,6 +105,7 @@ if [ "$CLOUD_CMD" = "aws-deploy" ] ; then
 
     kubectl create -f /cncf/rbac/ || true
     kubectl create -f /cncf/addons/ || true
+    KUBECTL_PATH=$(which kubectl) NUM_NODES="$TF_VAR_worker_node_count" KUBERNETES_PROVIDER=local ./validate-cluster/cluster/validate-cluster.sh || true
 
 elif [ "$CLOUD_CMD" = "aws-destroy" ] ; then
       cd ${DIR}/aws
@@ -162,6 +163,8 @@ elif [ "$CLOUD_CMD" = "azure-deploy" ] ; then
     kubectl create -f /cncf/rbac/ || true
     kubectl create -f /cncf/addons/ || true
 
+    KUBECTL_PATH=$(which kubectl) NUM_NODES="$TF_VAR_worker_node_count" KUBERNETES_PROVIDER=local ./validate-cluster/cluster/validate-cluster.sh || true
+
 
 elif [ "$CLOUD_CMD" = "azure-destroy" ] ; then
     cd ${DIR}/azure
@@ -216,6 +219,8 @@ elif [[ "$CLOUD_CMD" = "openstack-deploy" || \
     kubectl create -f /cncf/rbac/ || true
     kubectl create -f /cncf/addons/ || true
 
+    KUBECTL_PATH=$(which kubectl) NUM_NODES="$TF_VAR_worker_node_count" KUBERNETES_PROVIDER=local ./validate-cluster/cluster/validate-cluster.sh || true
+
 # End OpenStack
 
 elif [ "$CLOUD_CMD" = "packet-deploy" ] ; then
@@ -247,6 +252,8 @@ fi
 
     kubectl create -f /cncf/rbac/ || true
     kubectl create -f /cncf/addons/ || true
+
+    KUBECTL_PATH=$(which kubectl) NUM_NODES="$TF_VAR_worker_node_count" KUBERNETES_PROVIDER=local ./validate-cluster/cluster/validate-cluster.sh || true
 
 elif [ "$CLOUD_CMD" = "packet-destroy" ] ; then
      cd ${DIR}/packet
@@ -297,6 +304,8 @@ elif [ "$BACKEND" = "file" ]; then
     kubectl create -f /cncf/rbac/ || true
     kubectl create -f /cncf/addons/ || true
 
+    KUBECTL_PATH=$(which kubectl) NUM_NODES="$TF_VAR_worker_node_count" KUBERNETES_PROVIDER=local ./validate-cluster/cluster/validate-cluster.sh || true
+
 elif [ "$CLOUD_CMD" = "gce-destroy" ] ; then
     cd ${DIR}/gce
     if [ "$BACKEND" = "s3" ]; then
@@ -346,6 +355,8 @@ fi
     echo "kube-dns is already deployed, skipping"
     kubectl create -f /cncf/rbac/helm-rbac.yml || true
 
+    KUBECTL_PATH=$(which kubectl) NUM_NODES="$TF_VAR_worker_node_count" KUBERNETES_PROVIDER=local ./validate-cluster/cluster/validate-cluster.sh || true
+
 elif [ "$CLOUD_CMD" = "gke-destroy" ] ; then
 cd ${DIR}/gke
 if [ "$BACKEND" = "s3" ]; then
@@ -382,6 +393,7 @@ if [ "$BACKEND" = "s3" ]; then
     # ensure kubeconfig is written to disk on infrastructure refresh
     terraform taint null_resource.kubeconfig || true
     time terraform apply -auto-approve ${DIR}/ibm
+    
 elif [ "$BACKEND" = "file" ]; then
     cp ../file-backend.tf .
     terraform init \
@@ -396,6 +408,7 @@ fi
     _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info
     kubectl cluster-info
     echo "kube-dns is already deployed, skipping"
+    KUBECTL_PATH=$(which kubectl) NUM_NODES="$TF_VAR_worker_node_count" KUBERNETES_PROVIDER=local ./validate-cluster/cluster/validate-cluster.sh || true
     kubectl create -f /cncf/rbac/helm-rbac.yml || true
     _retry "❤ Installing Helm" helm init
     kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
@@ -492,6 +505,8 @@ elif [[ "$CLOUD_CMD" = "vsphere-deploy" || \
     kubectl create -f /cncf/rbac/ || true
     kubectl create -f /cncf/addons/ || true
 
+    KUBECTL_PATH=$(which kubectl) NUM_NODES="$TF_VAR_worker_node_count" KUBERNETES_PROVIDER=local ./validate-cluster/cluster/validate-cluster.sh || true
+
 # End vSphere
 
 # Begin OCI
@@ -546,6 +561,8 @@ elif [[ "$CLOUD_CMD" = "oci-deploy" || \
     kubectl --namespace kube-system create secret generic oci-flexvolume-driver --from-file=config.yaml=/cncf/data/addons/create/oci-fvd-secret.yaml || true
     kubectl --namespace kube-system create secret generic oci-volume-provisioner --from-file=config.yaml=/cncf/data/addons/create/oci-vp-secret.yaml || true
     kubectl apply -f /cncf/data/addons/apply
+
+    KUBECTL_PATH=$(which kubectl) NUM_NODES="$TF_VAR_worker_node_count" KUBERNETES_PROVIDER=local ./validate-cluster/cluster/validate-cluster.sh || true
 # End Oracle
 fi
 

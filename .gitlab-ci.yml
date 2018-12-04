@@ -86,7 +86,6 @@ before_script:
         echo "Skipping OCI Cloud Certs"
       fi
     - /cncf/provision.sh ${CLOUD}-deploy ${ENVIRONMENT}${DEPLOYMENT_SHA} s3 ${CLOUD}
-    - KUBECTL_PATH=$(which kubectl) NUM_NODES="$TF_VAR_worker_node_count" KUBERNETES_PROVIDER=local ./validate-cluster/cluster/validate-cluster.sh || true
     - helm init --service-account tiller
     - sleep 10
     - kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system

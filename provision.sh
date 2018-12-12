@@ -432,7 +432,8 @@ fi
 
 # Begin vSphere
 elif [[ "$CLOUD_CMD" = "vsphere-deploy" || \
-        "$CLOUD_CMD" = "vsphere-destroy" ]] ; then
+        "$CLOUD_CMD" = "vsphere-destroy" || \
+        "$CLOUD_CMD" = "vsphere-validate" ]] ; then
 
     cd ${DIR}/vsphere
 
@@ -494,6 +495,10 @@ elif [[ "$CLOUD_CMD" = "vsphere-deploy" || \
         fi
         # Exit after destroying resources as further commands cause hang
         exit
+    elif [ "$CLOUD_CMD" = "vsphere-validate" ] ; then
+      export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
+      KUBECTL_PATH=$(which kubectl) NUM_NODES="$TF_VAR_worker_node_count" KUBERNETES_PROVIDER=local ${DIR}/validate-cluster/cluster/validate-cluster.sh || true
+      exit 0
     fi
 
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig

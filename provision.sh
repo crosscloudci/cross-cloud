@@ -564,5 +564,6 @@ elif [[ "$CLOUD_CMD" = "oci-deploy" || \
 
     KUBECTL_PATH=$(which kubectl) NUM_NODES="$TF_VAR_worker_node_count" KUBERNETES_PROVIDER=local ${DIR}/validate-cluster/cluster/validate-cluster.sh || true
 # End Oracle
-fi
+
+fi # END PROVIDERS - DO NOT REPLACE
 

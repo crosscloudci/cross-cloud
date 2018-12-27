@@ -88,20 +88,11 @@ before_script:
     - >
       if [ $CLOUD == "packet" ]; then
          echo "Write reserved node config"
-         cat <<EOF >"/cncf/packet/modules/master/override.tf"
-         resource "packet_device" "masters" {
-           hardware_reservation_id = "next-available"
-         }
-         EOF
-         cat <<EOF >"/cncf/packet/modules/worker/override.tf"
-         resource "packet_device" "workers" {
-           hardware_reservation_id = "next-available"
-         }
-         EOF
+         cp /cncf/packet/packet_master_reservation /cncf/packet/modules/master/override.tf
+         cp /cncf/packet/packet_worker_reservation /cncf/packet/modules/worker/override.tf
       else
        echo "Skipping reservations"
       fi
-    - sleep 1000000
     - /cncf/provision.sh ${CLOUD}-deploy ${ENVIRONMENT}${DEPLOYMENT_SHA} s3 ${CLOUD}
     - helm init --service-account tiller
     - sleep 10

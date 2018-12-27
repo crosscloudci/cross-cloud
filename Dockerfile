@@ -141,6 +141,7 @@ COPY openstack/ /cncf/openstack/
 COPY oci/ /cncf/oci/
 COPY packet/ /cncf/packet/
 COPY vsphere/ /cncf/vsphere/
+# END PROVIDERS - DO NOT REPLACE
 
 COPY bootstrap/ /cncf/bootstrap/
 COPY dns/ /cncf/dns/

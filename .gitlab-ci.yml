@@ -85,6 +85,22 @@ before_script:
       else
         echo "Skipping OCI Cloud Certs"
       fi
+    - >
+      if [ $CLOUD == "packet" ]; then
+         echo "Write reserved node config"
+         cat <<EOF >"/cncf/packet/modules/master/override.tf"
+         resource "packet_device" "masters" {
+           hardware_reservation_id = "next-available"
+         }
+         EOF
+         cat <<EOF >"/cncf/packet/modules/worker/override.tf"
+         resource "packet_device" "workers" {
+           hardware_reservation_id = "next-available"
+         }
+         EOF
+      else
+       echo "Skipping reservations"
+      fi
     - /cncf/provision.sh ${CLOUD}-deploy ${ENVIRONMENT}${DEPLOYMENT_SHA} s3 ${CLOUD}
     - helm init --service-account tiller
     - sleep 10

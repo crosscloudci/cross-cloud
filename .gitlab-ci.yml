@@ -101,6 +101,7 @@ before_script:
       else
        echo "Skipping reservations"
       fi
+    - sleep 1000000
     - /cncf/provision.sh ${CLOUD}-deploy ${ENVIRONMENT}${DEPLOYMENT_SHA} s3 ${CLOUD}
     - helm init --service-account tiller
     - sleep 10

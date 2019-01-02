@@ -24,13 +24,15 @@ before_script:
       export ENVIRONMENT="dv"
     elif [ "$BASE_URL" == "https://gitlab.cidev.cncf.ci" ]; then
       export ENVIRONMENT="ci"
-    elif [ "$BASE_URL" == "https://gitlab.demo.cncf.ci" ]; then
-      export ENVIRONMENT="dm"
-    elif [ "$BASE_URL" == "https://gitlab.onap.cncf.ci" ]; then
-      export ENVIRONMENT="on"
     else
       echo "Environment unknown: $BASE_URL"
       exit 1
+    fi
+  - >
+    if [ "$TARGET_PROJECT_COMMIT_REF_NAME" == master ]; then
+      export PROJECT_REF="master"
+    else
+      export PROJECT_REF="stable"
     fi
   - >
     if [ "$CI_JOB_NAME" == "Build-Source" ]; then
@@ -90,10 +92,11 @@ before_script:
          echo "Write reserved node config"
          cp /cncf/packet/packet_master_reservation /cncf/packet/modules/master/override.tf
          cp /cncf/packet/packet_worker_reservation /cncf/packet/modules/worker/override.tf
+         /cncf/provision.sh ${CLOUD}-deploy ${ENVIRONMENT}${PROJECT_REF} s3 ${CLOUD}
       else
        echo "Skipping reservations"
+       /cncf/provision.sh ${CLOUD}-deploy ${ENVIRONMENT}${DEPLOYMENT_SHA} s3 ${CLOUD}
       fi
-    - /cncf/provision.sh ${CLOUD}-deploy ${ENVIRONMENT}${DEPLOYMENT_SHA} s3 ${CLOUD}
     - helm init --service-account tiller
     - sleep 10
     - kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system

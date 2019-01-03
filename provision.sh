@@ -562,6 +562,10 @@ elif [[ "$CLOUD_CMD" = "oci-deploy" || \
     _retry "❤ Ensure that ClusterRoles are available" kubectl get ClusterRole.v1.rbac.authorization.k8s.io
     _retry "❤ Ensure that ClusterRoleBindings are available" kubectl get ClusterRoleBinding.v1.rbac.authorization.k8s.io
 
+    # Need to run sed on the secrets files to add the OCI API key so that it doesn't appear in the TF output.
+    sed -e 's/^/    /g' /cncf/keys/oci_api_key.pem > /cncf/keys/oci_api_key_indented.pem
+    sed -i -e '/@@oci_api_private_key@@/r /cncf/keys/oci_api_key_indented.pem' -e '/@@oci_api_private_key@@/d' /cncf/data/addons/create/*.yaml
+    rm -f /cncf/keys/oci_api_key_indented.pem
     kubectl create -f /cncf/rbac/ || true
     kubectl --namespace kube-system create secret generic oci-cloud-controller-manager --from-file=cloud-provider.yaml=/cncf/data/addons/create/oci-ccm-secret.yaml || true
     kubectl --namespace kube-system create secret generic oci-flexvolume-driver --from-file=config.yaml=/cncf/data/addons/create/oci-fvd-secret.yaml || true

@@ -6,7 +6,6 @@ resource "template_dir" "create" {
     oci_region              = "${var.oci_region}"
     oci_tenancy_ocid        = "${var.oci_tenancy_ocid}"
     oci_user_ocid           = "${var.oci_user_ocid}"
-    oci_api_private_key     = "${var.oci_api_private_key}"
     oci_fingerprint         = "${var.oci_fingerprint}"
     oci_compartment_ocid    = "${var.oci_compartment_ocid}"
     oci_vcn_ocid            = "${var.oci_vcn_ocid}"

@@ -36,6 +36,7 @@ NC='\033[0m' # No Color
 export TF_VAR_name="$NAME"
 export TF_VAR_data_dir=$(pwd)/data/"$DATA_FOLDER"
 export TF_VAR_packet_api_key=${PACKET_AUTH_TOKEN}
+export TF_VAR_master_node_count="${TF_VAR_master_node_count:-3}"
 export TF_VAR_worker_node_count="${TF_VAR_worker_node_count:-1}"
 
 # Configure Artifacts

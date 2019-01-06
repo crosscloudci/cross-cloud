@@ -572,7 +572,7 @@ elif [[ "$CLOUD_CMD" = "oci-deploy" || \
     kubectl --namespace kube-system create secret generic oci-volume-provisioner --from-file=config.yaml=/cncf/data/addons/create/oci-vp-secret.yaml || true
     kubectl apply -f /cncf/data/addons/apply
 
-    KUBECTL_PATH=$(which kubectl) NUM_NODES="$TF_VAR_worker_node_count" KUBERNETES_PROVIDER=local ${DIR}/validate-cluster/cluster/validate-cluster.sh || true
+    KUBECTL_PATH=$(which kubectl) NUM_NODES=$(expr $TF_VAR_worker_node_count + $TF_VAR_master_node_count) KUBERNETES_PROVIDER=local ${DIR}/validate-cluster/cluster/validate-cluster.sh || true
 # End Oracle
 
 fi # END PROVIDERS - DO NOT REPLACE

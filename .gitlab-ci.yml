@@ -29,12 +29,6 @@ before_script:
       exit 1
     fi
   - >
-    if [ "$TARGET_PROJECT_COMMIT_REF_NAME" == master ]; then
-      export PROJECT_REF="master"
-    else
-      export PROJECT_REF="stable"
-    fi
-  - >
     if [ "$CI_JOB_NAME" == "Build-Source" ]; then
       source /opt/local/etc/rvmrc ; source /opt/local/etc/profile.d/rvm.sh ; cp -a /opt/local/dashboard /dashboard ; pushd /dashboard ; source /opt/local/.env ; ./bin/update_dashboard ; popd
     elif [ "$CI_JOB_NAME" == "Dashboard" ]; then
@@ -93,7 +87,7 @@ before_script:
          cp /cncf/packet/packet_master_reservation /cncf/packet/modules/master/override.tf
          cp /cncf/packet/packet_worker_reservation /cncf/packet/modules/worker/override.tf
          cp /cncf/packet/packet_cluster_override /cncf/packet/override.tf
-         /cncf/provision.sh ${CLOUD}-deploy ${ENVIRONMENT}${PROJECT_REF} s3 ${CLOUD}
+         /cncf/provision.sh ${CLOUD}-deploy ${ENVIRONMENT}${DEPLOYMENT_SHA} s3 ${CLOUD}
       else
        echo "Skipping reservations"
        /cncf/provision.sh ${CLOUD}-deploy ${ENVIRONMENT}${DEPLOYMENT_SHA} s3 ${CLOUD}

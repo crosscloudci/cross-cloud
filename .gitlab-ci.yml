@@ -24,10 +24,6 @@ before_script:
       export ENVIRONMENT="dv"
     elif [ "$BASE_URL" == "https://gitlab.cidev.cncf.ci" ]; then
       export ENVIRONMENT="ci"
-    elif [ "$BASE_URL" == "https://gitlab.demo.cncf.ci" ]; then
-      export ENVIRONMENT="dm"
-    elif [ "$BASE_URL" == "https://gitlab.onap.cncf.ci" ]; then
-      export ENVIRONMENT="on"
     else
       echo "Environment unknown: $BASE_URL"
       exit 1
@@ -85,25 +81,17 @@ before_script:
       else
         echo "Skipping OCI Cloud Certs"
       fi
-    - /cncf/provision.sh ${CLOUD}-deploy ${ENVIRONMENT}${DEPLOYMENT_SHA} s3 ${CLOUD}
     - >
-      if [ $CLOUD == "gke" ]; then
-         echo "kube-dns is already deployed, skipping"
-         kubectl create -f ./rbac/helm-rbac.yml || true
-      elif [ $CLOUD == "ibmcloud" ]; then
-         echo "kube-dns is already deployed, skipping"
-         kubectl create -f ./rbac/helm-rbac.yml || true
-      elif [ $CLOUD == "oci" ]; then
-         kubectl create -f ./rbac/ || true
-         kubectl --namespace kube-system create secret generic oci-cloud-controller-manager --from-file=cloud-provider.yaml=/cncf/data/addons/create/oci-ccm-secret.yaml || true
-         kubectl --namespace kube-system create secret generic oci-flexvolume-driver --from-file=config.yaml=/cncf/data/addons/create/oci-fvd-secret.yaml || true
-         kubectl --namespace kube-system create secret generic oci-volume-provisioner --from-file=config.yaml=/cncf/data/addons/create/oci-vp-secret.yaml || true
-         kubectl apply -f /cncf/data/addons/apply
+      if [ $CLOUD == "packet" ]; then
+         echo "Write reserved node config"
+         cp /cncf/packet/packet_master_reservation /cncf/packet/modules/master/override.tf
+         cp /cncf/packet/packet_worker_reservation /cncf/packet/modules/worker/override.tf
+         cp /cncf/packet/packet_cluster_override /cncf/packet/override.tf
+         /cncf/provision.sh ${CLOUD}-deploy ${ENVIRONMENT}${DEPLOYMENT_SHA} s3 ${CLOUD}
       else
-        kubectl create -f ./rbac/ || true
-        kubectl create -f ./addons/ || true
+       echo "Skipping reservations"
+       /cncf/provision.sh ${CLOUD}-deploy ${ENVIRONMENT}${DEPLOYMENT_SHA} s3 ${CLOUD}
       fi
-    - KUBECTL_PATH=$(which kubectl) NUM_NODES="$TF_VAR_worker_node_count" KUBERNETES_PROVIDER=local ./validate-cluster/cluster/validate-cluster.sh || true
     - helm init --service-account tiller
     - sleep 10
     - kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system

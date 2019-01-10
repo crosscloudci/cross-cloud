@@ -192,7 +192,7 @@ module "dns" {
   name = "${ var.name }"
   etcd_server = "${ var.etcd_server }"
   discovery_nameserver = "${ var.discovery_nameserver }"
-  upstream_dns = "DNS=169.254.169.254"
+  upstream_dns = "DNS=147.75.207.207"
   cloud_provider = "${ var.cloud_provider }"
 
   master_ips = "${ module.master.master_ips }"

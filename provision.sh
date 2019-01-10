@@ -36,6 +36,8 @@ NC='\033[0m' # No Color
 export TF_VAR_name="$NAME"
 export TF_VAR_data_dir=$(pwd)/data/"$DATA_FOLDER"
 export TF_VAR_packet_api_key=${PACKET_AUTH_TOKEN}
+export TF_VAR_master_node_count="${TF_VAR_master_node_count:-3}"
+export TF_VAR_worker_node_count="${TF_VAR_worker_node_count:-1}"
 
 # Configure Artifacts
 if [ ! -e $KUBELET_ARTIFACT ] ; then
@@ -103,6 +105,10 @@ if [ "$CLOUD_CMD" = "aws-deploy" ] ; then
     _retry "❤ Ensure that ClusterRoles are available" kubectl get ClusterRole.v1.rbac.authorization.k8s.io
     _retry "❤ Ensure that ClusterRoleBindings are available" kubectl get ClusterRoleBinding.v1.rbac.authorization.k8s.io
 
+    kubectl create -f /cncf/rbac/ || true
+    kubectl create -f /cncf/addons/ || true
+    KUBECTL_PATH=$(which kubectl) NUM_NODES="$TF_VAR_worker_node_count" KUBERNETES_PROVIDER=local ${DIR}/validate-cluster/cluster/validate-cluster.sh || true
+
 elif [ "$CLOUD_CMD" = "aws-destroy" ] ; then
       cd ${DIR}/aws
       if [ "$BACKEND" = "s3" ]; then
@@ -156,6 +162,11 @@ elif [ "$CLOUD_CMD" = "azure-deploy" ] ; then
     _retry "❤ Ensure that ClusterRoles are available" kubectl get ClusterRole.v1.rbac.authorization.k8s.io
     _retry "❤ Ensure that ClusterRoleBindings are available" kubectl get ClusterRoleBinding.v1.rbac.authorization.k8s.io
 
+    kubectl create -f /cncf/rbac/ || true
+    kubectl create -f /cncf/addons/ || true
+
+    KUBECTL_PATH=$(which kubectl) NUM_NODES="$TF_VAR_worker_node_count" KUBERNETES_PROVIDER=local ${DIR}/validate-cluster/cluster/validate-cluster.sh || true
+
 
 elif [ "$CLOUD_CMD" = "azure-destroy" ] ; then
     cd ${DIR}/azure
@@ -207,6 +218,11 @@ elif [[ "$CLOUD_CMD" = "openstack-deploy" || \
     _retry "❤ Ensure that ClusterRoles are available" kubectl get ClusterRole.v1.rbac.authorization.k8s.io
     _retry "❤ Ensure that ClusterRoleBindings are available" kubectl get ClusterRoleBinding.v1.rbac.authorization.k8s.io
 
+    kubectl create -f /cncf/rbac/ || true
+    kubectl create -f /cncf/addons/ || true
+
+    KUBECTL_PATH=$(which kubectl) NUM_NODES="$TF_VAR_worker_node_count" KUBERNETES_PROVIDER=local ${DIR}/validate-cluster/cluster/validate-cluster.sh || true
+
 # End OpenStack
 
 elif [ "$CLOUD_CMD" = "packet-deploy" ] ; then
@@ -235,6 +251,11 @@ fi
     _retry "❤ Ensure that the kube-system namespaces exists" kubectl get namespace kube-system
     _retry "❤ Ensure that ClusterRoles are available" kubectl get ClusterRole.v1.rbac.authorization.k8s.io
     _retry "❤ Ensure that ClusterRoleBindings are available" kubectl get ClusterRoleBinding.v1.rbac.authorization.k8s.io
+
+    kubectl create -f /cncf/rbac/ || true
+    kubectl create -f /cncf/addons/ || true
+
+    KUBECTL_PATH=$(which kubectl) NUM_NODES="$TF_VAR_worker_node_count" KUBERNETES_PROVIDER=local ${DIR}/validate-cluster/cluster/validate-cluster.sh || true
 
 elif [ "$CLOUD_CMD" = "packet-destroy" ] ; then
      cd ${DIR}/packet
@@ -282,6 +303,11 @@ elif [ "$BACKEND" = "file" ]; then
     _retry "❤ Ensure that ClusterRoles are available" kubectl get ClusterRole.v1.rbac.authorization.k8s.io
     _retry "❤ Ensure that ClusterRoleBindings are available" kubectl get ClusterRoleBinding.v1.rbac.authorization.k8s.io
 
+    kubectl create -f /cncf/rbac/ || true
+    kubectl create -f /cncf/addons/ || true
+
+    KUBECTL_PATH=$(which kubectl) NUM_NODES="$TF_VAR_worker_node_count" KUBERNETES_PROVIDER=local ${DIR}/validate-cluster/cluster/validate-cluster.sh || true
+
 elif [ "$CLOUD_CMD" = "gce-destroy" ] ; then
     cd ${DIR}/gce
     if [ "$BACKEND" = "s3" ]; then
@@ -328,6 +354,10 @@ fi
     echo "❤ Polling for cluster life - this could take a minute or more"
     _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info 
     kubectl cluster-info
+    echo "kube-dns is already deployed, skipping"
+    kubectl create -f /cncf/rbac/helm-rbac.yml || true
+
+    KUBECTL_PATH=$(which kubectl) NUM_NODES="$TF_VAR_worker_node_count" KUBERNETES_PROVIDER=local ${DIR}/validate-cluster/cluster/validate-cluster.sh || true
 
 elif [ "$CLOUD_CMD" = "gke-destroy" ] ; then
 cd ${DIR}/gke
@@ -365,6 +395,7 @@ if [ "$BACKEND" = "s3" ]; then
     # ensure kubeconfig is written to disk on infrastructure refresh
     terraform taint null_resource.kubeconfig || true
     time terraform apply -auto-approve ${DIR}/ibm
+    
 elif [ "$BACKEND" = "file" ]; then
     cp ../file-backend.tf .
     terraform init \
@@ -378,6 +409,9 @@ fi
     echo "❤ Polling for cluster life - this could take a minute or more"
     _retry "❤ Trying to connect to cluster with kubectl" kubectl cluster-info
     kubectl cluster-info
+    echo "kube-dns is already deployed, skipping"
+    KUBECTL_PATH=$(which kubectl) NUM_NODES="$TF_VAR_worker_node_count" KUBERNETES_PROVIDER=local ${DIR}/validate-cluster/cluster/validate-cluster.sh || true
+    kubectl create -f /cncf/rbac/helm-rbac.yml || true
     _retry "❤ Installing Helm" helm init
     kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
 
@@ -400,7 +434,8 @@ fi
 
 # Begin vSphere
 elif [[ "$CLOUD_CMD" = "vsphere-deploy" || \
-        "$CLOUD_CMD" = "vsphere-destroy" ]] ; then
+        "$CLOUD_CMD" = "vsphere-destroy" || \
+        "$CLOUD_CMD" = "vsphere-validate" ]] ; then
 
     cd ${DIR}/vsphere
 
@@ -462,6 +497,10 @@ elif [[ "$CLOUD_CMD" = "vsphere-deploy" || \
         fi
         # Exit after destroying resources as further commands cause hang
         exit
+    elif [ "$CLOUD_CMD" = "vsphere-validate" ] ; then
+      export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
+      KUBECTL_PATH=$(which kubectl) NUM_NODES="$TF_VAR_worker_node_count" KUBERNETES_PROVIDER=local ${DIR}/validate-cluster/cluster/validate-cluster.sh || true
+      exit 0
     fi
 
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig
@@ -469,6 +508,12 @@ elif [[ "$CLOUD_CMD" = "vsphere-deploy" || \
     _retry "❤ Ensure that the kube-system namespaces exists" kubectl get namespace kube-system
     _retry "❤ Ensure that ClusterRoles are available" kubectl get ClusterRole.v1.rbac.authorization.k8s.io
     _retry "❤ Ensure that ClusterRoleBindings are available" kubectl get ClusterRoleBinding.v1.rbac.authorization.k8s.io
+
+    kubectl create -f /cncf/rbac/ || true
+    kubectl create -f /cncf/addons/ || true
+
+    KUBECTL_PATH=$(which kubectl) NUM_NODES="$TF_VAR_worker_node_count" KUBERNETES_PROVIDER=local ${DIR}/validate-cluster/cluster/validate-cluster.sh || true
+
 # End vSphere
 
 # Begin OCI
@@ -517,5 +562,19 @@ elif [[ "$CLOUD_CMD" = "oci-deploy" || \
     _retry "❤ Ensure that the kube-system namespaces exists" kubectl get namespace kube-system
     _retry "❤ Ensure that ClusterRoles are available" kubectl get ClusterRole.v1.rbac.authorization.k8s.io
     _retry "❤ Ensure that ClusterRoleBindings are available" kubectl get ClusterRoleBinding.v1.rbac.authorization.k8s.io
+
+    # Need to run sed on the secrets files to add the OCI API key so that it doesn't appear in the TF output.
+    sed -e 's/^/    /g' /cncf/keys/oci_api_key.pem > /cncf/keys/oci_api_key_indented.pem
+    sed -i -e '/@@oci_api_private_key@@/r /cncf/keys/oci_api_key_indented.pem' -e '/@@oci_api_private_key@@/d' /cncf/data/addons/create/*.yaml
+    rm -f /cncf/keys/oci_api_key_indented.pem
+    kubectl create -f /cncf/rbac/ || true
+    kubectl --namespace kube-system create secret generic oci-cloud-controller-manager --from-file=cloud-provider.yaml=/cncf/data/addons/create/oci-ccm-secret.yaml || true
+    kubectl --namespace kube-system create secret generic oci-flexvolume-driver --from-file=config.yaml=/cncf/data/addons/create/oci-fvd-secret.yaml || true
+    kubectl --namespace kube-system create secret generic oci-volume-provisioner --from-file=config.yaml=/cncf/data/addons/create/oci-vp-secret.yaml || true
+    kubectl apply -f /cncf/data/addons/apply
+
+    KUBECTL_PATH=$(which kubectl) NUM_NODES=$(expr $TF_VAR_worker_node_count + $TF_VAR_master_node_count) KUBERNETES_PROVIDER=local ${DIR}/validate-cluster/cluster/validate-cluster.sh || true
 # End Oracle
-fi
+
+fi # END PROVIDERS - DO NOT REPLACE
+

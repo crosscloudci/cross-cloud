@@ -1,0 +1,2 @@
+${ admin },admin,admin,system:masters
+${ bootstrap },kubelet-bootstrap,kubelet-bootstrap,system:node-bootstrapper

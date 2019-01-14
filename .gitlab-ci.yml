@@ -92,9 +92,6 @@ before_script:
        echo "Skipping reservations"
        /cncf/provision.sh ${CLOUD}-deploy ${ENVIRONMENT}${DEPLOYMENT_SHA} s3 ${CLOUD}
       fi
-    - _retry helm init --service-account tiller
-    - sleep 10
-    - _retry kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
   artifacts:
     when: always
     expire_in: 4 weeks

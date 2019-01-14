@@ -109,6 +109,10 @@ if [ "$CLOUD_CMD" = "aws-deploy" ] ; then
     kubectl create -f /cncf/addons/ || true
     KUBECTL_PATH=$(which kubectl) NUM_NODES="$TF_VAR_worker_node_count" KUBERNETES_PROVIDER=local ${DIR}/validate-cluster/cluster/validate-cluster.sh || true
 
+    _retry "Installing Helm" helm init --service-account tiller
+    sleep 10
+    _retry "Wait for Helm to Finish Install" kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
+
 elif [ "$CLOUD_CMD" = "aws-destroy" ] ; then
       cd ${DIR}/aws
       if [ "$BACKEND" = "s3" ]; then
@@ -167,6 +171,11 @@ elif [ "$CLOUD_CMD" = "azure-deploy" ] ; then
 
     KUBECTL_PATH=$(which kubectl) NUM_NODES="$TF_VAR_worker_node_count" KUBERNETES_PROVIDER=local ${DIR}/validate-cluster/cluster/validate-cluster.sh || true
 
+    _retry "Installing Helm" helm init --service-account tiller
+    sleep 10
+    _retry "Wait for Helm to Finish Install" kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
+
+
 
 elif [ "$CLOUD_CMD" = "azure-destroy" ] ; then
     cd ${DIR}/azure
@@ -223,6 +232,10 @@ elif [[ "$CLOUD_CMD" = "openstack-deploy" || \
 
     KUBECTL_PATH=$(which kubectl) NUM_NODES="$TF_VAR_worker_node_count" KUBERNETES_PROVIDER=local ${DIR}/validate-cluster/cluster/validate-cluster.sh || true
 
+    _retry "Installing Helm" helm init --service-account tiller
+    sleep 10
+    _retry "Wait for Helm to Finish Install" kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
+
 # End OpenStack
 
 elif [ "$CLOUD_CMD" = "packet-deploy" ] ; then
@@ -256,6 +269,10 @@ fi
     kubectl create -f /cncf/addons/ || true
 
     KUBECTL_PATH=$(which kubectl) NUM_NODES="$TF_VAR_worker_node_count" KUBERNETES_PROVIDER=local ${DIR}/validate-cluster/cluster/validate-cluster.sh || true
+
+    _retry "Installing Helm" helm init --service-account tiller
+    sleep 10
+    _retry "Wait for Helm to Finish Install" kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
 
 elif [ "$CLOUD_CMD" = "packet-destroy" ] ; then
      cd ${DIR}/packet
@@ -308,6 +325,10 @@ elif [ "$BACKEND" = "file" ]; then
 
     KUBECTL_PATH=$(which kubectl) NUM_NODES="$TF_VAR_worker_node_count" KUBERNETES_PROVIDER=local ${DIR}/validate-cluster/cluster/validate-cluster.sh || true
 
+    _retry "Installing Helm" helm init --service-account tiller
+    sleep 10
+    _retry "Wait for Helm to Finish Install" kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
+
 elif [ "$CLOUD_CMD" = "gce-destroy" ] ; then
     cd ${DIR}/gce
     if [ "$BACKEND" = "s3" ]; then
@@ -358,6 +379,10 @@ fi
     kubectl create -f /cncf/rbac/helm-rbac.yml || true
 
     KUBECTL_PATH=$(which kubectl) NUM_NODES="$TF_VAR_worker_node_count" KUBERNETES_PROVIDER=local ${DIR}/validate-cluster/cluster/validate-cluster.sh || true
+
+    _retry "Installing Helm" helm init --service-account tiller
+    sleep 10
+    _retry "Wait for Helm to Finish Install" kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
 
 elif [ "$CLOUD_CMD" = "gke-destroy" ] ; then
 cd ${DIR}/gke
@@ -413,7 +438,9 @@ fi
     KUBECTL_PATH=$(which kubectl) NUM_NODES="$TF_VAR_worker_node_count" KUBERNETES_PROVIDER=local ${DIR}/validate-cluster/cluster/validate-cluster.sh || true
     kubectl create -f /cncf/rbac/helm-rbac.yml || true
     _retry "❤ Installing Helm" helm init
-    kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
+    sleep 10
+
+    _retry "Wait for Helm to Finish Install" kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
 
 elif [ "$CLOUD_CMD" = "ibmcloud-destroy" ] ; then
 cd ${DIR}/ibm
@@ -514,6 +541,10 @@ elif [[ "$CLOUD_CMD" = "vsphere-deploy" || \
 
     KUBECTL_PATH=$(which kubectl) NUM_NODES="$TF_VAR_worker_node_count" KUBERNETES_PROVIDER=local ${DIR}/validate-cluster/cluster/validate-cluster.sh || true
 
+    _retry "Installing Helm" helm init --service-account tiller
+    sleep 10
+    _retry "Wait for Helm to Finish Install" kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
+
 # End vSphere
 
 # Begin OCI
@@ -574,6 +605,10 @@ elif [[ "$CLOUD_CMD" = "oci-deploy" || \
     kubectl apply -f /cncf/data/addons/apply
 
     KUBECTL_PATH=$(which kubectl) NUM_NODES=$(expr $TF_VAR_worker_node_count + $TF_VAR_master_node_count) KUBERNETES_PROVIDER=local ${DIR}/validate-cluster/cluster/validate-cluster.sh || true
+
+    _retry "Installing Helm" helm init --service-account tiller
+    sleep 10
+    _retry "Wait for Helm to Finish Install" kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
 # End Oracle
 
 fi # END PROVIDERS - DO NOT REPLACE

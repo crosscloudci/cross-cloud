@@ -1,7 +1,6 @@
 variable oci_region {}
 variable oci_tenancy_ocid {}
 variable oci_user_ocid {}
-variable oci_api_private_key {}
 variable oci_fingerprint {}
 variable oci_compartment_ocid {}
 variable oci_vcn_ocid {}

@@ -1,0 +1,235 @@
+#cloud-config
+package_upgrade: true
+packages:
+  - [ docker.io ]
+runcmd:
+  - [ swapoff, -a ]
+  - [ systemctl, restart, systemd-resolved ]
+  - [ systemctl, restart, systemd-hostnamed ]
+  - [ systemctl, start, bins ]
+  - [ systemctl, start, etcd ]
+  - [ systemctl, start, kube-apiserver ]
+  - [ systemctl, start, kube-controller-manager ]
+  - [ systemctl, start, kube-scheduler ]
+  - [ rm, /etc/resolv.conf ]
+  - [ ln, -s, /run/systemd/resolve/resolv.conf, /etc/resolv.conf ]
+
+write_files:
+  - path: /etc/systemd/system/bins.service
+    content: |
+      [Unit]
+      Description=Download Binaries
+      After=network-online.target
+      Requires=network-online.target
+      [Service]
+      Type=oneshot
+      RemainAfterExit=yes
+      ExecStartPre=/bin/bash -c "while true; do ping -c1 www.google.com > /dev/null && break; done"
+      ExecStartPre=/bin/mkdir --parents /home/kubernetes/bin
+      ExecStart=/usr/bin/curl --retry-max-time 120 -L -o /home/kubernetes/bin/etcd.tar.gz ${ etcd_artifact }
+      ExecStart=/usr/bin/curl --retry-max-time 120 -L -o /home/kubernetes/bin/kube-apiserver ${ kube_apiserver_artifact }
+      ExecStart=/usr/bin/curl --retry-max-time 120 -L -o /home/kubernetes/bin/kube-controller-manager ${ kube_controller_manager_artifact }
+      ExecStart=/usr/bin/curl --retry-max-time 120 -L -o /home/kubernetes/bin/kube-scheduler ${ kube_scheduler_artifact }
+      ExecStart=/bin/tar -xzvf /home/kubernetes/bin/etcd.tar.gz -C /home/kubernetes/bin/ --strip-components=1
+      ExecStart=/bin/chmod +x /home/kubernetes/bin/etcd
+      ExecStart=/bin/chmod +x /home/kubernetes/bin/kube-apiserver
+      ExecStart=/bin/chmod +x /home/kubernetes/bin/kube-controller-manager
+      ExecStart=/bin/chmod +x /home/kubernetes/bin/kube-scheduler
+
+  - path: /etc/systemd/system/etcd.service
+    content: |
+      [Unit]
+      Description=etcd
+      Documentation=https://github.com/coreos/etcd
+      After=bins.service
+      Requires=bins.service
+        
+      [Service]
+      Type=notify
+      Restart=always
+      RestartSec=10s
+      LimitNOFILE=40000
+      TimeoutStartSec=0
+      Environment=ETCD_NAME=${ name }
+      Environment=ETCD_DISCOVERY_SRV=${ etcd_discovery }
+      Environment=ETCD_INITIAL_ADVERTISE_PEER_URLS=http://${ node }.${ etcd_discovery }:2380
+      Environment=ETCD_INITIAL_CLUSTER_TOKEN=${ name }-etcd
+      Environment=ETCD_INITIAL_CLUSTER_STATE=new       
+      Environment=ETCD_ADVERTISE_CLIENT_URLS=http://${ node }.${ etcd_discovery }:4001       
+      Environment=ETCD_LISTEN_CLIENT_URLS=http://0.0.0.0:4001
+      Environment=ETCD_LISTEN_PEER_URLS=http://0.0.0.0:2380
+      Environment=ETCD_DATA_DIR=/var/etcd/data       
+        
+      ExecStart=/home/kubernetes/bin/etcd
+
+      [Install]
+      WantedBy=multi-user.target
+
+  - path: /etc/systemd/system/kube-apiserver.service
+    content: |
+      [Unit]
+      Description=Kubernetes API Server
+      Documentation=https://github.com/kubernetes/kubernetes
+      After=bins.service
+      Requires=bins.service
+
+      [Service]
+      EnvironmentFile=/etc/default/kube-apiserver
+      ExecStart=/home/kubernetes/bin/kube-apiserver $APISERVER_OPTS
+
+      Restart=always
+      RestartSec=5
+
+      [Install]
+      WantedBy=multi-user.target
+
+  - path: /etc/systemd/system/kube-controller-manager.service
+    content: |
+      [Unit]
+      Description=Kubernetes Controller Manager
+      Documentation=https://github.com/kubernetes/kubernetes
+      After=bins.service
+      Requires=bins.service
+
+      [Service]
+      EnvironmentFile=/etc/default/kube-controller-manager
+      ExecStart=/home/kubernetes/bin/kube-controller-manager $CONTROLLER_OPTS
+        
+      Restart=always
+      RestartSec=5
+
+      [Install]
+      WantedBy=multi-user.target
+
+  - path: /etc/systemd/system/kube-scheduler.service
+    content: |
+      [Unit]
+      Description=Kubernetes Scheduler
+      Documentation=https://github.com/kubernetes/kubernetes
+      After=bins.service
+      Requires=bins.service
+
+      [Service]
+      EnvironmentFile=/etc/default/kube-scheduler
+      ExecStart=/home/kubernetes/bin/kube-scheduler $SCHEDULER_OPTS 
+
+      Restart=always
+      RestartSec=5
+
+      [Install]
+      WantedBy=multi-user.target
+
+  - path: ${ hostname_path }
+    content: |
+      ${ hostname }
+
+  - path: /etc/default/docker
+    content: |
+      DOCKER_OPTS="--ip-masq=false --iptables=false --log-driver=json-file --log-level=warn --log-opt=max-file=5 --log-opt=max-size=10m --storage-driver=overlay"
+
+  - path: /etc/systemd/system/docker.service.d/docker.conf
+    content: |
+      [Service]
+      EnvironmentFile=/etc/default/docker
+      ExecStart=
+      ExecStart=/usr/bin/dockerd -H fd:// $DOCKER_OPTS
+
+  - path: /etc/default/kube-apiserver
+    encoding: "gzip+base64"
+    content: |
+      ${ kube_apiserver }
+
+  - path: /etc/default/kube-controller-manager
+    encoding: "gzip+base64"
+    content: |
+      ${ kube_controller_manager }
+
+  - path: /etc/default/kube-scheduler
+    encoding: "gzip+base64"
+    content: |
+      ${ kube_scheduler }
+
+  - path: /var/lib/kube-controller-manager/kubeconfig
+    encoding: "gzip+base64"
+    content: |
+      ${ kube_controller_manager_kubeconfig }
+
+  - path: /var/lib/kube-scheduler/kubeconfig
+    encoding: "gzip+base64"
+    content: |
+      ${ kube_scheduler_kubeconfig }
+
+  - path: /etc/srv/kubernetes/pki/ca-certificates.crt
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ ca }
+
+  - path: /etc/srv/kubernetes/pki/ca-certificates.key
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ ca_key }
+
+  - path: /etc/srv/kubernetes/pki/apiserver.crt
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ apiserver }
+
+  - path: /etc/srv/kubernetes/pki/apiserver.key
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ apiserver_key }
+
+  - path: /etc/srv/kubernetes/pki/controller.crt
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ controller }
+
+  - path: /etc/srv/kubernetes/pki/controller.key
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ controller_key }
+
+  - path: /etc/srv/kubernetes/pki/scheduler.crt
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ scheduler }
+
+  - path: /etc/srv/kubernetes/pki/scheduler.key
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ scheduler_key }
+
+  - path: /etc/srv/kubernetes/known_tokens.csv
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ known_tokens_csv }
+
+  - path: /etc/srv/kubernetes/cloud-config
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ cloud_config_file }
+
+  - path: /etc/systemd/resolved.conf.d/dns.conf
+    permissions: 0644
+    encoding: "gzip+base64"
+    owner: root
+    content: |
+      ${ dns_conf }
+
+  - path: /etc/dhcp/dhclient.conf
+    permissions: 0644
+    encoding: "gzip+base64"
+    owner: root
+    content: |
+      ${ dns_dhcp }
+

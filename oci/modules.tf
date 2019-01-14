@@ -151,7 +151,6 @@ module "addons" {
   oci_region                                    = "${var.oci_region}"
   oci_tenancy_ocid                              = "${var.oci_tenancy_ocid}"
   oci_user_ocid                                 = "${var.oci_user_ocid}"
-  oci_api_private_key                           = "${indent(4, file("/cncf/keys/oci_api_key.pem"))}"
   oci_fingerprint                               = "${var.oci_fingerprint}"
   oci_compartment_ocid                          = "${module.compartment.compartment_id}"
   oci_vcn_ocid                                  = "${module.network.oci_core_vcn_id}"

@@ -1,0 +1,77 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    k8s-app: etcd-server-events
+  name: etcd-server-events
+  namespace: kube-system
+spec:
+  containers:
+  - command:
+    - /bin/sh
+    - -c
+    - /usr/local/bin/etcd 1>>/var/log/etcd-events.log 2>&1
+    env:
+    - name: ETCD_NAME
+      value: ${ name }-events
+    - name: ETCD_DISCOVERY_SRV
+      value: ${ etcd_discovery }
+    - name: ETCD_INITIAL_ADVERTISE_PEER_URLS
+      value: http://${ node }.${ etcd_discovery }:2381
+    - name: ETCD_INITIAL_CLUSTER_TOKEN
+      value: ${ name }-events
+    - name: ETCD_INITIAL_CLUSTER_STATE
+      value: new
+    - name: ETCD_ADVERTISE_CLIENT_URLS
+      value: http://${ node }.${ etcd_discovery }:4002
+    - name: ETCD_LISTEN_CLIENT_URLS
+      value: http://0.0.0.0:4002
+    - name: ETCD_LISTEN_PEER_URLS
+      value: http://0.0.0.0:2381
+    - name: ETCD_DATA_DIR
+      value: /var/etcd/data-events
+    image: ${ etcd_image }:${ etcd_tag }
+    livenessProbe:
+      httpGet:
+        host: 127.0.0.1
+        path: /health
+        port: 4002
+      initialDelaySeconds: 15
+      timeoutSeconds: 15
+    name: etcd-container
+    ports:
+    - containerPort: 2381
+      hostPort: 2381
+      name: serverport
+    - containerPort: 4002
+      hostPort: 4002
+      name: clientport
+    resources:
+      requests:
+        cpu: 100m
+    volumeMounts:
+    - mountPath: /etc/ssl/certs
+      name: etcssl
+      readOnly: true
+    - mountPath: /var/etcd/data-events
+      name: varetcdata
+    - mountPath: /var/log
+      name: varlogetcd
+    - mountPath: /etc/srv/kubernetes
+      name: cloudvars
+  hostNetwork: true
+  volumes:
+  - hostPath:
+      path: /usr/share/ca-certificates
+    name: etcssl
+  - hostPath:
+      path: /var/etcd/data-events
+    name: varetcdata
+  - hostPath:
+      path: /var/log
+    name: varlogetcd
+  - hostPath:
+      path: /etc/srv/kubernetes
+    name: cloudvars
+status: {}

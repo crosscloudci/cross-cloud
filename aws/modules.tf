@@ -169,7 +169,7 @@ module "tls" {
 }
 
 module "master_templates" {
-  source = "/cncf/master_templates-v1.10.0"
+  source = "/cncf/master_templates-v1.13.0"
 
   hostname = ""
   hostname_suffix = ""
@@ -208,7 +208,7 @@ module "master_templates" {
 }
 
 module "worker_templates" {
-  source = "../worker_templates-v1.10.0"
+  source = "../worker_templates-v1.13.0"
 
   hostname = ""
   hostname_suffix = ""

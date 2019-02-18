@@ -38,7 +38,7 @@ module "master" {
 }
 
 module "master_templates" {
-  source = "../master_templates-v1.10.0"
+  source = "../master_templates-v1.13.0"
 
   hostname        = "${var.name}-master"
   hostname_suffix = "${var.name}.${var.cloud_provider}.local"
@@ -96,7 +96,7 @@ module "worker" {
 }
 
 module "worker_templates" {
-  source = "../worker_templates-v1.10.0"
+  source = "../worker_templates-v1.13.0"
 
   hostname        = "${var.name}-worker"
   hostname_suffix = "${var.name}.${var.cloud_provider}.local"

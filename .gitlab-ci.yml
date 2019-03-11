@@ -84,8 +84,8 @@ before_script:
     - >
       if [ $CLOUD == "packet" ]; then
          echo "Write reserved node config"
-         cp /cncf/packet/packet_master_reservation /cncf/packet/modules/master/override.tf
-         cp /cncf/packet/packet_worker_reservation /cncf/packet/modules/worker/override.tf
+         # cp /cncf/packet/packet_master_reservation /cncf/packet/modules/master/override.tf
+         # cp /cncf/packet/packet_worker_reservation /cncf/packet/modules/worker/override.tf
          cp /cncf/packet/packet_cluster_override /cncf/packet/override.tf
          /cncf/provision.sh ${CLOUD}-deploy ${ENVIRONMENT}${DEPLOYMENT_SHA} s3 ${CLOUD}
       else

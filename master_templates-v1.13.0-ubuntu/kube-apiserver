@@ -1,0 +1,27 @@
+APISERVER_OPTS="--enable-admission-plugins=NamespaceLifecycle,LimitRanger,ServiceAccount,PersistentVolumeClaimResize,DefaultStorageClass,DefaultTolerationSeconds,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,ResourceQuota,Priority \
+--allow-privileged=true \
+--apiserver-count=${ master_node_count } \
+--audit-log-maxage=30 \
+--audit-log-maxbackup=3 \
+--audit-log-maxsize=100 \
+--audit-log-path=/var/log/audit.log \
+--authorization-mode=Node,RBAC \
+--token-auth-file=/etc/srv/kubernetes/known_tokens.csv \
+--bind-address=0.0.0.0 \
+--secure-port=443 \
+--kubelet-preferred-address-types=Hostname \
+--client-ca-file=/etc/srv/kubernetes/pki/ca-certificates.crt \
+--enable-swagger-ui=true \
+--etcd-servers=http://${ etcd_endpoint }:4001 \
+--event-ttl=1h \
+--insecure-bind-address=127.0.0.1 \
+--kubelet-certificate-authority=/etc/srv/kubernetes/pki/ca-certificates.crt \
+--kubelet-client-certificate=/etc/srv/kubernetes/pki/apiserver.crt \
+--kubelet-client-key=/etc/srv/kubernetes/pki/apiserver.key \
+--kubelet-https=true \
+--cloud-provider=${ cloud_provider } ${ cloud_config } \
+--service-account-key-file=/etc/srv/kubernetes/pki/ca-certificates.key \
+--service-cluster-ip-range=${ service_cidr } \
+--tls-cert-file=/etc/srv/kubernetes/pki/apiserver.crt \
+--tls-private-key-file=/etc/srv/kubernetes/pki/apiserver.key \
+--v=2"

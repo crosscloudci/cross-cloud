@@ -41,6 +41,7 @@ variable "external_lb_subnet_id" { default = "4083e5c2-41ef-4838-8844-d2d300d2fb
 variable "internal_network_cidr" { default = "10.240.0.0/16" }
 
 # Kubernetes configuration
+variable "arch" {}
 variable "etcd_endpoint" {default = "127.0.0.1"}
 variable "cloud_provider" { default = "openstack" }
 variable "cloud_config" { default = "--cloud-config=/etc/srv/kubernetes/cloud-config" }

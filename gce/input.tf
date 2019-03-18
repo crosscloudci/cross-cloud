@@ -18,6 +18,7 @@ variable "discovery_nameserver" { default = "147.75.69.23" }
 
 
 # Kubernetes
+variable "arch" {}
 variable "cloud_provider" { default = "gce" }
 variable "cloud_config" { default = "" }
 variable "cluster_domain" { default = "cluster.local" }

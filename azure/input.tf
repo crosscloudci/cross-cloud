@@ -23,6 +23,8 @@ variable "worker_vm_size"   { default = "Standard_F16s" }
 variable "bastion_vm_size"   { default = "Standard_A1" }
 
 # Kubernetes
+
+variable "arch" {}
 variable "etcd_endpoint" {default = "127.0.0.1"}
 variable "cloud_provider" { default = "azure" }
 variable "cloud_config" { default = "--cloud-config=/etc/srv/kubernetes/cloud-config" }

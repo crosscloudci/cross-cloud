@@ -150,6 +150,7 @@ module "tls" {
 module "master_templates" {
   source = "/cncf/master_templates-v1.13.0"
 
+  arch = "${ var.arch }"
   hostname = ""
   hostname_suffix = ""
   hostname_path = "/etc/ignore_hostname"

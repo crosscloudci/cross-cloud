@@ -3,6 +3,8 @@ variable "name" {
   default = "vsphere"
 }
 
+variable "arch" {}
+
 variable "data_dir" {
   default = "/cncf/data/vsphere"
 }

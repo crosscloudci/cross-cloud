@@ -40,6 +40,7 @@ module "master" {
 module "master_templates" {
   source = "../master_templates-v1.13.0"
 
+  arch = "${ var.arch }"
   hostname        = "${var.name}-master"
   hostname_suffix = "${var.name}.${var.cloud_provider}.local"
   hostname_path   = "/etc/hostname"

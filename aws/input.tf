@@ -21,6 +21,7 @@ variable "aws_worker_vm_size" { default = "m4.4xlarge" }
 variable "aws_bastion_vm_size" { default = "t2.nano" }
 
 # Kubernetes
+variable "arch" {}
 variable "etcd_endpoint" {default = "127.0.0.1"}
 variable "cloud_provider" { default = "aws" }
 variable "cloud_config" { default = "" }

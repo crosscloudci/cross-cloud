@@ -25,6 +25,7 @@ variable "packet_operating_system" { default = "ubuntu_18_04" }
 
 
 # Kubernetes
+variable "arch" { default = "" }
 variable "cloud_provider" { default = "packet" }
 variable "cloud_config" { default = "" }
 variable "cluster_domain" { default = "cluster.local" }

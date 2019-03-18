@@ -36,7 +36,7 @@ NC='\033[0m' # No Color
 export TF_VAR_name="$NAME"
 export TF_VAR_data_dir=$(pwd)/data/"$DATA_FOLDER"
 export TF_VAR_packet_api_key=${PACKET_AUTH_TOKEN}
-export TF_VAR_master_node_count="${TF_VAR_master_node_count:-3}"
+export TF_VAR_master_node_count="${TF_VAR_master_node_count:-1}"
 export TF_VAR_worker_node_count="${TF_VAR_worker_node_count:-1}"
 
 # Configure Artifacts
@@ -266,13 +266,21 @@ fi
     _retry "❤ Ensure that ClusterRoleBindings are available" kubectl get ClusterRoleBinding.v1.rbac.authorization.k8s.io
 
     kubectl create -f /cncf/rbac/ || true
-    kubectl create -f /cncf/addons/ || true
 
-    KUBECTL_PATH=$(which kubectl) NUM_NODES="$TF_VAR_worker_node_count" KUBERNETES_PROVIDER=local ${DIR}/validate-cluster/cluster/validate-cluster.sh || true
+    if [ "$ARCH" = "arm64" ]; then
+        kubectl create -f /cncf/addons-arm/ || true
+        KUBECTL_PATH=$(which kubectl) NUM_NODES="$TF_VAR_worker_node_count" KUBERNETES_PROVIDER=local ${DIR}/validate-cluster/cluster/validate-cluster.sh || true
+        _retry "Installing Helm" helm init --tiller-image=jessestuart/tiller --service-account tiller
+        sleep 10
+        _retry "Wait for Helm to Finish Install" kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
+    else
+        kubectl create -f /cncf/addons/ || true
+        KUBECTL_PATH=$(which kubectl) NUM_NODES="$TF_VAR_worker_node_count" KUBERNETES_PROVIDER=local ${DIR}/validate-cluster/cluster/validate-cluster.sh || true
+        _retry "Installing Helm" helm init --service-account tiller
+        sleep 10
+        _retry "Wait for Helm to Finish Install" kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
+    fi
 
-    _retry "Installing Helm" helm init --service-account tiller
-    sleep 10
-    _retry "Wait for Helm to Finish Install" kubectl rollout status -w deployment/tiller-deploy --namespace=kube-system
 
 elif [ "$CLOUD_CMD" = "packet-destroy" ] ; then
      cd ${DIR}/packet

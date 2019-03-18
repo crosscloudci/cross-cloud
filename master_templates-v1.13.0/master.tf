@@ -131,6 +131,7 @@ data "template_file" "master" {
 
   vars {
     name = "${ var.name }"
+    arch = "${ var.arch }"
     hostname = "${ var.hostname }-${ count.index + 1 }.${ var.hostname_suffix }"
     hostname_path = "${ var.hostname_path }"
     node = "${ var.name }-master-${ count.index +1 }"

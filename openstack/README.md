@@ -121,7 +121,7 @@ docker run \
   -e TF_VAR_os_project_name=$OS_PROJECT_NAME \
   -e TF_VAR_os_password=$OS_PASSWORD \
   -e CLOUD=openstack \
-  -e COMMAND=deploy \
+  -e COMMAND=destroy \
   -e NAME=cross-cloud \
   -e BACKEND=file \
   -ti provisioning

@@ -59,7 +59,7 @@ write_files:
       Environment=ETCD_LISTEN_CLIENT_URLS=http://0.0.0.0:4001
       Environment=ETCD_LISTEN_PEER_URLS=http://0.0.0.0:2380
       Environment=ETCD_DATA_DIR=/var/etcd/data       
-      Environment=${ arch }
+      ${ arch }
         
       ExecStart=/home/kubernetes/bin/etcd
 

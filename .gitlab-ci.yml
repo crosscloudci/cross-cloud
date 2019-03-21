@@ -82,11 +82,10 @@ before_script:
         echo "Skipping OCI Cloud Certs"
       fi
     - >
-      if [ $CLOUD == "packet" ] && [ $CI_COMMIT_REF_NAME !== "production" ]; then
+      if [ $CLOUD == "packet" ] && [ $CI_COMMIT_REF_NAME !== "production" ] && [ $ARCH !== "arm64" ]; then
          echo "Write reserved node config"
          cp /cncf/packet/packet_master_reservation /cncf/packet/modules/master/override.tf
          cp /cncf/packet/packet_worker_reservation /cncf/packet/modules/worker/override.tf
-         /cncf/provision.sh ${CLOUD}-deploy ${ENVIRONMENT}${DEPLOYMENT_SHA} s3 ${CLOUD}
       else
        echo "Skipping reservations"
       fi

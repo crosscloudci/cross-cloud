@@ -53,8 +53,13 @@ before_script:
       elif [ "${DISABLE_SOURCE}" == "yes" ]; then
         exit 0 #Should Show Skipped on Gitlab CI FIXME
       else
-        PROJECT_JOB=$(curl --header "PRIVATE-TOKEN:${TOKEN}" "${BASE_URL}/api/v4/projects/14/pipelines/${SOURCE}/jobs?scope=success" | jq '.[] | select(.name=="container") | .id')
-        curl -s -o data/kubernetes.env -L "${BASE_URL}/kubernetes/kubernetes/-/jobs/${PROJECT_JOB}/artifacts/raw/release.env"
+        if [ "$TARGET_PROJECT_COMMIT_REF_NAME" == "master" ]; then
+          PROJECT_JOB=$(curl --header "PRIVATE-TOKEN:${TOKEN}" "${BASE_URL}/api/v4/projects/14/pipelines/${SOURCE}/jobs?scope=success" | jq '.[] | select(.name=="container-aufs") | .id')
+          curl -s -o data/kubernetes.env -L "${BASE_URL}/kubernetes/kubernetes/-/jobs/${PROJECT_JOB}/artifacts/raw/release.env"
+        else
+          PROJECT_JOB=$(curl --header "PRIVATE-TOKEN:${TOKEN}" "${BASE_URL}/api/v4/projects/14/pipelines/${SOURCE}/jobs?scope=success" | jq '.[] | select(.name=="container-overlayfs") | .id')
+          curl -s -o data/kubernetes.env -L "${BASE_URL}/kubernetes/kubernetes/-/jobs/${PROJECT_JOB}/artifacts/raw/release.env"
+        fi
         cat data/kubernetes.env
       fi
 

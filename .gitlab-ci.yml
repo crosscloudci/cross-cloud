@@ -82,16 +82,22 @@ before_script:
         echo "Skipping OCI Cloud Certs"
       fi
     - >
-      if [ $CLOUD == "packet" ]; then
+      if [ $CLOUD == "packet" ] && [ $CI_COMMIT_REF_NAME !== "production" ] && [ $ARCH !== "arm64" ]; then
          echo "Write reserved node config"
          cp /cncf/packet/packet_master_reservation /cncf/packet/modules/master/override.tf
          cp /cncf/packet/packet_worker_reservation /cncf/packet/modules/worker/override.tf
-         cp /cncf/packet/packet_cluster_override /cncf/packet/override.tf
-         /cncf/provision.sh ${CLOUD}-deploy ${ENVIRONMENT}${DEPLOYMENT_SHA} s3 ${CLOUD}
       else
        echo "Skipping reservations"
-       /cncf/provision.sh ${CLOUD}-deploy ${ENVIRONMENT}${DEPLOYMENT_SHA} s3 ${CLOUD}
       fi
+    - >
+      if [ $ARCH == "arm64" ]; then
+         echo "Write arm64 config"
+         cp /cncf/packet/packet_arch_override /cncf/packet/modules/master/override.tf
+         export TF_VAR_master_node_count=1
+      else
+       echo "Skipping arm configuration"
+      fi
+    - /cncf/provision.sh ${CLOUD}-deploy ${ARCH}${ENVIRONMENT}${DEPLOYMENT_SHA} s3 ${CLOUD}
   artifacts:
     when: always
     expire_in: 4 weeks
@@ -127,7 +133,7 @@ before_script:
       else
         echo "Skipping OCI Cloud Certs"
       fi
-    - /cncf/provision.sh ${CLOUD}-destroy ${ENVIRONMENT}${DEPLOYMENT_SHA} s3 ${CLOUD}
+    - /cncf/provision.sh ${CLOUD}-destroy ${ARCH}${ENVIRONMENT}${DEPLOYMENT_SHA} s3 ${CLOUD}
 
 # Build-Source VARs
 Build-Source:

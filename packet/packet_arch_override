@@ -1,0 +1,9 @@
+variable "arch" { default = "Environment=ETCD_UNSUPPORTED_ARCH=arm64" }
+
+variable "etcd_artifact" { default = "https://storage.googleapis.com/etcd/v3.3.11/etcd-v3.3.11-linux-arm64.tar.gz" }
+variable "cni_artifact" { default = "https://github.com/containernetworking/cni/releases/download/v0.6.0/cni-arm64-v0.6.0.tgz" }
+variable "cni_plugins_artifact" { default = "https://github.com/containernetworking/plugins/releases/download/v0.7.4/cni-plugins-arm64-v0.7.4.tgz" }
+
+variable "packet_facility" { default = "nrt1" }
+variable "packet_master_device_plan" { default = "c1.large.arm" }
+variable "packet_worker_device_plan" { default = "c1.large.arm" }

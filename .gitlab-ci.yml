@@ -54,9 +54,11 @@ before_script:
         exit 0 #Should Show Skipped on Gitlab CI FIXME
       else
         if [ "$TARGET_PROJECT_COMMIT_REF_NAME" == "master" ]; then
+          sleep 1000000
           PROJECT_JOB=$(curl --header "PRIVATE-TOKEN:${TOKEN}" "${BASE_URL}/api/v4/projects/14/pipelines/${SOURCE}/jobs?scope=success" | jq '.[] | select(.name=="container-aufs") | .id')
           curl -s -o data/kubernetes.env -L "${BASE_URL}/kubernetes/kubernetes/-/jobs/${PROJECT_JOB}/artifacts/raw/release.env"
         else
+          sleep 1000000
           PROJECT_JOB=$(curl --header "PRIVATE-TOKEN:${TOKEN}" "${BASE_URL}/api/v4/projects/14/pipelines/${SOURCE}/jobs?scope=success" | jq '.[] | select(.name=="container-overlayfs") | .id')
           curl -s -o data/kubernetes.env -L "${BASE_URL}/kubernetes/kubernetes/-/jobs/${PROJECT_JOB}/artifacts/raw/release.env"
         fi

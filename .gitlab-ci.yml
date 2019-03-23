@@ -97,7 +97,7 @@ before_script:
     - >
       if [ $ARCH == "arm64" ]; then
          echo "Write arm64 config"
-         cp /cncf/packet/packet_arch_override /cncf/packet/modules/master/override.tf
+         cp /cncf/packet/packet_arch_override /cncf/packet/override.tf
          export TF_VAR_master_node_count=1
       else
        echo "Skipping arm configuration"

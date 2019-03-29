@@ -103,7 +103,7 @@ module "tls" {
   tls_proxy_cert_subject_organization_unit = "Kubernetes"
   tls_proxy_cert_subject_province = "California"
   tls_proxy_cert_subject_country = "US"
-  tls_proxy_cert_validity_period_hours = "1000"
+  tls_proxy_cert_validity_period_hours = "10000"
   tls_proxy_cert_early_renewal_hours = "100"
   tls_proxy_cert_ip_addresses = "127.0.0.1"
   tls_proxy_cert_dns_names = "kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster.local" 

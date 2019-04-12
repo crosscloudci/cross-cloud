@@ -38,8 +38,8 @@ RUN go get -d github.com/vmware/govmomi && \
 #FROM crosscloudci/debian-go:latest
 FROM alpine:3.7
 LABEL maintainer="Denver Williams <denver@debian.nz>"
-ENV KUBECTL_VERSION=v1.8.1
-ENV HELM_VERSION=v2.9.1
+ENV KUBECTL_VERSION=v1.13.0
+ENV HELM_VERSION=v2.13.1
 # PIN to Commit on Master
 ENV TERRAFORM_VERSION=0.11.7
 # ENV TERRAFORM_VERSION=master

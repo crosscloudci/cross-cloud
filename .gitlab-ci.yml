@@ -78,16 +78,7 @@ before_script:
     CLOUD: MUST BE SET
   script:
     - >
-      if [ $CLOUD == "oci" ]; then
-         echo "Writing certs"
-         mkdir /cncf/keys
-         echo "$OCI_API_KEY" > /cncf/keys/oci_api_key.pem
-         echo "$OCI_API_PUB" > /cncf/keys/oci_api_key_pub.pem
-      else
-        echo "Skipping OCI Cloud Certs"
-      fi
-    - >
-      if [ $CLOUD == "packet" ] && [ $CI_COMMIT_REF_NAME !== "production" ] && [ $ARCH !== "arm64" ]; then
+      if [ $CLOUD == "packet" ] && [ $CI_COMMIT_REF_NAME == "production" ] && [ $ARCH != "arm64" ]; then
          echo "Write reserved node config"
          cp /cncf/packet/packet_master_reservation /cncf/packet/modules/master/override.tf
          cp /cncf/packet/packet_worker_reservation /cncf/packet/modules/worker/override.tf

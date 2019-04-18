@@ -106,28 +106,6 @@ docker run \
   -ti registry.cncf.ci/cncf/cross-cloud/provisioning:production
 ```
 
-##### Quick start for OpenStack
-
-You will need a full set of credentials for an OpenStack cloud, including
-authentication endpoint.
-
-**Run the following to provision an OpenStack cluster:**
-``` bash
-docker run \
-  -v $(pwd)/data:/cncf/data \
-  -e NAME=cross-cloud \
-  -e CLOUD=openstack \
-  -e COMMAND=deploy \
-  -e BACKEND=file \
-  -e TF_VAR_os_auth_url=$OS_AUTH_URL \
-  -e TF_VAR_os_region_name=$OS_REGION_NAME \
-  -e TF_VAR_os_user_domain_name=$OS_USER_DOMAIN_NAME \
-  -e TF_VAR_os_username=$OS_USERNAME \
-  -e TF_VAR_os_project_name=$OS_PROJECT_NAME \
-  -e TF_VAR_os_password=$OS_PASSWORD \
-  -ti registry.cncf.ci/cncf/cross-cloud/provisioning:ci-stable-v0-2-0
-```
-
 ##### Quick start for vSphere via VMware Cloud (VMC) on AWS
 
 The vSphere provider requires vSphere host and credential information,

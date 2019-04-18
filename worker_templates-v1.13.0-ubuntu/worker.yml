@@ -19,7 +19,7 @@ write_files:
       [Service]
       Type=oneshot
       RemainAfterExit=yes
-      ExecStartPre=/bin/bash -c "while true; do ping -c1 www.google.com > /dev/null && break; done"
+      ExecStartPre=/bin/bash -c "while true; do ping -c1 www.google.com -4 > /dev/null && break; done"
       ExecStartPre=/bin/mkdir --parents /opt/cni/bin
       ExecStartPre=/bin/mkdir --parents /etc/cni/net.d
       ExecStartPre=/bin/mkdir --parents /home/kubernetes/bin

@@ -26,7 +26,7 @@ coreos:
         [Service]
         Type=oneshot
         RemainAfterExit=yes
-        ExecStartPre=/usr/bin/bash -c "while true; do ping -c1 www.google.com > /dev/null && break; done"
+        ExecStartPre=/usr/bin/bash -c "while true; do ping -c1 www.google.com -4 > /dev/null && break; done"
         ExecStartPre=/usr/bin/mkdir --parents /opt/cni/bin
         ExecStartPre=/usr/bin/mkdir --parents /etc/cni/net.d
         ExecStartPre=/usr/bin/mkdir --parents /home/kubernetes/bin

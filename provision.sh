@@ -256,7 +256,7 @@ elif [ "$CLOUD_CMD" = "packet-deploy" ] ; then
                   -backend-config "path=/cncf/data/${TF_VAR_name}/terraform.tfstate" 
         # ensure kubeconfig is written to disk on infrastructure refresh
         terraform taint -module=kubeconfig null_resource.kubeconfig || true ${DIR}/packet
-        time terraform apply -auto-approve ${DIR}/packet || true
+        time terraform apply -auto-approve ${DIR}/packet
 fi
 
     export KUBECONFIG=${TF_VAR_data_dir}/kubeconfig

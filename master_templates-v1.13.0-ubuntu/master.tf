@@ -124,7 +124,15 @@ data "template_file" "kube_scheduler_kubeconfig" {
   }
 }
 
+resource "gzip_me" "audit_policy" {
+  input = "${ data.template_file.audit_policy.rendered }"
+}
 
+data "template_file" "audit_policy" {
+  template = "${ file( "${ path.module }/audit-policy.yaml" )}"
+  vars {
+  }
+}
 data "template_file" "master" {
   count = "${ var.master_node_count }"
   template = "${ file( "${ path.module }/master.yml" )}"
@@ -157,6 +165,7 @@ data "template_file" "master" {
     kube_scheduler_kubeconfig = "${ gzip_me.kube_scheduler_kubeconfig.output }"
     dns_conf = "${ gzip_me.dns_conf.output }"
     dns_dhcp = "${ gzip_me.dns_dhcp.output }"
+    audit_policy = "${ gzip_me.audit_policy.ouput }"
 
   }
 }

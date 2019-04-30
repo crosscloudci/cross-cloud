@@ -165,7 +165,7 @@ data "template_file" "master" {
     kube_scheduler_kubeconfig = "${ gzip_me.kube_scheduler_kubeconfig.output }"
     dns_conf = "${ gzip_me.dns_conf.output }"
     dns_dhcp = "${ gzip_me.dns_dhcp.output }"
-    audit_policy = "${ gzip_me.audit_policy.ouput }"
+    audit_policy = "${ gzip_me.audit_policy.output }"
 
   }
 }

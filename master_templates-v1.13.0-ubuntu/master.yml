@@ -8,6 +8,7 @@ runcmd:
   - [ systemctl, restart, systemd-hostnamed ]
   - [ systemctl, start, bins ]
   - [ systemctl, start, etcd ]
+  - [ systemctl, start, docker ]
   - [ systemctl, start, kube-apiserver ]
   - [ systemctl, start, kube-controller-manager ]
   - [ systemctl, start, kube-scheduler ]

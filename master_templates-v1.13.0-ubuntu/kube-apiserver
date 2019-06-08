@@ -2,9 +2,10 @@ APISERVER_OPTS="--enable-admission-plugins=NamespaceLifecycle,LimitRanger,Servic
 --allow-privileged=true \
 --apiserver-count=${ master_node_count } \
 --audit-log-maxage=30 \
---audit-log-maxbackup=3 \
---audit-log-maxsize=100 \
+--audit-log-maxbackup=9 \
+--audit-log-maxsize=1000 \
 --audit-log-path=/var/log/audit.log \
+--audit-policy-file=/etc/srv/kubernetes/audit-policy.yaml \
 --authorization-mode=Node,RBAC \
 --token-auth-file=/etc/srv/kubernetes/known_tokens.csv \
 --bind-address=0.0.0.0 \

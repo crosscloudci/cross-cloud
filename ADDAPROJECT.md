@@ -58,12 +58,20 @@ In Gitlab you need to complete the following steps.
     - Stop impersonating
 4. Set up project variables (*steps and menu items in gitlab*)
     - Settings
-        - Pipelines 
+        - Pipeline trigger
+	  - add trigger
+	  - copy token
+	  - put in environment.rb
+	- Pipelines 
             - Custom ci config path
                 - e.g. https://raw.githubusercontent.com/crosscloudci/envoy-configuration/master/.gitlab-ci.yml
             - Add cloud variable
                 - CLOUD
-                - e.g.  aws
+                  - e.g.  aws
+		- ARCH
+		- GEMFURY
+		- TOKEN
+		  - token from earlier pipeline trigger step
 5. Enable runners (*steps and menu items in gitlab*)
     - Admin
         - Runners
@@ -97,32 +105,10 @@ In Gitlab you need to complete the following steps.
   - Copy/cut the gitlab.yml and save an empty url
   - Paste the url in again and save it
 ### Gitlab Yml Configuration
-1. Make a crosscloudci/envoy-configuration.git
+1. Make crosscloudci/<projectname>-configuration project
 2. Edit .gitlab-ci.yml
     ```
     e.g. envoy-configuration
     ```
-
-3. Get values from upstream in the value.yml
-4. Review helm chart for project
-5. Replace image in .gitlab-ci.yml with image helm chart
-6. Create a new file in the cross-project defaults directory (envoy.yml)
-    - *Helm has a wait flag that only works when you are rolling out: this needs tob be updated*
-    	```
-    	max unavailable: 0
-    	```
-	  - Update Helm configuration flags
-	
-6. Review value file and compair it with the gitlab-ci.yml
-
-7. A project specific environement variable (*e.g. gitlab_envoy_token*) needs to be added directly to .env
-
-8. Make a token for the project  (*steps and menu items in gitlab*)
-
-    - Settings - pipelines
-    - Add trigger
-    - Copy token
-    
-9. Add new project name in the environnment.rb file in the list of projects for the api token
   
 

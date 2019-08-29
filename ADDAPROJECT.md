@@ -3,36 +3,12 @@
 The goal is to call the new project's ci scripts from gitlabs ci 
 configuration file
 
-## CI Setup
-
-1.  Clone the project
-
-```
-git clone yourprojectname
-```	
-```
-- e.g. git clone https://github.com/envoyproxy/envoy.git
-```
-
-2.  Make a note of any ci instructions including
-scripts for building and publishing images
-
-- e.g. the .circleci/config.yml file outlines lots of shell scripts
-that refer to a docker dependencies image and build image
-
-3. Replicate the builds
-
-- e.g. use docker to replicate a build image using the previously viewed ci 
-- you probably want to pin your image
-- update the script not to push 
-- images will be local after build
-- publish to gitlab directory
-
-4. Create a script that builds head 
-
-5. Create a script that builds stable
-
-
+## Gitlab Yml Configuration
+1. Make crosscloudci/<projectname>-configuration project (copy an existing <projectname>-configuration project as an example
+2. Edit .gitlab-ci.yml to include curl commands and scripts for getting build status, deploys, and tests
+    ```
+    e.g. envoy-configuration
+    ```
 
 ## Gitlab Setup
 ### GitLab Pipeline Setup
@@ -95,20 +71,45 @@ In Gitlab you need to complete the following steps.
         - Select master
         - Select stable (*e.g. v1.7.0*)
         - Both should be running
+  
+## Optional CI Setup (legacy manual build -- not using ci-proxy )
+
+1.  Clone the project
+
+```
+git clone yourprojectname
+```	
+```
+- e.g. git clone https://github.com/envoyproxy/envoy.git
+```
+
+2.  Make a note of any ci instructions including
+scripts for building and publishing images
+
+- e.g. the .circleci/config.yml file outlines lots of shell scripts
+that refer to a docker dependencies image and build image
+
+3. Replicate the builds
+
+- e.g. use docker to replicate a build image using the previously viewed ci 
+- you probably want to pin your image
+- update the script not to push 
+- images will be local after build
+- publish to gitlab directory
+
+4. Create a script that builds head 
+
+5. Create a script that builds stable
+
 #### How to Debug
 1. Add a sleep to the .gitlab-ci.yml script
 2. ssh root@runner.yourgitlaburl
 3. Click on compile job
-### Gitlab yml common issue
+
+#### Gitlab yml common issues
 - If .gitlab-ci.yml does not refresh: 
   - Go to pipelines
   - Copy/cut the gitlab.yml and save an empty url
   - Paste the url in again and save it
-### Gitlab Yml Configuration
-1. Make crosscloudci/<projectname>-configuration project
-2. Edit .gitlab-ci.yml
-    ```
-    e.g. envoy-configuration
-    ```
-  
+
 

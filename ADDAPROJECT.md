@@ -58,7 +58,7 @@ In Gitlab you need to complete the following steps.
             - Find logo image e.g. https://d33wubrfki0l68.cloudfront.net/77bb2db951dc11d54851e79e0ca09e3a02b276fa/9c0b7/img/envoy-logo.svg
                 - Add to cncf artwork repo
                 - Link to cross cloud artwork repo
-            - Rename the project names to envoy etc
+            - Rename the project names e.g. to envoy 
             - Charts are the repo that we get the helm charts from
             - Change timeout for how long your build takes
 7. Review pipelines

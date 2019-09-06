@@ -68,7 +68,9 @@ In Gitlab you need to complete the following steps.
         - Select master
         - Select stable (*e.g. v1.7.0*)
         - Both should be running
-  
+## Trigger Client
+1. add the new project into the enviroment.rb
+
 ## Optional CI Setup (legacy manual build -- not using ci-proxy )
 
 1.  Clone the project

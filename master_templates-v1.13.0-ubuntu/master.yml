@@ -235,3 +235,10 @@ write_files:
     content: |
       ${ dns_dhcp }
 
+  - path: /etc/srv/kubernetes/audit-policy.yaml
+    permissions: "0644"
+    encoding: "gzip+base64"
+    content: |
+      ${ audit_policy }
+
+ 

@@ -6,6 +6,7 @@ configuration file
 ## Gitlab Yml Configuration
 1. Make crosscloudci/<projectname>-configuration project -- copy an existing <projectname>-configuration project (see testproj-configuration: https://github.com/crosscloudci/testproj-configuration/blob/master/cncfci.yml which is for the testproj example: https://github.com/crosscloudci/testproj)
 2. Edit .gitlab-ci.yml to include curl commands and scripts for getting build status, deploys, and tests e.g. envoy-configuration (see https://github.com/crosscloudci/testproj-configuration/blob/master/.gitlab-ci.yml)
+3. Optional: write a ci proxy plugin for your ci tool and submit a pull request (see https://github.com/crosscloudci/ex_ci_proxy/blob/master/README.md)
 
 ## Gitlab Setup
 ### GitLab Pipeline Setup

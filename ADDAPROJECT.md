@@ -4,7 +4,7 @@ The goal is to call the new project's ci scripts from gitlabs ci
 configuration file
 
 ## Gitlab Yml Configuration
-1. Make crosscloudci/<projectname>-configuration project -- copy an existing <projectname>-configuration project (e.g. testproj-configuration https://github.com/crosscloudci/testproj-configuration/blob/master/cncfci.yml) as an example
+1. Make crosscloudci/<projectname>-configuration project -- copy an existing <projectname>-configuration project (e.g. testproj-configuration https://github.com/crosscloudci/testproj-configuration/blob/master/cncfci.yml which is for the testproj example https://github.com/crosscloudci/testproj) as an example
 2. Edit .gitlab-ci.yml to include curl commands and scripts for getting build status, deploys, and tests e.g. envoy-configuration (see https://github.com/crosscloudci/testproj-configuration/blob/master/.gitlab-ci.yml)
 
 ## Gitlab Setup

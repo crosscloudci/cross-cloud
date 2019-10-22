@@ -51,7 +51,7 @@ In Gitlab you need to complete the following steps.
         - Runners
             - Select token
                 - Select envoy
-6. Add to dashboard script (*steps and menu items in gitlab*)
+6. Add to dashboard yml (*steps and menu items in gitlab*)
     - Cncf configuration
         - Integration branch
             - Add to cross-cloud.yml

@@ -1,3 +1,4 @@
+# deprecated: This information is now in  https://github.com/crosscloudci/crosscloudci/blob/master/CNCFCI_GITLAB_CONFIGURATION.md
 # Cross Cloud CI New Project Setup
 
 The goal is to call the new project's ci scripts from gitlabs ci 

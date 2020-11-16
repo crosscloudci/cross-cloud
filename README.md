@@ -130,7 +130,7 @@ docker run \
   -ti registry.cncf.ci/cncf/cross-cloud/provisioning:ci-stable-v0-2-0
 ```
 
-#### Quickstart for metal.equinix.net
+#### Quickstart for metal.equinix.com
 
 Packet.net requires an auth token and a project id.
 

@@ -5,7 +5,7 @@ The multi-cloud kubernetes provisioner component of the [Cross-Cloud CI](https:/
 ### What is Cross-cloud?
 
 
-A Kubernetes provisioner supporting multiple clouds (eg. AWS, Azure, Google, Packet) which
+A Kubernetes provisioner supporting multiple clouds (eg. AWS, Azure, Google, Equinix Metal) which
 
   * Creates K8s clusters on cloud providers
   * Supplies conformance validated Kubernetes end-points for each cloud provider with cloud specific features enabled
@@ -130,11 +130,11 @@ docker run \
   -ti registry.cncf.ci/cncf/cross-cloud/provisioning:ci-stable-v0-2-0
 ```
 
-#### Quickstart for Packet.net
+#### Quickstart for metal.equinix.com
 
 Packet.net requires an auth token and a project id.
 
-To deploy to packet:
+To deploy to equinix metal:
 ```bash
 docker run \
   -v /tmp/data:/cncf/data \
@@ -195,7 +195,7 @@ AWS:
  * -e AWS_SECRET_ACCESS_KEY=secret
  * -e AWS_DEFAULT_REGION=ap-southeast-2
 
-Packet:
+Equinix Metal:
  * -e PACKET_AUTH_TOKEN=secret
  * -e TF_VAR_packet_project_id=secret 
 

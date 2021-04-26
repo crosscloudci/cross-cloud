@@ -30,11 +30,11 @@ before_script:
     fi
   - >
     if [ "$CI_JOB_NAME" == "Build-Source" ]; then
-      source /opt/local/etc/rvmrc ; source /opt/local/etc/profile.d/rvm.sh ; rvm use ruby-2.3.0 ;  cp -a /opt/local/dashboard /dashboard ; pushd /dashboard ; source /opt/local/.env ; ./bin/update_dashboard ; popd
+      source /opt/local/etc/rvmrc ; source /opt/local/etc/profile.d/rvm.sh ; rvm install "ruby-2.6.3" ; rvm use ruby-2.3.0 ;  cp -a /opt/local/dashboard /dashboard ; pushd /dashboard ; source /opt/local/.env ; ./bin/update_dashboard ; popd
     elif [ "$CI_JOB_NAME" == "Dashboard" ]; then
-      source /opt/local/etc/rvmrc ; source /opt/local/etc/profile.d/rvm.sh ; rvm use ruby-2.3.0 ;  cp -a /opt/local/dashboard /dashboard ; pushd /dashboard ; source /opt/local/.env ; ./bin/update_dashboard ; popd
+      source /opt/local/etc/rvmrc ; source /opt/local/etc/profile.d/rvm.sh ; rvm install "ruby-2.6.3" ; rvm use ruby-2.3.0 ;  cp -a /opt/local/dashboard /dashboard ; pushd /dashboard ; source /opt/local/.env ; ./bin/update_dashboard ; popd
     else
-      source /opt/local/alpine/etc/rvmrc ; source /opt/local/alpine/etc/profile.d/rvm.sh ; rvm use ruby-2.3.0 ; cp -a /opt/local/dashboard /dashboard ; pushd /dashboard ; source /opt/local/.env ; ./bin/update_dashboard ; popd
+      source /opt/local/alpine/etc/rvmrc ; source /opt/local/alpine/etc/profile.d/rvm.sh ; rvm install "ruby-2.6.3" ; rvm use ruby-2.3.0 ; cp -a /opt/local/dashboard /dashboard ; pushd /dashboard ; source /opt/local/.env ; ./bin/update_dashboard ; popd
     fi
 
 .build_source: &build_source
